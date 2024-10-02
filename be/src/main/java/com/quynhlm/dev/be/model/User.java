@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
@@ -29,10 +31,11 @@ import lombok.Setter;
         @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "email"),
         @UserAccountElement(field = "phoneNumber", regex = UserAccountRegex.PHONE_NUMBER, message = "phoneNumber"),
 })
+@JsonInclude(Include.NON_NULL)
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer user_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
     String username;
     @StrongPassword(message = "password")
     String password;

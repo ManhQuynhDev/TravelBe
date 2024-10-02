@@ -1,15 +1,19 @@
 package com.quynhlm.dev.be.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.User;
+import com.quynhlm.dev.be.model.dto.LoginDTO;
 import com.quynhlm.dev.be.service.UserService;
 
 import jakarta.validation.Valid;
@@ -19,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/onboarding")
 public class UserController {
-
     @Autowired
     private UserService userService;
 
@@ -29,5 +32,18 @@ public class UserController {
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new account successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseObject<?>> login(@RequestBody LoginDTO request) {
+        ResponseObject<?> response = userService.login(request);
+        return new ResponseEntity<ResponseObject<?>>(response, HttpStatus.OK);
+    }
+
+     @GetMapping("/users")
+    public Page<User> getUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return userService.getListData(page, size);
     }
 }
