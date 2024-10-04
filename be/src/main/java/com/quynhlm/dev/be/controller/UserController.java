@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.User;
+import com.quynhlm.dev.be.model.dto.ForgetDTO;
 import com.quynhlm.dev.be.model.dto.LoginDTO;
 import com.quynhlm.dev.be.service.UserService;
 
@@ -45,5 +46,15 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return userService.getListData(page, size);
+    }
+
+    @PostMapping("/send")
+    public ResponseEntity<String> sendOTP(@RequestBody ForgetDTO request) {
+        if (userService.canRequestNewOTP(request.getEmail())) {
+            userService.generateOTP(request.getEmail());
+            return ResponseEntity.ok("OTP sent to email: " + request.getEmail());
+        } else {
+            return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
+        }
     }
 }

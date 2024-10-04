@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findOneByUsername(String username);
 
     List<User> findByEmail(String email);
+
+    Optional<User> findById(Long id);
 
     List<User> findByPhoneNumber(String phoneNumber);
 

@@ -5,7 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -16,12 +20,17 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.core.exception.UnknowException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
+import com.quynhlm.dev.be.model.OTPData;
 import com.quynhlm.dev.be.model.User;
 import com.quynhlm.dev.be.model.dto.LoginDTO;
 import com.quynhlm.dev.be.repositories.UserRepository;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nimbusds.jose.Payload;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import java.util.Map;
+import java.util.Random;
 
 @Service
 public class UserService {
@@ -29,7 +38,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
     private static final String SIGNER_KEY = "/q5Il7oI//Hiv4va97MQAtYOaktNo188-23WY12YVRCRGBEwYECRg0T6YcrEzYWb";
+
+    private Map<String, OTPData> otpStorage = new HashMap<>();
+
+    private static final long OTP_VALID_DURATION = 1; // 1 minute
 
     public ResponseObject<?> login(LoginDTO request) throws UserAccountExistingException {
         User user = userRepository.findOneByUsername(request.getUsername());
@@ -84,6 +100,7 @@ public class UserService {
         }
     }
 
+    // Create token
     public String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -103,5 +120,35 @@ public class UserService {
         } catch (JOSEException e) {
             throw new UnknowException("Token generation failed: " + e.getMessage());
         }
+    }
+
+    // Create OTP
+    public void generateOTP(String email) {
+        // Generate OTP
+        String otp = String.valueOf(new Random().nextInt(900000) + 100000);
+
+        // Create and store OTP details
+        OTPData otpData = new OTPData(otp, LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
+        otpStorage.put(email, otpData);
+
+        // Send OTP via email
+        sendEmail(email, "Your OTP Code", "Your OTP is: " + otp);
+    }
+
+    // Send email
+    private void sendEmail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        mailSender.send(message);
+    }
+
+    public boolean canRequestNewOTP(String email) {
+        OTPData otpData = otpStorage.get(email);
+        if (otpData != null) {
+            return otpData.getExpiryTime().minusMinutes(OTP_VALID_DURATION).isBefore(LocalDateTime.now());
+        }
+        return true;
     }
 }
