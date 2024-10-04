@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class OTPData {
+public class OTPResponse {
     private String otp;
     private LocalDateTime expiryTime;
 }

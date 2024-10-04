@@ -37,7 +37,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String username;
-    @StrongPassword(message = "password")
+    @StrongPassword(message = "Incorrect password format")
     String password;
     @Length(min = 8, message = "name is too short")
     String fullname;

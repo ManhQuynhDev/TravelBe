@@ -6,10 +6,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -20,8 +20,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.core.exception.UnknowException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
-import com.quynhlm.dev.be.model.OTPData;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.OTPResponse;
 import com.quynhlm.dev.be.model.User;
+import com.quynhlm.dev.be.model.dto.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.LoginDTO;
 import com.quynhlm.dev.be.repositories.UserRepository;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -43,7 +45,7 @@ public class UserService {
 
     private static final String SIGNER_KEY = "/q5Il7oI//Hiv4va97MQAtYOaktNo188-23WY12YVRCRGBEwYECRg0T6YcrEzYWb";
 
-    private Map<String, OTPData> otpStorage = new HashMap<>();
+    private Map<String, OTPResponse> otpStorage = new HashMap<>();
 
     private static final long OTP_VALID_DURATION = 1; // 1 minute
 
@@ -123,12 +125,16 @@ public class UserService {
     }
 
     // Create OTP
-    public void generateOTP(String email) {
+    public void generateOTP(String email) throws UserAccountNotFoundException {
+        List<User> foundUser = userRepository.findByEmail(email);
+        if (foundUser.isEmpty()) {
+            throw new UserAccountNotFoundException("Email " + email + " not found . Please try another!");
+        }
         // Generate OTP
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
 
         // Create and store OTP details
-        OTPData otpData = new OTPData(otp, LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
+        OTPResponse otpData = new OTPResponse(otp, LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
         otpStorage.put(email, otpData);
 
         // Send OTP via email
@@ -144,11 +150,39 @@ public class UserService {
         mailSender.send(message);
     }
 
-    public boolean canRequestNewOTP(String email) {
-        OTPData otpData = otpStorage.get(email);
+    public boolean canRequestNewOTP(String email) throws UserAccountNotFoundException {
+        OTPResponse otpData = otpStorage.get(email);
         if (otpData != null) {
             return otpData.getExpiryTime().minusMinutes(OTP_VALID_DURATION).isBefore(LocalDateTime.now());
         }
         return true;
+    }
+
+    public boolean validateOTP(String email, String otp) {
+        OTPResponse otpData = otpStorage.get(email);
+        if (otpData != null) {
+            if (otpData.getExpiryTime().isAfter(LocalDateTime.now())) {
+                return otpData.getOtp().equals(otp);
+            }
+        }
+        return false;
+    }
+
+    public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException , UnknowException{
+        User foundUser = userRepository.findOneByEmail(changePassDTO.getEmail());
+
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException(
+                    "User with " + changePassDTO.getEmail() + " not found . Please try another!");
+        }
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        String newEncodedPassword = passwordEncoder.encode(changePassDTO.getPassword());
+
+        foundUser.setPassword(newEncodedPassword);
+        User savedUser = userRepository.save(foundUser);
+        if (savedUser.getId() == null) {
+            throw new UnknowException("Transaction cannot complete!");
+        }
     }
 }

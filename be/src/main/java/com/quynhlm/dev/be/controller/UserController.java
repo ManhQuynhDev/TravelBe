@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.User;
-import com.quynhlm.dev.be.model.dto.ForgetDTO;
+import com.quynhlm.dev.be.model.dto.ChangePassDTO;
+import com.quynhlm.dev.be.model.dto.ConfirmEmailDTO;
 import com.quynhlm.dev.be.model.dto.LoginDTO;
+import com.quynhlm.dev.be.model.dto.VerifyDTO;
 import com.quynhlm.dev.be.service.UserService;
 
 import jakarta.validation.Valid;
@@ -41,7 +43,7 @@ public class UserController {
         return new ResponseEntity<ResponseObject<?>>(response, HttpStatus.OK);
     }
 
-     @GetMapping("/users")
+    @GetMapping("/users")
     public Page<User> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
@@ -49,12 +51,29 @@ public class UserController {
     }
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendOTP(@RequestBody ForgetDTO request) {
+    public ResponseEntity<String> sendOTP(@RequestBody ConfirmEmailDTO request) {
         if (userService.canRequestNewOTP(request.getEmail())) {
             userService.generateOTP(request.getEmail());
             return ResponseEntity.ok("OTP sent to email: " + request.getEmail());
         } else {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
+        if (userService.validateOTP(verify.getEmail(), verify.getOtp())) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.badRequest().body(false);
+        }
+    }
+
+    @PostMapping("/set-password")
+    public ResponseEntity<ResponseObject<Void>> changePassword(@RequestBody ChangePassDTO changePassDTO) {
+        ResponseObject<Void> result = new ResponseObject<>();
+        userService.setNewPassWord(changePassDTO);
+        result.setMessage("Change password successfully");
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

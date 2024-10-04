@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.model.dto;
 
+import com.quynhlm.dev.be.core.validation.StrongPassword;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -8,5 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ForgetDTO {
-    private String email;
+    @StrongPassword(message = "Incorrect password format")
+    private String password;
 }
