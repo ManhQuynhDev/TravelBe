@@ -1,4 +1,4 @@
-package com.quynhlm.dev.be.model;
+package com.quynhlm.dev.be.model.dto.responseDTO;
 
 import java.time.LocalDateTime;
 

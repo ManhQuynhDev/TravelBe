@@ -1,4 +1,4 @@
-package com.quynhlm.dev.be.model.dto;
+package com.quynhlm.dev.be.model.dto.requestDTO;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

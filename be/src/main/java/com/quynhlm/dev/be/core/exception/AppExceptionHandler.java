@@ -19,12 +19,23 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class })
-    public ResponseEntity<?> isExist(UserAccountExistingException ex, HttpServletRequest request) {
+    @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
+            LocationExistingException.class })
+    public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
-        response.setError(new AppError(AppError.ErrorCode.ACCOUNT_EXIST, ex.getMessage()));
-        return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
+
+        AppError.ErrorCode errorCode;
+        if (ex instanceof UserAccountExistingException || ex instanceof UserAccountNotFoundException) {
+            errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
+        } else if (ex instanceof LocationExistingException) {
+            errorCode = AppError.ErrorCode.LOCATION_EXIST;
+        } else {
+            errorCode = AppError.ErrorCode.UNKNOW;
+        }
+
+        response.setError(new AppError(errorCode, ex.getMessage()));
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

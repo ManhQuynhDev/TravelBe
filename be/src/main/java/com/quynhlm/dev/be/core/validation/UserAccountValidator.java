@@ -24,5 +24,4 @@ public class UserAccountValidator implements ConstraintValidator<UserAccountElem
         }
         return fieldValued.matches(regex);
     }
-
 }

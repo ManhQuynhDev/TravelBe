@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
-import com.quynhlm.dev.be.model.User;
-import com.quynhlm.dev.be.model.dto.ChangePassDTO;
-import com.quynhlm.dev.be.model.dto.ConfirmEmailDTO;
-import com.quynhlm.dev.be.model.dto.LoginDTO;
-import com.quynhlm.dev.be.model.dto.VerifyDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
 
 import jakarta.validation.Valid;
@@ -38,9 +39,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseObject<?>> login(@RequestBody LoginDTO request) {
-        ResponseObject<?> response = userService.login(request);
-        return new ResponseEntity<ResponseObject<?>>(response, HttpStatus.OK);
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginDTO request) {
+        TokenResponse response = userService.login(request);
+        return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users")

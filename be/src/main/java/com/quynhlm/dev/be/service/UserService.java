@@ -17,14 +17,14 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.core.exception.UnknowException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
-import com.quynhlm.dev.be.model.OTPResponse;
-import com.quynhlm.dev.be.model.User;
-import com.quynhlm.dev.be.model.dto.ChangePassDTO;
-import com.quynhlm.dev.be.model.dto.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
+import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.UserRepository;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,25 +49,26 @@ public class UserService {
 
     private static final long OTP_VALID_DURATION = 1; // 1 minute
 
-    public ResponseObject<?> login(LoginDTO request) throws UserAccountExistingException {
+    public TokenResponse login(LoginDTO request) throws UserAccountNotFoundException {
         User user = userRepository.findOneByUsername(request.getUsername());
         if (user == null) {
-            throw new UserAccountExistingException("User don't exist");
+            throw new UserAccountNotFoundException(
+                    "Username " + request.getUsername() + " not found. Please try another!");
         }
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         String token = generateToken(user);
 
         boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-
+        TokenResponse response = new TokenResponse();
         if (isAuthenticated == false) { // Login failure
-            ResponseObject<Boolean> response = new ResponseObject<>();
-            response.setData(isAuthenticated);
+            response.setSuccess(isAuthenticated);
             response.setMessage("Login not successfully");
             return response;
         }
-        ResponseObject<String> response = new ResponseObject<>();
-        response.setData(token);
+        response.setSuccess(isAuthenticated);
+        response.setMessage("Authentication successful.");
+        response.setToken(token);
         return response;
     }
 
@@ -168,7 +169,7 @@ public class UserService {
         return false;
     }
 
-    public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException , UnknowException{
+    public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException, UnknowException {
         User foundUser = userRepository.findOneByEmail(changePassDTO.getEmail());
 
         if (foundUser == null) {
@@ -185,4 +186,8 @@ public class UserService {
             throw new UnknowException("Transaction cannot complete!");
         }
     }
+    // public void changeAvatar(Long id , MultipartFile file) throws
+    // UserAccountNotFoundException , UnknowException {
+    // List<User> foundUser = userRepository.findById(id);
+    // }
 }

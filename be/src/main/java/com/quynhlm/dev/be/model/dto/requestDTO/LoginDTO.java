@@ -1,4 +1,4 @@
-package com.quynhlm.dev.be.model.dto;
+package com.quynhlm.dev.be.model.dto.requestDTO;
 
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
