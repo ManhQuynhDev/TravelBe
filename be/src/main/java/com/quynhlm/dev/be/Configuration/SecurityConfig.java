@@ -22,6 +22,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(
                 request -> request.requestMatchers(HttpMethod.POST).permitAll()
                         .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers(HttpMethod.DELETE).permitAll()
                         .anyRequest().authenticated()); // Token
         http.csrf(t -> t.disable());
 

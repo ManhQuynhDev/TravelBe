@@ -8,7 +8,7 @@ import lombok.Setter;
 public class AppError {
     public enum ErrorCode {
         UNKNOW ,
-        DATA_INVALID , ACCOUNT_EXIST , LOCATION_EXIST
+        DATA_INVALID , ACCOUNT_EXIST , LOCATION_EXIST , STORY_EXIST
     }    
     private ErrorCode code;
     private String message;

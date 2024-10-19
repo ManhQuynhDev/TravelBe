@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AppExceptionHandler {
 
     @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
-            LocationExistingException.class })
+            LocationExistingException.class, StoryNotFoundException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -30,6 +30,8 @@ public class AppExceptionHandler {
             errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
         } else if (ex instanceof LocationExistingException) {
             errorCode = AppError.ErrorCode.LOCATION_EXIST;
+        } else if (ex instanceof StoryNotFoundException) {
+            errorCode = AppError.ErrorCode.STORY_EXIST;
         } else {
             errorCode = AppError.ErrorCode.UNKNOW;
         }
