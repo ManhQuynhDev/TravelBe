@@ -68,7 +68,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>9.30.1</version> <!-- Đảm bảo sử dụng phiên bản mới nhất -->
+			<version>9.30.1</version>
 		</dependency>
 
 		<dependency>

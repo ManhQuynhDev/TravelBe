@@ -15,17 +15,24 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.UnknowException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.UserRepository;
+
+import java.text.ParseException;
+
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nimbusds.jose.Payload;
@@ -70,6 +77,14 @@ public class UserService {
         response.setMessage("Authentication successful.");
         response.setToken(token);
         return response;
+    }
+
+    public User findAnUser(Long id) throws UserAccountNotFoundException {
+        User user = userRepository.getAnUser(id);
+        if (user == null) {
+            throw new UserAccountExistingException("Id " + id + " not found . Please try another!");
+        }
+        return user;
     }
 
     public Page<User> getListData(int page, int size) {
@@ -186,8 +201,18 @@ public class UserService {
             throw new UnknowException("Transaction cannot complete!");
         }
     }
-    // public void changeAvatar(Long id , MultipartFile file) throws
-    // UserAccountNotFoundException , UnknowException {
-    // List<User> foundUser = userRepository.findById(id);
-    // }
+
+    public boolean checkUserToken(IntrospectRequest request) throws JOSEException, ParseException {
+        String token = request.getToken();
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiration_time = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        boolean isCheck = signedJWT.verify(verifier);
+
+        return isCheck && expiration_time.after(new Date());
+    }
 }

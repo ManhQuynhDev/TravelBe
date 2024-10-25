@@ -1,6 +1,8 @@
 package com.quynhlm.dev.be.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.quynhlm.dev.be.model.entity.User;
@@ -10,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -25,11 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByEmail(String email);
 
-    Optional<User> findById(Long id);
-
     List<User> findByPhoneNumber(String phoneNumber);
 
-    // @Modifying
-    // @Query(value = "INSERT INTO User (username, password) VALUES (:username, :password)", nativeQuery = true)
-    // void register(@Param("username") String username, @Param("phoneNumber") String phoneNumber);
+    @Query(value = "SELECT * FROM User WHERE id = :id", nativeQuery = true)
+    User getAnUser(@Param("id") Long id);
 }

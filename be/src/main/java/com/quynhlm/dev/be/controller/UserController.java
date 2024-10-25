@@ -5,20 +5,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
+import java.text.ParseException;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +48,14 @@ public class UserController {
         return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ResponseObject<User>> findAnUser(@PathVariable Long id) {
+        ResponseObject<User> result = new ResponseObject<>();
+        result.setMessage("Get an user with id " + id + " successfully");
+        result.setData(userService.findAnUser(id));
+        return new ResponseEntity<ResponseObject<User>>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/users")
     public Page<User> getUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -61,6 +73,7 @@ public class UserController {
         }
     }
 
+    // Email
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
         if (userService.validateOTP(verify.getEmail(), verify.getOtp())) {
@@ -76,5 +89,21 @@ public class UserController {
         userService.setNewPassWord(changePassDTO);
         result.setMessage("Change password successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
+
+    // Token
+    @PostMapping("/auth/token")
+    public ResponseEntity<ResponseObject<Boolean>> introspect(@RequestBody IntrospectRequest request) {
+        ResponseObject<Boolean> response = new ResponseObject<>();
+        boolean isCheckUserToken = false;
+        try {
+            isCheckUserToken = userService.checkUserToken(request);
+            response.setData(isCheckUserToken);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (JOSEException | ParseException e) {
+            response.setData(isCheckUserToken);
+            e.printStackTrace();
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
