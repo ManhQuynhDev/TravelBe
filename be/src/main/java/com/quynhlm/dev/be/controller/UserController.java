@@ -22,7 +22,10 @@ import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
+
 import java.text.ParseException;
+
+import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -105,5 +108,13 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @PostMapping("/changeFullname/{id}")
+    public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Long id, @RequestBody @Valid ChangeFullnameDTO changeFullnameDTO) {
+        userService.changeFullname(id, changeFullnameDTO);
+        ResponseObject<Void> response = new ResponseObject<>();
+        response.setMessage("Change Fullname successfully.");
+        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 }

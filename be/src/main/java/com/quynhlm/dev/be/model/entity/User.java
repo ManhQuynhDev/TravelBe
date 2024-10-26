@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.model.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
@@ -52,4 +53,5 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     Timestamp create_at;
+    LocalDateTime lastNameChangeDate;
 }
