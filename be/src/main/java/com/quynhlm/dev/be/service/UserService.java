@@ -36,6 +36,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
@@ -232,6 +233,20 @@ public class UserService {
             user.setLastNameChangeDate(LocalDateTime.now());
             User saveName = userRepository.save(user);
             if (saveName.getId() == null) {
+                throw new UnknowException("Transaction cannot complete!");
+            }
+        }
+    }
+    //ChangeProfile
+    public void changeProfile(Long id, UpdateProfileDTO updateUser) throws UserAccountNotFoundException, UnknowException {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserAccountNotFoundException("ID " + id + " not found. Please try another!");
+        } else {
+            User user = userRepository.findOneById(id);
+            user.setBio(updateUser.getBio());
+            user.setDob(updateUser.getDob());
+            User saveUser = userRepository.save(user);
+            if (saveUser.getId() == null) {
                 throw new UnknowException("Transaction cannot complete!");
             }
         }
