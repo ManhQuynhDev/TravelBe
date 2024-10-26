@@ -1,21 +1,30 @@
 package com.quynhlm.dev.be.service;
 
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -23,6 +32,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.UnknowException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
@@ -30,16 +40,6 @@ import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.UserRepository;
-
-import java.text.ParseException;
-
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import com.nimbusds.jose.Payload;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import java.util.Map;
-import java.util.Random;
 
 @Service
 public class UserService {
@@ -213,6 +213,27 @@ public class UserService {
 
         boolean isCheck = signedJWT.verify(verifier);
 
-        return isCheck && expiration_time.after(new Date());
+    return isCheck && expiration_time.after(new Date());
+    }
+    //ChangeFullname
+    public void changeFullname(Long id, ChangeFullnameDTO changeName) throws UnknowException, UserAccountNotFoundException {
+        if (userRepository.findById(id).isEmpty()) {
+            throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
+        } else {
+            User user = userRepository.findOneById(id);
+            if (user.getLastNameChangeDate() != null) {
+                long daysSinceLastChange = ChronoUnit.DAYS.between(user.getLastNameChangeDate(),LocalDateTime.now());
+                if (daysSinceLastChange < 30) {
+                    throw new UnknowException("You can only change your name once every 30 days. Please try again after " + (30 - daysSinceLastChange) + " days.");
+                }
+            }
+
+            user.setFullname(changeName.getFullname());
+            user.setLastNameChangeDate(LocalDateTime.now());
+            User saveName = userRepository.save(user);
+            if (saveName.getId() == null) {
+                throw new UnknowException("Transaction cannot complete!");
+            }
+        }
     }
 }
