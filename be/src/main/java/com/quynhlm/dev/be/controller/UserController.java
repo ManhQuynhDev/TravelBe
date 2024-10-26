@@ -18,6 +18,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.entity.User;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/onboarding")
 public class UserController {
+
     @Autowired
     private UserService userService;
 
@@ -109,12 +111,20 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @PostMapping("/changeFullname/{id}")
     public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Long id, @RequestBody @Valid ChangeFullnameDTO changeFullnameDTO) {
         userService.changeFullname(id, changeFullnameDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("Change Fullname successfully.");
+        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/changeProfile/{id}")
+    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable Long id, @RequestBody @Valid UpdateProfileDTO updateDTO) {
+        userService.changeProfile(id, updateDTO);
+        ResponseObject<Void> response = new ResponseObject<>();
+        response.setMessage("User profile updated successfully.");
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 }
