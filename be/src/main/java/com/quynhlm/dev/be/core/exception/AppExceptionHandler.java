@@ -15,12 +15,12 @@ import com.quynhlm.dev.be.core.AppError.ErrorCode;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
-            LocationExistingException.class, StoryNotFoundException.class })
+    @ExceptionHandler(value = {UserAccountExistingException.class, UserAccountNotFoundException.class,
+        LocationExistingException.class, StoryNotFoundException.class, CommentNotFoundException.class})
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -32,6 +32,8 @@ public class AppExceptionHandler {
             errorCode = AppError.ErrorCode.LOCATION_EXIST;
         } else if (ex instanceof StoryNotFoundException) {
             errorCode = AppError.ErrorCode.STORY_EXIST;
+        } else if (ex instanceof CommentNotFoundException) {
+            errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
         } else {
             errorCode = AppError.ErrorCode.UNKNOW;
         }
@@ -54,7 +56,7 @@ public class AppExceptionHandler {
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = { UnknowException.class })
+    @ExceptionHandler(value = {UnknowException.class})
     public ResponseEntity<?> unknow(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Something went wrong!.");
