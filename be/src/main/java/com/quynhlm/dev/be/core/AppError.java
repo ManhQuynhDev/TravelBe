@@ -15,7 +15,8 @@ public class AppError {
         POST_NOT_FOUND,
         REVIEW_NOT_FOUND,
         GROUP_NOT_FOUND,
-        GROUP_EXIST, MEMBER_NOT_FOUND
+        GROUP_EXIST, MEMBER_NOT_FOUND,
+        COMMENT_NOT_FOUND
     }
 
     private ErrorCode code;
