@@ -2,6 +2,7 @@ package com.quynhlm.dev.be.model.entity;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
@@ -36,14 +37,14 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    Integer id;
     String username;
     @StrongPassword(message = "Incorrect password format")
     String password;
     @Length(min = 8, message = "name is too short")
     String fullname;
     String email;
-    String role;
+    Set<String> roles;
     @Column(name = "phoneNumber")
     String phoneNumber;
     String status;

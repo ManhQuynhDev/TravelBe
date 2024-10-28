@@ -20,7 +20,9 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AppExceptionHandler {
 
     @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
-            LocationExistingException.class, StoryNotFoundException.class })
+            LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
+            ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
+            MemberNotFoundException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -31,9 +33,19 @@ public class AppExceptionHandler {
         } else if (ex instanceof LocationExistingException) {
             errorCode = AppError.ErrorCode.LOCATION_EXIST;
         } else if (ex instanceof StoryNotFoundException) {
-            errorCode = AppError.ErrorCode.STORY_EXIST;
+            errorCode = AppError.ErrorCode.STORY_NOT_FOUND;
+        } else if (ex instanceof PostNotFoundException) {
+            errorCode = AppError.ErrorCode.POST_NOT_FOUND;
+        } else if (ex instanceof ReViewNotFoundException) {
+            errorCode = AppError.ErrorCode.REVIEW_NOT_FOUND;
+        } else if (ex instanceof GroupNotFoundException) {
+            errorCode = AppError.ErrorCode.GROUP_NOT_FOUND;
+        } else if (ex instanceof GroupExistingException) {
+            errorCode = AppError.ErrorCode.GROUP_EXIST;
+        } else if (ex instanceof MemberNotFoundException) {
+            errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
         } else {
-            errorCode = AppError.ErrorCode.UNKNOW;
+            errorCode = AppError.ErrorCode.UNKNOWN;
         }
 
         response.setError(new AppError(errorCode, ex.getMessage()));
@@ -54,11 +66,11 @@ public class AppExceptionHandler {
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = { UnknowException.class })
-    public ResponseEntity<?> unknow(Exception ex, HttpServletRequest request) {
+    @ExceptionHandler(value = { UnknownException.class })
+    public ResponseEntity<?> unknown(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Something went wrong!.");
-        response.setError(new AppError(ErrorCode.UNKNOW, ex.getMessage()));
+        response.setError(new AppError(ErrorCode.UNKNOWN, ex.getMessage()));
         return new ResponseEntity<ResponseObject>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

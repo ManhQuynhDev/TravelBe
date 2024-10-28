@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ import org.springframework.data.domain.Pageable;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.quynhlm.dev.be.core.exception.UnknowException;
+import com.quynhlm.dev.be.core.exception.PostNotFoundException;
+import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
@@ -38,8 +40,9 @@ public class PostService {
     @Autowired
     private MediaRepository mediaRepository;
 
-    public void insertPost(Post post, List<MultipartFile> files, String type) throws UnknowException {
+    public void insertPost(Post post, List<MultipartFile> files, String type) throws UnknownException {
         try {
+            post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Post savedPost = postRepository.save(post);
 
             if (files != null && !files.isEmpty()) {
@@ -60,7 +63,7 @@ public class PostService {
 
                         amazonS3.putObject(bucketName, fileName, inputStream, metadata);
                         if (savedPost.getId() == null) {
-                            throw new UnknowException("Transaction cannot complete!");
+                            throw new UnknownException("Transaction cannot complete!");
                         }
 
                         Media media = new Media(null, savedPost.getId(),
@@ -72,9 +75,9 @@ public class PostService {
                 }
             }
         } catch (IOException e) {
-            throw new UnknowException("File handling error: " + e.getMessage());
+            throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
-            throw new UnknowException(e.getMessage());
+            throw new UnknownException(e.getMessage());
         }
     }
 
@@ -94,5 +97,20 @@ public class PostService {
         }).collect(Collectors.toList());
 
         return new PageImpl<>(postMediaDTOList, pageable, resultPage.getTotalElements());
+    }
+
+    public void deletePost(int post_id) throws PostNotFoundException{
+        Post foundPost = postRepository.getAnPost(post_id);
+
+        if (foundPost == null) {
+            throw new PostNotFoundException("Id " + post_id + " not found. Please try another!");
+        }
+
+        Media media = mediaRepository.foundMediaByPostId(post_id);
+        if (media != null) {
+            mediaRepository.delete(media);
+        }
+
+        postRepository.delete(foundPost);
     }
 }

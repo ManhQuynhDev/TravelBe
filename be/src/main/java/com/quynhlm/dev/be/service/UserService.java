@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,9 +17,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -29,9 +33,10 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.quynhlm.dev.be.core.exception.UnknowException;
+import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
@@ -57,11 +62,12 @@ public class UserService {
 
     private static final long OTP_VALID_DURATION = 1; // 1 minute
 
+    // Login Check
     public TokenResponse login(LoginDTO request) throws UserAccountNotFoundException {
-        User user = userRepository.findOneByUsername(request.getUsername());
+        User user = userRepository.findOneByEmail(request.getEmail());
         if (user == null) {
             throw new UserAccountNotFoundException(
-                    "Username " + request.getUsername() + " not found. Please try another!");
+                    "Email " + request.getEmail() + " not found. Please try another!");
         }
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -80,7 +86,8 @@ public class UserService {
         return response;
     }
 
-    public User findAnUser(Long id) throws UserAccountNotFoundException {
+    @PostAuthorize("hasRole('ADMIN') or returnObject.username == authentication.name")
+    public User findAnUser(Integer id) throws UserAccountNotFoundException {
         User user = userRepository.getAnUser(id);
         if (user == null) {
             throw new UserAccountExistingException("Id " + id + " not found . Please try another!");
@@ -93,15 +100,18 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public void register(User user) throws UserAccountExistingException, UnknowException {
+    public void register(User user) throws UserAccountExistingException, UnknownException {
         checkUserExists(user);
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);
 
         User savedUser = userRepository.save(user);
         if (savedUser.getId() == null) {
-            throw new UnknowException("Transaction cannot complete!");
+            throw new UnknownException("Transaction cannot complete!");
         }
     }
 
@@ -121,24 +131,40 @@ public class UserService {
 
     // Create token
     public String generateToken(User user) {
+        // Create JWT header with the HS512 algorithm
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        // Build JWT claims
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
                 .issuer("quynhlm.dev@gmail.com")
                 .issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + 3600000))
-                .claim("role", "USER")
+                .expirationTime(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration
+                .claim("scope", buildScope(user))
                 .build();
 
+        // Prepare payload and JWS object
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
 
         try {
+            // Sign the JWS object with the secret key
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            throw new UnknowException("Token generation failed: " + e.getMessage());
+            throw new UnknownException("Token generation failed: " + e.getMessage());
         }
+    }
+
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        // Check if roles are not empty
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(stringJoiner::add);
+        }
+
+        return stringJoiner.toString();
     }
 
     // Create OTP
@@ -185,7 +211,7 @@ public class UserService {
         return false;
     }
 
-    public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException, UnknowException {
+    public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException, UnknownException {
         User foundUser = userRepository.findOneByEmail(changePassDTO.getEmail());
 
         if (foundUser == null) {
@@ -199,7 +225,7 @@ public class UserService {
         foundUser.setPassword(newEncodedPassword);
         User savedUser = userRepository.save(foundUser);
         if (savedUser.getId() == null) {
-            throw new UnknowException("Transaction cannot complete!");
+            throw new UnknownException("Transaction cannot complete!");
         }
     }
 
@@ -214,18 +240,22 @@ public class UserService {
 
         boolean isCheck = signedJWT.verify(verifier);
 
-    return isCheck && expiration_time.after(new Date());
+        return isCheck && expiration_time.after(new Date());
     }
-    //ChangeFullname
-    public void changeFullname(Long id, ChangeFullnameDTO changeName) throws UnknowException, UserAccountNotFoundException {
+
+    // ChangeFullname
+    public void changeFullname(Integer id, ChangeFullnameDTO changeName)
+            throws UnknownException, UserAccountNotFoundException {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         } else {
             User user = userRepository.findOneById(id);
             if (user.getLastNameChangeDate() != null) {
-                long daysSinceLastChange = ChronoUnit.DAYS.between(user.getLastNameChangeDate(),LocalDateTime.now());
+                long daysSinceLastChange = ChronoUnit.DAYS.between(user.getLastNameChangeDate(), LocalDateTime.now());
                 if (daysSinceLastChange < 30) {
-                    throw new UnknowException("You can only change your name once every 30 days. Please try again after " + (30 - daysSinceLastChange) + " days.");
+                    throw new UnknownException(
+                            "You can only change your name once every 30 days. Please try again after "
+                                    + (30 - daysSinceLastChange) + " days.");
                 }
             }
 
@@ -233,12 +263,14 @@ public class UserService {
             user.setLastNameChangeDate(LocalDateTime.now());
             User saveName = userRepository.save(user);
             if (saveName.getId() == null) {
-                throw new UnknowException("Transaction cannot complete!");
+                throw new UnknownException("Transaction cannot complete!");
             }
         }
     }
-    //ChangeProfile
-    public void changeProfile(Long id, UpdateProfileDTO updateUser) throws UserAccountNotFoundException, UnknowException {
+
+    // ChangeProfile
+    public void changeProfile(Integer id, UpdateProfileDTO updateUser)
+            throws UserAccountNotFoundException, UnknownException {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserAccountNotFoundException("ID " + id + " not found. Please try another!");
         } else {
@@ -247,8 +279,9 @@ public class UserService {
             user.setDob(updateUser.getDob());
             User saveUser = userRepository.save(user);
             if (saveUser.getId() == null) {
-                throw new UnknowException("Transaction cannot complete!");
+                throw new UnknownException("Transaction cannot complete!");
             }
         }
     }
+    // Change STATUS User
 }

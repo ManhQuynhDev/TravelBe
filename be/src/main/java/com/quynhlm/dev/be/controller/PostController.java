@@ -18,7 +18,10 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.service.PostService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RequestMapping("posts")
 @RestController
@@ -37,8 +40,16 @@ public class PostController {
     }
 
     @GetMapping("")
-     public Page<PostMediaDTO> getPostsWithMedia(
-        @PageableDefault(page = 0, size = 2) Pageable pageable) {
+    public Page<PostMediaDTO> getPostsWithMedia(
+            @PageableDefault(page = 0, size = 2) Pageable pageable) {
         return postService.getPostsWithMedia(pageable);
+    }
+
+    @DeleteMapping("/{post_id}")
+    public ResponseEntity<ResponseObject<Void>> deleteStory(@PathVariable int post_id) {
+        postService.deletePost(post_id);
+        ResponseObject<Void> result = new ResponseObject<>();
+        result.setMessage("Delete post successfully");
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

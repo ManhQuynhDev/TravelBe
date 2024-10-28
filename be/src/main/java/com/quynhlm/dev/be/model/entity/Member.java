@@ -12,21 +12,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Post")
+@Table(name = "Member")
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-
-public class Post {
+@NoArgsConstructor
+public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String content;
-    private String status;
-    @Column(name = "create_time", updatable = false)
-    private String create_time;
+    @Column(name = "group_id")
+    private int group_id;
+    @Column(name = "user_id")
     private int user_id;
-    private int location_id;
-    private String hastag;
+    private String join_time;
+    private String role;
+    private String status;
 }

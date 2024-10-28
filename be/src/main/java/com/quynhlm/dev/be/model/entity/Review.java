@@ -12,21 +12,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Post")
+@Table(name = "Story")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Post {
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String content;
-    private String status;
-    @Column(name = "create_time", updatable = false)
-    private String create_time;
     private int user_id;
     private int location_id;
-    private String hastag;
+    private String content;
+    private String mediaUrl;
+    @Column(name = "create_time", updatable = false)
+    private String create_time;
 }

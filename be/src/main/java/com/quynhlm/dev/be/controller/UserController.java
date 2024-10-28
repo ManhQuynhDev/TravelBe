@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<ResponseObject<User>> findAnUser(@PathVariable Long id) {
+    public ResponseEntity<ResponseObject<User>> findAnUser(@PathVariable Integer id) {
         ResponseObject<User> result = new ResponseObject<>();
         result.setMessage("Get an user with id " + id + " successfully");
         result.setData(userService.findAnUser(id));
@@ -113,7 +113,8 @@ public class UserController {
     }
 
     @PostMapping("/changeFullname/{id}")
-    public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Long id, @RequestBody @Valid ChangeFullnameDTO changeFullnameDTO) {
+    public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Integer id,
+            @RequestBody @Valid ChangeFullnameDTO changeFullnameDTO) {
         userService.changeFullname(id, changeFullnameDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("Change Fullname successfully.");
@@ -121,7 +122,8 @@ public class UserController {
     }
 
     @PostMapping("/changeProfile/{id}")
-    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable Long id, @RequestBody @Valid UpdateProfileDTO updateDTO) {
+    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable Integer id,
+            @RequestBody @Valid UpdateProfileDTO updateDTO) {
         userService.changeProfile(id, updateDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");

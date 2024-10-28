@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.quynhlm.dev.be.model.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
     Page<User> findAll(Pageable pageable);
 
@@ -27,8 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByPhoneNumber(String phoneNumber);
 
     @Query(value = "SELECT * FROM User WHERE id = :id", nativeQuery = true)
-    User getAnUser(@Param("id") Long id);
+    User getAnUser(@Param("id") Integer id);
 
-    User findOneById(Long id);
+    User findOneById(Integer id);
 
 }

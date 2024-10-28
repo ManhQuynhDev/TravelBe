@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.quynhlm.dev.be.core.exception.LocationExistingException;
-import com.quynhlm.dev.be.core.exception.UnknowException;
+import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 
@@ -19,7 +19,7 @@ public class LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public void insertLocation(Location location) throws LocationExistingException, UnknowException {
+    public void insertLocation(Location location) throws LocationExistingException, UnknownException {
         List<Location> foundLocation = locationRepository.findByName(location.getName());
         if (!foundLocation.isEmpty()) {
             throw new LocationExistingException(
@@ -27,7 +27,7 @@ public class LocationService {
         }
         Location saveLocation = locationRepository.save(location);
         if (saveLocation.getId() == null) {
-            throw new UnknowException("Transaction cannot complete!");
+            throw new UnknownException("Transaction cannot complete!");
         }
     }
 }

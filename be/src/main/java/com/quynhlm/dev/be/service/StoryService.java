@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.StoryNotFoundException;
-import com.quynhlm.dev.be.core.exception.UnknowException;
+import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.repositories.StoryRepository;
 
@@ -40,10 +40,10 @@ public class StoryService {
     }
 
     public void insertStory(Story story, MultipartFile mediaFile, MultipartFile musicFile)
-            throws UnknowException {
+            throws UnknownException {
         try {
             if (mediaFile == null || mediaFile.isEmpty()) {
-                throw new UnknowException("No image or video file provided for the story.");
+                throw new UnknownException("No image or video file provided for the story.");
             }
 
             // Nếu có file nhạc, kiểm tra file nhạc
@@ -53,7 +53,7 @@ public class StoryService {
                 String musicContentType = musicFile.getContentType();
 
                 if (!musicContentType.startsWith("audio/")) {
-                    throw new UnknowException("Invalid music file type. Only audio files are allowed.");
+                    throw new UnknownException("Invalid music file type. Only audio files are allowed.");
                 }
 
                 // Upload nhạc lên S3
@@ -78,7 +78,7 @@ public class StoryService {
 
             // Kiểm tra loại file (chỉ chấp nhận ảnh, video)
             if (!isValidFileType(imageOrVideoContentType)) {
-                throw new UnknowException("Invalid file type. Only image or video files are allowed.");
+                throw new UnknownException("Invalid file type. Only image or video files are allowed.");
             }
 
             // Upload file hình ảnh hoặc video lên S3
@@ -97,13 +97,13 @@ public class StoryService {
 
                 Story savedStory = storyRepository.save(story);
                 if (savedStory.getId() == null) {
-                    throw new UnknowException("Transaction cannot complete!");
+                    throw new UnknownException("Transaction cannot complete!");
                 }
             }
         } catch (IOException e) {
-            throw new UnknowException("File handling error: " + e.getMessage());
+            throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
-            throw new UnknowException(e.getMessage());
+            throw new UnknownException(e.getMessage());
         }
     }
 
