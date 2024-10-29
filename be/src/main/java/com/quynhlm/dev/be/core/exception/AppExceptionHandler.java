@@ -15,14 +15,14 @@ import com.quynhlm.dev.be.core.AppError.ErrorCode;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
-            LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
-            ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
-            MemberNotFoundException.class })
+    @ExceptionHandler(value = {UserAccountExistingException.class, UserAccountNotFoundException.class,
+        LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
+        ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
+        MemberNotFoundException.class, CommentNotFoundException.class})
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -44,6 +44,8 @@ public class AppExceptionHandler {
             errorCode = AppError.ErrorCode.GROUP_EXIST;
         } else if (ex instanceof MemberNotFoundException) {
             errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
+        } else if (ex instanceof CommentNotFoundException) {
+            errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
         } else {
             errorCode = AppError.ErrorCode.UNKNOWN;
         }
@@ -66,7 +68,7 @@ public class AppExceptionHandler {
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = { UnknownException.class })
+    @ExceptionHandler(value = {UnknownException.class})
     public ResponseEntity<?> unknown(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Something went wrong!.");
