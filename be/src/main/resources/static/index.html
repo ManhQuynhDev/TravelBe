@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat Application</h1>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Enter your message" />
+
+    <input type="number" id="yourId" placeholder="Enter your Id" />
+
+    <div class="input-container">
+        <label>
+            <input type="radio" name="messageType" value="private" checked> Nhắn tin riêng
+        </label>
+        <label>
+            <input type="radio" name="messageType" value="group"> Nhắn tin nhóm
+        </label>
+    </div>
+    <input type="file" id="fileInput" multiple />
+    <button id="sendButton">Send</button>
+
+
+    <h2>Notifications</h2>
+    <div id="notifications" style="border: 1px solid #ccc; height: 100px; overflow-y: scroll; margin-bottom: 20px;">
+    </div>
+
+
+    <script>
+        let stompClient = null;
+
+        function connect() {
+            const socket = new SockJS('http://localhost:8080/ws-message');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+
+                const userId = 1;
+                const groupId = 1;
+
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/private/' + userId, function (messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body), "private");
+                });
+                stompClient.subscribe('/topic/group/' + groupId, function (messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body), "group");
+                });
+                stompClient.subscribe('/topic/notification/' + 2, function (notification) {
+                    showNotification(JSON.parse(notification.body))
+                });
+            });
+        }
+
+        function showMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message';
+            messageDiv.textContent = message.content;
+            document.getElementById('messages').appendChild(messageDiv);
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+        }
+
+        function showNotification(notificationBody) {
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = 'notification';
+            notificationDiv.textContent = notificationBody; // Hoặc parse JSON nếu cần
+            document.getElementById('notifications').appendChild(notificationDiv);
+            document.getElementById('notifications').scrollTop = document.getElementById('notifications').scrollHeight;
+        }
+
+        document.getElementById('sendButton').addEventListener('click', function () {
+            const messageInput = document.getElementById('messageInput').value;
+            const messageType = document.querySelector('input[name="messageType"]:checked').value;
+            const fileInput = document.getElementById('fileInput');
+            const files = Array.from(fileInput.files);
+
+            const message = {
+                content: messageInput,
+                userSendId: 1,
+                status: "SENT"
+            };
+
+            if (messageType === "private") {
+                message.userIdReceived = 2;
+                message.groupId = null;
+            } else if (messageType === "group") {
+                message.groupId = 1;
+                message.userIdReceived = null;
+            }
+            console.log(message);
+
+            // const formData = new FormData();
+            // formData.append('message', JSON.stringify(message)); // Không cần type
+
+            // // Duyệt qua và in ra các giá trị trong formData
+            // for (let [key, value] of formData.entries()) {
+            //     console.log(`${key}:`, value);
+            // }
+
+            // const formDataObject = {};
+            // for (let [key, value] of formData.entries()) {
+            //     formDataObject[key] = value;
+            // }
+
+            // Gửi dữ liệu qua WebSocket dưới dạng JSON
+            stompClient.send("/app/sendMessage", {}, JSON.stringify(message));
+        });
+        window.onload = connect;
+    </script>
+</body>
+
+</html>

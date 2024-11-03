@@ -37,17 +37,15 @@ public class CommentService {
 
     public void insertComment(Comment comment, MultipartFile imageFile) throws UnknownException {
         try {
-            // Nếu có file hình ảnh, kiểm tra và tải lên S3
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
                 long imageFileSize = imageFile.getSize();
                 String imageContentType = imageFile.getContentType();
 
-                // Kiểm tra loại file (chỉ chấp nhận ảnh)
                 if (!isValidFileType(imageContentType)) {
                     throw new UnknownException("Invalid file type. Only image files are allowed.");
                 }
-                // Tải lên hình ảnh hoặc video lên S3
+             
                 try (InputStream mediaInputStream = imageFile.getInputStream()) {
                     ObjectMetadata mediaMetadata = new ObjectMetadata();
                     mediaMetadata.setContentLength(imageFileSize);
@@ -55,8 +53,8 @@ public class CommentService {
 
                     amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
 
-                    // Lưu đường dẫn file vào Comment (url)
-                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s", imageFileName);
+                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                            imageFileName);
                     comment.setUrl(mediaUrl);
                 }
             }
@@ -66,12 +64,10 @@ public class CommentService {
         } catch (Exception e) {
             throw new UnknownException(e.getMessage());
         }
-
     }
 
-    // Hàm kiểm tra định dạng file (chỉ chấp nhận ảnh và video)
     private boolean isValidFileType(String contentType) {
-return contentType.startsWith("image/") || contentType.startsWith("video/");
+        return contentType.startsWith("image/") || contentType.startsWith("video/");
     }
 
     public void deleteComment(Integer id) throws CommentNotFoundException {
@@ -82,7 +78,8 @@ return contentType.startsWith("image/") || contentType.startsWith("video/");
         commentRepository.delete(foundComment);
     }
 
-    public void updateComment(Integer id, String newContent, MultipartFile imageFile) throws CommentNotFoundException, UnknownException {
+    public void updateComment(Integer id, String newContent, MultipartFile imageFile)
+            throws CommentNotFoundException, UnknownException {
         Comment existingComment = commentRepository.findComment(id);
         if (existingComment == null) {
             throw new CommentNotFoundException("Comment with id " + id + " not found.");

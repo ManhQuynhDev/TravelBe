@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.entity.Comment;
-import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.CommentService;
 
 import org.springframework.web.bind.annotation.PutMapping;
@@ -66,7 +65,6 @@ public class CommentController {
         result.setMessage("Update comment successfully");
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
     
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject<Comment>> findAnComment(@PathVariable Integer id) {

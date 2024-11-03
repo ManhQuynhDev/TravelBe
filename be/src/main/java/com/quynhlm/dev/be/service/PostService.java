@@ -3,7 +3,6 @@ package com.quynhlm.dev.be.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +17,12 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageImpl;
 
 @Service
 public class PostService {
@@ -81,25 +80,27 @@ public class PostService {
         }
     }
 
-    public Page<PostMediaDTO> getPostsWithMedia(Pageable pageable) {
-        Page<Object[]> resultPage = postRepository.fetchPostWithMedia(pageable);
+    public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
+        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(pageable);
 
-        List<PostMediaDTO> postMediaDTOList = resultPage.stream().map(result -> {
-            int postId = (int) result[0]; // post_id
-            String content = (String) result[1]; // content
-            String status = (String) result[2]; // status
-            int locationId = (int) result[3]; // location_id
-            String hastag = (String) result[4]; // hastag
-            String mediaUrl = (String) result[5]; // media_url
-            String type = (String) result[6]; // type
-
-            return new PostMediaDTO(postId, content, status, locationId, hastag, mediaUrl, type);
-        }).collect(Collectors.toList());
-
-        return new PageImpl<>(postMediaDTOList, pageable, resultPage.getTotalElements());
+        return results.map(row -> {
+            PostResponseDTO post = new PostResponseDTO();
+            post.setOwnerId(((Number) row[0]).intValue());
+            post.setPostId(((Number) row[1]).intValue());
+            post.setContent((String) row[2]);
+            post.setMediaUrl((String) row[3]);
+            post.setLocationId(((Number) row[4]).intValue());
+            post.setHastag((String) row[5]);
+            post.setStatus((String) row[6]);
+            post.setType((String) row[7]);
+            post.setIsShare(((Number) row[8]).intValue());
+            post.setCreate_time((String) row[9]);
+            post.setShareByUser(row[10] != null ? ((Number) row[10]).intValue() : null);
+            return post;
+        });
     }
 
-    public void deletePost(int post_id) throws PostNotFoundException{
+    public void deletePost(int post_id) throws PostNotFoundException {
         Post foundPost = postRepository.getAnPost(post_id);
 
         if (foundPost == null) {
@@ -113,4 +114,98 @@ public class PostService {
 
         postRepository.delete(foundPost);
     }
+
+    public PostMediaDTO getAnPost(Integer post_id) throws PostNotFoundException {
+        List<Object[]> results = postRepository.getPost(post_id);
+
+        if (results.isEmpty()) {
+            throw new PostNotFoundException(
+                    "Id " + post_id + " not found or invalid data. Please try another!");
+        }
+
+        Object[] result = results.get(0);
+
+        int ownerId = (int) result[0];
+        int postId = (int) result[1];
+        String content = (String) result[2];
+        String mediaUrl = (String) result[3];
+        int locationId = (int) result[4];
+        String status = (String) result[5];
+        String type = (String) result[6];
+        String create_time = (String) result[7];
+
+        return new PostMediaDTO(ownerId, postId, content, mediaUrl, locationId, status, type, create_time);
+    }
+
+    // Update post
+
+    public void updatePost(Integer post_id, Post newPost, List<MultipartFile> files, String newType)
+            throws PostNotFoundException, UnknownException {
+        try {
+            // Tìm bài viết đã tồn tại
+            Post foundPost = postRepository.getAnPost(post_id);
+            if (foundPost == null) {
+                throw new PostNotFoundException(
+                        "Id " + post_id + " not found or invalid data. Please try another!");
+            }
+
+            if (newPost.getContent() != null) {
+                foundPost.setContent(newPost.getContent());
+            }
+            if (newPost.getLocation_id() != null) {
+                foundPost.setLocation_id(newPost.getLocation_id());
+            }
+            if (newPost.getStatus() != null) {
+                foundPost.setStatus(newPost.getStatus());
+            }
+            if (newPost.getHastag() != null) {
+                foundPost.setHastag(newPost.getHastag());
+            }
+
+            // Nếu người dùng có tải lên các tệp tin mới
+            if (files != null && !files.isEmpty()) {
+                for (MultipartFile file : files) {
+                    if (file.isEmpty()) {
+                        continue; // Bỏ qua tệp rỗng
+                    }
+
+                    String fileName = file.getOriginalFilename();
+                    long fileSize = file.getSize();
+                    String contentType = file.getContentType();
+
+                    try (InputStream inputStream = file.getInputStream()) {
+                        ObjectMetadata metadata = new ObjectMetadata();
+                        metadata.setContentLength(fileSize);
+                        metadata.setContentType(contentType);
+
+                        // Tải tệp lên S3
+                        amazonS3.putObject(bucketName, fileName, inputStream, metadata);
+
+                        // Cập nhật thông tin media
+                        Media media = mediaRepository.foundMediaByPostId(post_id);
+                        if (media != null) {
+                            String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                                    fileName);
+                            media.setMedia_url(mediaUrl);
+                            media.setType(newType);
+                            mediaRepository.save(media);
+                        } else {
+                            // Nếu không tìm thấy media, có thể thêm logic để tạo mới nếu cần
+                        }
+                    }
+                }
+            }
+
+            // Lưu bài viết đã cập nhật
+            Post savedPost = postRepository.save(foundPost);
+            if (savedPost.getId() == null) {
+                throw new UnknownException("Transaction cannot be completed!");
+            }
+        } catch (IOException e) {
+            throw new UnknownException("File handling error: " + e.getMessage());
+        } catch (Exception e) {
+            throw new UnknownException(e.getMessage());
+        }
+    }
+
 }

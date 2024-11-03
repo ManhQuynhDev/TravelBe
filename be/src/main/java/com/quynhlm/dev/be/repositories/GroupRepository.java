@@ -9,10 +9,10 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.Group;
 
 public interface GroupRepository extends JpaRepository<Group, Integer> {
-    @Query(value = "SELECT * FROM mGroup WHERE name = :name", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_group WHERE name = :name", nativeQuery = true)
     Group findGroupByName(@Param("name") String name);
 
-    @Query(value = "SELECT * FROM mGroup WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_group WHERE id = :id", nativeQuery = true)
     Group findGroupById(@Param("id") Integer id);
 
     Page<Group> findAll(Pageable pageable);

@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
@@ -35,16 +38,16 @@ public class MemberService {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
-        if (!groupRepository.existsById(member.getGroup_id())) {
-            throw new GroupNotFoundException("Group with ID " + member.getGroup_id() + " not found.");
+        if (!groupRepository.existsById(member.getGroupId())) {
+            throw new GroupNotFoundException("Group with ID " + member.getGroupId() + " not found.");
         }
 
-        if (!userRepository.existsById(member.getUser_id())) {
-            throw new UserAccountNotFoundException("User with ID " + member.getUser_id() + " not found.");
+        if (!userRepository.existsById(member.getUserId())) {
+            throw new UserAccountNotFoundException("User with ID " + member.getUserId() + " not found.");
         }
 
         Optional<Member> existingMember = memberRepository.findByUser_idAndGroup_idAndStatusIn(
-                member.getUser_id(), member.getGroup_id(), Arrays.asList("PENDING", "APPROVED"));
+                member.getUserId(), member.getGroupId(), Arrays.asList("PENDING", "APPROVED"));
 
         if (existingMember.isPresent()) {
             throw new UnknownException("User has already requested to join or is already a member.");
@@ -58,37 +61,74 @@ public class MemberService {
         }
     }
 
-    public void deleleMember(Integer id) throws MemberNotFoundException {
-        Member foundMember = memberRepository.findMemberById(id);
+    public Page<Member> getRequestToJoinGroup(Integer groupId, String status, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return memberRepository.getRequestToJoinGroup(groupId, status, pageable);
+    }
+
+    public void setAdminGroup(Member member)
+            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException {
+
+        member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
+
+        if (!groupRepository.existsById(member.getGroupId())) {
+            throw new GroupNotFoundException("Group with ID " + member.getGroupId() + " not found.");
+        }
+
+        if (!userRepository.existsById(member.getUserId())) {
+            throw new UserAccountNotFoundException("User with ID " + member.getUserId() + " not found.");
+        }
+
+        Optional<Member> existingMember = memberRepository.findByUser_idAndGroup_idAndStatusIn(
+                member.getUserId(), member.getGroupId(), Arrays.asList("PENDING", "APPROVED"));
+
+        if (existingMember.isPresent()) {
+            throw new UnknownException("User has already requested to join or is already a member.");
+        }
+
+        member.setStatus("APPROVED");
+        Member saveMember = memberRepository.save(member);
+
+        if (saveMember.getId() == null) {
+            throw new UnknownException("Transaction cannot be completed!");
+        }
+    }
+
+    public void deleleMember(Integer memberId) throws MemberNotFoundException {
+        Member foundMember = memberRepository.findMemberById(memberId);
         if (foundMember == null) {
-            throw new GroupNotFoundException("Member with ID " + id + " not found, please try another ID.");
+            throw new GroupNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
         }
         memberRepository.delete(foundMember);
     }
 
-    public void updateMemberStatus(int groupId, int memberId, String action, String userRole) {
-        if (!userRole.equals("ADMIN") && !userRole.equals("MANAGER")) {
-            throw new SecurityException("You do not have permission to approve/reject members.");
-        }
+    public void updateMemberStatus(int groupId, int memberSendRequestId, int memberId, String action)
+            throws UnknownException {
 
-        // Tìm thành viên theo ID
-        Member member = memberRepository.findById(memberId)
+        Member memberManager = memberRepository.findById(memberId) // Find quyền user
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        if (member.getGroup_id() != groupId) {
+        Member memberSendRequest = memberRepository.findById(memberSendRequestId) // Find quyền user
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
+            throw new UnknownException("You do not have permission to approve/reject members.");
+        }
+
+        if (memberSendRequest.getGroupId() != groupId) {
             throw new IllegalArgumentException("Group ID does not match");
         }
 
         // Cập nhật trạng thái dựa trên action
         if ("approve".equalsIgnoreCase(action)) {
-            member.setStatus("APPROVED");
+            memberSendRequest.setStatus("APPROVED");
         } else if ("reject".equalsIgnoreCase(action)) {
-            member.setStatus("REJECTED");
+            memberSendRequest.setStatus("REJECTED");
         } else {
             throw new IllegalArgumentException("Invalid action");
         }
 
-        Member updatMember = memberRepository.save(member);
+        Member updatMember = memberRepository.save(memberSendRequest);
         if (updatMember == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }

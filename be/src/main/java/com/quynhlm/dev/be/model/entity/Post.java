@@ -26,7 +26,7 @@ public class Post {
     private String status;
     @Column(name = "create_time", updatable = false)
     private String create_time;
-    private int user_id;
-    private int location_id;
+    private Integer user_id;
+    private Integer location_id;
     private String hastag;
 }

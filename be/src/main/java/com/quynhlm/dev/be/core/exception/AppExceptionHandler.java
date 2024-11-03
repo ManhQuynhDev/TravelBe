@@ -15,44 +15,126 @@ import com.quynhlm.dev.be.core.AppError.ErrorCode;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = {UserAccountExistingException.class, UserAccountNotFoundException.class,
-        LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
-        ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
-        MemberNotFoundException.class, CommentNotFoundException.class})
+    // @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
+    //         LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
+    //         ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
+    //         MemberNotFoundException.class, CommentNotFoundException.class, TravelPlanNotFoundException.class,
+    //         ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
+    //         ReplyNotFoundException.class })
+    // public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
+    //     ResponseObject response = new ResponseObject();
+    //     response.setMessage("Data is invalid.");
+
+    //     AppError.ErrorCode errorCode;
+    //     if (ex instanceof UserAccountExistingException) {
+    //         errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
+    //     } else if (ex instanceof UserAccountNotFoundException) {
+    //         errorCode = AppError.ErrorCode.ACCOUNT_NOT_FOUND;
+    //     } else if (ex instanceof LocationExistingException) {
+    //         errorCode = AppError.ErrorCode.LOCATION_EXIST;
+    //     } else if (ex instanceof StoryNotFoundException) {
+    //         errorCode = AppError.ErrorCode.STORY_NOT_FOUND;
+    //     } else if (ex instanceof PostNotFoundException) {
+    //         errorCode = AppError.ErrorCode.POST_NOT_FOUND;
+    //     } else if (ex instanceof ReViewNotFoundException) {
+    //         errorCode = AppError.ErrorCode.REVIEW_NOT_FOUND;
+    //     } else if (ex instanceof GroupNotFoundException) {
+    //         errorCode = AppError.ErrorCode.GROUP_NOT_FOUND;
+    //     } else if (ex instanceof GroupExistingException) {
+    //         errorCode = AppError.ErrorCode.GROUP_EXIST;
+    //     } else if (ex instanceof MemberNotFoundException) {
+    //         errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
+    //     } else if (ex instanceof CommentNotFoundException) {
+    //         errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
+    //     } else if (ex instanceof TravelPlanNotFoundException) {
+    //         errorCode = AppError.ErrorCode.TRAVEL_PLAN_NOT_FOUND;
+    //     } else if (ex instanceof ActivitiesExistingException) {
+    //         errorCode = AppError.ErrorCode.ACTIVITIES_EXIST;
+    //     } else if (ex instanceof ActivitiesNotFoundException) {
+    //         errorCode = AppError.ErrorCode.ACTIVITIES_NOT_FOUND;
+    //     } else if (ex instanceof ShareNotFoundException) {
+    //         errorCode = AppError.ErrorCode.SHARE_NOT_FOUND;
+    //     } else if (ex instanceof ReplyNotFoundException) {
+    //         errorCode = AppError.ErrorCode.REPLY_NOT_FOUND;
+    //     } else {
+    //         errorCode = AppError.ErrorCode.UNKNOWN;
+    //     }
+
+    //     response.setError(new AppError(errorCode, ex.getMessage()));
+    //     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    // }
+
+    @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
+            LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
+            ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
+            MemberNotFoundException.class, CommentNotFoundException.class, TravelPlanNotFoundException.class,
+            ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
+            ReplyNotFoundException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
 
         AppError.ErrorCode errorCode;
-        if (ex instanceof UserAccountExistingException || ex instanceof UserAccountNotFoundException) {
-            errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
-        } else if (ex instanceof LocationExistingException) {
-            errorCode = AppError.ErrorCode.LOCATION_EXIST;
-        } else if (ex instanceof StoryNotFoundException) {
-            errorCode = AppError.ErrorCode.STORY_NOT_FOUND;
-        } else if (ex instanceof PostNotFoundException) {
-            errorCode = AppError.ErrorCode.POST_NOT_FOUND;
-        } else if (ex instanceof ReViewNotFoundException) {
-            errorCode = AppError.ErrorCode.REVIEW_NOT_FOUND;
-        } else if (ex instanceof GroupNotFoundException) {
-            errorCode = AppError.ErrorCode.GROUP_NOT_FOUND;
-        } else if (ex instanceof GroupExistingException) {
-            errorCode = AppError.ErrorCode.GROUP_EXIST;
-        } else if (ex instanceof MemberNotFoundException) {
-            errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
-        } else if (ex instanceof CommentNotFoundException) {
-            errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
-        } else {
-            errorCode = AppError.ErrorCode.UNKNOWN;
+
+        switch (ex.getClass().getSimpleName()) {
+            case "UserAccountExistingException":
+                errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
+                break;
+            case "UserAccountNotFoundException":
+                errorCode = AppError.ErrorCode.ACCOUNT_NOT_FOUND;
+                break;
+            case "LocationExistingException":
+                errorCode = AppError.ErrorCode.LOCATION_EXIST;
+                break;
+            case "StoryNotFoundException":
+                errorCode = AppError.ErrorCode.STORY_NOT_FOUND;
+                break;
+            case "PostNotFoundException":
+                errorCode = AppError.ErrorCode.POST_NOT_FOUND;
+                break;
+            case "ReViewNotFoundException":
+                errorCode = AppError.ErrorCode.REVIEW_NOT_FOUND;
+                break;
+            case "GroupNotFoundException":
+                errorCode = AppError.ErrorCode.GROUP_NOT_FOUND;
+                break;
+            case "GroupExistingException":
+                errorCode = AppError.ErrorCode.GROUP_EXIST;
+                break;
+            case "MemberNotFoundException":
+                errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
+                break;
+            case "CommentNotFoundException":
+                errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
+                break;
+            case "TravelPlanNotFoundException":
+                errorCode = AppError.ErrorCode.TRAVEL_PLAN_NOT_FOUND;
+                break;
+            case "ActivitiesExistingException":
+                errorCode = AppError.ErrorCode.ACTIVITIES_EXIST;
+                break;
+            case "ActivitiesNotFoundException":
+                errorCode = AppError.ErrorCode.ACTIVITIES_NOT_FOUND;
+                break;
+            case "ShareNotFoundException":
+                errorCode = AppError.ErrorCode.SHARE_NOT_FOUND;
+                break;
+            case "ReplyNotFoundException":
+                errorCode = AppError.ErrorCode.REPLY_NOT_FOUND;
+                break;
+            default:
+                errorCode = AppError.ErrorCode.UNKNOWN;
+                break;
         }
 
         response.setError(new AppError(errorCode, ex.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> invalid(MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -68,7 +150,7 @@ public class AppExceptionHandler {
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {UnknownException.class})
+    @ExceptionHandler(value = { UnknownException.class })
     public ResponseEntity<?> unknown(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Something went wrong!.");

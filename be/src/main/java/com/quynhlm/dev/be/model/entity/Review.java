@@ -21,9 +21,10 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id;
-    private int location_id;
+    private Integer user_id;
+    private Integer location_id;
     private String content;
+    private double star;
     private String mediaUrl;
     @Column(name = "create_time", updatable = false)
     private String create_time;

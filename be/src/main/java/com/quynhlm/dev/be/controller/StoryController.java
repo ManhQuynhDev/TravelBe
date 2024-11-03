@@ -1,5 +1,6 @@
 package com.quynhlm.dev.be.controller;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class StoryController {
             @RequestParam(defaultValue = "2") int size) {
         return storyService.getListData(page, size);
     }
+    
 
     @PostMapping("")
     public ResponseEntity<ResponseObject<Void>> insertStory(

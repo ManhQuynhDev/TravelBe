@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -127,6 +128,15 @@ public class UserController {
         userService.changeProfile(id, updateDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
+        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/switchStatus/{id}/isLock")
+    public ResponseEntity<ResponseObject<Void>> switchStatusUser(@PathVariable Integer id,
+            @RequestParam @Valid String isLock) {
+        userService.switchStatusUser(id, isLock);
+        ResponseObject<Void> response = new ResponseObject<>();
+        response.setMessage("Switch status user successfully.");
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 }

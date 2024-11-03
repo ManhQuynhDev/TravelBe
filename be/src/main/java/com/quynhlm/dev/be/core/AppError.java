@@ -10,13 +10,19 @@ public class AppError {
         UNKNOWN,
         DATA_INVALID,
         ACCOUNT_EXIST,
+        ACCOUNT_NOT_FOUND,
         LOCATION_EXIST,
         STORY_NOT_FOUND,
         POST_NOT_FOUND,
         REVIEW_NOT_FOUND,
         GROUP_NOT_FOUND,
         GROUP_EXIST, MEMBER_NOT_FOUND,
-        COMMENT_NOT_FOUND
+        COMMENT_NOT_FOUND,
+        TRAVEL_PLAN_NOT_FOUND,
+        ACTIVITIES_EXIST, 
+        ACTIVITIES_NOT_FOUND, 
+        SHARE_NOT_FOUND, 
+        REPLY_NOT_FOUND, 
     }
 
     private ErrorCode code;

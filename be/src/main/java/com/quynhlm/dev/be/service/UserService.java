@@ -36,6 +36,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.enums.LockUser;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
@@ -102,6 +103,8 @@ public class UserService {
 
     public void register(User user) throws UserAccountExistingException, UnknownException {
         checkUserExists(user);
+
+        user.setIsLocked(LockUser.OPEN.name());
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -284,4 +287,22 @@ public class UserService {
         }
     }
     // Change STATUS User
+
+    public void switchStatusUser(Integer userId, String isLock) throws UserAccountNotFoundException {
+        User foundUser = checkFoundUser(userId, isLock);
+        foundUser.setIsLocked(isLock);
+    }
+
+    public User checkFoundUser(Integer userId, String isLock) throws UserAccountNotFoundException, UnknownException {
+        User user = userRepository.getAnUser(userId);
+        if (user == null) {
+            throw new UserAccountNotFoundException("ID: " + userId + " not found. Please try another!");
+        }
+
+        if (user.getIsLocked() == isLock) {
+            throw new UnknownException("Transaction cannot complete because old status the same as the new status!");
+        }
+
+        return user;
+    }
 }

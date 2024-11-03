@@ -17,8 +17,10 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.GroupExistingException;
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.enums.GroupRole;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
 import com.quynhlm.dev.be.model.entity.Group;
+import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 
 @Service
@@ -33,16 +35,8 @@ public class GroupService {
     @Autowired
     private GroupRepository groupRepository;
 
-    public void createGroup(Group group) throws GroupExistingException, UnknownException {
-        Group foundGroup = groupRepository.findGroupByName(group.getName());
-        if (foundGroup != null) {
-            throw new GroupExistingException("Group name " + group.getName() + " is exits , please try other name");
-        }
-        Group saveGroup = groupRepository.save(group);
-        if (saveGroup.getId() == null) {
-            throw new UnknownException("Transaction cannot complete!");
-        }
-    }
+    @Autowired
+    private MemberService memberService;
 
     public void createGroup(Group group, MultipartFile file) throws GroupExistingException, UnknownException {
         try {
@@ -72,8 +66,13 @@ public class GroupService {
             Group saveGroup = groupRepository.save(group);
             if (saveGroup.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");
+            } else {
+                Member member = new Member();
+                member.setUserId(saveGroup.getUser_id());
+                member.setGroupId(saveGroup.getId());
+                member.setRole(GroupRole.ADMIN.name());
+                memberService.setAdminGroup(member);
             }
-
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {

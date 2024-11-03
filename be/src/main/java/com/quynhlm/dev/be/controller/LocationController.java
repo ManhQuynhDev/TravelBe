@@ -23,7 +23,7 @@ public class LocationController {
     private LocationService locationService;
 
     @PostMapping(path = "")
-    public ResponseEntity<ResponseObject<Void>> register(@RequestBody @Valid Location location) {
+    public ResponseEntity<ResponseObject<Void>> createLocation(@RequestBody @Valid Location location) {
         locationService.insertLocation(location);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a location successfully");

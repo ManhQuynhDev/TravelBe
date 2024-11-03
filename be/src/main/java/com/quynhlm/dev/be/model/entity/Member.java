@@ -21,10 +21,10 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "group_id")
-    private int group_id;
-    @Column(name = "user_id")
-    private int user_id;
+    @Column(name = "groupId")
+    private Integer groupId;
+    @Column(name = "userId")
+    private Integer userId;
     private String join_time;
     private String role;
     private String status;

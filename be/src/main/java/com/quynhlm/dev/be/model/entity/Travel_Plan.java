@@ -21,6 +21,7 @@ public class Travel_Plan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int user_id;
+    private int location_id;
     private String plan_name;
     private String start_date;
     private String end_date;

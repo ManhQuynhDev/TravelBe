@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
+import com.quynhlm.dev.be.core.validation.ValidStatusUserType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,22 +38,24 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-    String username;
-    @StrongPassword(message = "Incorrect password format")
-    String password;
-    @Length(min = 8, message = "name is too short")
-    String fullname;
-    String email;
-    Set<String> roles;
+    private Integer id;
+    private String username;
+    @StrongPassword(message = "Incorrect password format . Please try other password")
+    private String password;
+    @Length(min = 8, message = "name is too short . please try again !")
+    private String fullname;
+    private String email;
+    private Set<String> roles;
     @Column(name = "phoneNumber")
-    String phoneNumber;
-    String status;
-    String dob;
-    String avatarUrl;
-    String bio;
+    private String phoneNumber;
+    private String status;
+    private String dob;
+    private String avatarUrl;
+    private String bio;
     @CreationTimestamp
     @Column(updatable = false)
-    Timestamp create_at;
-    LocalDateTime lastNameChangeDate;
+    private Timestamp create_at;
+    @ValidStatusUserType
+    private String isLocked;
+    private LocalDateTime lastNameChangeDate;
 }
