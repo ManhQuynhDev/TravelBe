@@ -1,11 +1,14 @@
 package com.quynhlm.dev.be.core.validation;
 
-import com.quynhlm.dev.be.enums.LockUser;
+import java.util.Arrays;
+import java.util.List;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class StatusUserTypeValidator implements ConstraintValidator<ValidStatusUserType, String> {
+public class StatusAccountTypeValidator implements ConstraintValidator<ValidStatusAccountType, String> {
+
+    private static final List<String> ACCOUNT_STATUSES = Arrays.asList("OPEN", "LOOK");
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
@@ -13,11 +16,6 @@ public class StatusUserTypeValidator implements ConstraintValidator<ValidStatusU
             return false;
         }
 
-        try {
-            LockUser.valueOf(value);
-            return true;
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
+        return ACCOUNT_STATUSES.contains(value);
     }
 }

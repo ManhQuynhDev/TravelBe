@@ -18,62 +18,12 @@ import jakarta.servlet.http.HttpServletRequest;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @ControllerAdvice
 public class AppExceptionHandler {
-
-    // @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
-    //         LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
-    //         ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
-    //         MemberNotFoundException.class, CommentNotFoundException.class, TravelPlanNotFoundException.class,
-    //         ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
-    //         ReplyNotFoundException.class })
-    // public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
-    //     ResponseObject response = new ResponseObject();
-    //     response.setMessage("Data is invalid.");
-
-    //     AppError.ErrorCode errorCode;
-    //     if (ex instanceof UserAccountExistingException) {
-    //         errorCode = AppError.ErrorCode.ACCOUNT_EXIST;
-    //     } else if (ex instanceof UserAccountNotFoundException) {
-    //         errorCode = AppError.ErrorCode.ACCOUNT_NOT_FOUND;
-    //     } else if (ex instanceof LocationExistingException) {
-    //         errorCode = AppError.ErrorCode.LOCATION_EXIST;
-    //     } else if (ex instanceof StoryNotFoundException) {
-    //         errorCode = AppError.ErrorCode.STORY_NOT_FOUND;
-    //     } else if (ex instanceof PostNotFoundException) {
-    //         errorCode = AppError.ErrorCode.POST_NOT_FOUND;
-    //     } else if (ex instanceof ReViewNotFoundException) {
-    //         errorCode = AppError.ErrorCode.REVIEW_NOT_FOUND;
-    //     } else if (ex instanceof GroupNotFoundException) {
-    //         errorCode = AppError.ErrorCode.GROUP_NOT_FOUND;
-    //     } else if (ex instanceof GroupExistingException) {
-    //         errorCode = AppError.ErrorCode.GROUP_EXIST;
-    //     } else if (ex instanceof MemberNotFoundException) {
-    //         errorCode = AppError.ErrorCode.MEMBER_NOT_FOUND;
-    //     } else if (ex instanceof CommentNotFoundException) {
-    //         errorCode = AppError.ErrorCode.COMMENT_NOT_FOUND;
-    //     } else if (ex instanceof TravelPlanNotFoundException) {
-    //         errorCode = AppError.ErrorCode.TRAVEL_PLAN_NOT_FOUND;
-    //     } else if (ex instanceof ActivitiesExistingException) {
-    //         errorCode = AppError.ErrorCode.ACTIVITIES_EXIST;
-    //     } else if (ex instanceof ActivitiesNotFoundException) {
-    //         errorCode = AppError.ErrorCode.ACTIVITIES_NOT_FOUND;
-    //     } else if (ex instanceof ShareNotFoundException) {
-    //         errorCode = AppError.ErrorCode.SHARE_NOT_FOUND;
-    //     } else if (ex instanceof ReplyNotFoundException) {
-    //         errorCode = AppError.ErrorCode.REPLY_NOT_FOUND;
-    //     } else {
-    //         errorCode = AppError.ErrorCode.UNKNOWN;
-    //     }
-
-    //     response.setError(new AppError(errorCode, ex.getMessage()));
-    //     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    // }
-
     @ExceptionHandler(value = { UserAccountExistingException.class, UserAccountNotFoundException.class,
             LocationExistingException.class, StoryNotFoundException.class, PostNotFoundException.class,
             ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
             MemberNotFoundException.class, CommentNotFoundException.class, TravelPlanNotFoundException.class,
             ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
-            ReplyNotFoundException.class })
+            ReplyNotFoundException.class, ReportExistingException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -126,6 +76,12 @@ public class AppExceptionHandler {
             case "ReplyNotFoundException":
                 errorCode = AppError.ErrorCode.REPLY_NOT_FOUND;
                 break;
+            case "ReportExistingException":
+                errorCode = AppError.ErrorCode.REPORT_EXIST;
+                break;
+            case "ReportNotFoundException":
+                errorCode = AppError.ErrorCode.REPORT_NOT_FOUND;
+                break;
             default:
                 errorCode = AppError.ErrorCode.UNKNOWN;
                 break;
@@ -134,7 +90,6 @@ public class AppExceptionHandler {
         response.setError(new AppError(errorCode, ex.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> invalid(MethodArgumentNotValidException ex, HttpServletRequest request) {

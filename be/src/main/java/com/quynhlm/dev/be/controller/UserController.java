@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.core.validation.ValidStatusAccountType;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
@@ -26,8 +29,6 @@ import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
 
 import java.text.ParseException;
-
-import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,9 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ResponseObject<Void>> register(@RequestBody @Valid User user) {
-        userService.register(user);
+    public ResponseEntity<ResponseObject<Void>> register(@RequestPart("user") User user,
+            @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
+        userService.register(user, imageFile);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new account successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
@@ -113,30 +115,31 @@ public class UserController {
         }
     }
 
-    @PostMapping("/changeFullname/{id}")
+    @PostMapping("/change-full-name/{id}")
     public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Integer id,
-            @RequestBody @Valid ChangeFullnameDTO changeFullnameDTO) {
-        userService.changeFullname(id, changeFullnameDTO);
+            @RequestParam String newName) {
+        userService.changeFullname(id, newName);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("Change Fullname successfully.");
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/changeProfile/{id}")
-    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable Integer id,
-            @RequestBody @Valid UpdateProfileDTO updateDTO) {
-        userService.changeProfile(id, updateDTO);
+    @PostMapping("/change-profile")
+    public ResponseEntity<ResponseObject<Void>> changeProfile(@RequestPart("id") int id,
+            @RequestPart("updateDTO") UpdateProfileDTO updateDTO,
+            @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
+        userService.changeProfile(id, updateDTO, imageFile);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/switchStatus/{id}/isLock")
+    @PutMapping("/status-account/{id}/status")
     public ResponseEntity<ResponseObject<Void>> switchStatusUser(@PathVariable Integer id,
-            @RequestParam @Valid String isLock) {
-        userService.switchStatusUser(id, isLock);
+            @RequestParam @Valid @ValidStatusAccountType String status) {
+        userService.switchStatusUser(id, status);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("Switch status user successfully.");
-        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

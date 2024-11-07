@@ -30,4 +30,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User getAnUser(@Param("id") Integer id);
 
     User findOneById(Integer id);
+
+    @Query(value = "SELECT * FROM User WHERE roles = BINARY :param1 OR roles = BINARY :param2", nativeQuery = true)
+    List<User> findUserWithRole(@Param("param1") String param1, @Param("param2") String param2);
+
 }

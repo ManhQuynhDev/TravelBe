@@ -12,7 +12,6 @@ public class ReactionTypeValidator implements ConstraintValidator<ValidReactionT
         if (value == null) {
             return false;
         }
-
         try {
             ReactionType.valueOf(value);
             return true;
@@ -20,5 +19,4 @@ public class ReactionTypeValidator implements ConstraintValidator<ValidReactionT
             return false;
         }
     }
-
 }

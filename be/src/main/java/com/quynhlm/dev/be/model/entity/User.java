@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
-import com.quynhlm.dev.be.core.validation.ValidStatusUserType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,7 +54,6 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp create_at;
-    @ValidStatusUserType
     private String isLocked;
     private LocalDateTime lastNameChangeDate;
 }

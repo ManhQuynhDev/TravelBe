@@ -9,11 +9,12 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Constraint(validatedBy = ReactionTypeValidator.class)
-@Target({ ElementType.METHOD, ElementType.FIELD })
+@Constraint(validatedBy = StatusAccountTypeValidator.class)
+@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ValidStatusUserType {
+public @interface ValidStatusAccountType {
+    
     String message() default "Invalid status user type. Please try again !";
 
     Class<?>[] groups() default {};

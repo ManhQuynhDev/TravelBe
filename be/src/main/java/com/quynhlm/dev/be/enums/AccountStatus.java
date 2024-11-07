@@ -1,6 +1,6 @@
 package com.quynhlm.dev.be.enums;
 
-public enum LockUser {
+public enum AccountStatus {
     OPEN,
     LOCK
 }

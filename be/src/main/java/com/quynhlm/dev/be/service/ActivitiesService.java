@@ -23,7 +23,8 @@ public class ActivitiesService {
     private ActivitiesRepository activitiesRepository;
 
     // Create activity
-    public void createActivities(Activities activities) throws ActivitiesExistingException, UnknownException {
+    public void createActivities(Activities activities) throws ActivitiesExistingException, UnknownException {// Status
+                                                                                                              // 1 : 0
         activities.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
         Activities foundActivity = activitiesRepository.findByNameAndPlanId(activities.getName(),
                 activities.getPlanId());
@@ -75,6 +76,7 @@ public class ActivitiesService {
         }
     }
 
+    // Get all data
     public Page<Activities> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return activitiesRepository.findAll(pageable);

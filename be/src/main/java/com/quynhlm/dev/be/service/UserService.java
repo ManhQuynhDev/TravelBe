@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -12,6 +14,7 @@ import java.util.Random;
 import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +25,10 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -36,9 +42,8 @@ import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
-import com.quynhlm.dev.be.enums.LockUser;
+import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
-import com.quynhlm.dev.be.model.dto.requestDTO.ChangeFullnameDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
@@ -56,6 +61,12 @@ public class UserService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private AmazonS3 amazonS3;
+
+    @Value("${aws.s3.bucketName}")
+    private String bucketName;
 
     private static final String SIGNER_KEY = "/q5Il7oI//Hiv4va97MQAtYOaktNo188-23WY12YVRCRGBEwYECRg0T6YcrEzYWb";
 
@@ -101,21 +112,51 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public void register(User user) throws UserAccountExistingException, UnknownException {
-        checkUserExists(user);
+    public void register(User user, MultipartFile imageFile) throws UserAccountExistingException, UnknownException {
+        try {
+            checkUserExists(user);
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageFileName = imageFile.getOriginalFilename();
+                long imageFileSize = imageFile.getSize();
+                String imageContentType = imageFile.getContentType();
 
-        user.setIsLocked(LockUser.OPEN.name());
+                if (!isValidFileType(imageContentType)) {
+                    throw new UnknownException("Invalid file type. Only image files are allowed.");
+                }
 
-        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
-        user.setRoles(roles);
+                try (InputStream mediaInputStream = imageFile.getInputStream()) {
+                    ObjectMetadata mediaMetadata = new ObjectMetadata();
+                    mediaMetadata.setContentLength(imageFileSize);
+                    mediaMetadata.setContentType(imageContentType);
 
-        User savedUser = userRepository.save(user);
-        if (savedUser.getId() == null) {
-            throw new UnknownException("Transaction cannot complete!");
+                    amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
+
+                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                            imageFileName);
+                    user.setAvatarUrl(mediaUrl);
+                }
+            }
+            user.setIsLocked(AccountStatus.OPEN.name());
+
+            PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            HashSet<String> roles = new HashSet<>();
+            roles.add(Role.USER.name());
+            user.setRoles(roles);
+
+            User savedUser = userRepository.save(user);
+            if (savedUser.getId() == null) {
+                throw new UnknownException("Transaction cannot complete!");
+            }
+        } catch (IOException e) {
+            throw new UnknownException("File handling error: " + e.getMessage());
+        } catch (Exception e) {
+            throw new UnknownException(e.getMessage());
         }
+    }
+
+    private boolean isValidFileType(String contentType) {
+        return contentType.startsWith("image/") || contentType.startsWith("video/");
     }
 
     private void checkUserExists(User user) throws UserAccountExistingException {
@@ -247,7 +288,7 @@ public class UserService {
     }
 
     // ChangeFullname
-    public void changeFullname(Integer id, ChangeFullnameDTO changeName)
+    public void changeFullname(Integer id, String changeName)
             throws UnknownException, UserAccountNotFoundException {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
@@ -262,7 +303,7 @@ public class UserService {
                 }
             }
 
-            user.setFullname(changeName.getFullname());
+            user.setFullname(changeName);
             user.setLastNameChangeDate(LocalDateTime.now());
             User saveName = userRepository.save(user);
             if (saveName.getId() == null) {
@@ -272,37 +313,66 @@ public class UserService {
     }
 
     // ChangeProfile
-    public void changeProfile(Integer id, UpdateProfileDTO updateUser)
+    public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UnknownException {
-        if (userRepository.findById(id).isEmpty()) {
-            throw new UserAccountNotFoundException("ID " + id + " not found. Please try another!");
-        } else {
-            User user = userRepository.findOneById(id);
-            user.setBio(updateUser.getBio());
-            user.setDob(updateUser.getDob());
-            User saveUser = userRepository.save(user);
+
+        try {
+            User foundUser = userRepository.findOneById(id);
+            if (foundUser == null) {
+                throw new UserAccountNotFoundException("ID " + id + " not found. Please try another!");
+            }
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageFileName = imageFile.getOriginalFilename();
+                long imageFileSize = imageFile.getSize();
+                String imageContentType = imageFile.getContentType();
+
+                if (!isValidFileType(imageContentType)) {
+                    throw new UnknownException("Invalid file type. Only image files are allowed.");
+                }
+
+                try (InputStream mediaInputStream = imageFile.getInputStream()) {
+                    ObjectMetadata mediaMetadata = new ObjectMetadata();
+                    mediaMetadata.setContentLength(imageFileSize);
+                    mediaMetadata.setContentType(imageContentType);
+
+                    amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
+
+                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                            imageFileName);
+                    foundUser.setAvatarUrl(mediaUrl);
+                }
+            }
+            if (updateUser.getBio() != null) {
+                foundUser.setBio(updateUser.getBio());
+            }
+
+            if (updateUser.getDob() != null) {
+                foundUser.setDob(updateUser.getDob());
+            }
+            User saveUser = userRepository.save(foundUser);
             if (saveUser.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");
             }
+        } catch (IOException e) {
+            throw new UnknownException("File handling error: " + e.getMessage());
+        } catch (Exception e) {
+            throw new UnknownException(e.getMessage());
         }
     }
     // Change STATUS User
 
-    public void switchStatusUser(Integer userId, String isLock) throws UserAccountNotFoundException {
-        User foundUser = checkFoundUser(userId, isLock);
-        foundUser.setIsLocked(isLock);
-    }
-
-    public User checkFoundUser(Integer userId, String isLock) throws UserAccountNotFoundException, UnknownException {
-        User user = userRepository.getAnUser(userId);
+    public void switchStatusUser(Integer id, String isLock) throws UserAccountNotFoundException, UnknownException {
+        User user = userRepository.findOneById(id);
         if (user == null) {
-            throw new UserAccountNotFoundException("ID: " + userId + " not found. Please try another!");
+            throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         }
 
-        if (user.getIsLocked() == isLock) {
-            throw new UnknownException("Transaction cannot complete because old status the same as the new status!");
+        if (user.getIsLocked() != null && user.getIsLocked().equals(isLock)) {
+            throw new UnknownException("Transaction cannot complete because old status is the same as the new status!");
         }
 
-        return user;
+        user.setIsLocked(isLock);
+
+        userRepository.save(user);
     }
 }
