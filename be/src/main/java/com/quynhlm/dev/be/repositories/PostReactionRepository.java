@@ -12,9 +12,21 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Inte
     PostReaction findByPostIdAndUserId(int postId, int userId);
 
     @Query(value = """
-            select u.id , u.fullname as fullname , u.avatar_url as avatar, p.type, p.create_time from post_reaction p
-            inner join user u ON p.user_id = u.id
-            where p.type = :type);
+            SELECT
+                u.id AS owner_id,
+                u.fullname AS fullname,
+                u.avatar_url AS avatar,
+                p.type,
+                p.create_time
+            FROM post_reaction p
+            INNER JOIN user u ON p.user_id = u.id
+            WHERE p.type = :type
+            """, countQuery = """
+            SELECT COUNT(*)
+            FROM post_reaction p
+            INNER JOIN user u ON p.user_id = u.id
+            WHERE p.type = :type
             """, nativeQuery = true)
-    Page<Object[]> getUserByType(Pageable pageable, @Param("type") String type);
+    Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type);
+
 }

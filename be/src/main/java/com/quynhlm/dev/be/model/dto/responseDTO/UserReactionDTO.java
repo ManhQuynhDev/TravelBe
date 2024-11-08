@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserReactionDTO {
-    private Integer id;
+    private Integer ownerId;
     private String fullname;
     private String avatar;
     private String type;

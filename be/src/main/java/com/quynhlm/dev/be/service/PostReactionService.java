@@ -3,11 +3,14 @@ package com.quynhlm.dev.be.service;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.PostReaction;
 import com.quynhlm.dev.be.model.entity.User;
@@ -68,7 +71,7 @@ public class PostReactionService {
         }
 
         PostReaction foundReaction = postReactionRepository.findByPostIdAndUserId(postReaction.getPostId(),
-        postReaction.getUserId());
+                postReaction.getUserId());
         if (foundReaction != null) {
             if (foundReaction.getType() == postReaction.getType()) {
                 postReactionRepository.delete(foundReaction);
@@ -93,5 +96,18 @@ public class PostReactionService {
         }
     }
 
-    //Get Reaction with type
+    // Get Reaction with type
+    public Page<UserReactionDTO> getAllUserReactionWithType(String type, Pageable pageable) {
+        Page<Object[]> results = postReactionRepository.getUserReactionByType(pageable, type);
+
+        return results.map(row -> {
+            UserReactionDTO userReactionDTO = new UserReactionDTO();
+            userReactionDTO.setOwnerId(((Number) row[0]).intValue());
+            userReactionDTO.setFullname((String) row[1]);
+            userReactionDTO.setAvatar((String) row[2]);
+            userReactionDTO.setType((String) row[3]);
+            userReactionDTO.setCreate_time((String) row[4]);
+            return userReactionDTO;
+        });
+    }
 }

@@ -21,4 +21,7 @@ public class PostResponseDTO {
     private Integer isShare;    
     private String create_time;
     private Integer shareByUser;
+    private Integer reaction_count;
+    private Integer comment_count;
+    private Integer share_count;
 }

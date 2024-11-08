@@ -97,6 +97,9 @@ public class PostService {
             post.setIsShare(((Number) row[8]).intValue());
             post.setCreate_time((String) row[9]);
             post.setShareByUser(row[10] != null ? ((Number) row[10]).intValue() : null);
+            post.setReaction_count(((Number) row[11]).intValue());
+            post.setComment_count(((Number) row[12]).intValue());
+            post.setShare_count(((Number) row[13]).intValue());
             return post;
         });
     }
