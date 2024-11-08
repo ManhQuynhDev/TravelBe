@@ -18,6 +18,7 @@ import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.repositories.MediaRepository;
@@ -208,4 +209,25 @@ public class PostService {
         }
     }
 
+    // Get All Video
+    public Page<VideoPostDTO> getAllPostTypeVideo(Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchPostWithMediaTypeVideo(pageable);
+
+        return results.map(row -> {
+            VideoPostDTO post = new VideoPostDTO();
+            post.setOwnerId(((Number) row[0]).intValue());
+            post.setPostId(((Number) row[1]).intValue());
+            post.setLocationId(((Number) row[2]).intValue());
+            post.setContent((String) row[3]);
+            post.setStatus((String) row[4]);
+            post.setFullname((String) row[5]);
+            post.setAvatar((String) row[6]);
+            post.setVideo((String) row[7]);
+            post.setCreate_time((String) row[8]);
+            post.setReaction_count(((Number) row[9]).intValue());
+            post.setComment_count(((Number) row[10]).intValue());
+            post.setShare_count(((Number) row[11]).intValue());
+            return post;
+        });
+    }
 }

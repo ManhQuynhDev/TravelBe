@@ -92,4 +92,6 @@ public class PostReactionService {
             throw new UnknownException("Transaction cannot be completed!");
         }
     }
+
+    //Get Reaction with type
 }

@@ -7,18 +7,19 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class PostResponseDTO {
+@AllArgsConstructor
+public class VideoPostDTO {
     private Integer ownerId;       
-    private Integer postId;        
-    private String content;
-    private String mediaUrl;
+    private Integer postId;
     private Integer locationId;
-    private String hastag;
+    private String content;
     private String status;
-    private String type;
-    private Integer isShare;    
+    private String fullname;
+    private String avatar;
+    private String video;
     private String create_time;
-    private Integer shareByUser;
+    private Integer reaction_count;
+    private Integer comment_count;
+    private Integer share_count;
 }

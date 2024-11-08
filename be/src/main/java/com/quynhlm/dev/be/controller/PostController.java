@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.service.PostService;
 
@@ -70,5 +71,10 @@ public class PostController {
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Update post successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/videos")
+    public Page<VideoPostDTO> getAllPostTypeVideo(Pageable pageable) {
+        return postService.getAllPostTypeVideo(pageable);
     }
 }
