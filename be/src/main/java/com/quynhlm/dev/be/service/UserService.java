@@ -276,13 +276,20 @@ public class UserService {
 
     // ChangeProfile
     public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
-            throws UserAccountNotFoundException, UnknownException {
+            throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
 
         try {
             User foundUser = userRepository.findOneById(id);
             if (foundUser == null) {
                 throw new UserAccountNotFoundException("ID " + id + " not found. Please try another!");
             }
+
+            List<User> foundExitsPhoneNumber = userRepository.findByPhoneNumber(updateUser.getPhoneNumber());
+            if (foundExitsPhoneNumber.size() > 1) {
+                throw new UserAccountExistingException(
+                        "PhoneNumber " + updateUser.getPhoneNumber() + " already exist . Please try another!");
+            }
+
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
                 long imageFileSize = imageFile.getSize();
@@ -337,4 +344,26 @@ public class UserService {
 
         userRepository.save(user);
     }
+    
+
+    //Create Manager
+    public void createManager(User user) throws UserAccountExistingException, UnknownException {
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
+        }
+
+        user.setIsLocked(AccountStatus.OPEN.name());
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.MANAGER.name());
+        user.setRoles(roles);
+
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() == null) {
+            throw new UnknownException("Transaction cannot complete!");
+        }
+    }
+
 }

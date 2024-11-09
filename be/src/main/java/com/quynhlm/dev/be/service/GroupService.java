@@ -19,6 +19,7 @@ import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.enums.GroupRole;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
@@ -135,5 +136,26 @@ public class GroupService {
         } catch (Exception e) {
             throw new UnknownException(e.getMessage());
         }
+    }
+
+    // Get list group
+
+    public Page<GroupResponseDTO> getAllGroup(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = groupRepository.fetchGroup(pageable);
+
+        return results.map(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
+            return group;
+        });
     }
 }

@@ -28,6 +28,7 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    // lấy ra
     @GetMapping("/{groupId}/status")
     public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
@@ -51,12 +52,13 @@ public class MemberController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/{groupId}/members/{memberId}/{action}/{memberSendRequestId}")
+    // Duyệt thành viên memberId = managerId
+    @PutMapping("/browse")
     public ResponseEntity<ResponseObject<Void>> updateMemberStatus(
-            @PathVariable Integer groupId,
-            @PathVariable Integer memberId,
-            @PathVariable String action,
-            @PathVariable Integer memberSendRequestId) {
+            @RequestParam(name = "groupId") Integer groupId,
+            @RequestParam(name = "managerId") Integer memberId,
+            @RequestParam(name = "action") String action,
+            @RequestParam(name = "memberSendRequestId") Integer memberSendRequestId) {
 
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.updateMemberStatus(groupId, memberId, memberSendRequestId, action);

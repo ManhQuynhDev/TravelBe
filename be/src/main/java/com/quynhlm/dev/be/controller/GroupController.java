@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.service.GroupService;
 
@@ -30,11 +31,11 @@ public class GroupController {
     @Autowired
     private final GroupService groupService;
 
-    @GetMapping("/")
-    public Page<Group> getGroup(
+    @GetMapping("")
+    public Page<GroupResponseDTO> getAllListGroups(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return groupService.getListData(page, size);
+        return groupService.getAllGroup(page, size);
     }
 
     @DeleteMapping("/{id}")

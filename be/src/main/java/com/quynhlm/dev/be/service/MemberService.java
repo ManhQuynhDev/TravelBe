@@ -14,6 +14,7 @@ import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
@@ -61,7 +62,12 @@ public class MemberService {
         }
     }
 
-    public Page<Member> getRequestToJoinGroup(Integer groupId, String status, int page, int size) {
+    public Page<Member> getRequestToJoinGroup(Integer groupId, String status, int page, int size)
+            throws GroupNotFoundException {
+        Group foundGroup = groupRepository.findGroupById(groupId);
+        if (foundGroup == null) {
+            throw new GroupNotFoundException("Found member with groupId " + groupId + " not found , please try again");
+        }
         Pageable pageable = PageRequest.of(page, size);
         return memberRepository.getRequestToJoinGroup(groupId, status, pageable);
     }
@@ -102,6 +108,7 @@ public class MemberService {
         memberRepository.delete(foundMember);
     }
 
+    // member id == managerId
     public void updateMemberStatus(int groupId, int memberSendRequestId, int memberId, String action)
             throws UnknownException {
 
@@ -116,7 +123,7 @@ public class MemberService {
         }
 
         if (memberSendRequest.getGroupId() != groupId) {
-            throw new IllegalArgumentException("Group ID does not match");
+            throw new UnknownException("Group ID does not match");
         }
 
         // Cập nhật trạng thái dựa trên action
@@ -125,7 +132,7 @@ public class MemberService {
         } else if ("reject".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("REJECTED");
         } else {
-            throw new IllegalArgumentException("Invalid action");
+            throw new UnknownException("Invalid action");
         }
 
         Member updatMember = memberRepository.save(memberSendRequest);

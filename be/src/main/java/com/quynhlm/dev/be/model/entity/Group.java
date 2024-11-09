@@ -20,9 +20,9 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id;
+    private int user_id; //admin
     private String name;
-    private String status;
+    private String status; //public or private
     private String create_time;
     private String coverPhoto;
     private String bio;

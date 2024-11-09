@@ -16,4 +16,27 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
     Group findGroupById(@Param("id") Integer id);
 
     Page<Group> findAll(Pageable pageable);
+
+    @Query(value = """
+            SELECT
+                u.id AS adminId,
+                g.id AS groupId,
+                g.name AS group_name,
+                u.fullname AS admin_name,
+                g.cover_photo,
+                g.status,
+                g.bio,
+                g.create_time,
+                SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count
+            FROM
+                m_group g
+            INNER JOIN
+                member m ON m.group_id = g.id
+            INNER JOIN
+                user u ON g.user_id = u.id
+            GROUP BY
+                g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
+            """, nativeQuery = true)
+    Page<Object[]> fetchGroup(Pageable pageable);
+
 }

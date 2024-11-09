@@ -123,8 +123,8 @@ public class UserController {
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/change-profile")
-    public ResponseEntity<ResponseObject<Void>> changeProfile(@RequestPart("id") int id,
+    @PostMapping("/change-profile/{id}")
+    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable int id,
             @RequestPart("updateDTO") UpdateProfileDTO updateDTO,
             @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
         userService.changeProfile(id, updateDTO, imageFile);
@@ -140,5 +140,13 @@ public class UserController {
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("Switch status user successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/createManager")
+    public ResponseEntity<ResponseObject<Void>> createManager(@RequestBody User user) {
+        userService.createManager(user);
+        ResponseObject<Void> result = new ResponseObject<>();
+        result.setMessage("Create a new account successfully");
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

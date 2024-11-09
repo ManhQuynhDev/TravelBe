@@ -20,7 +20,7 @@ public class Travel_Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id;
+    private int user_id; //admin
     private int location_id;
     private String plan_name;
     private String start_date;

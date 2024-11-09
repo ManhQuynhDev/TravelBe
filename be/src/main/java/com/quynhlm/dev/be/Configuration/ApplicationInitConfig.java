@@ -20,11 +20,10 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
-            if (userRepository.findByEmail("accountAdmin").isEmpty()) {
+            if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
                 User user = new User();
                 user.setFullname("admin");
                 user.setEmail("admin@gmail.com");
-                user.setPhoneNumber("0869865871");
                 HashSet<String> roles = new HashSet<>();
                 roles.add(Role.ADMIN.name());
                 user.setRoles(roles);
@@ -34,7 +33,7 @@ public class ApplicationInitConfig {
                 user.setPassword(hashPassword);
 
                 userRepository.save(user);
-                log.warn("admin user has been create with default password : admin , please change it");
+                log.warn("admin user has been create with default email : admin@gmail.com and password : admin");
             }
         };
     }
