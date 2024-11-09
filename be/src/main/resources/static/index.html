@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -128,6 +128,124 @@
             stompClient.send("/app/sendMessage", {}, JSON.stringify(message));
         });
         window.onload = connect;
+    </script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Đăng Nhập</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+
+        .login-form {
+            width: 300px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .login-form input[type="email"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-form">
+        <h2>Đăng Nhập</h2>
+        <form id="loginForm">
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng Nhập</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("loginForm");
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+
+                if (email && password) {
+                    try {
+                        const response = await fetch("http://localhost:8080/onboarding/login", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ email: email, password: password }),
+                            credentials: "include",
+                        });
+
+                        console.log("Response status:", response.status);
+
+                        if (!response.ok) {
+                            throw new Error("Đăng nhập thất bại. Vui lòng kiểm tra thông tin đăng nhập.");
+                        }
+
+                        const data = await response.json();
+                        const token = data.token;
+                        alert("Đăng nhập thành công! Token: " + token);
+
+                        // Lưu token vào localStorage
+                        localStorage.setItem("authToken", token);
+
+                    } catch (error) {
+                        alert(error.message);
+                        console.error("Error:", error);
+                    }
+                } else {
+                    alert("Vui lòng nhập đầy đủ email và mật khẩu.");
+                }
+            });
+        });
     </script>
 </body>
 

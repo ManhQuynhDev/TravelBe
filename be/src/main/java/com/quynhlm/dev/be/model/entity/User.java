@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -29,23 +28,18 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @UserAccountElement.List({
-        @UserAccountElement(field = "username", regex = UserAccountRegex.USERNAME, message = "username"),
         @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "email"),
-        @UserAccountElement(field = "phoneNumber", regex = UserAccountRegex.PHONE_NUMBER, message = "phoneNumber"),
 })
 @JsonInclude(Include.NON_NULL)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String username;
     @StrongPassword(message = "Incorrect password format . Please try other password")
     private String password;
-    @Length(min = 8, message = "name is too short . please try again !")
     private String fullname;
     private String email;
     private Set<String> roles;
-    @Column(name = "phoneNumber")
     private String phoneNumber;
     private String status;
     private String dob;

@@ -20,9 +20,9 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
-            if (userRepository.findByUsername("admin").isEmpty()) {
+            if (userRepository.findByEmail("accountAdmin").isEmpty()) {
                 User user = new User();
-                user.setUsername("admin");
+                user.setFullname("admin");
                 user.setEmail("admin@gmail.com");
                 user.setPhoneNumber("0869865871");
                 HashSet<String> roles = new HashSet<>();

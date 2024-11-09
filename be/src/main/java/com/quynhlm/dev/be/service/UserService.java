@@ -112,65 +112,27 @@ public class UserService {
         return userRepository.findAll(pageable);
     }
 
-    public void register(User user, MultipartFile imageFile) throws UserAccountExistingException, UnknownException {
-        try {
-            checkUserExists(user);
-            if (imageFile != null && !imageFile.isEmpty()) {
-                String imageFileName = imageFile.getOriginalFilename();
-                long imageFileSize = imageFile.getSize();
-                String imageContentType = imageFile.getContentType();
+    public void register(User user) throws UserAccountExistingException, UnknownException {
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
+        }
 
-                if (!isValidFileType(imageContentType)) {
-                    throw new UnknownException("Invalid file type. Only image files are allowed.");
-                }
+        user.setIsLocked(AccountStatus.OPEN.name());
 
-                try (InputStream mediaInputStream = imageFile.getInputStream()) {
-                    ObjectMetadata mediaMetadata = new ObjectMetadata();
-                    mediaMetadata.setContentLength(imageFileSize);
-                    mediaMetadata.setContentType(imageContentType);
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);
 
-                    amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
-
-                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
-                            imageFileName);
-                    user.setAvatarUrl(mediaUrl);
-                }
-            }
-            user.setIsLocked(AccountStatus.OPEN.name());
-
-            PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            HashSet<String> roles = new HashSet<>();
-            roles.add(Role.USER.name());
-            user.setRoles(roles);
-
-            User savedUser = userRepository.save(user);
-            if (savedUser.getId() == null) {
-                throw new UnknownException("Transaction cannot complete!");
-            }
-        } catch (IOException e) {
-            throw new UnknownException("File handling error: " + e.getMessage());
-        } catch (Exception e) {
-            throw new UnknownException(e.getMessage());
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() == null) {
+            throw new UnknownException("Transaction cannot complete!");
         }
     }
 
     private boolean isValidFileType(String contentType) {
         return contentType.startsWith("image/") || contentType.startsWith("video/");
-    }
-
-    private void checkUserExists(User user) throws UserAccountExistingException {
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
-        }
-        if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
-            throw new UserAccountExistingException(
-                    "Username " + user.getUsername() + " already exist. Please try another!");
-        }
-        if (!userRepository.findByPhoneNumber(user.getPhoneNumber()).isEmpty()) {
-            throw new UserAccountExistingException(
-                    "PhoneNumber " + user.getPhoneNumber() + " already exist. Please try another!");
-        }
     }
 
     // Create token
@@ -180,7 +142,7 @@ public class UserService {
 
         // Build JWT claims
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getFullname())
                 .issuer("quynhlm.dev@gmail.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration

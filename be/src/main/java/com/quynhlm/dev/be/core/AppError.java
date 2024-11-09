@@ -25,6 +25,7 @@ public class AppError {
         REPLY_NOT_FOUND,
         REPORT_EXIST,
         REPORT_NOT_FOUND,
+        TAG_NOT_FOUND,
     }
 
     private ErrorCode code;

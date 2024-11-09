@@ -42,9 +42,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ResponseObject<Void>> register(@RequestPart("user") User user,
-            @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
-        userService.register(user, imageFile);
+    public ResponseEntity<ResponseObject<Void>> register(@RequestBody User user) {
+        userService.register(user);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new account successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
