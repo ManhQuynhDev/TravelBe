@@ -50,6 +50,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
@@ -75,7 +76,7 @@ public class UserService {
     private static final long OTP_VALID_DURATION = 1; // 1 minute
 
     // Login Check
-    public TokenResponse login(LoginDTO request) throws UserAccountNotFoundException {
+    public TokenResponse<UserResponseDTO> login(LoginDTO request) throws UserAccountNotFoundException {
         User user = userRepository.findOneByEmail(request.getEmail());
         if (user == null) {
             throw new UserAccountNotFoundException(
@@ -86,15 +87,26 @@ public class UserService {
         String token = generateToken(user);
 
         boolean isAuthenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        TokenResponse response = new TokenResponse();
+        TokenResponse<UserResponseDTO> response = new TokenResponse<>();
         if (isAuthenticated == false) { // Login failure
-            response.setSuccess(isAuthenticated);
+            response.setStatus(isAuthenticated);
             response.setMessage("Login not successfully");
             return response;
         }
-        response.setSuccess(isAuthenticated);
+        response.setStatus(isAuthenticated);
         response.setMessage("Authentication successful.");
         response.setToken(token);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(user.getId());
+        userResponseDTO.setFullname(user.getFullname());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setPhoneNumber(user.getPhoneNumber());
+        userResponseDTO.setRoles(user.getRoles());
+        userResponseDTO.setIsLocked(user.getIsLocked());
+        userResponseDTO.setCreate_at(user.getCreate_at());
+
+        response.setUserInfo(userResponseDTO);
         return response;
     }
 
@@ -344,9 +356,8 @@ public class UserService {
 
         userRepository.save(user);
     }
-    
 
-    //Create Manager
+    // Create Manager
     public void createManager(User user) throws UserAccountExistingException, UnknownException {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");

@@ -25,6 +25,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
 
@@ -51,9 +52,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginDTO request) {
-        TokenResponse response = userService.login(request);
-        return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
+    public ResponseEntity<TokenResponse<UserResponseDTO>> login(@RequestBody LoginDTO request) {
+        TokenResponse<UserResponseDTO> response = userService.login(request);
+        return new ResponseEntity<TokenResponse<UserResponseDTO>>(response, HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}")

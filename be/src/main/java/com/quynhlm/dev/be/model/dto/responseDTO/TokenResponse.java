@@ -14,8 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
 
-public class TokenResponse {
-    private Boolean success;
-    private String message;
+public class TokenResponse<T> {
+    private Boolean status;
     private String token;
+    private String message;
+    private T userInfo;
 }
