@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/onboarding")
 public class UserController {
 
@@ -47,8 +49,8 @@ public class UserController {
         userService.register(user);
         ResponseObject<Boolean> result = new ResponseObject<>();
         result.setData(true);
-        result.setMessage("Create a new account successfully");
-        return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
+            result.setMessage("Create a new account successfully");
+            return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -93,11 +95,12 @@ public class UserController {
     }
 
     @PostMapping("/set-password")
-    public ResponseEntity<ResponseObject<Void>> changePassword(@RequestBody ChangePassDTO changePassDTO) {
-        ResponseObject<Void> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<Boolean>> changePassword(@RequestBody ChangePassDTO changePassDTO) {
+        ResponseObject<Boolean> result = new ResponseObject<>();
         userService.setNewPassWord(changePassDTO);
+        result.setData(true);
         result.setMessage("Change password successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
     // Token
@@ -117,38 +120,42 @@ public class UserController {
     }
 
     @PostMapping("/change-full-name/{id}")
-    public ResponseEntity<ResponseObject<Void>> changeFullname(@PathVariable Integer id,
+    public ResponseEntity<ResponseObject<Boolean>> changeFullname(@PathVariable Integer id,
             @RequestParam String newName) {
         userService.changeFullname(id, newName);
-        ResponseObject<Void> response = new ResponseObject<>();
+        ResponseObject<Boolean> response = new ResponseObject<>();
+        response.setData(true);
         response.setMessage("Change Fullname successfully.");
-        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<Boolean>>(response, HttpStatus.OK);
     }
 
     @PostMapping("/change-profile/{id}")
-    public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable int id,
+    public ResponseEntity<ResponseObject<Boolean>> changeProfile(@PathVariable int id,
             @RequestPart("updateDTO") UpdateProfileDTO updateDTO,
             @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
         userService.changeProfile(id, updateDTO, imageFile);
-        ResponseObject<Void> response = new ResponseObject<>();
+        ResponseObject<Boolean> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
-        return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
+        response.setData(true);
+        return new ResponseEntity<ResponseObject<Boolean>>(response, HttpStatus.OK);
     }
 
     @PutMapping("/status-account/{id}/status")
-    public ResponseEntity<ResponseObject<Void>> switchStatusUser(@PathVariable Integer id,
+    public ResponseEntity<ResponseObject<Boolean>> switchStatusUser(@PathVariable Integer id,
             @RequestParam @Valid @ValidStatusAccountType String status) {
         userService.switchStatusUser(id, status);
-        ResponseObject<Void> response = new ResponseObject<>();
+        ResponseObject<Boolean> response = new ResponseObject<>();
+        response.setData(true);
         response.setMessage("Switch status user successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping(path = "/createManager")
-    public ResponseEntity<ResponseObject<Void>> createManager(@RequestBody User user) {
+    public ResponseEntity<ResponseObject<Boolean>> createManager(@RequestBody User user) {
         userService.createManager(user);
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<Boolean> result = new ResponseObject<>();
+        result.setData(true);
         result.setMessage("Create a new account successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 }
