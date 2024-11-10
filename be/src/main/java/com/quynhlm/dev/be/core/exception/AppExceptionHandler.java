@@ -27,6 +27,7 @@ public class AppExceptionHandler {
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
+        response.setData(false);
 
         AppError.ErrorCode errorCode;
 
@@ -104,6 +105,7 @@ public class AppExceptionHandler {
         });
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
+        response.setData(false);
         response.setErrors(errors);
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }

@@ -14,6 +14,7 @@ import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
@@ -126,11 +127,12 @@ public class MemberService {
             throw new UnknownException("Group ID does not match");
         }
 
-        // Cập nhật trạng thái dựa trên action
         if ("approve".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("APPROVED");
+            memberSendRequest.setRole(Role.USER.name());
         } else if ("reject".equalsIgnoreCase(action)) {
-            memberSendRequest.setStatus("REJECTED");
+            memberRepository.delete(memberSendRequest);
+            // memberSendRequest.setStatus("REJECTED");
         } else {
             throw new UnknownException("Invalid action");
         }

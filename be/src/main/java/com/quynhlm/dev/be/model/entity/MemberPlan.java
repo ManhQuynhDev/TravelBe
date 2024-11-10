@@ -1,5 +1,6 @@
 package com.quynhlm.dev.be.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,22 +12,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "travel_plan")
+@Table(name = "MemberPlan")
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class Travel_Plan {
+@NoArgsConstructor
+public class MemberPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id; //admin
-    private int location_id;
-    private String plan_name;
-    private String start_date;
-    private String end_date;
+    @Column(name = "planId")
+    private Integer planId;
+    @Column(name = "userId")
+    private Integer userId;
+    private String join_time;
+    private String role;
     private String status;
-    private String description;
-    private double total_butget;
-    private String create_time;
 }

@@ -42,11 +42,12 @@ public class UserController {
     private UserService userService;
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ResponseObject<Void>> register(@RequestBody User user) {
+    public ResponseEntity<ResponseObject<Boolean>> register(@RequestBody @Valid User user) {
         userService.register(user);
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<Boolean> result = new ResponseObject<>();
+        result.setData(true);
         result.setMessage("Create a new account successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
     @PostMapping("/login")
