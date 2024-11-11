@@ -22,5 +22,6 @@ public class UserResponseDTO {
     private Set<String> roles;
     private String phoneNumber;
     private String isLocked;
+    private String avatarUrl;
     private Timestamp create_at;
 }

@@ -105,7 +105,7 @@ public class UserService {
         userResponseDTO.setRoles(user.getRoles());
         userResponseDTO.setIsLocked(user.getIsLocked());
         userResponseDTO.setCreate_at(user.getCreate_at());
-
+        userResponseDTO.setAvatarUrl(user.getAvatarUrl());
         response.setUserInfo(userResponseDTO);
         return response;
     }

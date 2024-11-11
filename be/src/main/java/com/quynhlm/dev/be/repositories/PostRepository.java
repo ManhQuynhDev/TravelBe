@@ -127,7 +127,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             LEFT JOIN
                 share s ON p.id = s.post_id
             GROUP BY
-                p.id
+                p.id , m.media_url , u.id
             """, nativeQuery = true)
     Page<Object[]> fetchPostWithMediaTypeVideo(Pageable pageable);
 

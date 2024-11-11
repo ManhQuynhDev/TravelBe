@@ -27,31 +27,6 @@ public class MessageService {
     public void insertMessage(Message message) throws UnknownException {
         try {
             message.setSendTime(new Timestamp(System.currentTimeMillis()).toString());
-
-            // if (files != null && !files.isEmpty()) {
-            // for (MultipartFile file : files) {
-            // if (file.isEmpty()) {
-            // continue;
-            // }
-
-            // String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            // long fileSize = file.getSize();
-            // String contentType = file.getContentType();
-
-            // try (InputStream inputStream = file.getInputStream()) {
-            // ObjectMetadata metadata = new ObjectMetadata();
-            // metadata.setContentLength(fileSize);
-            // metadata.setContentType(contentType);
-
-            // amazonS3.putObject(bucketName, uniqueFileName, inputStream, metadata);
-
-            // String mediaUrl = String.format("https://%s.s3.%s.amazonaws.com/%s",
-            // bucketName,
-            // "ap-southeast-2", uniqueFileName);
-            // message.setMediaUrl(mediaUrl);
-            // }
-            // }
-            // }
             isSuccess(message);
         } catch (Exception e) {
             throw new UnknownException(e.getMessage());
