@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
@@ -342,10 +344,19 @@ public class UserService {
     }
     // Change STATUS User
 
-    public void switchStatusUser(Integer id, String isLock) throws UserAccountNotFoundException, UnknownException {
+    public void switchIsLockedUser(Integer id, String isLock)
+            throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
         User user = userRepository.findOneById(id);
         if (user == null) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
+        }
+
+        String[] statusUser = { "OPEN", "LOOK" };
+
+        Boolean isCheck = isLock == null || Arrays.asList(statusUser).contains(isLock);
+
+        if (isCheck == false) {
+            throw new MethodNotValidException("Invalid status user type. Please try again !");
         }
 
         if (user.getIsLocked() != null && user.getIsLocked().equals(isLock)) {
@@ -353,6 +364,29 @@ public class UserService {
         }
 
         user.setIsLocked(isLock);
+
+        userRepository.save(user);
+    }
+
+    public void switchStatusUser(Integer id, String status) throws UserAccountNotFoundException, UnknownException {
+        User user = userRepository.findOneById(id);
+        if (user == null) {
+            throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
+        }
+
+        String[] statusUser = { "ONLINE", "OFFLINE" };
+
+        Boolean isCheck = status == null || Arrays.asList(statusUser).contains(status);
+
+        if (isCheck == false) {
+            throw new MethodNotValidException("Invalid status user type. Please try again !");
+        }
+
+        if (user.getStatus() != null && user.getIsLocked().equals(status)) {
+            throw new UnknownException("Transaction cannot complete because old status is the same as the new status!");
+        }
+
+        user.setStatus(status);
 
         userRepository.save(user);
     }

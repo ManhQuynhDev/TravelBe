@@ -43,7 +43,7 @@ public class PostReactionService {
                     "Post find with id " + postReaction.getPostId() + " not found. Please try another!");
         }
 
-        User foundUser = userRepository.getAnUser(postReaction.getPostId());
+        User foundUser = userRepository.getAnUser(postReaction.getUserId());
 
         if (foundUser == null) {
             throw new UserAccountNotFoundException(

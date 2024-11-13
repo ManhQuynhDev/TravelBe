@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
-import com.quynhlm.dev.be.core.validation.ValidStatusAccountType;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
@@ -49,8 +48,8 @@ public class UserController {
         userService.register(user);
         ResponseObject<Boolean> result = new ResponseObject<>();
         result.setData(true);
-            result.setMessage("Create a new account successfully");
-            return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
+        result.setMessage("Create a new account successfully");
+        return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
     @PostMapping("/login")
@@ -140,9 +139,19 @@ public class UserController {
         return new ResponseEntity<ResponseObject<Boolean>>(response, HttpStatus.OK);
     }
 
+    @PutMapping("/locked-account/{id}/isLocked")
+    public ResponseEntity<ResponseObject<Boolean>> switchLockedUser(@PathVariable Integer id,
+            @RequestParam String isLocked) {
+        userService.switchIsLockedUser(id, isLocked);
+        ResponseObject<Boolean> response = new ResponseObject<>();
+        response.setData(true);
+        response.setMessage("Switch status user successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }   
+
     @PutMapping("/status-account/{id}/status")
     public ResponseEntity<ResponseObject<Boolean>> switchStatusUser(@PathVariable Integer id,
-            @RequestParam @Valid @ValidStatusAccountType String status) {
+            @RequestParam String status) {
         userService.switchStatusUser(id, status);
         ResponseObject<Boolean> response = new ResponseObject<>();
         response.setData(true);

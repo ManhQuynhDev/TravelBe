@@ -5,16 +5,19 @@ import java.util.Arrays;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class ReactionTypeValidator implements ConstraintValidator<ValidReactionType, String> {
+public class AccountLockedValidator implements ConstraintValidator<AccountLockedType, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        String[] reactionType = { "LIKE", "LOVE", "HAHA", "WOW", "SAD", "ANGRY" };
+
+        String[] statusUser = { "LOOK", "OPEN" };
 
         if (value == null) {
             return false;
         }
 
-        return Arrays.asList(reactionType).contains(value);
+        Boolean isCheck = Arrays.asList(statusUser).contains(value);
+        System.err.println("is check : " + isCheck);
+        return isCheck;
     }
 }

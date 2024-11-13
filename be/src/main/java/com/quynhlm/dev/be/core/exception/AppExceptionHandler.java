@@ -110,9 +110,24 @@ public class AppExceptionHandler {
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MethodNotValidException.class)
+    public ResponseEntity<?> handleConstraintViolationException(MethodNotValidException ex,
+            HttpServletRequest request) {
+
+        AppError error = new AppError(AppError.ErrorCode.DATA_INVALID,
+                ex.getMessage());
+        ResponseObject<Boolean> responseObject = new ResponseObject<>();
+        responseObject.setData(false);
+        responseObject.setError(error);
+        responseObject.setMessage("Validation failed");
+
+        return new ResponseEntity<>(responseObject, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = { UnknownException.class })
     public ResponseEntity<?> unknown(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
+        response.setData(false);
         response.setMessage("Something went wrong!.");
         response.setError(new AppError(ErrorCode.UNKNOWN, ex.getMessage()));
         return new ResponseEntity<ResponseObject>(response, HttpStatus.INTERNAL_SERVER_ERROR);
