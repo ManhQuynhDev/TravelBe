@@ -18,23 +18,23 @@ import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.service.MemberPlanService;
 
 @RestController
-@RequestMapping(name = "api/v1/member-plan")
+@RequestMapping(name = "api/member-plan")
 public class MemberPlanController {
     @Autowired
     private MemberPlanService memberPlanService;
 
-    @GetMapping("/{groupId}/status")
+    @GetMapping("/{planId}/status")
     public Page<MemberPlan> getListUserByStatus(@PathVariable Integer planId, @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return memberPlanService.getRequestToJoinPlans(planId, status, page, size);
     }
 
-    @PostMapping("/request-join-group")
-    public ResponseEntity<ResponseObject<Void>> requestToJoinGroup(@RequestBody MemberPlan member) {
+    @PostMapping("/request-join-plan")
+    public ResponseEntity<ResponseObject<Void>> requestToJoinPlan(@RequestBody MemberPlan member) {
         ResponseObject<Void> result = new ResponseObject<>();
         memberPlanService.requestToJoinPlan(member);
-        result.setMessage("Send request join group successfully");
+        result.setMessage("Send request join plan successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 

@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +22,9 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
     Page<FriendShip> findByUserReceivedIdAndStatus(
             @Param("userReceivedId") Integer userReceivedId,
             @Param("status") String status, Pageable pageable);
+
+    @Query(value = "SELECT * FROM friend_ship f WHERE f.user_received_id = :userReceivedId AND f.status = :status", nativeQuery = true)
+    List<FriendShip> fetchByUserReceivedIdAndStatus(
+            @Param("userReceivedId") Integer userReceivedId,
+            @Param("status") String status);
 }

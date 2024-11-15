@@ -12,13 +12,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Story")
+@Table(name = "stories")
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Story {
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String content;
@@ -29,6 +29,7 @@ public class Story {
     private String create_time;
     private int location_id;
     private String hastag;
-    @Column(name = "delFlag")
+    private String status;
+    @Column(name = "del_flag")
     private int delFlag;
 }

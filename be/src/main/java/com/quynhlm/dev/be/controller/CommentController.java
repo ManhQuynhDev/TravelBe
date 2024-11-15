@@ -1,6 +1,5 @@
 package com.quynhlm.dev.be.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.service.CommentService;
 
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping(path = "/api/comments")
 public class CommentController {
 
     @Autowired
@@ -65,7 +65,7 @@ public class CommentController {
         result.setMessage("Update comment successfully");
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject<Comment>> findAnComment(@PathVariable Integer id) {
         ResponseObject<Comment> result = new ResponseObject<>();
@@ -73,5 +73,11 @@ public class CommentController {
         result.setData(commentService.findAnComment(id));
         return new ResponseEntity<ResponseObject<Comment>>(result, HttpStatus.OK);
     }
-    
+
+    @GetMapping("/postId")
+    public Page<CommentResponseDTO> foundCommentWithPostId(@RequestParam("postId") Integer postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return commentService.fetchCommentWithPostId(postId, page, size);
+    }
 }

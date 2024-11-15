@@ -26,6 +26,6 @@ public class Activities {
     private String time;
     private String description;
     private double cost;
-    private int status;
+    private String status;
     private String create_time;
 }

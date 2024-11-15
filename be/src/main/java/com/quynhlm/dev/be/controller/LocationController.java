@@ -29,5 +29,4 @@ public class LocationController {
         result.setMessage("Create a location successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
-
 }

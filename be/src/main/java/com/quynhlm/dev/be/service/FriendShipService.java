@@ -132,5 +132,4 @@ public class FriendShipService {
         notificationHelper.pushNotification(foundFriendShip.getUserReceivedId(), foundFriendShip.getUserSendId(),
                 "đã hủy kết bạn với bạn", "Kết bạn đã bị hủy từ ");
     }
-
 }

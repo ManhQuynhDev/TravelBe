@@ -55,6 +55,7 @@ public class MemberService {
             throw new UnknownException("User has already requested to join or is already a member.");
         }
 
+        member.setRole(Role.USER.name());
         member.setStatus("PENDING");
         Member saveMember = memberRepository.save(member);
 

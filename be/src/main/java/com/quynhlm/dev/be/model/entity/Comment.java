@@ -24,4 +24,5 @@ public class Comment {
     private String url;
     private int postId;
     private int userId;
+    private String create_time;
 }

@@ -2,6 +2,7 @@ package com.quynhlm.dev.be.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 
@@ -45,7 +47,7 @@ public class CommentService {
                 if (!isValidFileType(imageContentType)) {
                     throw new UnknownException("Invalid file type. Only image files are allowed.");
                 }
-             
+
                 try (InputStream mediaInputStream = imageFile.getInputStream()) {
                     ObjectMetadata mediaMetadata = new ObjectMetadata();
                     mediaMetadata.setContentLength(imageFileSize);
@@ -58,6 +60,7 @@ public class CommentService {
                     comment.setUrl(mediaUrl);
                 }
             }
+            comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             commentRepository.save(comment);
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -112,6 +115,25 @@ public class CommentService {
             throw new CommentNotFoundException("Id " + id + " not found . Please try another!");
         }
         return comment;
+    }
+
+    public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
+
+        return results.map(row -> {
+            CommentResponseDTO comment = new CommentResponseDTO();
+            comment.setCommentId(((Number) row[0]).intValue());
+            comment.setOwnerId(((Number) row[1]).intValue());
+            comment.setFullname((String) row[2]);
+            comment.setAvatar((String) row[3]);
+            comment.setContent((String) row[4]);
+            comment.setPostId(((Number) row[5]).intValue());
+            comment.setCreate_time((String) row[6]);
+            comment.setReaction_count(((Number) row[7]).intValue());
+            comment.setReply_count(((Number) row[8]).intValue());
+            return comment;
+        });
     }
 
 }

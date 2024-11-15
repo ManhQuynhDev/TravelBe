@@ -55,7 +55,7 @@ public class FriendShipController {
     }
 
     @DeleteMapping("/cancel")
-    public ResponseEntity<String> cancelFriend(@RequestParam int userSendId, @RequestParam int userReceivedId) {
+    public ResponseEntity<String> cancelFriend(@PathVariable Integer userSendId, @PathVariable Integer userReceivedId) {
         friendShipService.cancelFriends(userSendId, userReceivedId);
         return ResponseEntity.ok("Friendship canceled successfully.");
     }

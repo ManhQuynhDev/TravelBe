@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -93,6 +94,19 @@ public class AppExceptionHandler {
 
         response.setError(new AppError(errorCode, ex.getMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<?> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+
+        AppError error = new AppError(AppError.ErrorCode.METHOD_NOT_ALLOWED,
+                ex.getMessage());
+        ResponseObject<Boolean> responseObject = new ResponseObject<>();
+        responseObject.setData(false);
+        responseObject.setError(error);
+        responseObject.setMessage("Method not supported");
+
+        return new ResponseEntity<>(responseObject, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

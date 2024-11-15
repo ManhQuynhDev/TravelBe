@@ -22,6 +22,8 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
+    
+
     @PostMapping("")
     public ResponseEntity<ResponseObject<Void>> tagWithFriend(@RequestBody Tag tag) {
         ResponseObject<Void> result = new ResponseObject<>();

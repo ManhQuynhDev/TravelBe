@@ -11,12 +11,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.StoryNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
+import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Story;
+import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.StoryRepository;
 
 @Service
@@ -24,6 +29,9 @@ public class StoryService {
 
     @Autowired
     private AmazonS3 amazonS3;
+
+    @Autowired
+    private FriendShipRepository friendShipRepository;
 
     @Value("${aws.s3.bucketName}")
     private String bucketName;
@@ -37,6 +45,14 @@ public class StoryService {
             throw new StoryNotFoundException("User find by " + id + " not found. Please try another!");
         }
         storyRepository.delete(foundStory);
+    }
+
+    public Story getAnStory(int id) throws StoryNotFoundException {
+        Story foundStory = storyRepository.getAnStory(id);
+        if (foundStory == null) {
+            throw new StoryNotFoundException("User find by " + id + " not found. Please try another!");
+        }
+        return foundStory;
     }
 
     public void insertStory(Story story, MultipartFile mediaFile, MultipartFile musicFile)
@@ -92,6 +108,7 @@ public class StoryService {
                 // Lưu đường dẫn file hình ảnh hoặc video vào Story (url)
                 String imageOrVideoUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
                         imageOrVideoFileName);
+                story.setDelFlag(0);
                 story.setUrl(imageOrVideoUrl);
                 story.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
 
@@ -115,6 +132,60 @@ public class StoryService {
     public Page<Story> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return storyRepository.findAll(pageable);
+    }
+
+    public Page<StoryResponseDTO> getAllStory(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = storyRepository.fetchStory(pageable);
+
+        return results.map(row -> {
+            StoryResponseDTO story = new StoryResponseDTO();
+            story.setOwnerId(((Number) row[0]).intValue());
+            story.setStoryId(((Number) row[1]).intValue());
+            story.setLocationId(((Number) row[2]).intValue());
+            story.setContent((String) row[3]);
+            story.setStatus((String) row[4]);
+            story.setFullname((String) row[5]);
+            story.setAvatar((String) row[6]);
+            story.setMusicUrl((String) row[7]);
+            story.setMediaUrl((String) row[8]);
+            story.setCreate_time((String) row[9]);
+            story.setReaction_count(((Number) row[10]).intValue());
+            return story;
+        });
+    }
+
+    public Page<StoryResponseDTO> fetchFriendStoriesByUserId(Integer userId, int page, int size) {
+
+        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+
+        List<Integer> friendUserIds = friendShips.stream()
+                .map(FriendShip::getUserSendId)
+                .collect(Collectors.toList());
+
+        if (friendUserIds.isEmpty()) {
+            return Page.empty();
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Object[]> results = storyRepository.fetchStoriesByUserIds(friendUserIds, pageable);
+
+        return results.map(row -> {
+            StoryResponseDTO story = new StoryResponseDTO();
+            story.setOwnerId(((Number) row[0]).intValue());
+            story.setStoryId(((Number) row[1]).intValue());
+            story.setLocationId(((Number) row[2]).intValue());
+            story.setContent((String) row[3]);
+            story.setStatus((String) row[4]);
+            story.setFullname((String) row[5]);
+            story.setAvatar((String) row[6]);
+            story.setMusicUrl((String) row[7]);
+            story.setMediaUrl((String) row[8]);
+            story.setCreate_time((String) row[9]);
+            story.setReaction_count(((Number) row[10]).intValue());
+            return story;
+        });
     }
 
 }
