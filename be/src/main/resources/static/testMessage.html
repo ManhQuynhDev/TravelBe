@@ -1,67 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSocket Message Test</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        input, textarea { width: 100%; margin: 10px 0; }
-        button { padding: 10px; }
-        #messages { margin-top: 20px; }
-        .message { margin: 5px 0; }
-    </style>
+    <title>Create Post</title>
 </head>
-<body>
-    <h1>Send Message via WebSocket</h1>
-    <textarea id="messageContent" rows="4" placeholder="Enter your message"></textarea>
-    <input type="file" id="fileInput" />
-    <button onclick="sendMessage()">Send</button>
 
-    <div id="messages"></div>
+<body>
+    <h2>Create a Post</h2>
+
+    <!-- Input để chọn file ảnh -->
+    <input type="file" id="fileInput" accept="image/*" />
+    <!-- Input để nhập nội dung bài viết -->
+    <input type="text" id="postContent" placeholder="Enter your post content" />
+    <!-- Nút để tạo bài viết -->
+    <button onclick="createPost()">Create Post</button>
 
     <script>
-        const ws = new WebSocket('ws://localhost:8080/ws'); // Adjust the URL as needed
-
-        ws.onopen = () => {
-            console.log('WebSocket connection established');
-        };
-
-        ws.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            displayMessage(message);
-        };
-
-        function displayMessage(message) {
-            const messagesDiv = document.getElementById('messages');
-            const messageElement = document.createElement('div');
-            messageElement.className = 'message';
-            messageElement.textContent = `${message.userSendId}: ${message.content}`;
-            messagesDiv.appendChild(messageElement);
-        }
-
-        async function sendMessage() {
-            const messageContent = document.getElementById('messageContent').value;
-            const fileInput = document.getElementById('fileInput');
+        const createPost = () => {
+            const content = document.getElementById("postContent").value.trim();
+            const fileInput = document.getElementById("fileInput");
             const file = fileInput.files[0];
+            const type = "IMAGE";
 
-            const message = {
-                content: messageContent,
-                userSendId: 'user1', // Replace with actual sender ID
-                groupId: null // Replace with actual group ID or keep as null for private messages
+            if (!content || !file) {
+                alert("Please enter content and choose an image!");
+                return;
+            }
+
+            // Kiểm tra file là hình ảnh
+            if (!file.type.startsWith("image/")) {
+                alert("Please select a valid image file!");
+                return;
+            }
+
+            const postData = {
+                content,
+                status: "PUBLIC",
+                user_id: 1,
+                location_id: 1,
             };
 
-            // Send message as JSON
-            ws.send(JSON.stringify(message));
+            const formData = new FormData();
+            formData.append("post", JSON.stringify(postData)); // JSON của bài viết
+            formData.append("files", file); // Hình ảnh
+            formData.append("type", type); // Loại
 
-            // Clear input fields after sending
-            document.getElementById('messageContent').value = '';
-            fileInput.value = '';
-        }
+            fetch("http://localhost:8080/api/posts", {
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbiIsImV4cCI6MTczMTcyOTc5MywiaWF0IjoxNzMxNzI2MTkzLCJzY29wZSI6IkFETUlOIn0.Y_PMFZtkOqKT2qN6DNuOhN6-Wj_vAOsL3lnYgqiuD_Y5g1MX1evagA3OjO36zi4ZvlXiKnn6ZJIGKKT11TywRw",
+                },
+                body: formData,
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to create post");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Post created successfully:", data);
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error("Error creating post:", error);
+                    alert("Error creating post");
+                });
 
-        ws.onclose = () => {
-            console.log('WebSocket connection closed');
         };
+
     </script>
 </body>
+
 </html>

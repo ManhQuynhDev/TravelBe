@@ -19,8 +19,8 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
 
     @Query(value = """
             SELECT
-                u.id AS adminId,
                 g.id AS groupId,
+                u.id AS adminId,
                 g.name AS group_name,
                 u.fullname AS admin_name,
                 g.cover_photo,

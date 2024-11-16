@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.service.PostService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,17 +36,43 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PostMapping("")
-    public ResponseEntity<ResponseObject<Void>> insertPost(@RequestPart("post") Post post,
-            @RequestPart("files") List<MultipartFile> files,
-            @RequestPart("type") String type) throws Exception {
+    // @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<ResponseObject<Void>> insertPost(@RequestPart("post")
+    // String postJson,
+    // @RequestPart(value = "files") List<MultipartFile> files,
+    // @RequestPart("type") String type) {
+    // postService.insertPost(post, files, type);
+    // ResponseObject<Void> result = new ResponseObject<>();
+    // result.setMessage("Create a new post successfully");
+    // return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    // }
+
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResponseObject<Void>> insertPost(
+            @RequestPart("post") String postJson,
+            @RequestPart(value = "files") List<MultipartFile> files,
+            @RequestPart("type") String type,
+            HttpServletRequest request) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRequestDTO post = null;
+        try {
+            post = objectMapper.readValue(postJson, PostRequestDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         postService.insertPost(post, files, type);
+
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping("")
+
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
         return postService.getAllPostsAndSharedPosts(pageable);
     }

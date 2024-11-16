@@ -159,7 +159,7 @@ public class UserService {
                 .subject(user.getFullname())
                 .issuer("quynhlm.dev@gmail.com")
                 .issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + 3600000)) // 1 hour expiration
+                .expirationTime(new Date(System.currentTimeMillis() + 86400000)) // 1 day expiration
                 .claim("scope", buildScope(user))
                 .build();
 

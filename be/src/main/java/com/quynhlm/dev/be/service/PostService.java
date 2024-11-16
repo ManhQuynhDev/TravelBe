@@ -16,6 +16,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
@@ -40,8 +41,15 @@ public class PostService {
     @Autowired
     private MediaRepository mediaRepository;
 
-    public void insertPost(Post post, List<MultipartFile> files, String type) throws UnknownException {
+    public void insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
+            throws UnknownException {
         try {
+            Post post = new Post();
+            post.setContent(postRequestDTO.getContent());
+            post.setStatus(postRequestDTO.getStatus());
+            post.setUser_id(postRequestDTO.getUser_id());
+            post.setLocation_id(postRequestDTO.getLocation_id());
+
             post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Post savedPost = postRepository.save(post);
 
