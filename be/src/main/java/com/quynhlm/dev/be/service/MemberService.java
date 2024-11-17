@@ -15,6 +15,7 @@ import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.Role;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
@@ -142,5 +143,26 @@ public class MemberService {
         if (updatMember == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
+    }
+
+    public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(Integer userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = memberRepository.foundUserJoinGroup(userId, pageable);
+
+        return results.map(row -> {
+            MemberJoinGroupResponseDTO object = new MemberJoinGroupResponseDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setMemberId(((Number) row[1]).intValue());
+            object.setGroupId(((Number) row[2]).intValue());
+            object.setGroup_name(((String) row[3]));
+            object.setAdmin_name((String) row[4]);
+            object.setCover_photo((String) row[5]);
+            object.setBio((String) row[6]);
+            object.setStatus((String) row[7]);
+            object.setRole((String) row[8]);
+            object.setJoin_time((String) row[9]);
+            object.setMember_count(((Number) row[10]).intValue());
+            return object;
+        });
     }
 }

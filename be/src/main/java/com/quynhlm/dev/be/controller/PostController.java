@@ -48,7 +48,7 @@ public class PostController {
     // }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseObject<Void>> insertPost(
+    public ResponseEntity<ResponseObject<?>> insertPost(
             @RequestPart("post") String postJson,
             @RequestPart(value = "files") List<MultipartFile> files,
             @RequestPart("type") String type,
@@ -65,14 +65,13 @@ public class PostController {
 
         postService.insertPost(post, files, type);
 
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<Boolean> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        result.setData(true);
+        return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
     @GetMapping("")
-
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
         return postService.getAllPostsAndSharedPosts(pageable);
     }
@@ -86,22 +85,24 @@ public class PostController {
     }
 
     @DeleteMapping("/{post_id}")
-    public ResponseEntity<ResponseObject<Void>> deleteStory(@PathVariable Integer post_id) {
+    public ResponseEntity<ResponseObject<?>> deleteStory(@PathVariable Integer post_id) {
         postService.deletePost(post_id);
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<Boolean> result = new ResponseObject<>();
         result.setMessage("Delete post successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setData(true);
+        return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{post_id}")
-    public ResponseEntity<ResponseObject<Void>> updatePost(@PathVariable Integer post_id,
+    public ResponseEntity<ResponseObject<?>> updatePost(@PathVariable Integer post_id,
             @RequestPart("post") Post newPost,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @RequestPart(value = "type", required = false) String type) throws Exception {
         postService.updatePost(post_id, newPost, files, type);
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<Boolean> result = new ResponseObject<>();
         result.setMessage("Update post successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setData(true);
+        return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/videos")

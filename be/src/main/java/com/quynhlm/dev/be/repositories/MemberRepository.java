@@ -29,4 +29,28 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                         @Param("groupId") Integer groupId,
                         @Param("status") String status,
                         Pageable pageable);
+
+        @Query(value = """
+                        SELECT
+                        m.user_id,
+                        m.id AS member_id,
+                        g.id AS group_id,
+                        g.name,
+                        userGroup.fullname AS adminName,
+                        g.cover_photo,
+                        g.bio,
+                        m.status,
+                        m.role,
+                        m.join_time,
+                        (SELECT COUNT(*)
+                        FROM member
+                        WHERE group_id = g.id AND status = "APPROVED") AS member_count
+                        FROM member m
+                        INNER JOIN user u ON u.id = m.user_id
+                        INNER JOIN m_group g ON g.id = m.group_id
+                        INNER JOIN user userGroup ON g.user_id = userGroup.id
+                        WHERE m.user_id = :userId AND m.status = "APPROVED";
+                            """, nativeQuery = true)
+        Page<Object[]> foundUserJoinGroup(@Param("userId") Integer userId,
+                        Pageable pageable);
 }

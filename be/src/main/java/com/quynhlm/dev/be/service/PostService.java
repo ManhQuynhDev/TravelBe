@@ -3,6 +3,7 @@ package com.quynhlm.dev.be.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,14 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
+import com.quynhlm.dev.be.repositories.TagRepository;
+
 import org.springframework.beans.factory.annotation.Value;
 
 @Service
@@ -40,6 +44,9 @@ public class PostService {
 
     @Autowired
     private MediaRepository mediaRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     public void insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
             throws UnknownException {
@@ -89,25 +96,41 @@ public class PostService {
         }
     }
 
+    //Get all list friend post
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
-        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(pageable);
+        Page<Object[]> results = postRepository.getAllPosts(pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
             post.setOwnerId(((Number) row[0]).intValue());
             post.setPostId(((Number) row[1]).intValue());
-            post.setContent((String) row[2]);
-            post.setMediaUrl((String) row[3]);
-            post.setLocationId(((Number) row[4]).intValue());
-            post.setHastag((String) row[5]);
-            post.setStatus((String) row[6]);
-            post.setType((String) row[7]);
-            post.setIsShare(((Number) row[8]).intValue());
-            post.setCreate_time((String) row[9]);
-            post.setShareByUser(row[10] != null ? ((Number) row[10]).intValue() : null);
-            post.setReaction_count(((Number) row[11]).intValue());
-            post.setComment_count(((Number) row[12]).intValue());
-            post.setShare_count(((Number) row[13]).intValue());
+            post.setLocationId(((Number) row[2]).intValue());
+            post.setAdminName((String) row[3]);
+            post.setAvatarUrl((String) row[4]);
+            post.setContent((String) row[5]);
+            post.setMediaUrl((String) row[6]);
+            post.setHastag((String) row[7]);
+            post.setStatus((String) row[8]);
+            post.setType((String) row[9]);
+            post.setIsShare(((Number) row[10]).intValue());
+            post.setCreate_time((String) row[11]);
+            post.setShare_by_user(row[12] != null ? ((Number) row[12]).intValue() : null);
+            post.setReaction_count(((Number) row[13]).intValue());
+            post.setComment_count(((Number) row[14]).intValue());
+            post.setShare_count(((Number) row[15]).intValue());
+            post.setIsTag(((Number) row[16]).intValue());
+
+            if (((Number) row[16]).intValue() >= 1) {
+                List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number) row[1]).intValue());
+                List<UserTagPostResponse> responses = rawResults.stream()
+                        .map(u -> new UserTagPostResponse(
+                                ((Number) u[0]).intValue(),
+                                (String) u[1],
+                                (String) u[2]))
+                        .collect(Collectors.toList());
+
+                post.setTags(responses);
+            }
             return post;
         });
     }

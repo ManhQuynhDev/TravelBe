@@ -39,7 +39,7 @@ public class GroupService {
     @Autowired
     private MemberService memberService;
 
-    public void createGroup(Group group, MultipartFile file) throws GroupExistingException, UnknownException {
+    public Group createGroup(Group group, MultipartFile file) throws GroupExistingException, UnknownException {
         try {
             if (file != null && !file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
@@ -73,6 +73,7 @@ public class GroupService {
                 member.setGroupId(saveGroup.getId());
                 member.setRole(GroupRole.ADMIN.name());
                 memberService.setAdminGroup(member);
+                return saveGroup;
             }
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -89,7 +90,7 @@ public class GroupService {
         groupRepository.delete(foundGroup);
     }
 
-    public Page<Group> getListData(int page, int size) {
+    public Page<Group> getListData(int page, int size)  {
         Pageable pageable = PageRequest.of(page, size);
         return groupRepository.findAll(pageable);
     }

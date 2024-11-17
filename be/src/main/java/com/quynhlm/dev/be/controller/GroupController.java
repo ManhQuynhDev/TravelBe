@@ -31,13 +31,17 @@ public class GroupController {
     @Autowired
     private final GroupService groupService;
 
+    //Get all list group
     @GetMapping("")
     public Page<GroupResponseDTO> getAllListGroups(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return groupService.getAllGroup(page, size);
     }
+    //Get list group by status PENDING
+    //Find group app with 
 
+    //Delete group by id
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> deleteGroup(@PathVariable Integer id) {
         ResponseObject<Void> result = new ResponseObject<>();
@@ -46,15 +50,18 @@ public class GroupController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
+    //Post group
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Void>> insertReview(@RequestPart("group") Group group,
+    public ResponseEntity<ResponseObject<Group>> insertReview(@RequestPart("group") Group group,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
-        groupService.createGroup(group, file);
-        ResponseObject<Void> result = new ResponseObject<>();
+        Group groupResponse = groupService.createGroup(group, file);
+        ResponseObject<Group> result = new ResponseObject<>();
         result.setMessage("Create a new group successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setData(groupResponse);
+        return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);
     }
 
+    //Update
     @PutMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> updateGroup(
             @PathVariable Integer id,

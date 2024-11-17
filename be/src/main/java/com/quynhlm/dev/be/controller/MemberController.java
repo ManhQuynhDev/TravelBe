@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.service.MemberService;
 
@@ -28,7 +29,16 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    // lấy ra
+    // FoundGroup member send
+    @GetMapping("/group-join/{userId}")
+    public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(
+            @PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return memberService.getGroupMemberJoin(userId, page, size);
+    }
+
+    // Get
     @GetMapping("/{groupId}/status")
     public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
@@ -36,6 +46,7 @@ public class MemberController {
         return memberService.getRequestToJoinGroup(groupId, status, page, size);
     }
 
+    // request - join - group
     @PostMapping("/request-join-group")
     public ResponseEntity<ResponseObject<Void>> requestToJoinGroup(@RequestBody Member member) {
         ResponseObject<Void> result = new ResponseObject<>();
@@ -44,6 +55,7 @@ public class MemberController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
+    // Delete member from group
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResponseObject<Void>> deleteMember(@PathVariable Integer memberId) {
         ResponseObject<Void> result = new ResponseObject<>();

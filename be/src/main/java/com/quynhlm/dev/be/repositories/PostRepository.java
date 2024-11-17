@@ -101,6 +101,97 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Object[]> getAllPostsAndSharedPosts(Pageable pageable);
 
     @Query(value = """
+                    (
+                SELECT
+                    p.user_id AS owner_id,
+                    p.id AS post_id,
+                    p.location_id,
+                    a.fullname AS admin_name,
+                    a.avatar_url,
+                    p.content,
+                    m.media_url,
+                    p.hastag,
+                    p.status,
+                    m.type,
+                    0 AS isShare,
+                    p.create_time,
+                    NULL AS share_by_user,
+                    COUNT(DISTINCT r.id) AS reaction_count,
+                    COUNT(DISTINCT c.id) AS comment_count,
+                    COUNT(DISTINCT s2.id) AS share_count,
+                    CASE
+                        WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
+                        ELSE 0
+                    END AS isTag
+                FROM
+                    Post p
+                INNER JOIN
+                    Media m ON p.id = m.post_id
+                LEFT JOIN
+                    post_reaction r ON p.id = r.post_id
+                LEFT JOIN
+                    comment c ON p.id = c.post_id
+                LEFT JOIN
+                    share s2 ON p.id = s2.post_id
+                LEFT JOIN
+                    User a ON p.user_id = a.id
+                WHERE
+                    p.status = 'PUBLIC'
+                GROUP BY
+                    p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
+            )
+
+            UNION ALL
+
+            (
+                SELECT
+                    p.user_id AS owner_id,
+                    p.id AS post_id,
+                    p.location_id,
+                    a.fullname AS admin_name,
+                    a.avatar_url ,
+                    p.content,
+                    m.media_url,
+                    p.hastag,
+                    p.status,
+                    m.type,
+                    1 AS isShare,
+                    s.create_time,
+                    s.user_id AS share_by_user,
+                    COUNT(DISTINCT r.id) AS reaction_count,
+                    COUNT(DISTINCT c.id) AS comment_count,
+                    COUNT(DISTINCT s2.id) AS share_count,
+                    CASE
+                        WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
+                        ELSE 0
+                    END AS isTag
+                FROM
+                    Share s
+                INNER JOIN
+                    Post p ON s.post_id = p.id
+                INNER JOIN
+                    Media m ON p.id = m.post_id
+                LEFT JOIN
+                    post_reaction r ON p.id = r.post_id
+                LEFT JOIN
+                    comment c ON p.id = c.post_id
+                LEFT JOIN
+                    share s2 ON p.id = s2.post_id
+                LEFT JOIN
+                    User a ON p.user_id = a.id
+                WHERE
+                    p.status = 'PUBLIC'
+                GROUP BY
+                    p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
+            )
+
+            ORDER BY
+                create_time DESC;
+
+                    """, nativeQuery = true)
+    Page<Object[]> getAllPosts(Pageable pageable);
+
+    @Query(value = """
             SELECT
                 p.id AS post_id,
                 u.id as owner_id,
@@ -131,4 +222,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             """, nativeQuery = true)
     Page<Object[]> fetchPostWithMediaTypeVideo(Pageable pageable);
 
+    
 }
