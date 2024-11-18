@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.requestDTO.GroupRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
@@ -38,26 +40,35 @@ public class GroupController {
             @RequestParam(defaultValue = "2") int size) {
         return groupService.getAllGroup(page, size);
     }
-    //Get list group by status PENDING
-    //Find group app with 
 
-    //Delete group by id
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> deleteGroup(@PathVariable Integer id) {
         ResponseObject<Void> result = new ResponseObject<>();
         groupService.deleteGroup(id);
         result.setMessage("Delete group with " + id + "successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
     //Post group
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Group>> insertReview(@RequestPart("group") Group group,
+    public ResponseEntity<ResponseObject<Group>> insertReview(@RequestPart("group") String groupJson,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
+
+         ObjectMapper objectMapper = new ObjectMapper();
+         GroupRequestDTO group = null;
+        try {
+            group = objectMapper.readValue(groupJson, GroupRequestDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         Group groupResponse = groupService.createGroup(group, file);
         ResponseObject<Group> result = new ResponseObject<>();
         result.setMessage("Create a new group successfully");
         result.setData(groupResponse);
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);
     }
 
@@ -67,9 +78,10 @@ public class GroupController {
             @PathVariable Integer id,
             @RequestPart("group") SettingsGroupDTO settings,
             @RequestPart(value = "file", required = false) MultipartFile file) {
+        groupService.settingGroup(id, settings, file);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new group successfully");
-        groupService.settingGroup(id, settings, file);
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

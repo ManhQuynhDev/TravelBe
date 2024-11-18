@@ -15,9 +15,11 @@ import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.Role;
+import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
@@ -163,6 +165,31 @@ public class MemberService {
             object.setJoin_time((String) row[9]);
             object.setMember_count(((Number) row[10]).intValue());
             return object;
+        });
+    }
+
+    public Page<GroupResponseDTO> foundGroupUserCreate(Integer userId, int page, int size)
+            throws UserAccountNotFoundException {
+
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found , please try again !");
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = memberRepository.fetchGroupUserCreate(userId, pageable);
+
+        return results.map(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
+            return group;
         });
     }
 }

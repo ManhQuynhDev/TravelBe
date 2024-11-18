@@ -28,7 +28,7 @@ public class AppExceptionHandler {
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
-        response.setData(false);
+        response.setStatus(false);
 
         AppError.ErrorCode errorCode;
 
@@ -102,7 +102,7 @@ public class AppExceptionHandler {
         AppError error = new AppError(AppError.ErrorCode.METHOD_NOT_ALLOWED,
                 ex.getMessage());
         ResponseObject<Boolean> responseObject = new ResponseObject<>();
-        responseObject.setData(false);
+        responseObject.setStatus(false);
         responseObject.setError(error);
         responseObject.setMessage("Method not supported");
 
@@ -119,7 +119,7 @@ public class AppExceptionHandler {
         });
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
-        response.setData(false);
+        response.setStatus(false);
         response.setErrors(errors);
         return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
     }
@@ -130,8 +130,8 @@ public class AppExceptionHandler {
 
         AppError error = new AppError(AppError.ErrorCode.DATA_INVALID,
                 ex.getMessage());
-        ResponseObject<Boolean> responseObject = new ResponseObject<>();
-        responseObject.setData(false);
+        ResponseObject<Void> responseObject = new ResponseObject<>();
+        responseObject.setStatus(false);
         responseObject.setError(error);
         responseObject.setMessage("Validation failed");
 
@@ -141,7 +141,7 @@ public class AppExceptionHandler {
     @ExceptionHandler(value = { UnknownException.class })
     public ResponseEntity<?> unknown(Exception ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
-        response.setData(false);
+        response.setStatus(false);
         response.setMessage("Something went wrong!.");
         response.setError(new AppError(ErrorCode.UNKNOWN, ex.getMessage()));
         return new ResponseEntity<ResponseObject>(response, HttpStatus.INTERNAL_SERVER_ERROR);

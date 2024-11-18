@@ -18,6 +18,7 @@ import com.quynhlm.dev.be.core.exception.GroupExistingException;
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.enums.GroupRole;
+import com.quynhlm.dev.be.model.dto.requestDTO.GroupRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
@@ -39,8 +40,18 @@ public class GroupService {
     @Autowired
     private MemberService memberService;
 
-    public Group createGroup(Group group, MultipartFile file) throws GroupExistingException, UnknownException {
+    // Create group
+    public Group createGroup(GroupRequestDTO groupRequestDTO, MultipartFile file)
+            throws GroupExistingException, UnknownException {
+
         try {
+            Group group = new Group();
+            group.setUser_id(groupRequestDTO.getUser_id());
+            group.setName(groupRequestDTO.getName());
+            group.setStatus(groupRequestDTO.getStatus());
+            if (group.getBio() != null) {
+                group.setBio(groupRequestDTO.getBio());
+            }
             if (file != null && !file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
                 long fileSize = file.getSize();
@@ -90,7 +101,7 @@ public class GroupService {
         groupRepository.delete(foundGroup);
     }
 
-    public Page<Group> getListData(int page, int size)  {
+    public Page<Group> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return groupRepository.findAll(pageable);
     }

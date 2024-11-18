@@ -36,21 +36,19 @@
             }
 
             const postData = {
-                content,
+                name,
                 status: "PUBLIC",
-                user_id: 1,
-                location_id: 1,
+                user_id: 1
             };
 
             const formData = new FormData();
-            formData.append("post", JSON.stringify(postData)); // JSON của bài viết
-            formData.append("files", file); // Hình ảnh
-            formData.append("type", type); // Loại
+            formData.append("group", JSON.stringify(postData));
+            formData.append("file", file);
 
-            fetch("http://localhost:8080/api/posts", {
+            fetch("http://localhost:8080/api/groups", {
                 method: "POST",
                 headers: {
-                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbiIsImV4cCI6MTczMTcyOTc5MywiaWF0IjoxNzMxNzI2MTkzLCJzY29wZSI6IkFETUlOIn0.Y_PMFZtkOqKT2qN6DNuOhN6-Wj_vAOsL3lnYgqiuD_Y5g1MX1evagA3OjO36zi4ZvlXiKnn6ZJIGKKT11TywRw",
+                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbiIsImV4cCI6MTczMjAwNjg0NiwiaWF0IjoxNzMxOTIwNDQ2LCJzY29wZSI6IkFETUlOIn0.k6dTnnU1Xx7sn_5mA5KnHriTDBBDscIzMrUPyDi0cC_sWWHUurWFVoH7ancVDXoh5EpnMED2W_CaGT2IdQLH8g",
                 },
                 body: formData,
             })
@@ -68,7 +66,6 @@
                     console.error("Error creating post:", error);
                     alert("Error creating post");
                 });
-
         };
 
     </script>

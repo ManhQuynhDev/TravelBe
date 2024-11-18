@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.service.MemberService;
@@ -28,6 +29,14 @@ public class MemberController {
 
     @Autowired
     private MemberService memberService;
+
+    @GetMapping("/user-create/{userId}")
+    public Page<GroupResponseDTO> getAllListGroups(
+            @PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return memberService.foundGroupUserCreate(userId, page, size);
+    }
 
     // FoundGroup member send
     @GetMapping("/group-join/{userId}")
@@ -51,6 +60,7 @@ public class MemberController {
     public ResponseEntity<ResponseObject<Void>> requestToJoinGroup(@RequestBody Member member) {
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.requestToJoinGroup(member);
+        result.setStatus(true);
         result.setMessage("Send request join group successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
@@ -60,6 +70,7 @@ public class MemberController {
     public ResponseEntity<ResponseObject<Void>> deleteMember(@PathVariable Integer memberId) {
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.deleleMember(memberId);
+        result.setStatus(true);
         result.setMessage("Delete member successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
@@ -75,6 +86,7 @@ public class MemberController {
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.updateMemberStatus(groupId, memberId, memberSendRequestId, action);
         result.setMessage("Member has been " + action + "d.");
+        result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

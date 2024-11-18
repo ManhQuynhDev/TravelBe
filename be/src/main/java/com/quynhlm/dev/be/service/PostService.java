@@ -17,16 +17,21 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
+import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
+import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.TagRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -48,7 +53,13 @@ public class PostService {
     @Autowired
     private TagRepository tagRepository;
 
-    public void insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private FriendShipRepository friendShipRepository;
+
+    public Post insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
             throws UnknownException {
         try {
             Post post = new Post();
@@ -89,6 +100,7 @@ public class PostService {
                     }
                 }
             }
+            return post;
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
@@ -96,9 +108,30 @@ public class PostService {
         }
     }
 
-    //Get all list friend post
-    public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
-        Page<Object[]> results = postRepository.getAllPosts(pageable);
+    // Get all list friend post
+    public Page<PostResponseDTO> getAllPostsAndSharedPosts(Integer userId, Pageable pageable)
+            throws UserAccountNotFoundException {
+
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
+        }
+
+        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+
+        List<Integer> friendUserIds = friendShips.stream()
+                .map(FriendShip::getUserSendId)
+                .collect(Collectors.toList());
+
+        System.out.println("UserId :" + userId);
+        System.out.println("Friends 2" + friendShips.size());
+        System.out.println("Friends" + friendUserIds.size());
+
+        if (friendUserIds.isEmpty()) {
+            return Page.empty();
+        }
+
+        Page<Object[]> results = postRepository.getAllFriendsPosts(friendUserIds, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();

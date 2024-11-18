@@ -21,4 +21,5 @@ public class ResponseObject<T> {
     private List<ObjectError> errors;
     private AppError error;
     private T data;
+    private Boolean status;
 }

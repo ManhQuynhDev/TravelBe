@@ -130,13 +130,13 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 LEFT JOIN
                     post_reaction r ON p.id = r.post_id
                 LEFT JOIN
-                    comment c ON p.id = c.post_id
+                    comment c ON p.id = c.post_id AND c.type = "POST"
                 LEFT JOIN
                     share s2 ON p.id = s2.post_id
                 LEFT JOIN
                     User a ON p.user_id = a.id
                 WHERE
-                    p.status = 'PUBLIC'
+                    p.status = 'PUBLIC' AND a.id IN (:userIds)
                 GROUP BY
                     p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
             )
@@ -158,7 +158,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     1 AS isShare,
                     s.create_time,
                     s.user_id AS share_by_user,
-                    COUNT(DISTINCT r.id) AS reaction_count,
+                    COUNT(DISTINCT sr.id) AS reaction_count,
                     COUNT(DISTINCT c.id) AS comment_count,
                     COUNT(DISTINCT s2.id) AS share_count,
                     CASE
@@ -172,15 +172,15 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 INNER JOIN
                     Media m ON p.id = m.post_id
                 LEFT JOIN
-                    post_reaction r ON p.id = r.post_id
+                    share_post_reaction sr ON s.id = sr.share_id
                 LEFT JOIN
-                    comment c ON p.id = c.post_id
+                    comment c ON p.id = c.post_id AND c.type = "SHARE"
                 LEFT JOIN
                     share s2 ON p.id = s2.post_id
                 LEFT JOIN
                     User a ON p.user_id = a.id
                 WHERE
-                    p.status = 'PUBLIC'
+                    p.status = 'PUBLIC' and a.id IN (:userIds)
                 GROUP BY
                     p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
             )
@@ -189,7 +189,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 create_time DESC;
 
                     """, nativeQuery = true)
-    Page<Object[]> getAllPosts(Pageable pageable);
+    Page<Object[]> getAllFriendsPosts(@Param("userIds") List<Integer> userIds , Pageable pageable);
 
     @Query(value = """
             SELECT

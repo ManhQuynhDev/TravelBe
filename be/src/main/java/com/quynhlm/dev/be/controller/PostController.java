@@ -63,17 +63,18 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        postService.insertPost(post, files, type);
+        Post postResponse = postService.insertPost(post, files, type);
 
-        ResponseObject<Boolean> result = new ResponseObject<>();
+        ResponseObject<Post> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
-        result.setData(true);
+        result.setStatus(true);
+        result.setData(postResponse);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
-    @GetMapping("")
-    public Page<PostResponseDTO> getAllPostsAndSharedPosts(Pageable pageable) {
-        return postService.getAllPostsAndSharedPosts(pageable);
+    @GetMapping("/friend_posts/{userId}")
+    public Page<PostResponseDTO> getAllPostsAndSharedPosts(@PathVariable Integer userId, Pageable pageable) {
+        return postService.getAllPostsAndSharedPosts(userId, pageable);
     }
 
     @GetMapping("/{post_id}")
@@ -81,15 +82,16 @@ public class PostController {
         ResponseObject<PostMediaDTO> result = new ResponseObject<>();
         result.setData(postService.getAnPost(post_id));
         result.setMessage("Get an post by " + post_id + " successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<PostMediaDTO>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{post_id}")
     public ResponseEntity<ResponseObject<?>> deleteStory(@PathVariable Integer post_id) {
         postService.deletePost(post_id);
-        ResponseObject<Boolean> result = new ResponseObject<>();
+        ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete post successfully");
-        result.setData(true);
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
@@ -99,9 +101,9 @@ public class PostController {
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @RequestPart(value = "type", required = false) String type) throws Exception {
         postService.updatePost(post_id, newPost, files, type);
-        ResponseObject<Boolean> result = new ResponseObject<>();
+        ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Update post successfully");
-        result.setData(true);
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
