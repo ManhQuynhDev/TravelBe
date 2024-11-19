@@ -42,6 +42,7 @@ public class FriendShipController {
         ResponseObject<Void> result = new ResponseObject<>();
         friendShipService.sendingRequestFriend(userSendId, userReceivedId);
         result.setMessage("Send request add friend successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
@@ -51,6 +52,7 @@ public class FriendShipController {
         ResponseObject<Void> result = new ResponseObject<>();
         friendShipService.acceptFriend(userSendId, userReceivedId, action);
         result.setMessage("Update accept friend successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
@@ -58,5 +60,16 @@ public class FriendShipController {
     public ResponseEntity<String> cancelFriend(@PathVariable Integer userSendId, @PathVariable Integer userReceivedId) {
         friendShipService.cancelFriends(userSendId, userReceivedId);
         return ResponseEntity.ok("Friendship canceled successfully.");
+    }
+    //ChangeStatus friends 
+
+    @PutMapping("/change-status/{userSendId}/{userReceivedId}/action")
+    public ResponseEntity<ResponseObject<Void>> changeStatus(@PathVariable Integer userSendId,
+            @PathVariable Integer userReceivedId, @RequestParam String action) {
+        ResponseObject<Void> result = new ResponseObject<>();
+        friendShipService.changeStatusFriend(userSendId, userReceivedId, action);
+        result.setMessage("Update status friend successfully");
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

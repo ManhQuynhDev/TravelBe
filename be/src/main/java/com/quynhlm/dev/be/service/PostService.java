@@ -131,7 +131,7 @@ public class PostService {
             return Page.empty();
         }
 
-        Page<Object[]> results = postRepository.getAllFriendsPosts(friendUserIds, pageable);
+        Page<Object[]> results = postRepository.getAllFriendsPosts(friendUserIds, userId, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
@@ -207,27 +207,24 @@ public class PostService {
 
     // Update post
 
-    public void updatePost(Integer post_id, Post newPost, List<MultipartFile> files, String newType)
+    public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files, String newType)
             throws PostNotFoundException, UnknownException {
         try {
-            // Tìm bài viết đã tồn tại
+
             Post foundPost = postRepository.getAnPost(post_id);
             if (foundPost == null) {
                 throw new PostNotFoundException(
                         "Id " + post_id + " not found or invalid data. Please try another!");
             }
 
-            if (newPost.getContent() != null) {
-                foundPost.setContent(newPost.getContent());
+            if (postRequestDTO.getContent() != null) {
+                foundPost.setContent(postRequestDTO.getContent());
             }
-            if (newPost.getLocation_id() != null) {
-                foundPost.setLocation_id(newPost.getLocation_id());
+            if (postRequestDTO.getLocation_id() != null) {
+                foundPost.setLocation_id(postRequestDTO.getLocation_id());
             }
-            if (newPost.getStatus() != null) {
-                foundPost.setStatus(newPost.getStatus());
-            }
-            if (newPost.getHastag() != null) {
-                foundPost.setHastag(newPost.getHastag());
+            if (postRequestDTO.getStatus() != null) {
+                foundPost.setStatus(postRequestDTO.getStatus());
             }
 
             // Nếu người dùng có tải lên các tệp tin mới

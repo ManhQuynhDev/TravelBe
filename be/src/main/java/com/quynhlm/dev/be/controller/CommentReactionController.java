@@ -28,6 +28,7 @@ public class CommentReactionController {
         ResponseObject<Void> result = new ResponseObject<>();
         commentReactionService.updateReaction(commentReaction);
         result.setMessage("Update reaction successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.service;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.FriendRequest;
@@ -104,8 +106,8 @@ public class FriendShipService {
                     "Transaction cannot be completed because userSendId and userReceivedId not status PENDING");
         }
 
-        if ("approve".equalsIgnoreCase(action)) {
-            foundFriendShip.setStatus("APPROVED");
+        if ("approved".equalsIgnoreCase(action)) {
+            foundFriendShip.setStatus("friend");
             notificationHelper.pushNotification(foundFriendShip.getUserSendId(), foundFriendShip.getUserReceivedId(),
                     "đã chấp nhận lời mời kết bạn", "Lời mời kết bạn được chấp nhận từ ");
         } else if ("reject".equalsIgnoreCase(action)) {
@@ -119,8 +121,21 @@ public class FriendShipService {
     }
 
     public void cancelFriends(int userSendId, int userReceivedId) throws UserAccountNotFoundException {
+
+        User userSending = userRepository.getAnUser(userSendId);
+        if (userSending == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user send request with " + userSendId + " not found , please try again !");
+        }
+
+        User userReceived = userRepository.getAnUser(userReceivedId);
+        if (userReceived == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user received with " + userReceivedId + " not found , please try again !");
+        }
+
         FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
-                userReceivedId, "APPROVED");
+                userReceivedId, "friend");
 
         if (foundFriendShip == null) {
             throw new UnknownException(
@@ -131,5 +146,40 @@ public class FriendShipService {
         friendShipRepository.delete(foundFriendShip);
         notificationHelper.pushNotification(foundFriendShip.getUserReceivedId(), foundFriendShip.getUserSendId(),
                 "đã hủy kết bạn với bạn", "Kết bạn đã bị hủy từ ");
+    }
+
+    public void changeStatusFriend(int userSendId, int userReceivedId, String action)
+            throws UserAccountNotFoundException, UnknownException {
+
+        User userSending = userRepository.getAnUser(userSendId);
+        if (userSending == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user send request with " + userSendId + " not found , please try again !");
+        }
+
+        User userReceived = userRepository.getAnUser(userReceivedId);
+        if (userReceived == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user received with " + userReceivedId + " not found , please try again !");
+        }
+
+        FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
+                userReceivedId, "friend");
+
+        if (foundFriendShip == null) {
+            throw new UnknownException(
+                    "Cannot complete transaction because there is no friendship between userSendId " + userSendId +
+                            " and userReceivedId " + userReceivedId);
+        }
+
+        String[] statusUser = { "Friend", "Following", "Blocked" };
+
+        Boolean isCheck = action == null || Arrays.asList(statusUser).contains(action);
+
+        if (isCheck == false) {
+            throw new MethodNotValidException("Invalid status user type. Please try again !");
+        }
+
+        foundFriendShip.setStatus(action);
     }
 }

@@ -38,6 +38,7 @@ public class ActivitiesController {
     public ResponseEntity<ResponseObject<Void>> deleteActivities(@PathVariable Integer id) {
         activitiesService.deleteActivities(id);
         ResponseObject<Void> result = new ResponseObject<>();
+        result.setStatus(true);
         result.setMessage("Delete activity successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
@@ -46,6 +47,7 @@ public class ActivitiesController {
     public ResponseEntity<ResponseObject<Void>> createActivities(@RequestBody Activities activities) {
         activitiesService.createActivities(activities);
         ResponseObject<Void> result = new ResponseObject<>();
+        result.setStatus(true);
         result.setMessage("Create a activities successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
@@ -55,6 +57,7 @@ public class ActivitiesController {
             @RequestBody Activities activities) {
         activitiesService.updateActivities(id, activities);
         ResponseObject<Void> result = new ResponseObject<>();
+        result.setStatus(true);
         result.setMessage("update activities successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }

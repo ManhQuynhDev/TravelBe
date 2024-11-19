@@ -44,6 +44,7 @@ public class CommentController {
         commentService.insertComment(comment, imageFile);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new comment successfully");
+        result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -52,6 +53,7 @@ public class CommentController {
         commentService.deleteComment(id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete comment successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
@@ -63,6 +65,7 @@ public class CommentController {
         commentService.updateComment(id, content, imageFile);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Update comment successfully");
+        result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -71,6 +74,7 @@ public class CommentController {
         ResponseObject<Comment> result = new ResponseObject<>();
         result.setMessage("Get an comment with id " + id + " successfully");
         result.setData(commentService.findAnComment(id));
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Comment>>(result, HttpStatus.OK);
     }
 
