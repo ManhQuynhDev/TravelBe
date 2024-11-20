@@ -30,7 +30,6 @@ public class PostResponseDTO {
     private Integer comment_count;
     private Integer share_count;
     private Integer isTag;
-
+    
     private List<UserTagPostResponse> tags;
-
 }

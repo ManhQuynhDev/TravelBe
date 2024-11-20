@@ -126,11 +126,7 @@ public class PostService {
         System.out.println("UserId :" + userId);
         System.out.println("Friends 2" + friendShips.size());
         System.out.println("Friends" + friendUserIds.size());
-
-        if (friendUserIds.isEmpty()) {
-            return Page.empty();
-        }
-
+        
         Page<Object[]> results = postRepository.getAllFriendsPosts(friendUserIds, userId, pageable);
 
         return results.map(row -> {

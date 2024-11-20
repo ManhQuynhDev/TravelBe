@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import java.util.List;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.requestDTO.ReplyRequestDTO;
 import com.quynhlm.dev.be.model.entity.Reply;
 import com.quynhlm.dev.be.service.ReplyService;
 
@@ -26,16 +28,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 @RestController
 public class ReplyController {
+    
     @Autowired
     private ReplyService replyService;
 
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Void>> insertReply(
-            @RequestPart("reply") Reply reply,
+    public ResponseEntity<ResponseObject<Reply>> insertReply(
+            @RequestPart("reply") String replyJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws UnknownException {
-        replyService.insertReply(reply, imageFile);
-        ResponseObject<Void> result = new ResponseObject<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ReplyRequestDTO reply = null;
+        try {
+            reply = objectMapper.readValue(replyJson, ReplyRequestDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Reply replyResponse = replyService.insertReply(reply, imageFile);
+        ResponseObject<Reply> result = new ResponseObject<>();
         result.setMessage("Create a new reply successfully");
+        result.setStatus(true);
+        result.setData(replyResponse);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

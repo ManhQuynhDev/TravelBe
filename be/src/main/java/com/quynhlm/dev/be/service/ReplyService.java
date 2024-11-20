@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.service;
 
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,15 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReplyNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.requestDTO.ReplyRequestDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Reply;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
+
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -37,9 +43,33 @@ public class ReplyService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     // Insert reply
-    public void insertReply(Reply reply, MultipartFile imageFile) throws UnknownException {
+    public Reply insertReply(ReplyRequestDTO replyRequestDTO, MultipartFile imageFile)
+            throws UserAccountNotFoundException, CommentNotFoundException, UnknownException {
         try {
+
+            User user = userRepository.getAnUser(replyRequestDTO.getUserId());
+            if (user == null) {
+                throw new UserAccountNotFoundException(
+                        "Found user with " + replyRequestDTO.getUserId() + " not found , please try with other id");
+            }
+
+            Comment foundComment = commentRepository.findComment(replyRequestDTO.getCommentId());
+            if (foundComment == null) {
+                throw new CommentNotFoundException(
+                        "Found comment with " + replyRequestDTO.getCommentId()
+                                + " not found , please try with other id");
+            }
+
+            Reply reply = new Reply();
+            reply.setCommentId(replyRequestDTO.getCommentId());
+            reply.setUserId(replyRequestDTO.getUserId());
+            reply.setContent(replyRequestDTO.getContent());
+            reply.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
+            
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
                 long imageFileSize = imageFile.getSize();
@@ -63,6 +93,7 @@ public class ReplyService {
             }
 
             isSuccess(reply);
+            return reply;
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {

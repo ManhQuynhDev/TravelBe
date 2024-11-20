@@ -24,4 +24,5 @@ public class Reply {
     private String url;
     private int commentId;
     private int userId;
+    private String create_time;
 }

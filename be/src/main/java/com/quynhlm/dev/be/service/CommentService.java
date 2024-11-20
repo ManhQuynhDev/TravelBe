@@ -3,6 +3,8 @@ package com.quynhlm.dev.be.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,9 +18,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.requestDTO.CommentRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.repositories.CommentRepository;
+import com.quynhlm.dev.be.repositories.ReplyRepository;
 
 @Service
 public class CommentService {
@@ -29,6 +34,9 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private ReplyRepository replyRepository;
+
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
@@ -37,8 +45,22 @@ public class CommentService {
         return commentRepository.findAll(pageable);
     }
 
-    public void insertComment(Comment comment, MultipartFile imageFile) throws UnknownException {
+    public void insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile) throws UnknownException {
         try {
+
+            Comment comment = new Comment();
+            comment.setContent(commentRequestDTO.getContent());
+            comment.setUserId(commentRequestDTO.getUserId());
+            if (commentRequestDTO.getPostId() != null) {
+                comment.setPostId(commentRequestDTO.getPostId());
+            }
+
+            if (commentRequestDTO.getShareId() != null) {
+                comment.setShareId(commentRequestDTO.getShareId());
+            }
+
+            comment.setType(commentRequestDTO.getType());
+
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
                 long imageFileSize = imageFile.getSize();
@@ -128,12 +150,60 @@ public class CommentService {
             comment.setFullname((String) row[2]);
             comment.setAvatar((String) row[3]);
             comment.setContent((String) row[4]);
-            comment.setPostId(((Number) row[5]).intValue());
-            comment.setCreate_time((String) row[6]);
-            comment.setReaction_count(((Number) row[7]).intValue());
-            comment.setReply_count(((Number) row[8]).intValue());
+            comment.setPostId(row[5] != null ? ((Number) row[5]).intValue() : null);
+            comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
+            comment.setCreate_time((String) row[7]);
+            comment.setReaction_count(((Number) row[8]).intValue());
+            comment.setReply_count(((Number) row[9]).intValue());
+
+             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+                List<ReplyResponseDTO> responses = rawResults.stream()
+                        .map(r -> new ReplyResponseDTO(
+                                ((Number) r[0]).intValue(),
+                                ((Number) r[1]).intValue(),
+                                ((Number) r[2]).intValue(),
+                                (String) r[3],
+                                (String) r[4],
+                                (String) r[5],
+                                (String) r[6]))
+                        .collect(Collectors.toList());
+
+            comment.setReplys(responses);
             return comment;
         });
     }
 
+    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
+
+        return results.map(row -> {
+            CommentResponseDTO comment = new CommentResponseDTO();
+            comment.setCommentId(((Number) row[0]).intValue());
+            comment.setOwnerId(((Number) row[1]).intValue());
+            comment.setFullname((String) row[2]);
+            comment.setAvatar((String) row[3]);
+            comment.setContent((String) row[4]);
+            comment.setPostId(row[5] != null ? ((Number) row[5]).intValue() : null);
+            comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
+            comment.setCreate_time((String) row[7]);
+            comment.setReaction_count(((Number) row[8]).intValue());
+            comment.setReply_count(((Number) row[9]).intValue());
+
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+                List<ReplyResponseDTO> responses = rawResults.stream()
+                        .map(r -> new ReplyResponseDTO(
+                                ((Number) r[0]).intValue(),
+                                ((Number) r[1]).intValue(),
+                                ((Number) r[2]).intValue(),
+                                (String) r[3],
+                                (String) r[4],
+                                (String) r[5],
+                                (String) r[6]))
+                        .collect(Collectors.toList());
+
+            comment.setReplys(responses);
+            return comment;
+        });
+    }
 }
