@@ -57,7 +57,7 @@ public class MemberController {
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getGroupMemberJoin(userId, page, size);
     }
-
+    
     // Get
     @GetMapping("/{groupId}/status")
     public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,

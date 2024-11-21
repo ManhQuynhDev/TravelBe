@@ -32,7 +32,7 @@ public class TravelPlanService {
     @Autowired
     private MemberPlanService memberPlanService;
 
-    public void addTravelPlan(Travel_Plan travelPlan) throws UserAccountNotFoundException, UnknownException {
+    public Travel_Plan addTravelPlan(Travel_Plan travelPlan) throws UserAccountNotFoundException, UnknownException {
 
         User foundUser = userRepository.getAnUser(travelPlan.getUser_id());
         if (foundUser == null) {
@@ -51,6 +51,7 @@ public class TravelPlanService {
             member.setPlanId(saveTravelPlan.getId());
             member.setRole(GroupRole.ADMIN.name());
             memberPlanService.setAdminPlan(member);
+            return saveTravelPlan;
         }
     }
 

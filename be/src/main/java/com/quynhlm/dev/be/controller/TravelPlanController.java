@@ -34,10 +34,12 @@ public class TravelPlanController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Void>> createTravelPlan(@RequestBody Travel_Plan travel_Plan) {
-        ResponseObject<Void> result = new ResponseObject<>();
-        travelPlanService.addTravelPlan(travel_Plan);
+    public ResponseEntity<ResponseObject<Travel_Plan>> createTravelPlan(@RequestBody Travel_Plan travel_Plan) {
+        ResponseObject<Travel_Plan> result = new ResponseObject<>();
+        Travel_Plan planResponse = travelPlanService.addTravelPlan(travel_Plan);
         result.setMessage("Create a new travel successfully");
+        result.setStatus(true);
+        result.setData(planResponse);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -46,6 +48,7 @@ public class TravelPlanController {
         travelPlanService.deleteTravelPlan(id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete travelPlan successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
