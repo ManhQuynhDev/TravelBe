@@ -17,6 +17,7 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.model.entity.User;
@@ -164,6 +165,24 @@ public class MemberService {
             object.setRole((String) row[8]);
             object.setJoin_time((String) row[9]);
             object.setMember_count(((Number) row[10]).intValue());
+            return object;
+        });
+    }
+
+    public Page<MemberResponseDTO> getListMemberFromGroup(Integer groupId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = memberRepository.foundUserJoinGroup(groupId, pageable);
+
+        return results.map(row -> {
+            MemberResponseDTO object = new MemberResponseDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setGroupId(((Number) row[1]).intValue());
+            object.setMemberId(((Number) row[2]).intValue());
+            object.setFullname(((String) row[3]));
+            object.setAvatar_url((String) row[4]);
+            object.setRole((String) row[5]);
+            object.setJoin_time((String) row[6]);
+            object.setJoined(true);
             return object;
         });
     }

@@ -36,23 +36,24 @@
             }
 
             const postData = {
-                name,
+                content,
                 status: "PUBLIC",
-                user_id: 1
+                user_id: 1,
+                post_id: 2,
             };
 
             const formData = new FormData();
-            formData.append("group", JSON.stringify(postData));
+            formData.append("comment", JSON.stringify(postData));
             formData.append("file", file);
 
-            fetch("http://localhost:8080/api/groups", {
+            fetch("http://localhost:8080/api/comments", {
                 method: "POST",
                 headers: {
                     Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbiIsImV4cCI6MTczMjAwNjg0NiwiaWF0IjoxNzMxOTIwNDQ2LCJzY29wZSI6IkFETUlOIn0.k6dTnnU1Xx7sn_5mA5KnHriTDBBDscIzMrUPyDi0cC_sWWHUurWFVoH7ancVDXoh5EpnMED2W_CaGT2IdQLH8g",
                 },
                 body: formData,
             })
-                .then(response => {
+                .then(response => { 
                     if (!response.ok) {
                         throw new Error("Failed to create post");
                     }

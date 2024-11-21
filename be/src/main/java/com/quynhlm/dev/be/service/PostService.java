@@ -128,10 +128,11 @@ public class PostService {
         System.out.println("Friends 2" + friendShips.size());
         System.out.println("Friends" + friendUserIds.size());
 
-        Page<Object[]> results = postRepository.getAllPostsExceptFriends(friendUserIds, userId,pageable);
+        Page<Object[]> results = postRepository.getAllPostsExceptFriends(friendUserIds, userId, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
+
             post.setOwnerId(((Number) row[0]).intValue());
             post.setPostId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());

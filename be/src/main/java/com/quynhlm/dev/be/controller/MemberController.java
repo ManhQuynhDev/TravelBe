@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.service.MemberService;
 
@@ -30,6 +31,16 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+    // Found memment join groups
+    @GetMapping("/member-join-group/{groupId}")
+    public Page<MemberResponseDTO> foundMemberJoinGroup(
+            @PathVariable Integer groupId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return memberService.getListMemberFromGroup(groupId, page, size);
+    }
+
+    // There are groups user create
     @GetMapping("/user-create/{userId}")
     public Page<GroupResponseDTO> getAllListGroups(
             @PathVariable Integer userId,
