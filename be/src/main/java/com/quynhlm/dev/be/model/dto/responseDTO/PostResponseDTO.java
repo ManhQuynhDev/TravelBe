@@ -1,20 +1,15 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
 import java.util.List;
-
-import com.quynhlm.dev.be.model.entity.Media;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostResponseDTO {
-
     private Integer ownerId;
     private Integer postId;
     private Integer locationId;

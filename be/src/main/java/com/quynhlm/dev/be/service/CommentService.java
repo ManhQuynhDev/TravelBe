@@ -156,17 +156,18 @@ public class CommentService {
             comment.setReaction_count(((Number) row[8]).intValue());
             comment.setReply_count(((Number) row[9]).intValue());
 
-             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
-                List<ReplyResponseDTO> responses = rawResults.stream()
-                        .map(r -> new ReplyResponseDTO(
-                                ((Number) r[0]).intValue(),
-                                ((Number) r[1]).intValue(),
-                                ((Number) r[2]).intValue(),
-                                (String) r[3],
-                                (String) r[4],
-                                (String) r[5],
-                                (String) r[6]))
-                        .collect(Collectors.toList());
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+            List<ReplyResponseDTO> responses = rawResults.stream()
+                    .map(r -> new ReplyResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6],
+                            ((Number) r[7]).intValue()))
+                    .collect(Collectors.toList());
 
             comment.setReplys(responses);
             return comment;
@@ -191,16 +192,17 @@ public class CommentService {
             comment.setReply_count(((Number) row[9]).intValue());
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
-                List<ReplyResponseDTO> responses = rawResults.stream()
-                        .map(r -> new ReplyResponseDTO(
-                                ((Number) r[0]).intValue(),
-                                ((Number) r[1]).intValue(),
-                                ((Number) r[2]).intValue(),
-                                (String) r[3],
-                                (String) r[4],
-                                (String) r[5],
-                                (String) r[6]))
-                        .collect(Collectors.toList());
+            List<ReplyResponseDTO> responses = rawResults.stream()
+                    .map(r -> new ReplyResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6],
+                            ((Number) r[7]).intValue()))
+                    .collect(Collectors.toList());
 
             comment.setReplys(responses);
             return comment;

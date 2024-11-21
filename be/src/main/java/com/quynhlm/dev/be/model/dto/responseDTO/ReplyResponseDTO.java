@@ -18,4 +18,5 @@ public class ReplyResponseDTO {
     private String avatar;
     private String content;
     private String create_time;
+    private Integer reaction_count;
 }
