@@ -113,6 +113,7 @@ public class PostService {
             throws UserAccountNotFoundException {
 
         User foundUser = userRepository.getAnUser(userId);
+
         if (foundUser == null) {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
         }
@@ -126,8 +127,8 @@ public class PostService {
         System.out.println("UserId :" + userId);
         System.out.println("Friends 2" + friendShips.size());
         System.out.println("Friends" + friendUserIds.size());
-        
-        Page<Object[]> results = postRepository.getAllFriendsPosts(friendUserIds, userId, pageable);
+
+        Page<Object[]> results = postRepository.getAllPostsExceptFriends(friendUserIds, userId,pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
@@ -137,19 +138,22 @@ public class PostService {
             post.setAdminName((String) row[3]);
             post.setAvatarUrl((String) row[4]);
             post.setContent((String) row[5]);
-            post.setMediaUrl((String) row[6]);
-            post.setHastag((String) row[7]);
-            post.setStatus((String) row[8]);
-            post.setType((String) row[9]);
-            post.setIsShare(((Number) row[10]).intValue());
-            post.setCreate_time((String) row[11]);
-            post.setShare_by_user(row[12] != null ? ((Number) row[12]).intValue() : null);
-            post.setReaction_count(((Number) row[13]).intValue());
-            post.setComment_count(((Number) row[14]).intValue());
-            post.setShare_count(((Number) row[15]).intValue());
-            post.setIsTag(((Number) row[16]).intValue());
+            post.setHastag((String) row[6]);
+            post.setStatus((String) row[7]);
+            post.setType((String) row[8]);
+            post.setIsShare(((Number) row[9]).intValue());
+            post.setCreate_time((String) row[10]);
+            post.setShare_by_user(row[11] != null ? ((Number) row[11]).intValue() : null);
+            post.setReaction_count(((Number) row[12]).intValue());
+            post.setComment_count(((Number) row[13]).intValue());
+            post.setShare_count(((Number) row[14]).intValue());
+            post.setIsTag(((Number) row[15]).intValue());
 
-            if (((Number) row[16]).intValue() >= 1) {
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+
+            post.setMediaUrls(medias);
+
+            if (((Number) row[15]).intValue() >= 1) {
                 List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number) row[1]).intValue());
                 List<UserTagPostResponse> responses = rawResults.stream()
                         .map(u -> new UserTagPostResponse(
@@ -290,6 +294,5 @@ public class PostService {
             return post;
         });
     }
-
     // Feature Search
 }

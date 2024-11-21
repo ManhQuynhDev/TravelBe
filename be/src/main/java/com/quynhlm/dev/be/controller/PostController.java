@@ -73,7 +73,8 @@ public class PostController {
     }
 
     @GetMapping("/friend_posts/{userId}")
-    public Page<PostResponseDTO> getAllPostsAndSharedPosts(@PathVariable Integer userId, Pageable pageable) {
+    public Page<PostResponseDTO> getAllPostsAndSharedPosts(@PathVariable Integer userId,
+            Pageable pageable) {
         return postService.getAllPostsAndSharedPosts(userId, pageable);
     }
 

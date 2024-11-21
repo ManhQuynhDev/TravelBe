@@ -100,275 +100,187 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             """, nativeQuery = true)
     Page<Object[]> getAllPostsAndSharedPosts(Pageable pageable);
 
-    // @Query(value = """
-    // (
-    // SELECT
-    // p.user_id AS owner_id,
-    // p.id AS post_id,
-    // p.location_id,
-    // a.fullname AS admin_name,
-    // a.avatar_url,
-    // p.content,
-    // m.media_url,
-    // p.hastag,
-    // p.status,
-    // m.type,
-    // 0 AS isShare,
-    // p.create_time,
-    // NULL AS share_by_user,
-    // COUNT(DISTINCT r.id) AS reaction_count,
-    // COUNT(DISTINCT c.id) AS comment_count,
-    // COUNT(DISTINCT s2.id) AS share_count,
-    // CASE
-    // WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-    // ELSE 0
-    // END AS isTag
-    // FROM
-    // Post p
-    // INNER JOIN
-    // Media m ON p.id = m.post_id
-    // LEFT JOIN
-    // post_reaction r ON p.id = r.post_id
-    // LEFT JOIN
-    // comment c ON p.id = c.post_id AND c.type = "POST"
-    // LEFT JOIN
-    // share s2 ON p.id = s2.post_id
-    // LEFT JOIN
-    // User a ON p.user_id = a.id
-    // WHERE
-    // p.status = 'PUBLIC' AND a.id IN (:userIds)
-    // GROUP BY
-    // p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url,
-    // m.type, p.create_time, a.fullname, a.avatar_url
-    // )
-
-    // UNION ALL
-
-    // (
-    // SELECT
-    // p.user_id AS owner_id,
-    // p.id AS post_id,
-    // p.location_id,
-    // a.fullname AS admin_name,
-    // a.avatar_url ,
-    // p.content,
-    // m.media_url,
-    // p.hastag,
-    // p.status,
-    // m.type,
-    // 1 AS isShare,
-    // s.create_time,
-    // s.user_id AS share_by_user,
-    // COUNT(DISTINCT sr.id) AS reaction_count,
-    // COUNT(DISTINCT c.id) AS comment_count,
-    // COUNT(DISTINCT s2.id) AS share_count,
-    // CASE
-    // WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-    // ELSE 0
-    // END AS isTag
-    // FROM
-    // Share s
-    // INNER JOIN
-    // Post p ON s.post_id = p.id
-    // INNER JOIN
-    // Media m ON p.id = m.post_id
-    // LEFT JOIN
-    // share_post_reaction sr ON s.id = sr.share_id
-    // LEFT JOIN
-    // comment c ON p.id = c.post_id AND c.type = "SHARE"
-    // LEFT JOIN
-    // share s2 ON p.id = s2.post_id
-    // LEFT JOIN
-    // User a ON p.user_id = a.id
-    // WHERE
-    // p.status = 'PUBLIC' and a.id IN (:userIds)
-    // GROUP BY
-    // p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url,
-    // m.type, p.create_time, a.fullname, a.avatar_url
-    // )
-
-    // ORDER BY
-    // create_time DESC;
-
-    // """, nativeQuery = true)
-    // Page<Object[]> getAllFriendsPosts(@Param("userIds") List<Integer> userIds ,
-    // Pageable pageable);
-
+    
     @Query(value = """
-            SELECT * FROM (
-                -- Top 10 bài viết có reaction_count cao nhất
-                (
-                    SELECT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.location_id,
-                        a.fullname AS admin_name,
-                        a.avatar_url,
-                        p.content,
-                        m.media_url,
-                        p.hastag,
-                        p.status,
-                        m.type,
-                        0 AS isShare,
-                        p.create_time,
-                        NULL AS share_by_user,
-                        COUNT(DISTINCT r.id) AS reaction_count,
-                        COUNT(DISTINCT c.id) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count,
-                        CASE
-                            WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-                            ELSE 0
-                        END AS isTag
-                    FROM
-                        Post p
-                    INNER JOIN
-                        Media m ON p.id = m.post_id
-                    LEFT JOIN
-                        post_reaction r ON p.id = r.post_id
-                    LEFT JOIN
-                        comment c ON p.id = c.post_id
-                    LEFT JOIN
-                        share s2 ON p.id = s2.post_id
-                    LEFT JOIN
-                        User a ON p.user_id = a.id
-                    WHERE
-                        p.status = 'PUBLIC'
-                    GROUP BY
-                        p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
-                    ORDER BY
-                        COUNT(DISTINCT r.id) DESC
-                    LIMIT 10
-                )
-                UNION ALL
-                -- Bài viết của bạn bè
-                (
-                    SELECT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.location_id,
-                        a.fullname AS admin_name,
-                        a.avatar_url,
-                        p.content,
-                        m.media_url,
-                        p.hastag,
-                        p.status,
-                        m.type,
-                        0 AS isShare,
-                        p.create_time,
-                        NULL AS share_by_user,
-                        COUNT(DISTINCT r.id) AS reaction_count,
-                        COUNT(DISTINCT c.id) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count,
-                        CASE
-                            WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-                            ELSE 0
-                        END AS isTag
-                    FROM
-                        Post p
-                    INNER JOIN
-                        Media m ON p.id = m.post_id
-                    LEFT JOIN
-                        post_reaction r ON p.id = r.post_id
-                    LEFT JOIN
-                        comment c ON p.id = c.post_id AND c.type = 'POST'
-                    LEFT JOIN
-                        share s2 ON p.id = s2.post_id
-                    LEFT JOIN
-                        User a ON p.user_id = a.id
-                    WHERE
-                        p.status = 'PUBLIC' AND a.id IN (:userIds)
-                    GROUP BY
-                        p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
-                )
-                UNION ALL
-                -- Bài viết được chia sẻ bởi bạn bè
-                (
-                    SELECT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.location_id,
-                        a.fullname AS admin_name,
-                        a.avatar_url,
-                        p.content,
-                        m.media_url,
-                        p.hastag,
-                        p.status,
-                        m.type,
-                        1 AS isShare,
-                        s.create_time,
-                        s.user_id AS share_by_user,
-                        COUNT(DISTINCT sr.id) AS reaction_count,
-                        COUNT(DISTINCT c.id) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count,
-                        CASE
-                            WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-                            ELSE 0
-                        END AS isTag
-                    FROM
-                        Share s
-                    INNER JOIN
-                        Post p ON s.post_id = p.id
-                    INNER JOIN
-                        Media m ON p.id = m.post_id
-                    LEFT JOIN
-                        share_post_reaction sr ON s.id = sr.share_id
-                    LEFT JOIN
-                        comment c ON p.id = c.post_id AND c.type = 'SHARE'
-                    LEFT JOIN
-                        share s2 ON p.id = s2.post_id
-                    LEFT JOIN
-                        User a ON p.user_id = a.id
-                    WHERE
-                        p.status = 'PUBLIC' AND a.id IN (:userIds)
-                    GROUP BY
-                        p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
-                )
-                UNION ALL
-                -- Bài viết của chủ bài viết
-                (
-                    SELECT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.location_id,
-                        a.fullname AS admin_name,
-                        a.avatar_url,
-                        p.content,
-                        m.media_url,
-                        p.hastag,
-                        p.status,
-                        m.type,
-                        0 AS isShare,
-                        p.create_time,
-                        NULL AS share_by_user,
-                        COUNT(DISTINCT r.id) AS reaction_count,
-                        COUNT(DISTINCT c.id) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count,
-                        CASE
-                            WHEN EXISTS (SELECT 1 FROM tag t WHERE t.post_id = p.id) THEN 1
-                            ELSE 0
-                        END AS isTag
-                    FROM
-                        Post p
-                    INNER JOIN
-                        Media m ON p.id = m.post_id
-                    LEFT JOIN
-                        post_reaction r ON p.id = r.post_id
-                    LEFT JOIN
-                        comment c ON p.id = c.post_id
-                    LEFT JOIN
-                        share s2 ON p.id = s2.post_id
-                    LEFT JOIN
-                        User a ON p.user_id = a.id
-                    WHERE
-                        p.user_id = :userId
-                    GROUP BY
-                        p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.media_url, m.type, p.create_time, a.fullname, a.avatar_url
-                )
-            ) AS posts
-            ORDER BY create_time DESC
-            """, nativeQuery = true)
-    Page<Object[]> getAllFriendsPosts(@Param("userIds") List<Integer> userIds, @Param("userId") Integer userId,
-            Pageable pageable);
+    WITH top_posts AS (
+        SELECT
+            p.id AS post_id
+        FROM
+            Post p
+        LEFT JOIN
+            post_reaction r ON p.id = r.post_id
+        WHERE
+            p.status = 'PUBLIC'
+            AND p.user_id NOT IN (:userIds) -- Loại trừ bài viết của bạn bè
+        GROUP BY
+            p.id
+        ORDER BY
+            COUNT(DISTINCT r.id) DESC
+        LIMIT 10
+    )
+    SELECT * FROM (
+        -- Top 10 bài viết có reaction_count cao nhất (không phải của bạn bè)
+        (
+            SELECT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content,
+                p.hastag,
+                p.status,
+                m.type,
+                0 AS isShare,
+                p.create_time,
+                NULL AS share_by_user,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                (SELECT COUNT(*) FROM tag t WHERE t.post_id = p.id) AS isTag
+            FROM
+                Post p
+            INNER JOIN
+                Media m ON p.id = m.post_id
+            LEFT JOIN
+                post_reaction r ON p.id = r.post_id
+            LEFT JOIN
+                comment c ON p.id = c.post_id
+            LEFT JOIN
+                share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                User a ON p.user_id = a.id
+            WHERE
+                p.status = 'PUBLIC'
+                AND p.user_id NOT IN (:userIds)
+                AND p.id NOT IN (SELECT post_id FROM top_posts)
+            GROUP BY
+                p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url
+            ORDER BY
+                COUNT(DISTINCT r.id) DESC
+            LIMIT 10
+        )
+        UNION ALL
+        (
+            SELECT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content,
+                p.hastag,
+                p.status,
+                m.type,
+                0 AS isShare,
+                p.create_time,
+                NULL AS share_by_user,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                (SELECT COUNT(*) FROM tag t WHERE t.post_id = p.id) AS isTag
+            FROM
+                Post p
+            INNER JOIN
+                Media m ON p.id = m.post_id
+            LEFT JOIN
+                post_reaction r ON p.id = r.post_id
+            LEFT JOIN
+                comment c ON p.id = c.post_id AND c.type = 'POST'
+            LEFT JOIN
+                share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                User a ON p.user_id = a.id
+            WHERE
+                p.status = 'PUBLIC' AND a.id IN (:userIds)
+                AND p.id NOT IN (SELECT post_id FROM top_posts)
+            GROUP BY
+                p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url
+        )
+        UNION ALL
+        (
+            SELECT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content,
+                p.hastag,
+                p.status,
+                m.type,
+                1 AS isShare,
+                s.create_time,
+                s.user_id AS share_by_user,
+                COUNT(DISTINCT sr.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                (SELECT COUNT(*) FROM tag t WHERE t.post_id = p.id) AS isTag
+            FROM
+                Share s
+            INNER JOIN
+                Post p ON s.post_id = p.id
+            INNER JOIN
+                Media m ON p.id = m.post_id
+            LEFT JOIN
+                share_post_reaction sr ON s.id = sr.share_id
+            LEFT JOIN
+                comment c ON p.id = c.post_id AND c.type = 'SHARE'
+            LEFT JOIN
+                share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                User a ON p.user_id = a.id
+            WHERE
+                p.status = 'PUBLIC' AND a.id IN (:userIds)
+                AND p.id NOT IN (SELECT post_id FROM top_posts)
+            GROUP BY
+                p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url
+        )
+        UNION ALL
+        -- Bài viết của chủ bài viết
+        (
+            SELECT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content,
+                p.hastag,
+                p.status,
+                m.type,
+                0 AS isShare,
+                p.create_time,
+                NULL AS share_by_user,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                (SELECT COUNT(*) FROM tag t WHERE t.post_id = p.id) AS isTag
+            FROM
+                Post p
+            INNER JOIN
+                Media m ON p.id = m.post_id
+            LEFT JOIN
+                post_reaction r ON p.id = r.post_id
+            LEFT JOIN
+                comment c ON p.id = c.post_id
+            LEFT JOIN
+                share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                User a ON p.user_id = a.id
+            WHERE
+                p.user_id = :userId
+                AND p.id NOT IN (SELECT post_id FROM top_posts) -- Loại trừ các bài viết trong top 10
+            GROUP BY
+                p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url
+        )
+    ) AS posts
+    ORDER BY create_time DESC
+""", nativeQuery = true)
+Page<Object[]> getAllPostsExceptFriends(@Param("userIds") List<Integer> userIds, @Param("userId") Integer userId,
+        Pageable pageable);
+
+    
 
     // Get all post type video
 
