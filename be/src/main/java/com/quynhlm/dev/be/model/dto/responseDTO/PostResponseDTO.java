@@ -10,8 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostResponseDTO {
-    private Integer ownerId;
+    
     private Integer postId;
+    private Integer ownerId;
     private Integer locationId;
     private String adminName;
     private String avatarUrl;

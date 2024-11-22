@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MemberResponseDTO {
+
+public class MemberPlanResponse {
     private Integer userId;
-    private Integer groupId;
+    private Integer planId;
     private Integer memberId;
     private String fullname;
     private String avatar_url;

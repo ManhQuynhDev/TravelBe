@@ -17,13 +17,19 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
+import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.CommentRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
+import com.quynhlm.dev.be.model.entity.Post;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
+import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
 public class CommentService {
@@ -37,6 +43,12 @@ public class CommentService {
     @Autowired
     private ReplyRepository replyRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
@@ -45,8 +57,21 @@ public class CommentService {
         return commentRepository.findAll(pageable);
     }
 
-    public void insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile) throws UnknownException {
+    public void insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
+            throws UnknownException, PostNotFoundException, UserAccountNotFoundException {
         try {
+
+            Post foundPost = postRepository.getAnPost(commentRequestDTO.getPostId());
+            if (foundPost == null) {
+                throw new PostNotFoundException(
+                        "Found post with " + commentRequestDTO.getPostId() + " not found please try again");
+            }
+
+            User foundUser = userRepository.getAnUser(commentRequestDTO.getUserId());
+            if (foundUser == null) {
+                throw new UserAccountNotFoundException(
+                        "Found user with " + commentRequestDTO.getUserId() + " not found please try again");
+            }
 
             Comment comment = new Comment();
             comment.setContent(commentRequestDTO.getContent());
@@ -174,7 +199,14 @@ public class CommentService {
         });
     }
 
-    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, int page, int size) {
+    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, int page, int size)
+            throws PostNotFoundException {
+
+        Post foundPost = postRepository.getAnPost(postId);
+        if (foundPost == null) {
+            throw new PostNotFoundException("Found post with " + postId + " not found please try again");
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
 
@@ -204,6 +236,11 @@ public class CommentService {
                             ((Number) r[7]).intValue()))
                     .collect(Collectors.toList());
 
+            if (foundPost.getUser_id() == ((Number) row[1]).intValue()) {
+                comment.setIsAuthor(true);
+            } else {
+                comment.setIsAuthor(false);
+            }
             comment.setReplys(responses);
             return comment;
         });

@@ -280,8 +280,9 @@ public class PostService {
 
         return results.map(row -> {
             VideoPostDTO post = new VideoPostDTO();
-            post.setOwnerId(((Number) row[0]).intValue());
-            post.setPostId(((Number) row[1]).intValue());
+            
+            post.setPostId(((Number) row[0]).intValue());
+            post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
             post.setContent((String) row[3]);
             post.setStatus((String) row[4]);

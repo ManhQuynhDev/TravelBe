@@ -93,4 +93,21 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             where m.group_id  = :groupId;
                                     """, nativeQuery = true)
     Page<Object[]> foundMemberJoinGroup(@Param("groupId") Integer groupId, Pageable pageable);
+
+    @Query(value = """
+                select
+                u.id as user_id,
+                g.id as group_id,
+                m.id as member_id,
+                u.fullname,
+                u.avatar_url,
+                m.role,
+                m.join_time
+             from member m
+            inner join m_group g on g.id = m.group_id
+            inner join user u on u.id = m.user_id
+            where m.group_id  = :groupId;
+                                    """, nativeQuery = true)
+    List<Object[]> getMemberJoinGroup(@Param("groupId") Integer groupId);
+
 }

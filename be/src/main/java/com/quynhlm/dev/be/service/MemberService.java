@@ -182,7 +182,6 @@ public class MemberService {
             object.setAvatar_url((String) row[4]);
             object.setRole((String) row[5]);
             object.setJoin_time((String) row[6]);
-            object.setJoined(true);
             return object;
         });
     }

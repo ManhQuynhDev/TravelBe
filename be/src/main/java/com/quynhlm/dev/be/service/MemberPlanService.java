@@ -93,7 +93,7 @@ public class MemberPlanService {
         }
     }
 
-    //Get plan with status
+    // Get plan with status
     public Page<MemberPlan> getRequestToJoinPlans(Integer planId, String status, int page, int size)
             throws TravelPlanNotFoundException {
         Travel_Plan foundPlan = travelPlanRepository.getAnTravel_Plan(planId);
@@ -105,7 +105,7 @@ public class MemberPlanService {
         return memberPlanRepository.getRequestToJoinPlan(planId, status, pageable);
     }
 
-    //Update status user join plan
+    // Update status user join plan
     public void updateMemberStatus(int planId, int memberSendRequestId, int managerId, String action)
             throws TravelPlanNotFoundException, UserAccountNotFoundException, UnknownException {
 

@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +20,5 @@ public class PlanResponseDTO {
     private String status;
     private String create_time;
     private Integer member_count;
+    private List<MemberPlanResponse> userJoined;
 }

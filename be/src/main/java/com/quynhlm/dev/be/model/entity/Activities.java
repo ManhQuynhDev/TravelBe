@@ -20,6 +20,7 @@ public class Activities {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private int user_id;//admin
     private int planId;
     private int locationId;
     private String name;
@@ -28,4 +29,4 @@ public class Activities {
     private double cost;
     private String status;
     private String create_time;
-}
+}   

@@ -33,6 +33,14 @@ public class TravelPlanController {
         return travelPlanService.getAllPlans(page, size);
     }
 
+    @GetMapping("/by-group-id/{groupId}")
+    public Page<PlanResponseDTO> getAllPlanWithGroupId(
+            @PathVariable Integer groupId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return travelPlanService.getAllPlansWithGroupId(groupId, page, size);
+    }
+
     @PostMapping("")
     public ResponseEntity<ResponseObject<Travel_Plan>> createTravelPlan(@RequestBody Travel_Plan travel_Plan) {
         ResponseObject<Travel_Plan> result = new ResponseObject<>();
@@ -51,5 +59,4 @@ public class TravelPlanController {
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
-
 }
