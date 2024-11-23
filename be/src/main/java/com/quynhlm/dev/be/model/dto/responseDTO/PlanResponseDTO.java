@@ -16,6 +16,8 @@ public class PlanResponseDTO {
     private Integer adminId;
     private String plan_name;
     private String admin_name;
+    private String start_date;
+    private String end_date;
     private String description;
     private String status;
     private String create_time;

@@ -95,10 +95,12 @@ public class TravelPlanService {
             group.setAdminId(((Number) row[1]).intValue());
             group.setPlan_name((String) row[2]);
             group.setAdmin_name((String) row[3]);
-            group.setDescription((String) row[4]);
-            group.setStatus((String) row[5]);
-            group.setCreate_time((String) row[6]);
-            group.setMember_count(((Number) row[7]).intValue());
+            group.setStart_date((String) row[4]);
+            group.setEnd_date((String) row[5]);
+            group.setDescription((String) row[6]);
+            group.setStatus((String) row[7]);
+            group.setCreate_time((String) row[8]);
+            group.setMember_count(((Number) row[9]).intValue());
 
             List<Object[]> rawResults = memberPlanRepository.foundMemberJoinPlan(((Number) row[0]).intValue());
             List<MemberPlanResponse> responses = rawResults.stream()
@@ -137,10 +139,12 @@ public class TravelPlanService {
             group.setAdminId(((Number) row[1]).intValue());
             group.setPlan_name((String) row[2]);
             group.setAdmin_name((String) row[3]);
-            group.setDescription((String) row[4]);
-            group.setStatus((String) row[5]);
-            group.setCreate_time((String) row[6]);
-            group.setMember_count(((Number) row[7]).intValue());
+            group.setStart_date((String) row[4]);
+            group.setEnd_date((String) row[5]);
+            group.setDescription((String) row[6]);
+            group.setStatus((String) row[7]);
+            group.setCreate_time((String) row[8]);
+            group.setMember_count(((Number) row[9]).intValue());
 
             List<Object[]> rawResults = memberPlanRepository.foundMemberJoinPlan(((Number) row[0]).intValue());
             List<MemberPlanResponse> responses = rawResults.stream()
