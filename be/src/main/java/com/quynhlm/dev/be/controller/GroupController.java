@@ -44,7 +44,7 @@ public class GroupController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject<Group>> getAnGroup(@PathVariable Integer id) {
         ResponseObject<Group> result = new ResponseObject<>();
-        result.setMessage("Delete group with " + id + "successfully");
+        result.setMessage("Get group with " + id + "successfully");
         result.setStatus(true);
         result.setData(groupService.getAnGroupWithId(id));
         return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);

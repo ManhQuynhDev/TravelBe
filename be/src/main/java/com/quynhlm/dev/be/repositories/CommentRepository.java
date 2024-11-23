@@ -31,7 +31,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
               inner join user u on u.id = c.user_id
               left join comment_reaction cr on cr.comment_id = c.id
               left join reply r on r.comment_id = c.id
-              group by c.id , u.id , r.id , cr.id
+              group by c.id , u.id , r.id , cr.id ,c.post_id
               having c.post_id = :postId;
                                       """, nativeQuery = true)
     Page<Object[]> fetchCommentWithPostId(Pageable pageable, @Param("postId") Integer postId);

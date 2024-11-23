@@ -55,13 +55,14 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             Pageable pageable);
 
     @Query(value = """
-                        SELECT
+                SELECT
                 g.id AS group_id,
                 u.id AS admin_id,
                 g.name AS group_name,
                 u.fullname AS admin_name,
                 g.cover_photo,
                 g.bio,
+                g.status,
                 g.create_time,
                 SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count
             FROM

@@ -18,11 +18,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.StoryNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Story;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.StoryRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
 public class StoryService {
@@ -33,6 +37,9 @@ public class StoryService {
     @Autowired
     private FriendShipRepository friendShipRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
@@ -42,7 +49,7 @@ public class StoryService {
     public void deleteStory(int id) throws StoryNotFoundException {
         Story foundStory = storyRepository.getAnStory(id);
         if (foundStory == null) {
-            throw new StoryNotFoundException("User find by " + id + " not found. Please try another!");
+            throw new StoryNotFoundException("Story find by " + id + " not found. Please try another!");
         }
         storyRepository.delete(foundStory);
     }
@@ -50,14 +57,27 @@ public class StoryService {
     public Story getAnStory(int id) throws StoryNotFoundException {
         Story foundStory = storyRepository.getAnStory(id);
         if (foundStory == null) {
-            throw new StoryNotFoundException("User find by " + id + " not found. Please try another!");
+            throw new StoryNotFoundException("Story find by " + id + " not found. Please try another!");
         }
         return foundStory;
     }
 
-    public void insertStory(Story story, MultipartFile mediaFile, MultipartFile musicFile)
-            throws UnknownException {
+    public void insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
+            throws UnknownException , UserAccountNotFoundException {
         try {
+
+            User foundUser = userRepository.getAnUser(storyRequestDTO.getUser_id());
+            if(foundUser == null){
+                throw new UserAccountNotFoundException("User find by " + storyRequestDTO.getUser_id() + " not found. Please try another!");
+            }
+
+            Story story = new Story();
+            story.setUser_id(storyRequestDTO.getUser_id());
+            story.setContent(storyRequestDTO.getContent());
+            story.setHastag(storyRequestDTO.getHastag());
+            story.setLocation_id(storyRequestDTO.getLocation_id());
+            story.setStatus(storyRequestDTO.getStatus());
+
             if (mediaFile == null || mediaFile.isEmpty()) {
                 throw new UnknownException("No image or video file provided for the story.");
             }

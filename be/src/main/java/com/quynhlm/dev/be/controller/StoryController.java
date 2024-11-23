@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
 import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.service.StoryService;
@@ -51,9 +53,18 @@ public class StoryController {
 
     @PostMapping("")
     public ResponseEntity<ResponseObject<Void>> insertStory(
-            @RequestPart("story") Story story,
+            @RequestPart("story") String storyJson,
             @RequestPart(value = "mediaUrl", required = false) MultipartFile mediaUrl,
             @RequestPart(value = "musicFile", required = false) MultipartFile musicFile) throws Exception {
+
+         ObjectMapper objectMapper = new ObjectMapper();
+        StoryRequestDTO story = null;
+        try {
+            story = objectMapper.readValue(storyJson, StoryRequestDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }        
 
         storyService.insertStory(story, mediaUrl, musicFile);
         ResponseObject<Void> result = new ResponseObject<>();

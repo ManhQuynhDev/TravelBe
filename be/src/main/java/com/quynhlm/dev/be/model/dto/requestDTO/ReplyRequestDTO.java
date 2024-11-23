@@ -13,5 +13,5 @@ import lombok.Setter;
 public class ReplyRequestDTO {
     private String content;
     private int commentId;
-    private int userId;
+    private int userId; 
 }
