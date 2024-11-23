@@ -33,7 +33,7 @@ public class StoryController {
         return storyService.getAllStory(page, size);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/friend_story/{userId}")
     public Page<StoryResponseDTO> getStoriesByUserId(
             @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
@@ -41,13 +41,13 @@ public class StoryController {
         return storyService.fetchFriendStoriesByUserId(userId, page, size);
     }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<ResponseObject<Story>> getAnStory(@PathVariable int id) {
-    //     ResponseObject<Story> result = new ResponseObject<>();
-    //     result.setMessage("Delete story successfully");
-    //     result.setData(storyService.getAnStory(id));
-    //     return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject<Story>> getAnStory(@PathVariable int id) {
+        ResponseObject<Story> result = new ResponseObject<>();
+        result.setMessage("Get an story successfully");
+        result.setData(storyService.getAnStory(id));
+        return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
+    }
 
     @PostMapping("")
     public ResponseEntity<ResponseObject<Void>> insertStory(

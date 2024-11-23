@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.Group;
 
 public interface GroupRepository extends JpaRepository<Group, Integer> {
+
     @Query(value = "SELECT * FROM m_group WHERE name = :name", nativeQuery = true)
     Group findGroupByName(@Param("name") String name);
 
@@ -24,8 +25,8 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 g.name AS group_name,
                 u.fullname AS admin_name,
                 g.cover_photo,
-                g.status,
                 g.bio,
+                g.status,
                 g.create_time,
                 SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count
             FROM
@@ -38,5 +39,4 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
             """, nativeQuery = true)
     Page<Object[]> fetchGroup(Pageable pageable);
-
 }
