@@ -28,10 +28,18 @@ public class ActivitiesController {
     private ActivitiesService activitiesService;
 
     @GetMapping("")
-    public Page<Activities> getComments(
+    public Page<Activities> getAllActivities(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return activitiesService.getListData(page, size);
+    }
+
+    @GetMapping("/by-plan-id/{planId}")
+    public Page<Activities> foundActivitiesWithPlanId(
+            @PathVariable Integer planId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return activitiesService.getActivitiesWithPlanId(planId, page, size);
     }
 
     @DeleteMapping("/{id}")
@@ -44,12 +52,13 @@ public class ActivitiesController {
     }
 
     @PostMapping(path = "")
-    public ResponseEntity<ResponseObject<Void>> createActivities(@RequestBody Activities activities) {
-        activitiesService.createActivities(activities);
-        ResponseObject<Void> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<Activities>> createActivities(@RequestBody Activities activities) {
+        Activities response = activitiesService.createActivities(activities);
+        ResponseObject<Activities> result = new ResponseObject<>();
         result.setStatus(true);
         result.setMessage("Create a activities successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setData(response);
+        return new ResponseEntity<ResponseObject<Activities>>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

@@ -9,9 +9,15 @@ import java.sql.Timestamp;
 
 import com.quynhlm.dev.be.core.exception.ActivitiesExistingException;
 import com.quynhlm.dev.be.core.exception.ActivitiesNotFoundException;
+import com.quynhlm.dev.be.core.exception.TravelPlanNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.entity.Activities;
+import com.quynhlm.dev.be.model.entity.Travel_Plan;
+import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.ActivitiesRepository;
+import com.quynhlm.dev.be.repositories.TravelPlanRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,9 +28,27 @@ public class ActivitiesService {
     @Autowired
     private ActivitiesRepository activitiesRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TravelPlanRepository travelPlanRepository;
+
     // Create activity
-    public void createActivities(Activities activities) throws ActivitiesExistingException, UnknownException {// Status
-                                                                                                              // 1 : 0
+    public Activities createActivities(Activities activities)
+            throws ActivitiesExistingException, TravelPlanNotFoundException,
+            UserAccountNotFoundException, UnknownException {// Status
+        // 1 : 0
+        User foundUser = userRepository.getAnUser(activities.getUser_id());
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with id not found please try again");
+        }
+
+        Travel_Plan foundPlan = travelPlanRepository.getAnTravel_Plan(activities.getPlanId());
+        if (foundPlan == null) {
+            throw new TravelPlanNotFoundException("Found group with id not found please try again");
+        }
+
         activities.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
         Activities foundActivity = activitiesRepository.findByNameAndPlanId(activities.getName(),
                 activities.getPlanId());
@@ -36,6 +60,7 @@ public class ActivitiesService {
         if (saveActivity.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
         }
+        return saveActivity;
     }
 
     public void deleteActivities(int id) throws ActivitiesNotFoundException {
@@ -80,5 +105,17 @@ public class ActivitiesService {
     public Page<Activities> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return activitiesRepository.findAll(pageable);
+    }
+
+    // Get all data with planid
+    public Page<Activities> getActivitiesWithPlanId(int planId, int page, int size) throws TravelPlanNotFoundException {
+
+        Travel_Plan foundPlan = travelPlanRepository.getAnTravel_Plan(planId);
+        if (foundPlan == null) {
+            throw new TravelPlanNotFoundException("Plan with id  " + planId + " not found please try again");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return activitiesRepository.findAllActivitiesWithPlanId(planId, pageable);
     }
 }

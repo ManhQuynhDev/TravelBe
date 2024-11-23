@@ -18,5 +18,7 @@ public interface ActivitiesRepository extends JpaRepository<Activities, Integer>
     @Query(value = "SELECT * FROM Activities WHERE id = :id", nativeQuery = true)
     Activities findActivities(@Param("id") Integer id);
 
-    Page<Activities> findAll(Pageable pageable);
+    @Query(value = "SELECT * FROM activities WHERE plan_id = :planId", nativeQuery = true)
+    Page<Activities> findAllActivitiesWithPlanId(@Param("planId") Integer planId, Pageable pageable);
+
 }
