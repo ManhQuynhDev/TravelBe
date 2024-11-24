@@ -36,17 +36,6 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    // @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // public ResponseEntity<ResponseObject<Void>> insertPost(@RequestPart("post")
-    // String postJson,
-    // @RequestPart(value = "files") List<MultipartFile> files,
-    // @RequestPart("type") String type) {
-    // postService.insertPost(post, files, type);
-    // ResponseObject<Void> result = new ResponseObject<>();
-    // result.setMessage("Create a new post successfully");
-    // return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
-    // }
-
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseObject<?>> insertPost(
             @RequestPart("post") String postJson,

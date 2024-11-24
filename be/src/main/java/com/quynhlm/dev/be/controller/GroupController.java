@@ -42,12 +42,19 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<Group>> getAnGroup(@PathVariable Integer id) {
-        ResponseObject<Group> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<GroupResponseDTO>> getAnGroup(@PathVariable Integer id) {
+        ResponseObject<GroupResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get group with " + id + "successfully");
         result.setStatus(true);
         result.setData(groupService.getAnGroupWithId(id));
-        return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<GroupResponseDTO>>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<GroupResponseDTO>> searchGroups(@RequestParam("q") String keyword , @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "2") int size) {
+        Page<GroupResponseDTO> groups = groupService.searchGroupsByName(keyword , page , size);
+        return ResponseEntity.ok(groups);   
     }
 
     @DeleteMapping("/{id}")

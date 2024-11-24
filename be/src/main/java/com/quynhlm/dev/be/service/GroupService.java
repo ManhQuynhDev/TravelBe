@@ -100,12 +100,75 @@ public class GroupService {
         }
     }
 
-    public Group getAnGroupWithId (Integer id) throws GroupNotFoundException {
-        Group foundGroup = groupRepository.findGroupById(id);
-        if (foundGroup == null) {
-            throw new GroupNotFoundException("Group find with " + id + " not found , please try other id");
+    public GroupResponseDTO getAnGroupWithId(Integer id) throws GroupNotFoundException {
+        List<Object[]> results = groupRepository.findAnGroupById(id);
+        
+        if (results.isEmpty()) {
+            throw new GroupNotFoundException(
+                    "Id " + id + " not found or invalid data. Please try another!");
         }
-        return foundGroup;
+
+        Object[] result = results.get(0);
+        
+        GroupResponseDTO group = new GroupResponseDTO();
+        group.setGroupId(((Number) result[0]).intValue());
+        group.setAdminId(((Number) result[1]).intValue());
+        group.setGroup_name((String) result[2]);
+        group.setAdmin_name((String) result[3]);
+        group.setCover_photo((String) result[4]);
+        group.setBio((String) result[5]);
+        group.setStatus((String) result[6]);
+        group.setCreate_time((String) result[7]);
+        group.setMember_count(((Number) result[8]).intValue());
+
+        List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) result[0]).intValue());
+        List<MemberResponseDTO> responses = rawResults.stream()
+                .map(r -> new MemberResponseDTO(
+                        ((Number) r[0]).intValue(),
+                        ((Number) r[1]).intValue(),
+                        ((Number) r[2]).intValue(),
+                        (String) r[3],
+                        (String) r[4],
+                        (String) r[5],
+                        (String) r[6]))
+                .collect(Collectors.toList());
+
+        group.setUserJoined(responses);
+    
+        return group;
+    }
+
+    public Page<GroupResponseDTO> searchGroupsByName(String keyword,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = groupRepository.searchGroupsByName(keyword , pageable);
+
+        return results.map(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+            List<MemberResponseDTO> responses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6]))
+                    .collect(Collectors.toList());
+
+            group.setUserJoined(responses);
+            return group;
+        });
     }
 
     public void deleteGroup(Integer id) throws GroupNotFoundException {

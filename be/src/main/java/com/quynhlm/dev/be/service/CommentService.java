@@ -165,6 +165,12 @@ public class CommentService {
     }
 
     public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, int page, int size) {
+
+        Post foundPost = postRepository.getAnPost(postId);
+        if (foundPost == null) {
+            throw new PostNotFoundException("Found post with " + postId + " not found please try again");
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
 
@@ -194,7 +200,14 @@ public class CommentService {
                             ((Number) r[7]).intValue()))
                     .collect(Collectors.toList());
 
+            if (foundPost.getUser_id() == ((Number) row[1]).intValue()) {
+                comment.setIsAuthor(true);
+            } else {
+                comment.setIsAuthor(false);
+            }
+
             comment.setReplys(responses);
+
             return comment;
         });
     }

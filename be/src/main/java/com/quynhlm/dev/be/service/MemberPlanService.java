@@ -15,6 +15,7 @@ import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.TravelPlanNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
@@ -64,7 +65,7 @@ public class MemberPlanService {
 
     public void setAdminPlan(MemberPlan member)
             throws TravelPlanNotFoundException, UserAccountNotFoundException,
-            UnknownException {
+            UnknownException , UserWasAlreadyRequest {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
@@ -82,7 +83,7 @@ public class MemberPlanService {
                 member.getUserId(), member.getPlanId(), Arrays.asList("PENDING", "APPROVED"));
 
         if (existingMember.isPresent()) {
-            throw new UnknownException("User has already requested to join or is already a member.");
+            throw new UserWasAlreadyRequest("User has already requested to join or is already a member.");
         }
 
         member.setStatus("APPROVED");
