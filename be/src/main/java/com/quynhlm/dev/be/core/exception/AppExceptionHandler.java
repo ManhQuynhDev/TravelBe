@@ -146,4 +146,13 @@ public class AppExceptionHandler {
         response.setError(new AppError(ErrorCode.UNKNOWN, ex.getMessage()));
         return new ResponseEntity<ResponseObject>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(value = { UserWasAlreadyRequest.class })
+    public ResponseEntity<?> alreadyRequest(Exception ex, HttpServletRequest request) {
+        ResponseObject response = new ResponseObject();
+        response.setStatus(false);
+        response.setMessage("User was request or already a member!.");
+        response.setError(new AppError(ErrorCode.USER_ALREADY, ex.getMessage()));
+        return new ResponseEntity<ResponseObject>(response, HttpStatus.OK);
+    }
 }

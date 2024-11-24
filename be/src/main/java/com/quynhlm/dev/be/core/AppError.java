@@ -26,7 +26,8 @@ public class AppError {
         REPORT_EXIST,
         REPORT_NOT_FOUND,
         TAG_NOT_FOUND,        
-        METHOD_NOT_ALLOWED
+        METHOD_NOT_ALLOWED,
+        USER_ALREADY
     }
 
     private ErrorCode code;

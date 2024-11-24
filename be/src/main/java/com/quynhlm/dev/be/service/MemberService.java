@@ -14,6 +14,7 @@ import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
@@ -40,7 +41,7 @@ public class MemberService {
     private UserRepository userRepository;
 
     public void requestToJoinGroup(Member member)
-            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException {
+            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException , UserWasAlreadyRequest{
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
@@ -56,7 +57,7 @@ public class MemberService {
                 member.getUserId(), member.getGroupId(), Arrays.asList("PENDING", "APPROVED"));
 
         if (existingMember.isPresent()) {
-            throw new UnknownException("User has already requested to join or is already a member.");
+            throw new UserWasAlreadyRequest("User has already requested to join or is already a member.");
         }
 
         member.setRole(Role.USER.name());
