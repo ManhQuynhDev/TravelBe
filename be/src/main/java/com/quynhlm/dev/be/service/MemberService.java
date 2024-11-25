@@ -168,8 +168,21 @@ public class MemberService {
             object.setBio((String) row[6]);
             object.setStatus((String) row[7]);
             object.setRole((String) row[8]);
-            object.setJoin_time((String) row[9]);
-            object.setMember_count(((Number) row[10]).intValue());
+            object.setJoin_time((String) row[9]);         
+            
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+            List<MemberResponseDTO> responses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6]))
+                    .collect(Collectors.toList());
+
+            object.setUserJoined(responses);
             return object;
         });
     }
