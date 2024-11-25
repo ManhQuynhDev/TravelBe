@@ -14,8 +14,7 @@ import com.quynhlm.dev.be.model.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-    Page<User> findAll(Pageable pageable);
-
+    // Page<User> findAll(Pageable pageable);
 
     User findOneByEmail(String email);
 
@@ -31,4 +30,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT * FROM User WHERE roles = BINARY :param1 OR roles = BINARY :param2", nativeQuery = true)
     List<User> findUserWithRole(@Param("param1") String param1, @Param("param2") String param2);
 
+    @Query(value = """
+                   SELECT u.id,
+                   u.fullname,
+                   u.email,
+                   u.phone_number AS phoneNumber,
+                   u.is_locked AS isLocked,
+                   u.avatar_url AS avatarUrl,
+                   u.create_at
+            FROM User u;
+                                            """, nativeQuery = true)
+    Page<Object[]> findAllUser(Pageable pageable);
 }

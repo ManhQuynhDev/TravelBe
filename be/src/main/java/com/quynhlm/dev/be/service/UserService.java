@@ -2,6 +2,7 @@ package com.quynhlm.dev.be.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -121,9 +122,21 @@ public class UserService {
         return user;
     }
 
-    public Page<User> getListData(int page, int size) {
+     public Page<UserResponseDTO> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findAll(pageable);
+        Page<Object[]> results = userRepository.findAllUser(pageable);
+
+        return results.map(row -> {
+            UserResponseDTO user = new UserResponseDTO();
+            user.setId(((Number) row[0]).intValue());
+            user.setFullname((String) row[1]); 
+            user.setEmail((String) row[2]);    
+            user.setPhoneNumber((String) row[3]); 
+            user.setIsLocked((String) row[4]);   
+            user.setAvatarUrl((String) row[5]);  
+            user.setCreate_at(((Timestamp) row[6]));
+            return user;
+        });
     }
 
     public void register(User user) throws UserAccountExistingException, UnknownException {

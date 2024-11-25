@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public Page<User> getUsers(
+    public Page<UserResponseDTO> getUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return userService.getListData(page, size);
