@@ -216,6 +216,10 @@ public class GroupService {
                 foundGroup.setBio(settingsGroupDTO.getBio());
             }
 
+            if(settingsGroupDTO.getStatus() != null && !settingsGroupDTO.getStatus().isEmpty()) {
+                foundGroup.setStatus(settingsGroupDTO.getStatus());
+            }
+
             Group savedGroup = groupRepository.save(foundGroup);
             if (savedGroup.getId() == null) {
                 throw new UnknownException("Transaction cannot be completed!");

@@ -33,7 +33,7 @@ public class GroupController {
     @Autowired
     private final GroupService groupService;
 
-    //Get all list group
+    // Get all list group
     @GetMapping("")
     public Page<GroupResponseDTO> getAllListGroups(
             @RequestParam(defaultValue = "0") int page,
@@ -51,10 +51,11 @@ public class GroupController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<GroupResponseDTO>> searchGroups(@RequestParam("q") String keyword , @RequestParam(defaultValue = "0") int page,
-    @RequestParam(defaultValue = "2") int size) {
-        Page<GroupResponseDTO> groups = groupService.searchGroupsByName(keyword , page , size);
-        return ResponseEntity.ok(groups);   
+    public ResponseEntity<Page<GroupResponseDTO>> searchGroups(@RequestParam("q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        Page<GroupResponseDTO> groups = groupService.searchGroupsByName(keyword, page, size);
+        return ResponseEntity.ok(groups);
     }
 
     @DeleteMapping("/{id}")
@@ -66,13 +67,13 @@ public class GroupController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    //Post group
+    // Post group
     @PostMapping("")
     public ResponseEntity<ResponseObject<Group>> insertReview(@RequestPart("group") String groupJson,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
 
-         ObjectMapper objectMapper = new ObjectMapper();
-         GroupRequestDTO group = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        GroupRequestDTO group = null;
         try {
             group = objectMapper.readValue(groupJson, GroupRequestDTO.class);
         } catch (Exception e) {
@@ -88,13 +89,23 @@ public class GroupController {
         return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);
     }
 
-    //Update
+    // Update
     @PutMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> updateGroup(
             @PathVariable Integer id,
-            @RequestPart("group") SettingsGroupDTO settings,
+            @RequestPart("group") String groupJson,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-        groupService.settingGroup(id, settings, file);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        SettingsGroupDTO group = null;
+        try {
+            group = objectMapper.readValue(groupJson, SettingsGroupDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+           
+        groupService.settingGroup(id, group, file);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Create a new group successfully");
         result.setStatus(true);

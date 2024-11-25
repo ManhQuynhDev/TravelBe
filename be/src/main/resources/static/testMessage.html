@@ -1,75 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        .gradient-custom {
+/* fallback for old browsers */
+background: #6a11cb;
+
+/* Chrome 10-25, Safari 5.1-6 */
+background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+
+/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+}
+    </style>
 </head>
-
 <body>
-    <h2>Create a Post</h2>
-
-    <!-- Input để chọn file ảnh -->
-    <input type="file" id="fileInput" accept="image/*" />
-    <!-- Input để nhập nội dung bài viết -->
-    <input type="text" id="postContent" placeholder="Enter your post content" />
-    <!-- Nút để tạo bài viết -->
-    <button onclick="createPost()">Create Post</button>
-
-    <script>
-        const createPost = () => {
-            const content = document.getElementById("postContent").value.trim();
-            const fileInput = document.getElementById("fileInput");
-            const file = fileInput.files[0];
-            const type = "IMAGE";
-
-            if (!content || !file) {
-                alert("Please enter content and choose an image!");
-                return;
-            }
-
-            // Kiểm tra file là hình ảnh
-            if (!file.type.startsWith("image/")) {
-                alert("Please select a valid image file!");
-                return;
-            }
-
-            const postData = {
-                content,
-                status: "PUBLIC",
-                user_id: 1,
-                post_id: 2,
-            };
-
-            const formData = new FormData();
-            formData.append("comment", JSON.stringify(postData));
-            formData.append("file", file);
-
-            fetch("http://localhost:8080/api/comments", {
-                method: "POST",
-                headers: {
-                    Authorization: "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbiIsImV4cCI6MTczMjAwNjg0NiwiaWF0IjoxNzMxOTIwNDQ2LCJzY29wZSI6IkFETUlOIn0.k6dTnnU1Xx7sn_5mA5KnHriTDBBDscIzMrUPyDi0cC_sWWHUurWFVoH7ancVDXoh5EpnMED2W_CaGT2IdQLH8g",
-                },
-                body: formData,
-            })
-                .then(response => { 
-                    if (!response.ok) {
-                        throw new Error("Failed to create post");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Post created successfully:", data);
-                    alert(data.message);
-                })
-                .catch(error => {
-                    console.error("Error creating post:", error);
-                    alert("Error creating post");
-                });
-        };
-
-    </script>
+    <section class="vh-100 gradient-custom">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+              <div class="card bg-dark text-white" style="border-radius: 1rem;">
+                <div class="card-body p-5 text-center">
+      
+                  <div class="mb-md-5 mt-md-4 pb-5">
+      
+                    <h2 class="fw-bold mb-2 text-uppercase">Login</h2>
+                    <p class="text-white-50 mb-5">Please enter your login and password!</p>
+      
+                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                      <input type="email" id="typeEmailX" class="form-control form-control-lg" />
+                      <label class="form-label" for="typeEmailX">Email</label>
+                    </div>
+      
+                    <div data-mdb-input-init class="form-outline form-white mb-4">
+                      <input type="password" id="typePasswordX" class="form-control form-control-lg" />
+                      <label class="form-label" for="typePasswordX">Password</label>
+                    </div>
+      
+                    <p class="small mb-5 pb-lg-2"><a class="text-white-50" href="#!">Forgot password?</a></p>
+      
+                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5" type="submit">Login</button>
+      
+                    <div class="d-flex justify-content-center text-center mt-4 pt-1">
+                      <a href="#!" class="text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
+                      <a href="#!" class="text-white"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
+                      <a href="#!" class="text-white"><i class="fab fa-google fa-lg"></i></a>
+                    </div>
+      
+                  </div>
+      
+                  <div>
+                    <p class="mb-0">Don't have an account? <a href="#!" class="text-white-50 fw-bold">Sign Up</a>
+                    </p>
+                  </div>
+      
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 </body>
-
 </html>

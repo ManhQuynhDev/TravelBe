@@ -1,7 +1,9 @@
 package com.quynhlm.dev.be.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +151,8 @@ public class MemberService {
         }
     }
 
+
+    //Note
     public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = memberRepository.foundUserJoinGroup(userId, pageable);
@@ -208,6 +212,22 @@ public class MemberService {
             group.setStatus((String) row[6]);
             group.setCreate_time((String) row[7]);
             group.setMember_count(((Number) row[8]).intValue());
+            group.setUserJoined(null);
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+            List<MemberResponseDTO> responses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6]))
+                    .collect(Collectors.toList());
+
+            group.setUserJoined(responses);
+
             return group;
         });
     }

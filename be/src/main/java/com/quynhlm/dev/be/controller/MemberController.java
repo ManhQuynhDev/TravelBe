@@ -49,7 +49,7 @@ public class MemberController {
         return memberService.foundGroupUserCreate(userId, page, size);
     }
 
-    // FoundGroup member send
+    // FoundGroup member send   
     @GetMapping("/group-join/{userId}")
     public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(
             @PathVariable Integer userId,

@@ -12,4 +12,5 @@ import lombok.Setter;
 public class SettingsGroupDTO {
     private String name;
     private String bio;
+    private String status;
 }
