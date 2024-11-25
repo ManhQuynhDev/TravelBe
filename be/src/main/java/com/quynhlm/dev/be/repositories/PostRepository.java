@@ -384,7 +384,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                         WHERE
                             p.status = 'PUBLIC' AND a.id IN (:userIds)
                         GROUP BY
-                            p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url
+                            p.id, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time, a.fullname, a.avatar_url , s.create_time , s.user_id
                     )
                     UNION ALL
                     -- Bài viết của chủ bài viết
