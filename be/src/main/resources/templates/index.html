@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #chat-form {
+            margin-top: 10px;
+        }
+
+        #chat-mes {
+            padding: 5px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        #send-chat {
+            padding: 5px;
+        }
+
+        #typing-status {
+            color: gray;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat Application</h1>
+    <ul id="messages"></ul>
+    <div id="typing-status"></div>
+    <form id="chat-form" action="">
+        <input type="text" id="chat-mes" placeholder="Type your message...">
+        <button id="send-chat">Send</button>
+    </form>
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/socket.io.js"></script>
+    <script>
+        const name = prompt("Enter your name:");
+        const room = prompt("Enter your room:");
+
+        const socketUrl = location.protocol + "//" + location.hostname + ":1111/chat";
+        const socket = io.connect(socketUrl, {
+            query: { room: room, userId: name }
+        });
+
+        // DOM elements
+        const chatForm = document.querySelector('#chat-form');
+        const chatMess = document.querySelector('#chat-mes');
+        const messages = document.querySelector('#messages');
+        const typingStatus = document.querySelector('#typing-status');
+
+        let typingTimeout;
+
+        // Notify server when user is typing
+        chatMess.addEventListener('input', () => {
+            clearTimeout(typingTimeout);
+            socket.emit('userTyping', name);
+
+            typingTimeout = setTimeout(() => {
+                socket.emit('userStoppedTyping', name);
+            }, 3000);
+        });
+
+        // Listen for typing notifications
+        socket.on("typingUsers", (usersTyping) => {
+            const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== name);
+            if (otherUsersTyping.length > 0) {
+                typingStatus.textContent = `${otherUsersTyping.join(", ")} is typing...`;
+            } else {
+                typingStatus.textContent = '';
+            }
+        });
+
+        socket.on('onMessageRead', (data) => {
+            const { messageId, room, status } = data;
+
+            // Hiển thị trạng thái đã xem hoặc chưa xem trong giao diện
+            const messageElement = document.querySelector(`#message-${messageId}`);
+            if (messageElement) {
+                // Hiển thị trạng thái đã xem hoặc chưa xem
+                const statusText = status === "Đã xem" ? "Đã xem" : "Chưa xem";
+                messageElement.innerHTML += ` <span class="status">(${statusText})</span>`;
+            }
+            console.log(`Message with ID ${messageId} in room ${room} marked as: ${status}`);
+        });
+
+        // Send chat message
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = chatMess.value.trim();
+            if (message) {
+                socket.emit('onChat', {
+                    message: {
+                        userSendId: name,
+                        content: message,
+                        groupId: room,
+                    },
+                    status: false
+                });
+                chatMess.value = '';
+            }
+        });
+
+        // Display received chat messages
+        socket.on("onChat", (data) => {
+            const chatItem = document.createElement('li');
+            chatItem.textContent = `${data.message.userSendId}: ${data.message.content} : ${data.status}`;
+            messages.appendChild(chatItem);
+        });
+
+        // Handle connection error
+        socket.on('connect_error', (error) => {
+            console.error('Connection failed: ', error);
+        });
+    </script>
+</body>
+
+</html>

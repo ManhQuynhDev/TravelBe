@@ -35,6 +35,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PostController {
     @Autowired
     private PostService postService;
+    // Find all
+    @GetMapping("")
+    public Page<PostMediaDTO> getAllPost(Pageable pageable) {
+        return postService.getAllPost(pageable);
+    }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseObject<?>> insertPost(

@@ -194,16 +194,21 @@ public class PostService {
 
         Object[] result = results.get(0);
 
-        int ownerId = (int) result[0];
-        int postId = (int) result[1];
-        String content = (String) result[2];
-        String mediaUrl = (String) result[3];
-        int locationId = (int) result[4];
-        String status = (String) result[5];
-        String type = (String) result[6];
-        String create_time = (String) result[7];
+        Integer ownerId = ((Number) result[0]).intValue();
+        Integer postId = ((Number) result[1]).intValue();
+        Integer locationId = ((Number) result[2]).intValue();
+        String content = (String) result[3];
+        String status = (String) result[4];
+        String fullname = (String) result[5];
+        String avatar = (String) result[6];
+        String mediaUrl = (String) result[7];
+        String type = (String) result[8];
+        String create_time = (String) result[9];
+        Integer reaction_count = ((Number) result[10]).intValue();
+        Integer comment_count = ((Number) result[11]).intValue();
+        Integer share_count = ((Number) result[12]).intValue();
 
-        return new PostMediaDTO(ownerId, postId, content, mediaUrl, locationId, status, type, create_time);
+        return new PostMediaDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time , reaction_count , comment_count , share_count);
     }
 
     // Update post
@@ -293,6 +298,30 @@ public class PostService {
             post.setReaction_count(((Number) row[9]).intValue());
             post.setComment_count(((Number) row[10]).intValue());
             post.setShare_count(((Number) row[11]).intValue());
+            return post;
+        });
+    }
+
+    // Get All Post
+    public Page<PostMediaDTO> getAllPost(Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchAllPost(pageable);
+
+        return results.map(row -> {
+            PostMediaDTO post = new PostMediaDTO();
+            
+            post.setPostId(((Number) row[0]).intValue());
+            post.setOwnerId(((Number) row[1]).intValue());
+            post.setLocationId(((Number) row[2]).intValue());
+            post.setContent((String) row[3]);
+            post.setStatus((String) row[4]);
+            post.setFullname((String) row[5]);
+            post.setAvatar((String) row[6]);
+            post.setMediaUrl((String) row[7]);
+            post.setType((String) row[8]);
+            post.setCreate_time((String) row[9]);
+            post.setReaction_count(((Number) row[10]).intValue());
+            post.setComment_count(((Number) row[11]).intValue());
+            post.setShare_count(((Number) row[12]).intValue());
             return post;
         });
     }

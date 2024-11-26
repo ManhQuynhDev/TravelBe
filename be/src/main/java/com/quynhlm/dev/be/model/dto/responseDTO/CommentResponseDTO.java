@@ -22,7 +22,6 @@ public class CommentResponseDTO {
     private Integer shareId; 
     private String create_time;
     private Integer reaction_count;
-    private Integer reply_count;
     private Boolean isAuthor;
     private List<ReplyResponseDTO> replys;
 }

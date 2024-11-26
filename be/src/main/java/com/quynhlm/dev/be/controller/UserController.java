@@ -59,12 +59,12 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<ResponseObject<User>> findAnUser(@PathVariable Integer id) {
-        ResponseObject<User> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<UserResponseDTO>> findAnUser(@PathVariable Integer id) {
+        ResponseObject<UserResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an user with id " + id + " successfully");
         result.setData(userService.findAnUser(id));
         result.setStatus(true);
-        return new ResponseEntity<ResponseObject<User>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<UserResponseDTO>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/users")

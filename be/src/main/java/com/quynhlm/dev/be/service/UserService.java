@@ -114,12 +114,23 @@ public class UserService {
     }
 
     @PostAuthorize("hasRole('ADMIN') or returnObject.username == authentication.name")
-    public User findAnUser(Integer id) throws UserAccountNotFoundException {
+    public UserResponseDTO findAnUser(Integer id) throws UserAccountNotFoundException {
         User user = userRepository.getAnUser(id);
         if (user == null) {
             throw new UserAccountExistingException("Id " + id + " not found . Please try another!");
         }
-        return user;
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(user.getId());
+        userResponseDTO.setFullname(user.getFullname());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setPhoneNumber(user.getPhoneNumber());
+        userResponseDTO.setRoles(user.getRoles());
+        userResponseDTO.setIsLocked(user.getIsLocked());
+        userResponseDTO.setCreate_at(user.getCreate_at());
+        userResponseDTO.setAvatarUrl(user.getAvatarUrl());
+
+        return userResponseDTO;
     }
 
      public Page<UserResponseDTO> getListData(int page, int size) {
@@ -345,6 +356,11 @@ public class UserService {
             if (updateUser.getDob() != null) {
                 foundUser.setDob(updateUser.getDob());
             }
+
+            if(updateUser.getPhoneNumber() != null){
+                foundUser.setPhoneNumber(updateUser.getPhoneNumber());
+            }
+
             User saveUser = userRepository.save(foundUser);
             if (saveUser.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");

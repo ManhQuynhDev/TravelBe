@@ -185,7 +185,6 @@ public class CommentService {
             comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setCreate_time((String) row[7]);
             comment.setReaction_count(((Number) row[8]).intValue());
-            comment.setReply_count(((Number) row[9]).intValue());
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
             List<ReplyResponseDTO> responses = rawResults.stream()
@@ -234,7 +233,6 @@ public class CommentService {
             comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setCreate_time((String) row[7]);
             comment.setReaction_count(((Number) row[8]).intValue());
-            comment.setReply_count(((Number) row[9]).intValue());
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
             List<ReplyResponseDTO> responses = rawResults.stream()

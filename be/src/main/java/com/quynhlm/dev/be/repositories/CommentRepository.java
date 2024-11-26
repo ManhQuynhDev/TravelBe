@@ -25,8 +25,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                c.post_id,
                c.share_id,
                c.create_time,
-               COUNT(DISTINCT cr.id) AS reaction_count,
-               COUNT(DISTINCT r.id) AS reply_count
+               COUNT(DISTINCT cr.id) AS reaction_count
             from comment c
               inner join user u on u.id = c.user_id
               left join comment_reaction cr on cr.comment_id = c.id
@@ -46,8 +45,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                c.post_id,
                c.share_id,
                c.create_time,
-               COUNT(DISTINCT cr.id) AS reaction_count,
-               COUNT(DISTINCT r.id) AS reply_count
+               COUNT(DISTINCT cr.id) AS reaction_count
             from comment c
               inner join user u on u.id = c.user_id
               left join comment_reaction cr on cr.comment_id = c.id
