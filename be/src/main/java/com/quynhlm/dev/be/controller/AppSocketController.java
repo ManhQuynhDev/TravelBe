@@ -46,7 +46,6 @@ public class AppSocketController {
         this.namespace.addDisconnectListener(onDisconnectListener);
         this.namespace.addEventListener("onChat", MessageRequestDTO.class, onSendMessage);
         this.namespace.addEventListener("userTyping", String.class, onUserTyping);
-        this.namespace.addEventListener("onMessageRead", MessageRequestDTO.class, messageRead);
         this.namespace.addEventListener("userStoppedTyping", String.class, onUserStoppedTyping);
     }
 
@@ -99,56 +98,6 @@ public class AppSocketController {
             }
         } catch (Exception e) {
             System.err.println("Error sending message: " + e.getMessage());
-            e.printStackTrace();
-        }
-    };
-
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-
-    class MessageReadDTO {
-        private int messageId;
-    private String room;
-    private String status;
-    }
-
-    public DataListener<MessageRequestDTO> messageRead = (client, messageRequestDTO, ackRequest) -> {
-        try {
-            boolean isRead = messageRequestDTO.getStatus(); // Trạng thái tin nhắn (true = đã xem, false = chưa xem)
-            
-            // Lấy thông tin phòng và tin nhắn từ messageRequestDTO
-            String room = messageRequestDTO.getMessage().getGroupId().toString();
-            int messageId = messageRequestDTO.getMessage().getId();
-            
-            // Tìm trạng thái tin nhắn từ database
-            MessageStatus foundMessage = messageStatusRepositoty.getAnMessageStatusWithUserId(messageRequestDTO.getMessage().getUserSendId());
-    
-            if (foundMessage != null) {
-                System.out.println("Received status: " + isRead);
-                System.out.println("Room ID: " + room);
-                System.out.println("Message ID: " + messageId);
-    
-                // Cập nhật trạng thái của tin nhắn trong cơ sở dữ liệu
-                foundMessage.setStatus(isRead); // Cập nhật trạng thái
-                MessageStatus isChecker = messageStatusRepositoty.save(foundMessage);
-    
-                if (isChecker.getId() != null) {
-                    // Gửi sự kiện "onMessageRead" với thông tin tin nhắn và trạng thái
-                    namespace.getRoomOperations(room).sendEvent("onMessageRead", 
-                        new MessageReadDTO(messageId, room, isRead ? "Đã xem" : "Chưa xem"));
-                    
-                    System.out.println("Message marked as " + (isRead ? "read" : "unread") + " in room " + room);
-                } else {
-                    System.out.println("Failed to update message status in database.");
-                }
-            } else {
-                System.out.println("Message not found in database.");
-            }
-            
-        } catch (Exception e) {
-            System.err.println("Error sending message read status: " + e.getMessage());
             e.printStackTrace();
         }
     };

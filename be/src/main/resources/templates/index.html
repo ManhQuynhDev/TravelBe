@@ -83,21 +83,8 @@
             } else {
                 typingStatus.textContent = '';
             }
-        });
-
-        socket.on('onMessageRead', (data) => {
-            const { messageId, room, status } = data;
-
-            // Hiển thị trạng thái đã xem hoặc chưa xem trong giao diện
-            const messageElement = document.querySelector(`#message-${messageId}`);
-            if (messageElement) {
-                // Hiển thị trạng thái đã xem hoặc chưa xem
-                const statusText = status === "Đã xem" ? "Đã xem" : "Chưa xem";
-                messageElement.innerHTML += ` <span class="status">(${statusText})</span>`;
-            }
-            console.log(`Message with ID ${messageId} in room ${room} marked as: ${status}`);
-        });
-
+        })
+        
         // Send chat message
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
