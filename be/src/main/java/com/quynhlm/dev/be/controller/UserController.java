@@ -148,7 +148,7 @@ public class UserController {
         response.setStatus(true);
         response.setMessage("Switch status user successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }   
+    }
 
     @PutMapping("/status-account/{id}/status")
     public ResponseEntity<ResponseObject<Void>> switchStatusUser(@PathVariable Integer id,

@@ -109,4 +109,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                                     """, nativeQuery = true)
     List<Object[]> getMemberJoinGroup(@Param("groupId") Integer groupId);
 
+    @Query("SELECT m FROM Member m WHERE m.groupId = :group_id AND m.status = 'APPROVED' AND m.userId <> :user_id")
+    List<Member> findApprovedMembersByGroupId(@Param("group_id") Integer group_id, @Param("user_id") Integer user_id);
+
 }

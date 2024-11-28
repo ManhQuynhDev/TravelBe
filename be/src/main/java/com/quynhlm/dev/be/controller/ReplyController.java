@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
-import java.util.List;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReplyRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
 import com.quynhlm.dev.be.model.entity.Reply;
 import com.quynhlm.dev.be.service.ReplyService;
 
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequiredArgsConstructor
 @RestController
 public class ReplyController {
-    
+
     @Autowired
     private ReplyService replyService;
 
@@ -73,8 +74,10 @@ public class ReplyController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{comment_id}")
-    public List<Reply> findReplyByCommentId(@PathVariable Integer comment_id) {
-        return replyService.findReplyByCommentId(comment_id);
+    @GetMapping("/comment-id/{comment_id}")
+    public Page<ReplyResponseDTO> findReplyByCommentId(@PathVariable Integer comment_id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return replyService.getAllListData(comment_id, page, size);
     }
 }

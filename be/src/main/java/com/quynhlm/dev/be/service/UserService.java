@@ -113,7 +113,7 @@ public class UserService {
         return response;
     }
 
-    @PostAuthorize("hasRole('ADMIN') or returnObject.username == authentication.name")
+    @PostAuthorize("hasRole('ADMIN') or returnObject.fullname == authentication.name")
     public UserResponseDTO findAnUser(Integer id) throws UserAccountNotFoundException {
         User user = userRepository.getAnUser(id);
         if (user == null) {

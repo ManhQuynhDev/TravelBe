@@ -1,7 +1,5 @@
 package com.quynhlm.dev.be.model.dto.requestDTO;
 
-import com.quynhlm.dev.be.model.entity.MessageGroup;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +9,10 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageRequestDTO {
-    private MessageGroup message;
-    private Boolean status;
-    private String file;
+public class MessageSeenDTO {
+    private String roomId;
+    private String messageId;
+    private String senderId;
+    private String viewerId;
+    private String status;
 }

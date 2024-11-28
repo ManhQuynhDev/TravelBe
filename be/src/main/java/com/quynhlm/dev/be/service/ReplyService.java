@@ -6,6 +6,9 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,14 +19,13 @@ import com.quynhlm.dev.be.core.exception.ReplyNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReplyRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Reply;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
-
-import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
@@ -69,7 +71,7 @@ public class ReplyService {
             reply.setUserId(replyRequestDTO.getUserId());
             reply.setContent(replyRequestDTO.getContent());
             reply.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
-            
+
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
                 long imageFileSize = imageFile.getSize();
@@ -148,11 +150,20 @@ public class ReplyService {
         }
     }
 
-    public List<Reply> findReplyByCommentId(Integer comment_id) throws CommentNotFoundException {
-        Comment foundComment = commentRepository.findComment(comment_id);
-        if (foundComment == null) {
-            throw new CommentNotFoundException("Comment with id " + comment_id + " not found.");
-        }
-        return replyRepository.findReplyByCommentId(comment_id);
+    public Page<ReplyResponseDTO> getAllListData(Integer comment_id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = replyRepository.findReplyByCommentId(comment_id, pageable);
+
+        return results.map(row -> {
+            ReplyResponseDTO object = new ReplyResponseDTO();
+            object.setReplyId(((Number) row[0]).intValue());
+            object.setOwnerId(((Number) row[1]).intValue());
+            object.setCommentId(((Number) row[2]).intValue());
+            object.setFullname(((String) row[3]));
+            object.setAvatar((String) row[4]);
+            object.setContent(((String) row[5]));
+            object.setCreate_time((String) row[6]);
+            return object;
+        });
     }
 }
