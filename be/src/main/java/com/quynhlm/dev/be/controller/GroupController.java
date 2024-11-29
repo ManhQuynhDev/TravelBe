@@ -69,7 +69,7 @@ public class GroupController {
 
     // Post group
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Group>> insertReview(@RequestPart("group") String groupJson,
+    public ResponseEntity<ResponseObject<Group>> insertGroup(@RequestPart("group") String groupJson,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();

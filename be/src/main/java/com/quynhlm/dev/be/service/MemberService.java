@@ -43,7 +43,8 @@ public class MemberService {
     private UserRepository userRepository;
 
     public void requestToJoinGroup(Member member)
-            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException , UserWasAlreadyRequest{
+            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException,
+            UserWasAlreadyRequest {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
@@ -151,8 +152,7 @@ public class MemberService {
         }
     }
 
-
-    //Note
+    // Note
     public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = memberRepository.foundUserJoinGroup(userId, pageable);
@@ -168,8 +168,42 @@ public class MemberService {
             object.setBio((String) row[6]);
             object.setStatus((String) row[7]);
             object.setRole((String) row[8]);
-            object.setJoin_time((String) row[9]);         
-            
+            object.setJoin_time((String) row[9]);
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+            List<MemberResponseDTO> responses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6]))
+                    .collect(Collectors.toList());
+
+            object.setUserJoined(responses);
+            return object;
+        });
+    }
+
+    public Page<MemberJoinGroupResponseDTO> searchGroupMemberJoin(Integer userId, String q, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = memberRepository.searchUserJoinGroup(userId, q, pageable);
+
+        return results.map(row -> {
+            MemberJoinGroupResponseDTO object = new MemberJoinGroupResponseDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setMemberId(((Number) row[1]).intValue());
+            object.setGroupId(((Number) row[2]).intValue());
+            object.setGroup_name(((String) row[3]));
+            object.setAdmin_name((String) row[4]);
+            object.setCover_photo((String) row[5]);
+            object.setBio((String) row[6]);
+            object.setStatus((String) row[7]);
+            object.setRole((String) row[8]);
+            object.setJoin_time((String) row[9]);
+
             List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
             List<MemberResponseDTO> responses = rawResults.stream()
                     .map(r -> new MemberResponseDTO(
@@ -226,6 +260,46 @@ public class MemberService {
             group.setCreate_time((String) row[7]);
             group.setMember_count(((Number) row[8]).intValue());
             group.setUserJoined(null);
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+            List<MemberResponseDTO> responses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6]))
+                    .collect(Collectors.toList());
+
+            group.setUserJoined(responses);
+
+            return group;
+        });
+    }
+
+    public Page<GroupResponseDTO> searchGroupUserCreate(Integer userId, String keyworld, int page, int size)
+            throws UserAccountNotFoundException {
+
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found , please try again !");
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = memberRepository.searchGroupUserCreate(userId, keyworld, pageable);
+
+        return results.map(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
 
             List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
             List<MemberResponseDTO> responses = rawResults.stream()

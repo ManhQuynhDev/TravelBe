@@ -6,11 +6,15 @@ import java.io.InputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,8 +24,9 @@ import com.quynhlm.dev.be.core.exception.StoryNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.FriendStoryResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
-import com.quynhlm.dev.be.model.entity.FriendShip;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.FriendShipRepository;
@@ -62,13 +67,21 @@ public class StoryService {
         return foundStory;
     }
 
+    @Scheduled(fixedRate = 86400000)
+    @Transactional
+    public void updateDelFlagForStories() {
+        Timestamp cutoffTime = new Timestamp(System.currentTimeMillis() - 86400000);
+        storyRepository.updateDelFlag(cutoffTime.toString());
+    }
+
     public void insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
-            throws UnknownException , UserAccountNotFoundException {
+            throws UnknownException, UserAccountNotFoundException {
         try {
 
             User foundUser = userRepository.getAnUser(storyRequestDTO.getUser_id());
-            if(foundUser == null){
-                throw new UserAccountNotFoundException("User find by " + storyRequestDTO.getUser_id() + " not found. Please try another!");
+            if (foundUser == null) {
+                throw new UserAccountNotFoundException(
+                        "User find by " + storyRequestDTO.getUser_id() + " not found. Please try another!");
             }
 
             Story story = new Story();
@@ -175,37 +188,47 @@ public class StoryService {
         });
     }
 
-    public Page<StoryResponseDTO> fetchFriendStoriesByUserId(Integer userId, int page, int size) {
-
-        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
-
-        List<Integer> friendUserIds = friendShips.stream()
-                .map(FriendShip::getUserSendId)
-                .collect(Collectors.toList());
-
-        if (friendUserIds.isEmpty()) {
-            return Page.empty();
-        }
-
+    public Page<FriendStoryResponseDTO> fetchFriendStoriesByUserId(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Object[]> results = storyRepository.fetchStoriesByUserIds(friendUserIds, pageable);
+        List<Object[]> friendShips = friendShipRepository.fetchByUserFriends(userId, "APPROVED");
 
-        return results.map(row -> {
-            StoryResponseDTO story = new StoryResponseDTO();
-            story.setOwnerId(((Number) row[0]).intValue());
-            story.setStoryId(((Number) row[1]).intValue());
-            story.setLocationId(((Number) row[2]).intValue());
-            story.setContent((String) row[3]);
-            story.setStatus((String) row[4]);
-            story.setFullname((String) row[5]);
-            story.setAvatar((String) row[6]);
-            story.setMusicUrl((String) row[7]);
-            story.setMediaUrl((String) row[8]);
-            story.setCreate_time((String) row[9]);
-            story.setReaction_count(((Number) row[10]).intValue());
-            return story;
-        });
+        List<UserTagPostResponse> responses = friendShips.stream()
+                .map(u -> new UserTagPostResponse(
+                        ((Number) u[0]).intValue(),
+                        (String) u[1],
+                        (String) u[2]))
+                .collect(Collectors.toList());
+
+        List<FriendStoryResponseDTO> friendStoryResponseList = new ArrayList<>();
+
+        for (UserTagPostResponse user : responses) {
+
+            List<Object[]> results = storyRepository.foundStoryByUserId(user.getUserId(), pageable);
+
+            List<StoryResponseDTO> storys = results.stream()
+                    .map(u -> new StoryResponseDTO(
+                            ((Number) u[0]).intValue(),
+                            ((Number) u[1]).intValue(),
+                            ((Number) u[2]).intValue(),
+                            (String) u[3],
+                            (String) u[4],
+                            (String) u[5],
+                            (String) u[6],
+                            (String) u[7],
+                            (String) u[8],
+                            (String) u[9],
+                            ((Number) u[0]).intValue()))
+                    .collect(Collectors.toList());
+
+            FriendStoryResponseDTO friendResult = new FriendStoryResponseDTO();
+            friendResult.setUserId(user.getUserId());
+            friendResult.setFullname(user.getFullname());
+            friendResult.setAvatar(user.getAvatarUrl());
+            friendResult.setStorys(storys);
+
+            friendStoryResponseList.add(friendResult);
+        }
+        return new PageImpl<>(friendStoryResponseList, pageable, friendStoryResponseList.size());
     }
-
 }

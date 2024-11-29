@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.FriendStoryResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
 import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.service.StoryService;
@@ -36,7 +37,7 @@ public class StoryController {
     }
 
     @GetMapping("/friend_story/{userId}")
-    public Page<StoryResponseDTO> getStoriesByUserId(
+    public Page<FriendStoryResponseDTO> getStoriesByUserId(
             @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {

@@ -42,14 +42,23 @@ public class MemberController {
 
     // There are groups user create
     @GetMapping("/user-create/{userId}")
-    public Page<GroupResponseDTO> getAllListGroups(
+    public Page<GroupResponseDTO> getAllListGroupUserCreate(
             @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return memberService.foundGroupUserCreate(userId, page, size);
     }
 
-    // FoundGroup member send   
+    @GetMapping("/user-create/search")
+    public Page<GroupResponseDTO> searchGroupUserCreate(
+            @RequestParam("user_id") Integer user_id,
+            @RequestParam("q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return memberService.searchGroupUserCreate(user_id, keyword, page, size);
+    }
+
+    // FoundGroup member send
     @GetMapping("/group-join/{userId}")
     public Page<MemberJoinGroupResponseDTO> getGroupMemberJoin(
             @PathVariable Integer userId,
@@ -57,7 +66,17 @@ public class MemberController {
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getGroupMemberJoin(userId, page, size);
     }
-    
+
+    // Search group user join
+    @GetMapping("/group-join/search")
+    public ResponseEntity<Page<MemberJoinGroupResponseDTO>> searchGroups(@RequestParam("user_id") Integer user_id,
+            @RequestParam("q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        Page<MemberJoinGroupResponseDTO> groups = memberService.searchGroupMemberJoin(user_id, keyword, page, size);
+        return ResponseEntity.ok(groups);
+    }
+
     // Get
     @GetMapping("/{groupId}/status")
     public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
@@ -100,4 +119,5 @@ public class MemberController {
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
 }
