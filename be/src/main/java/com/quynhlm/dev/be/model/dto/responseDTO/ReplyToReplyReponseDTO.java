@@ -1,7 +1,5 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,12 +7,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 
-public class ReplyResponseDTO {
+public class ReplyToReplyReponseDTO {
+    private Integer id;
     private Integer replyId;
-    private Integer commentId;
     private Integer ownerId;
     private String fullname;
     private String avatar;
@@ -22,5 +20,4 @@ public class ReplyResponseDTO {
     private String create_time;
     private Integer reaction_count;
     private Boolean isAuthor;
-    private List<ReplyToReplyReponseDTO> replys;
 }

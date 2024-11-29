@@ -49,5 +49,4 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
             GROUP BY r.id, m.id, u.id, u.fullname, u.avatar_url, r.content, r.create_time
             """, nativeQuery = true)
     List<Object[]> fetchReplyByCommentId(@Param("comment_id") Integer comment_id);
-
 }

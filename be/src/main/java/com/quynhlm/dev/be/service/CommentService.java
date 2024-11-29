@@ -23,12 +23,14 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.CommentRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReplyToReplyReponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
+import com.quynhlm.dev.be.repositories.ReplyToReplyRepositoty;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
@@ -48,6 +50,9 @@ public class CommentService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private ReplyToReplyRepositoty replyToReplyRepositoty;
 
     @Value("${aws.s3.bucketName}")
     private String bucketName;
@@ -188,23 +193,44 @@ public class CommentService {
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
             List<ReplyResponseDTO> responses = rawResults.stream()
-                    .map(r -> new ReplyResponseDTO(
-                            ((Number) r[0]).intValue(),
-                            ((Number) r[1]).intValue(),
-                            ((Number) r[2]).intValue(),
-                            (String) r[3],
-                            (String) r[4],
-                            (String) r[5],
-                            (String) r[6],
-                            ((Number) r[7]).intValue()))
+                    .map(r -> {
+                        ReplyResponseDTO reply = new ReplyResponseDTO();
+                        reply.setReplyId(((Number) r[0]).intValue());
+                        reply.setCommentId(((Number) r[1]).intValue());
+                        reply.setOwnerId(((Number) r[2]).intValue());
+                        reply.setFullname((String) r[3]);
+                        reply.setAvatar((String) r[4]);
+                        reply.setContent((String) r[5]);
+                        reply.setCreate_time((String) r[6]);
+                        reply.setReaction_count(((Number) r[7]).intValue());
+                        reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
+
+                        List<Object[]> rawReplys = replyToReplyRepositoty
+                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue()); 
+
+                        List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
+                                .map(result -> {
+                                    ReplyToReplyReponseDTO reply_to_reply = new ReplyToReplyReponseDTO();
+                                    reply_to_reply.setId(((Number) result[0]).intValue());
+                                    reply_to_reply.setReplyId(((Number) result[1]).intValue());
+                                    reply_to_reply.setOwnerId(((Number) result[2]).intValue());
+                                    reply_to_reply.setFullname((String) result[3]);
+                                    reply_to_reply.setAvatar((String) result[4]);
+                                    reply_to_reply.setContent((String) result[5]);
+                                    reply_to_reply.setCreate_time((String) result[6]);
+
+                                    reply_to_reply.setIsAuthor(foundPost.getUser_id() == ((Number) result[2]).intValue());
+
+                                    return reply_to_reply;
+                                }).collect(Collectors.toList());
+
+                        reply.setReplys(responseReply);
+
+                        return reply;
+                    })
                     .collect(Collectors.toList());
 
-            if (foundPost.getUser_id() == ((Number) row[1]).intValue()) {
-                comment.setIsAuthor(true);
-            } else {
-                comment.setIsAuthor(false);
-            }
-
+            comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
             comment.setReplys(responses);
 
             return comment;
@@ -216,7 +242,7 @@ public class CommentService {
 
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
-            throw new PostNotFoundException("Found post with " + postId + " not found please try again");
+            throw new PostNotFoundException("Post with ID " + postId + " not found. Please try again.");
         }
 
         Pageable pageable = PageRequest.of(page, size);
@@ -236,24 +262,46 @@ public class CommentService {
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
             List<ReplyResponseDTO> responses = rawResults.stream()
-                    .map(r -> new ReplyResponseDTO(
-                            ((Number) r[0]).intValue(),
-                            ((Number) r[1]).intValue(),
-                            ((Number) r[2]).intValue(),
-                            (String) r[3],
-                            (String) r[4],
-                            (String) r[5],
-                            (String) r[6],
-                            ((Number) r[7]).intValue()))
+                    .map(r -> {
+                        ReplyResponseDTO reply = new ReplyResponseDTO();
+                        reply.setReplyId(((Number) r[0]).intValue());
+                        reply.setCommentId(((Number) r[1]).intValue());
+                        reply.setOwnerId(((Number) r[2]).intValue());
+                        reply.setFullname((String) r[3]);
+                        reply.setAvatar((String) r[4]);
+                        reply.setContent((String) r[5]);
+                        reply.setCreate_time((String) r[6]);
+                        reply.setReaction_count(((Number) r[7]).intValue());
+
+                        // Fetch reply-to-reply data
+                        List<Object[]> rawReplys = replyToReplyRepositoty
+                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue()); // Sửa tham số truy vấn
+
+                        List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
+                                .map(result -> {
+                                    ReplyToReplyReponseDTO reply_to_reply = new ReplyToReplyReponseDTO();
+                                    reply_to_reply.setId(((Number) result[0]).intValue());
+                                    reply_to_reply.setReplyId(((Number) result[1]).intValue());
+                                    reply_to_reply.setOwnerId(((Number) result[2]).intValue());
+                                    reply_to_reply.setFullname((String) result[3]);
+                                    reply_to_reply.setAvatar((String) result[4]);
+                                    reply_to_reply.setContent((String) result[5]);
+                                    reply_to_reply.setCreate_time((String) result[6]);
+
+                                    return reply_to_reply;
+                                }).collect(Collectors.toList());
+
+                        reply.setReplys(responseReply);
+
+                        return reply;
+                    })
                     .collect(Collectors.toList());
 
-            if (foundPost.getUser_id() == ((Number) row[1]).intValue()) {
-                comment.setIsAuthor(true);
-            } else {
-                comment.setIsAuthor(false);
-            }
+            comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
             comment.setReplys(responses);
+
             return comment;
         });
     }
+
 }

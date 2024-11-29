@@ -52,7 +52,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                         share s ON p.id = s.post_id
                     WHERE p.id = :post_id
                     GROUP BY
-                        p.id , m.media_url , u.id
+                        p.id , m.media_url , u.id , m.type
                     """, nativeQuery = true)
     List<Object[]> getPost(@Param("post_id") Integer post_id);
 
