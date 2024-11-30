@@ -18,7 +18,7 @@ import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.service.MemberPlanService;
 
 @RestController
-@RequestMapping(name = "api/member-plan")
+@RequestMapping("api/member-plan")
 public class MemberPlanController {
     @Autowired
     private MemberPlanService memberPlanService;
@@ -30,12 +30,14 @@ public class MemberPlanController {
         return memberPlanService.getRequestToJoinPlans(planId, status, page, size);
     }
 
-    @PostMapping("/request-join-plan")
-    public ResponseEntity<ResponseObject<Void>> requestToJoinPlan(@RequestBody MemberPlan member) {
-        ResponseObject<Void> result = new ResponseObject<>();
-        memberPlanService.requestToJoinPlan(member);
+    @PostMapping("/request-join-plan")      
+    public ResponseEntity<ResponseObject<MemberPlan>> requestToJoinPlan(@RequestBody MemberPlan member) {
+        ResponseObject<MemberPlan> result = new ResponseObject<>();
+        MemberPlan memberResponse = memberPlanService.requestToJoinPlan(member);
         result.setMessage("Send request join plan successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setData(memberResponse);
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<MemberPlan>>(result, HttpStatus.OK);
     }
 
     @PutMapping("/browse")

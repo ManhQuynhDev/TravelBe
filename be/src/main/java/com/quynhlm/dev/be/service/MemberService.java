@@ -42,7 +42,7 @@ public class MemberService {
     @Autowired
     private UserRepository userRepository;
 
-    public void requestToJoinGroup(Member member)
+    public Member requestToJoinGroup(Member member)
             throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException,
             UserWasAlreadyRequest {
 
@@ -70,6 +70,7 @@ public class MemberService {
         if (saveMember.getId() == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
+        return saveMember;
     }
 
     public Page<Member> getRequestToJoinGroup(Integer groupId, String status, int page, int size)

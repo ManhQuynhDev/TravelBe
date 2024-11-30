@@ -35,7 +35,7 @@ public class MemberPlanService {
     @Autowired
     private UserRepository userRepository;
 
-    public void requestToJoinPlan(MemberPlan member)
+    public MemberPlan requestToJoinPlan(MemberPlan member)
             throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
@@ -61,6 +61,7 @@ public class MemberPlanService {
         if (saveMember.getId() == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
+        return saveMember;
     }
 
     public void setAdminPlan(MemberPlan member)

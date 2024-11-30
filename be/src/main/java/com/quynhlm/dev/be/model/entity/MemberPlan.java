@@ -27,5 +27,5 @@ public class MemberPlan {
     private Integer userId;
     private String join_time;
     private String role;
-    private String status;
+    private String status;  
 }
