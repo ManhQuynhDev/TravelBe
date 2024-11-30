@@ -8,15 +8,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +36,9 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.GET, "/api/message/index").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**").permitAll()
                                                 .requestMatchers("/ws-message/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/web-server/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/assets/**").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/web-server/assets/**").permitAll()
                                                 .anyRequest().authenticated()); // Token
 
                 http.oauth2ResourceServer(oauth2 -> oauth2
