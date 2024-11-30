@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css"> -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+
+
+</head>
+
+<body>
+    <div th:replace="fragments/headerMain"></div>
+    <div id="headerFluid" class="d-none">
+        <header id="header"
+            class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered  ">
+            <div class="js-mega-menu navbar-nav-wrap">
+                <div class="navbar-brand-wrapper">
+                    <a class="navbar-brand" th:href="@{/}" aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div id="headerDouble" class="d-none">
+        <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
+        </header>
+    </div>
+    <div th:replace="fragments/sidebarMain"></div>
+    <div id="sidebarCompact" class="d-none">
+        <aside
+            class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
+            <div class="navbar-vertical-container">
+                <div class="navbar-vertical-content">
+                </div>
+            </div>
+        </aside>
+    </div>
+    <div th:replace="fragments/searchDropdown"></div>
+    <div id="content" role="main" class="main pointer-event">
+        <div class="container-fluid">
+            <div class="row mt-3 mb-0">
+                <!-- Card 1 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-70" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2">Total users</h6>
+                            <div class="row align-items-center gx-2">
+                                <div class="col">
+                                    <span class="js-counter display-4 text-dark" th:text="${userCount}">24</span>
+                                    <span class="text-body font-size-sm ml-1">from 9</span>
+                                </div>
+
+                                <div class="col-auto">
+                                    <span class="badge badge-soft-success p-1">
+                                        <i class="tio-trending-up"></i> <span
+                                            th:text="${formattedPercentage}">5.0</span>%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-70" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2">Active members</h6>
+
+                            <div class="row align-items-center gx-2">
+                                <div class="col">
+                                    <span class="js-counter display-4 text-dark" data-value="12">12</span>
+                                    <span class="text-body font-size-sm ml-1">from 11</span>
+                                </div>
+
+                                <div class="col-auto">
+                                    <span class="badge badge-soft-success p-1">
+                                        <i class="tio-trending-up"></i> 1.2%
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- End Row -->
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-70" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2">New/returning</h6>
+
+                            <div class="row align-items-center gx-2">
+                                <div class="col">
+                                    <span class="js-counter display-4 text-dark" data-value="56">56</span>
+                                    <span class="display-4 text-dark">%</span>
+                                    <span class="text-body font-size-sm ml-1">from 48.7</span>
+                                </div>
+
+                                <div class="col-auto">
+                                    <span class="badge badge-soft-danger p-1">
+                                        <i class="tio-trending-down"></i> 2.8%
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- End Row -->
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-70" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2">Active members</h6>
+
+                            <div class="row align-items-center gx-2">
+                                <div class="col">
+                                    <span class="js-counter display-4 text-dark" data-value="28">28</span>
+                                    <span class="display-4 text-dark">%</span>
+                                    <span class="text-body font-size-sm ml-1">from 28.6%</span>
+                                </div>
+
+                                <div class="col-auto">
+                                    <span class="badge badge-soft-secondary p-1">0.0%</span>
+                                </div>
+                            </div>
+                            <!-- End Row -->
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- <div class="row">
+                <div class="col-12 col-md-6">
+                    <canvas id="ageDistributionChart"></canvas>
+                </div>
+                <div class="col-12 col-md-6">
+                    <canvas id="weeklySignupChart"></canvas>
+                </div>
+            </div> -->
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Users</h5>
+                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
+                        id="addUser">
+                        <i class="tio-user-add mr-1"></i>Add User
+                    </button>
+                </div>
+                <div class="card-body">
+                    <table id="modernTable" class="dataTables_wrapper no-footer" style="width:100%">
+                        <thead class="table-white">
+                            <tr>
+                                <th>#</th>
+                                <th>Họ và Tên</th>
+                                <th>Email</th>
+                                <th>Số Điện Thoại</th>
+                                <th>Chức vụ</th>
+                                <th>Ngày Tạo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${userList}">
+                                <td class="text-start" th:text="${user.id}">ID</td>
+
+                                <td class="table-column-pl-0">
+                                    <a class="d-flex align-items-center"
+                                        th:onclick="'loadUserDetails(' + ${user.id} + ')'">
+                                        <div class="avatar avatar-circle">
+                                            <img class="avatar-img" th:src="${user.avatarUrl}" alt="Image Description">
+                                        </div>
+                                        <div class="ml-3">
+                                            <span class="d-block h5 text-hover-primary mb-0"
+                                                th:text="${user.fullname}">Amanda Harvey </span>
+                                            <span class="d-block font-size-sm text-body"
+                                                th:text="${user.email}">amanda@example.com</span>
+                                        </div>
+                                    </a>
+                                </td>
+
+
+                                <td class="text-start" th:text="${user.email}">Email</td>
+                                <td class="text-start" th:text="${user.phoneNumber}">Phone</td>
+                                <td class="text-start" th:text="${user.roles}">Role</td>
+                                <td class="text-start" th:text="${user.create_at}">Ngày Tạo</td>
+                                <td>
+                                    <button class="btn btn-sm btn-white" id="edit" th:attr="data-id=${user.id}">
+                                        <i class="tio-edit mr-1"></i>Edit
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
+                                        <i class="tio-users-switch mr-1"></i>Switch
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- Edit User -->
+            <div th:replace="fragments/users/editUserModal"></div>
+            <div th:replace="fragments/users/switchUserModal"></div>
+            <div th:replace="fragments/users/addUserModal"></div>
+            <div th:replace="fragments/users/userDetailsModal"></div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+    <script>
+        $(document).on('ready', function () {
+            $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+                $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+            });
+            var megaMenu = new HSMegaMenu($('.js-mega-menu'), {
+                desktop: {
+                    position: 'left'
+                }
+            }).init();
+            var sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+            $('.js-nav-tooltip-link').tooltip({ boundary: 'window' });
+            $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+                if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                    return false;
+                }
+            });
+        });
+
+
+    </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script> -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script>
+        // var ageDistributionChart = new Chart(document.getElementById('ageDistributionChart').getContext('2d'), {
+        //     type: 'doughnut',
+        //     data: {
+        //         labels: ['Under 18', '18-45', 'Above 45'],
+        //         datasets: [{
+        //             data: [25, 50, 25],
+        //             backgroundColor: ['#FF5733', '#33FF57', '#3357FF'],
+        //             borderWidth: 5
+        //         }]
+        //     }
+        // });
+
+        // var weeklySignupChart = new Chart(document.getElementById('weeklySignupChart').getContext('2d'), {
+        //     type: 'bar',
+        //     data: {
+        //         labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5'],
+        //         datasets: [{
+        //             label: 'Số người đăng ký',
+        //             data: [5, 12, 15, 20, 23],
+        //             backgroundColor: '#007bff'
+        //         }]
+        //     },
+        //     options: {
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: true,
+        //                 max: 50,
+        //                 ticks: { stepSize: 10 }
+        //             }
+        //         }
+        //     }
+        // });
+
+        $(document).ready(function () {
+            var table = $('#modernTable').DataTable({
+                dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
+                paging: true,
+                searching: true,
+                ordering: true,
+                order: [],
+                pageLength: 5,
+                columnDefs: [
+                    {
+                        targets: [4],
+                        orderable: false
+                    }
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search users",
+                    paginate: {
+                        previous: "Prev",
+                    },
+
+                }
+            });
+
+            $('#selectAll').on('click', function () {
+                var rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
+
+
+        });
+    </script>
+    <script>
+        document.getElementById('editAvatarUploaderModal').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const avatarImage = document.getElementById('editAvatarImgModal');
+                    avatarImage.src = e.target.result;  // Thay đổi src của hình ảnh
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+
+
+        // Hàm lấy dữ liệu người dùng và cập nhật các input trong modal
+        async function fetchOneUseData(userId) {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                    }
+                });
+                const data = await response.json();
+                console.log(data.data.fullname);
+
+
+
+                // Cập nhật các ô input trong modal với dữ liệu người dùng
+                // document.getElementById('editFullnameModal').value = data.data.fullname || '';  // Điền fullname vào input
+                document.getElementById('editPhoneModal').value = data.data.phoneNumber || '';  // Điền phone number vào input
+                document.getElementById('editBioModalLabel').value = data.data.bio || '';  // Điền email vào input
+
+
+
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi tải dữ liệu người dùng:', error);
+            }
+        }
+
+        document.querySelectorAll('#edit').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                modal.show();  // Hiển thị modal khi nhấn nút
+
+
+                fetchOneUseData(userId);
+
+                // Lấy và cập nhật dữ liệu từ API (nếu cần)
+                const updateProfile = async (id) => {
+                    try {
+                        // Tạo DTO từ form
+                        const token = localStorage.getItem('authToken');
+                        const phoneNumber = document.getElementById('editPhoneModal')?.value?.trim();
+                        const birthDate = document.getElementById('editBirthDayModalLabel')?.value?.trim();
+                        const bio = document.getElementById('editBioModalLabel')?.value?.trim();
+                        const avatarFile = document.getElementById('editAvatarUploaderModal')?.files[0];
+                        if (!phoneNumber || !birthDate || !bio) {
+                            throw new Error("Please fill in all fields.");
+                        }
+
+                        var dateParts = birthDate.split("-");
+                        var formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
+
+                        const updateDTO = {
+                            phoneNumber: phoneNumber,
+                            dob: formattedDate,
+                            bio: bio
+                        };
+
+                        const linkAPI = `http://localhost:8080/onboarding/change-profile/${id}`;
+                        const formData = new FormData();
+
+                        formData.append("updateDTO", new Blob([JSON.stringify(updateDTO)], { type: "application/json" }));
+
+                        // Thêm avatar nếu có
+                        if (avatarFile) {
+                            formData.append("imageFile", avatarFile);
+                        }
+
+                        // Gửi yêu cầu POST
+                        const response = await fetch(linkAPI, {
+                            method: "POST",
+                            body: formData,
+                            headers: {
+                                'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                            }
+                        });
+                        const data = await response.json();
+
+                        console.log(data);
+
+
+                        if (data.status !== false) {
+                            modal.hide(); // Ẩn modal khi cập nhật thành công
+                            alert("Cập nhật thành công!");
+
+
+                        } else {
+                            throw new Error("Lỗi :" + data.error.message);
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert(error.message || "Đã có lỗi xảy ra.");
+                    }
+                };
+                // Xử lý khi nhấn "Save Changes"
+                document.getElementById("submit").addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (userId) {
+                        updateProfile(userId);  // Gọi hàm cập nhật khi nhấn lưu
+                    } else {
+                        alert("Không có ID người dùng!");
+                    }
+                });
+            });
+        });
+
+
+        function checkStatus(userId) {
+            const token = localStorage.getItem('authToken');
+            const openButton = document.getElementById('openAccount');
+            const lockButton = document.getElementById('confirmLock');
+
+            return fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const userAccount = data.data.isLocked; // Lấy trạng thái tài khoản
+                    if (userAccount === "LOOK") {
+                        openButton.disabled = false;
+                        lockButton.disabled = true;
+                    } else {
+                        openButton.disabled = true;
+                        lockButton.disabled = false;
+                    }
+                    return userAccount; // Trả về trạng thái tài khoản
+                })
+                .catch(error => {
+                    console.error("Có lỗi xảy ra khi lấy thông tin người dùng:", error);
+                    alert("Có lỗi xảy ra khi lấy thông tin người dùng.");
+                    throw error; // Quăng lỗi để xử lý bên ngoài
+                });
+        }
+
+        document.querySelectorAll('.btn-outline-success').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                const token = localStorage.getItem('authToken');
+                const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
+                modal.show();
+
+                const openButton = document.getElementById('openAccount');
+                const lockButton = document.getElementById('confirmLock');
+
+                // Xóa các sự kiện cũ trước khi gắn sự kiện mới
+                const newOpenButton = replaceButtonWithClone(openButton);
+                const newLockButton = replaceButtonWithClone(lockButton);
+
+                // Kiểm tra trạng thái tài khoản
+                checkStatus(userId)
+                    .then(userAccount => {
+                        if (userAccount === "LOOK") {
+                            newOpenButton.addEventListener("click", () => {
+                                fetch(`http://localhost:8080/onboarding/locked-account/${userId}/isLocked?isLocked=OPEN`, {
+                                    method: "PUT",
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data) {
+                                            modal.hide();
+                                            alert("OPEN Succesfully")
+                                            location.reload();
+                                        } else {
+                                            alert("Có lỗi xảy ra khi mở khóa tài khoản.");
+                                        }
+                                    })
+                                    .catch(error => console.error("Lỗi:", error));
+                            });
+                        } else {
+                            newLockButton.addEventListener("click", () => {
+                                fetch(`http://localhost:8080/onboarding/locked-account/${userId}/isLocked?isLocked=LOOK`, {
+                                    method: "PUT",
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
+                                    }
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data) {
+                                            modal.hide();
+                                            alert("LOCK Succesfully")
+                                            location.reload();
+                                        } else {
+                                            alert("Có lỗi xảy ra khi khóa tài khoản.");
+                                        }
+                                    })
+                                    .catch(error => console.error("Lỗi:", error));
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Không thể kiểm tra trạng thái tài khoản:", error);
+                    });
+            });
+        });
+
+        function replaceButtonWithClone(button) {
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            return newButton;
+        }
+
+
+
+        document.getElementById("addUser").addEventListener("click", () => {
+            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
+            modal.show();
+        })
+
+        // Hàm này sẽ được gọi khi nhấn vào liên kết người dùng
+        function loadUserDetails(userId) {
+            const token = localStorage.getItem('authToken');
+            // Gửi yêu cầu HTTP đến API để lấy thông tin người dùng
+            fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                }
+            })
+                .then(response => response.json())  // Phân tích cú pháp JSON từ phản hồi
+                .then(data => {
+                    if (data.status) {
+                        const user = data.data; // Lấy dữ liệu người dùng từ API response
+                        console.log(user);
+                        console.log(user.fullname);
+
+                        // Cập nhật thông tin người dùng vào các phần tử trong modal
+                        document.getElementById('editAvatarImgModal').src = user.avatarUrl
+                        document.getElementById('userFullNameDetails').value = user.fullname || 'Full name not available'; // Gán giá trị fullname hoặc hiển thị thông báo nếu không có
+                        document.getElementById('userPhoneDetails').value = user.phoneNumber || 'Phone number not available'; // Gán giá trị phone hoặc hiển thị thông báo nếu không có
+                        document.getElementById('userBioDetails').value = user.bio || 'No bio available'; // Gán giá trị bio hoặc hiển thị thông báo nếu không có
+                        document.getElementById('userDOBDetails').value = user.dob || 'Date of birth not available'; // Gán giá trị ngày sinh hoặc hiển thị thông báo nếu không có
+
+
+
+                        // Mở modal
+                        const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+                        modal.show();
+                    } else {
+                        console.error('Lỗi khi tải thông tin người dùng');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi mạng:', error);
+                });
+        }
+
+
+
+
+    </script>
+
+    <script th:src="@{/assets/js/userjs.js}"></script>
+    <script>
+        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+    </script>
+    </div>
+</body>
+
+</html>
