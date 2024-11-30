@@ -118,7 +118,7 @@ public class AppSocketController {
             e.printStackTrace();
         }
     };
-
+    
     public DataListener<MessageSeenDTO> onMessageSeen = (client, messageSeenDTO, ackRequest) -> {
         try {
             String room = messageSeenDTO.getRoomId();

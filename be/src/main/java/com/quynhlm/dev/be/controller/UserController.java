@@ -30,6 +30,7 @@ import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
 
 import java.text.ParseException;
+import java.util.List;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,11 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @GetMapping("/users/role-admin")
+    public List<User> getAllListUser() {
+        return userService.getAllListUser();
+    }
 
     @PostMapping(path = "/register")
     public ResponseEntity<ResponseObject<Void>> register(@RequestBody @Valid User user) {

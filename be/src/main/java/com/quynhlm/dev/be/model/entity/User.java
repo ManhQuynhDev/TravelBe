@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
@@ -30,7 +27,6 @@ import lombok.Setter;
 @UserAccountElement.List({
         @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "email"),
 })
-@JsonInclude(Include.NON_NULL)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
