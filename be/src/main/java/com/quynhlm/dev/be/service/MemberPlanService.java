@@ -49,13 +49,13 @@ public class MemberPlanService {
         }
 
         Optional<MemberPlan> existingMember = memberPlanRepository.findByUserIdAndPlanIdAndStatusIn(
-                member.getUserId(), member.getPlanId(), Arrays.asList("PENDING", "APPROVED"));
+                member.getUserId(), member.getPlanId(), Arrays.asList("APPROVED"));
 
         if (existingMember.isPresent()) {
             throw new UnknownException("User has already requested to join or is already a member.");
         }
 
-        member.setStatus("PENDING"); // Waiting for request
+        member.setStatus("APPROVED");
         MemberPlan saveMember = memberPlanRepository.save(member);
 
         if (saveMember.getId() == null) {
@@ -64,9 +64,17 @@ public class MemberPlanService {
         return saveMember;
     }
 
+    public void deleteMemberPlan(Integer memberId,Integer planId) throws MemberNotFoundException {
+        MemberPlan foundMember = memberPlanRepository.findMemberById(memberId , planId);
+        if (foundMember == null) {
+            throw new MemberNotFoundException("Found user not found please try again");
+        }
+        memberPlanRepository.delete(foundMember);
+    }
+
     public void setAdminPlan(MemberPlan member)
             throws TravelPlanNotFoundException, UserAccountNotFoundException,
-            UnknownException , UserWasAlreadyRequest {
+            UnknownException, UserWasAlreadyRequest {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
