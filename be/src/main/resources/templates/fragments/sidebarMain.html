@@ -1,0 +1,75 @@
+<div id="sidebarMain" class="d-none" th:fragment="sidebarMain">
+    <aside
+    class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-light navbar-vertical-aside-initialized">
+        <div class="navbar-vertical-container">
+            <div class="navbar-vertical-footer-offset">
+                <div class="navbar-brand-wrapper justify-content-between">
+                    <a class="navbar-brand"  aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+                        <p>Travel With Me</p>
+                        <img class="navbar-brand-logo-mini" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                    <button type="button"
+                        class="js-navbar-vertical-aside-toggle-invoker navbar-vertical-aside-toggle btn btn-icon btn-xs btn-ghost-dark">
+                        <i class="tio-clear tio-lg"></i>
+                    </button>
+                </div>
+                <div class="navbar-vertical-content">
+                    <ul class="navbar-nav navbar-nav-lg nav-tabs">
+                        <li class="nav-item ">
+                            <a th:href="@{/web-server/}" class="js-nav-tooltip-link nav-link "  title="Dashboards"
+                                data-placement="left">
+                                <i class="tio-home-vs-1-outlined nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Dashboards</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <small class="nav-subtitle" title="Manages">Manages</small>
+                            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/users}" class="js-navbar-vertical-aside-menu-link nav-link "
+                                title="Users">
+                                <i class="tio-group-equal nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Users</span>
+                            </a>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu ">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link  " th:href="@{/web-server/posts}"
+                                title="Posts">
+                                <i class="tio-comment-image nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Posts
+                                </span>
+                            </a>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu ">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link  " th:href="@{/web-server/groups}"
+                                title="Posts">
+                                <i class="tio-comment-vs nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Groups</span>
+                            </a>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu ">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link  " href="javascript:;"
+                                title="Storys">
+                                <i class="tio-apps nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Storys</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <div class="nav-divider"></div>
+                        </li>
+                        <li class="nav-item">
+                            <small class="nav-subtitle" title="Documentation">Documentation</small>
+                            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
