@@ -58,7 +58,6 @@ public class AppSocketController {
     public ConnectListener onConnectListener = client -> {
         System.out.println("User " + client.getSessionId() + " connected");
 
-        // Kiểm tra xem người dùng đã online chưa
         String userId = client.getHandshakeData().getSingleUrlParam("userId");
         if (userId != null && !userId.isEmpty()) {
             if (userSocketMap.containsKey(userId)) {

@@ -188,6 +188,27 @@ public class StoryService {
         });
     }
 
+    public Page<StoryResponseDTO> getAllStoryCreateByUserId(Integer user_id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = storyRepository.fetchStoryByUserId(user_id, pageable);
+
+        return results.map(row -> {
+            StoryResponseDTO story = new StoryResponseDTO();
+            story.setOwnerId(((Number) row[0]).intValue());
+            story.setStoryId(((Number) row[1]).intValue());
+            story.setLocationId(((Number) row[2]).intValue());
+            story.setContent((String) row[3]);
+            story.setStatus((String) row[4]);
+            story.setFullname((String) row[5]);
+            story.setAvatar((String) row[6]);
+            story.setMusicUrl((String) row[7]);
+            story.setMediaUrl((String) row[8]);
+            story.setCreate_time((String) row[9]);
+            story.setReaction_count(((Number) row[10]).intValue());
+            return story;
+        });
+    }
+
     public Page<FriendStoryResponseDTO> fetchFriendStoriesByUserId(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 

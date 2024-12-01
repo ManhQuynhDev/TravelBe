@@ -719,4 +719,40 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             """, nativeQuery = true)
     Page<Object[]> fetchAllPost(Pageable pageable);
 
+    @Query(value = """
+            SELECT
+                        p.id AS post_id,
+                        u.id as owner_id,
+                        p.location_id,
+                        p.content,
+                        p.status,
+                        u.fullname AS fullname,
+                        u.avatar_url as avatar,
+                        m.media_url AS mediaUrl,
+                        m.type,
+                        p.create_time,
+                        COUNT(DISTINCT r.id) AS reaction_count,
+                        (
+            	SELECT COUNT(*)
+            	FROM comment c
+            	WHERE c.type = 'POST' AND c.post_id = p.id
+            ) AS comment_count,
+                        COUNT(DISTINCT s.id) AS share_count
+                    FROM
+                        post p
+                    INNER JOIN
+                        user u ON p.user_id = u.id
+                    INNER JOIN
+                        media m ON p.id = m.post_id
+                    LEFT JOIN
+                        post_reaction r ON p.id = r.post_id
+                    LEFT JOIN
+                        comment c ON p.id = c.post_id
+                    LEFT JOIN
+                        share s ON p.id = s.post_id
+                    WHERE u.id = :user_id
+                    GROUP BY
+                        p.id , m.media_url , u.id , m.type;
+            """, nativeQuery = true)
+    Page<Object[]> foundPostByUserId(@Param("user_id") Integer user_id , Pageable pageable);
 }

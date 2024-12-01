@@ -35,10 +35,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class PostController {
     @Autowired
     private PostService postService;
+
     // Find all
     @GetMapping("")
     public Page<PostMediaDTO> getAllPost(Pageable pageable) {
         return postService.getAllPost(pageable);
+    }
+
+    @GetMapping("/user-create/{user_id}")
+    public Page<PostMediaDTO> foundPostByUserId(@PathVariable Integer user_id, Pageable pageable) {
+        return postService.foundPostByUserId(user_id, pageable);
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -325,5 +325,30 @@ public class PostService {
             return post;
         });
     }
+
+
+    public Page<PostMediaDTO> foundPostByUserId(Integer user_id , Pageable pageable) {
+        Page<Object[]> results = postRepository.foundPostByUserId(user_id , pageable);
+
+        return results.map(row -> {
+            PostMediaDTO post = new PostMediaDTO();
+            
+            post.setPostId(((Number) row[0]).intValue());
+            post.setOwnerId(((Number) row[1]).intValue());
+            post.setLocationId(((Number) row[2]).intValue());
+            post.setContent((String) row[3]);
+            post.setStatus((String) row[4]);
+            post.setFullname((String) row[5]);
+            post.setAvatar((String) row[6]);
+            post.setMediaUrl((String) row[7]);
+            post.setType((String) row[8]);
+            post.setCreate_time((String) row[9]);
+            post.setReaction_count(((Number) row[10]).intValue());
+            post.setComment_count(((Number) row[11]).intValue());
+            post.setShare_count(((Number) row[12]).intValue());
+            return post;
+        });
+    }
+
     // Feature Search
 }

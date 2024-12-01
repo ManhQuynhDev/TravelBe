@@ -36,6 +36,14 @@ public class StoryController {
         return storyService.getAllStory(page, size);
     }
 
+    @GetMapping("/user-create/{user_id}")
+    public Page<StoryResponseDTO> getAllStoryCreateByUserId(
+            @PathVariable Integer user_id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return storyService.getAllStoryCreateByUserId(user_id, page, size);
+    }
+
     @GetMapping("/friend_story/{userId}")
     public Page<FriendStoryResponseDTO> getStoriesByUserId(
             @PathVariable Integer userId,
@@ -58,14 +66,14 @@ public class StoryController {
             @RequestPart(value = "mediaUrl", required = false) MultipartFile mediaUrl,
             @RequestPart(value = "musicFile", required = false) MultipartFile musicFile) throws Exception {
 
-         ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = new ObjectMapper();
         StoryRequestDTO story = null;
         try {
             story = objectMapper.readValue(storyJson, StoryRequestDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }        
+        }
 
         storyService.insertStory(story, mediaUrl, musicFile);
         ResponseObject<Void> result = new ResponseObject<>();

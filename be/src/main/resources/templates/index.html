@@ -196,17 +196,22 @@
     <h3>Seen Users</h3>
     <ul id="seen-users"></ul>
 
-    <script src="/js/jquery.min.js"></script>
-    <script src="/js/socket.io.js"></script>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
     <script>
-        const name = prompt("Enter your name:");
-        const room = prompt("Enter your room:");
+
+        const name = prompt("Enter your userId:");
+        const room = prompt("Enter your groupId:");
 
         const socketUrl = location.protocol + "//" + location.hostname + ":1111/chat";
         console.log(socketUrl);
         const socket = io.connect(socketUrl, {
             query: { room: room, userId: name }
         });
+
+        socket.on('connect', () => {
+			console.log("Connected with socket ID: ", socket.id);
+		});
 
         // DOM elements
         const chatForm = document.querySelector('#chat-form');

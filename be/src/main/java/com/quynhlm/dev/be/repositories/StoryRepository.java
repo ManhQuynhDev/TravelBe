@@ -67,7 +67,6 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
                 """, nativeQuery = true)
    Page<Object[]> fetchStoryByUserId(@Param("userId") Integer userId, Pageable pageable);
 
-
    @Query(value = """
             SELECT
             s.id AS story_id,
