@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageGroupResponseDTO;
 import com.quynhlm.dev.be.service.MessageGroupService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class MessageGroupController {
     private MessageGroupService messageGroupService;
 
     @GetMapping("/group-id/{groupId}")
-    public Page<UserMessageResponseDTO> getAllListMessage(@PathVariable Integer groupId,
+    public Page<UserMessageGroupResponseDTO> getAllListMessage(@PathVariable Integer groupId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return messageGroupService.getAllListData(groupId, page, size);

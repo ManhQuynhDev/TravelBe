@@ -16,4 +16,10 @@ public class MessageController {
     public String getIndexPage(Model model) {
         return "index";
     }
+
+
+    @GetMapping("/message")
+    public String getMessagePage(Model model) {
+        return "testmessage";
+    }
 }

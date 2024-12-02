@@ -79,7 +79,7 @@ public class MemberController {
 
     // Get
     @GetMapping("/{groupId}/status")
-    public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
+    public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getRequestToJoinGroup(groupId, status, page, size);

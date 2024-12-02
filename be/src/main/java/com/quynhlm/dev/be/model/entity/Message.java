@@ -21,10 +21,9 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String content;
-    private Integer userSendId;
-    private Integer userIdReceived;
-    private Integer groupId;
+    private Integer senderId;
+    private Integer receiverId;
     private String sendTime;
-    private String status;
+    private boolean status;
     private String mediaUrl;
 }

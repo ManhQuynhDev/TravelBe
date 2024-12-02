@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 request -> request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/message/index").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/message/message").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/js/**", "/css/**", "/images/**").permitAll()
                                                 .requestMatchers("/ws-message/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/web-server/**").permitAll()

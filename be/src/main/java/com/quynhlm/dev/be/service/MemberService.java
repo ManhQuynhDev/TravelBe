@@ -73,14 +73,28 @@ public class MemberService {
         return saveMember;
     }
 
-    public Page<Member> getRequestToJoinGroup(Integer groupId, String status, int page, int size)
+    public Page<MemberResponseDTO> getRequestToJoinGroup(Integer groupId, String status, int page, int size)
             throws GroupNotFoundException {
         Group foundGroup = groupRepository.findGroupById(groupId);
         if (foundGroup == null) {
             throw new GroupNotFoundException("Found member with groupId " + groupId + " not found , please try again");
         }
         Pageable pageable = PageRequest.of(page, size);
-        return memberRepository.getRequestToJoinGroup(groupId, status, pageable);
+
+
+        Page<Object[]> results = memberRepository.getRequestToJoinGroup(groupId , status , pageable);
+
+        return results.map(row -> {
+            MemberResponseDTO object = new MemberResponseDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setGroupId(((Number) row[1]).intValue());
+            object.setMemberId(((Number) row[2]).intValue());
+            object.setFullname(((String) row[3]));
+            object.setAvatar_url((String) row[4]);
+            object.setRole((String) row[5]);
+            object.setJoin_time((String) row[6]);
+            return object;
+        });
     }
 
     public void setAdminGroup(Member member)

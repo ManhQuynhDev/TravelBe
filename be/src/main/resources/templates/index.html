@@ -203,7 +203,7 @@
         const name = prompt("Enter your userId:");
         const room = prompt("Enter your groupId:");
 
-        const socketUrl = location.protocol + "//" + location.hostname + ":1111/chat";
+        const socketUrl = location.protocol + "//" + location.hostname + ":1111/group";
         console.log(socketUrl);
         const socket = io.connect(socketUrl, {
             query: { room: room, userId: name }
