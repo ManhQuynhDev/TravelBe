@@ -330,9 +330,9 @@
 
             socket.emit("message-seen", {
                 roomId: room,
-                messageId: data.message.id,
+                messageId: data.id,
                 viewerId: name,
-                senderId: data.message.userSendId,
+                senderId: data.userSendId,
                 status : true
             });
         });

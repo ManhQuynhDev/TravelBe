@@ -14,6 +14,7 @@ public interface MessageGroupRepository extends JpaRepository<MessageGroup, Inte
 
     @Query(value = """
                 SELECT
+                g.id,
                 g.user_send_id,
                 g.group_id,
                 g.content,
@@ -36,6 +37,7 @@ public interface MessageGroupRepository extends JpaRepository<MessageGroup, Inte
 
     @Query(value = """
                 SELECT
+                g.id,
                 g.user_send_id,
                 g.group_id,
                 g.content,

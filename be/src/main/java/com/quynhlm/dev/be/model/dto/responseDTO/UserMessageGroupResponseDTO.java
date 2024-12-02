@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class UserMessageGroupResponseDTO {
+    private Integer id;
     private Integer userSendId;
     private Integer groupId;
     private String content;

@@ -51,13 +51,14 @@ public class MessageGroupService {
 
         return results.map(row -> {
             UserMessageGroupResponseDTO object = new UserMessageGroupResponseDTO();
-            object.setUserSendId(((Number) row[0]).intValue());
-            object.setGroupId(((Number) row[1]).intValue());
-            object.setContent(((String) row[2]));
-            object.setFullname(((String) row[3]));
-            object.setAvatarUrl((String) row[4]);
-            object.setStatus(((Boolean) row[5]));
-            object.setSend_time((String) row[6]);
+            object.setId(((Number) row[0]).intValue());
+            object.setUserSendId(((Number) row[1]).intValue());
+            object.setGroupId(((Number) row[2]).intValue());
+            object.setContent(((String) row[3]));
+            object.setFullname(((String) row[4]));
+            object.setAvatarUrl((String) row[5]);
+            object.setStatus(((Boolean) row[6]));
+            object.setSend_time((String) row[7]);
             return object;
         });
     }
@@ -149,14 +150,15 @@ public class MessageGroupService {
 
         Object[] result = results.get(0);
 
-        Integer user_send_id = ((Number) result[0]).intValue();
-        Integer group_id = ((Number) result[1]).intValue();
-        String content = (String) result[2];
-        String fullname = (String) result[3];
-        String avatar = (String) result[4];
-        Boolean status = (Boolean) result[5];
-        String send_time = (String) result[6];
+        Integer message_id = ((Number) result[0]).intValue();
+        Integer user_send_id = ((Number) result[1]).intValue();
+        Integer group_id = ((Number) result[2]).intValue();
+        String content = (String) result[3];
+        String fullname = (String) result[4];
+        String avatar = (String) result[5];
+        Boolean status = (Boolean) result[6];
+        String send_time = (String) result[7];
 
-        return new UserMessageGroupResponseDTO(user_send_id, group_id,content,fullname,avatar ,status, send_time);
+        return new UserMessageGroupResponseDTO(message_id,user_send_id, group_id,content,fullname,avatar ,status, send_time);
     }
 }
