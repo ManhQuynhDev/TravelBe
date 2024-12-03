@@ -210,8 +210,8 @@
         });
 
         socket.on('connect', () => {
-			console.log("Connected with socket ID: ", socket.id);
-		});
+            console.log("Connected with socket ID: ", socket.id);
+        });
 
         // DOM elements
         const chatForm = document.querySelector('#chat-form');
@@ -301,14 +301,15 @@
                         content: message,
                         groupId: room,
                     },
-                    status : false,
+                    status: false,
                     file: fileBase64 ?? null
                 };
 
-                if (message) {
-                    socket.emit('onChat', data); 
-                    chatMess.value = ''; 
-                }
+                console.log(data);
+
+                socket.emit('onChat', data);
+                chatMess.value = '';
+
             }
         });
 
@@ -321,9 +322,9 @@
 
             if (data.mediaUrl) {
                 const imageElement = document.createElement('img');
-                imageElement.src = data.mediaUrl; 
-                imageElement.alt = 'Sent image';  
-                imageElement.style.maxWidth = '300px'; 
+                imageElement.src = data.mediaUrl;
+                imageElement.alt = 'Sent image';
+                imageElement.style.maxWidth = '300px';
                 imageElement.style.marginTop = '10px';
                 chatItem.appendChild(imageElement);
             }
@@ -333,7 +334,7 @@
                 messageId: data.id,
                 viewerId: name,
                 senderId: data.userSendId,
-                status : true
+                status: true
             });
         });
 

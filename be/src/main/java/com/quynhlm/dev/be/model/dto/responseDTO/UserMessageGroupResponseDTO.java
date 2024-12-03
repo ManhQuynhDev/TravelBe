@@ -15,6 +15,7 @@ public class UserMessageGroupResponseDTO {
     private Integer userSendId;
     private Integer groupId;
     private String content;
+    private String mediaUrl;
     private String fullname;
     private String avatarUrl;
     private Boolean status;
