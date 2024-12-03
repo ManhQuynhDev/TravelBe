@@ -20,8 +20,8 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
-import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.service.PostService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,9 +63,9 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Post postResponse = postService.insertPost(post, files, type);
+        PostSaveResponseDTO postResponse = postService.insertPost(post, files, type);
 
-        ResponseObject<Post> result = new ResponseObject<>();
+        ResponseObject<PostSaveResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
         result.setStatus(true);
         result.setData(postResponse);

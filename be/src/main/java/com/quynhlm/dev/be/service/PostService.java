@@ -21,6 +21,7 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
@@ -59,7 +60,7 @@ public class PostService {
     @Autowired
     private FriendShipRepository friendShipRepository;
 
-    public Post insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
+    public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
             throws UnknownException {
         try {
             Post post = new Post();
@@ -100,7 +101,8 @@ public class PostService {
                     }
                 }
             }
-            return post;
+
+            return getAnPostReturnSave(savedPost.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
@@ -209,6 +211,34 @@ public class PostService {
         Integer share_count = ((Number) result[12]).intValue();
 
         return new PostMediaDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time , reaction_count , comment_count , share_count);
+    }
+
+
+    public PostSaveResponseDTO getAnPostReturnSave(Integer post_id) throws PostNotFoundException {
+        List<Object[]> results = postRepository.getPost(post_id);
+
+        if (results.isEmpty()) {
+            throw new PostNotFoundException(
+                    "Id " + post_id + " not found or invalid data. Please try another!");
+        }
+
+        Object[] result = results.get(0);
+
+        Integer ownerId = ((Number) result[0]).intValue();
+        Integer postId = ((Number) result[1]).intValue();
+        Integer locationId = ((Number) result[2]).intValue();
+        String content = (String) result[3];
+        String status = (String) result[4];
+        String fullname = (String) result[5];
+        String avatar = (String) result[6];
+        String mediaUrl = (String) result[7];
+        String type = (String) result[8];
+        String create_time = (String) result[9];
+        // Integer reaction_count = ((Number) result[10]).intValue();
+        // Integer comment_count = ((Number) result[11]).intValue();
+        // Integer share_count = ((Number) result[12]).intValue();
+
+        return new PostSaveResponseDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time);
     }
 
     // Update post
