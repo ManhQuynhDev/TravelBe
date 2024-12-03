@@ -234,9 +234,6 @@ public class PostService {
         String mediaUrl = (String) result[7];
         String type = (String) result[8];
         String create_time = (String) result[9];
-        // Integer reaction_count = ((Number) result[10]).intValue();
-        // Integer comment_count = ((Number) result[11]).intValue();
-        // Integer share_count = ((Number) result[12]).intValue();
 
         return new PostSaveResponseDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time);
     }

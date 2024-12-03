@@ -12,6 +12,6 @@ import lombok.Setter;
 public class PostRequestDTO {
     private String content;
     private String status;
-    private Integer user_id;
+    private Integer user_id;    
     private Integer location_id;
 }

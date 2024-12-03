@@ -15,6 +15,14 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member WHERE id = :id", nativeQuery = true)
     Member findMemberById(@Param("id") Integer id);
 
+    @Query(value = "SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.role <> 'ADMIN' AND m.status = 'APPROVED'", nativeQuery = true)
+    Member findUserMemberById(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
+    @Query(value = "SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.role = 'ADMIN'", nativeQuery = true)
+    Member findUserAdminById(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
     @Query("SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.status IN :status")
     Optional<Member> findByUser_idAndGroup_idAndStatusIn(
             @Param("userId") Integer userId,
@@ -24,6 +32,8 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId AND m.status = :status", nativeQuery = true)
     List<Member> findByGroup_idAndStatus(@Param("groupId") Integer groupId, @Param("status") String status);
 
+    @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId", nativeQuery = true)
+    List<Member> findByGroupId(@Param("groupId") Integer groupId);
     @Query(value = """
                 select
             	u.id as user_id,

@@ -119,5 +119,17 @@ public class MemberController {
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    
+    @PutMapping("/change-admin")
+    public ResponseEntity<ResponseObject<Void>> changeRoleAdmin(
+            @RequestParam(name = "adminId") Integer adminId,
+            @RequestParam(name = "memberId") Integer memberId,
+            @RequestParam(name = "groupId") Integer groupId) {
 
+        ResponseObject<Void> result = new ResponseObject<>();
+        memberService.changeRoleAdmin(adminId , memberId , groupId);
+        result.setMessage("Change role admin successfully");
+        result.setStatus(true);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

@@ -81,8 +81,7 @@ public class MemberService {
         }
         Pageable pageable = PageRequest.of(page, size);
 
-
-        Page<Object[]> results = memberRepository.getRequestToJoinGroup(groupId , status , pageable);
+        Page<Object[]> results = memberRepository.getRequestToJoinGroup(groupId, status, pageable);
 
         return results.map(row -> {
             MemberResponseDTO object = new MemberResponseDTO();
@@ -131,6 +130,40 @@ public class MemberService {
             throw new GroupNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
         }
         memberRepository.delete(foundMember);
+    }
+
+    public void changeRoleAdmin(int adminId, int memberId, int groupId) throws UserAccountNotFoundException {
+
+        Member foundUserMember = memberRepository.findUserMemberById(memberId, groupId);
+
+        if (foundUserMember == null) {
+            throw new UserAccountNotFoundException( "Found member with " + memberId + " not found please try again");
+        }
+
+        Member memberManager = memberRepository.findUserAdminById(adminId, groupId);
+
+        if (memberManager == null) {
+            throw new UserAccountNotFoundException(
+                    "Found member admin with " + adminId + " not found please try again");
+        }
+
+        if (!memberManager.getRole().equals("ADMIN")) {
+            throw new UnknownException("You do not have permission to approve/reject members.");
+        }
+
+        memberManager.setStatus(Role.USER.name());
+
+        foundUserMember.setStatus(Role.ADMIN.name());
+
+        Member saveUserMember = memberRepository.save(foundUserMember);
+        if (saveUserMember == null) {
+            throw new UnknownException("Transaction cannot be completed!");
+        }
+
+        Member saveUserAdmin = memberRepository.save(memberManager);
+        if (saveUserAdmin == null) {
+            throw new UnknownException("Transaction cannot be completed!");
+        }
     }
 
     // member id == managerId
