@@ -105,7 +105,6 @@ public class MemberController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-
     @DeleteMapping("/reject_member")
     public ResponseEntity<ResponseObject<Void>> rejectMember(
             @RequestParam Integer groupId,

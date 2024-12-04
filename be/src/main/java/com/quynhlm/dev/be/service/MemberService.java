@@ -308,17 +308,17 @@ public class MemberService {
 
     public Page<MemberResponseDTO> getListMemberFromGroup(Integer groupId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = memberRepository.foundUserJoinGroup(groupId, pageable);
+        Page<Object[]> results = memberRepository.foundMemberJoinGroup(groupId, pageable);
 
         return results.map(row -> {
             MemberResponseDTO object = new MemberResponseDTO();
             object.setUserId(((Number) row[0]).intValue());
             object.setGroupId(((Number) row[1]).intValue());
             object.setMemberId(((Number) row[2]).intValue());
-            object.setFullname(((String) row[4]));
-            object.setAvatar_url((String) row[5]);
-            object.setRole((String) row[9]);
-            object.setJoin_time((String) row[10]);
+            object.setFullname(((String) row[3]));
+            object.setAvatar_url((String) row[4]);
+            object.setRole((String) row[5]);
+            object.setJoin_time((String) row[6]);
             return object;
         });
     }
