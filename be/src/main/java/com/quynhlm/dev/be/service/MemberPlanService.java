@@ -17,7 +17,7 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.Role;
-import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberPlanResponseDTO;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.repositories.MemberPlanRepository;
@@ -105,7 +105,7 @@ public class MemberPlanService {
         }
     }
 
-    public Page<MemberResponseDTO> getRequestToJoinPlans(Integer planId, int page, int size)
+    public Page<MemberPlanResponseDTO> getRequestToJoinPlans(Integer planId, int page, int size)
             throws TravelPlanNotFoundException {
         Travel_Plan foundPlan = travelPlanRepository.getAnTravel_Plan(planId);
         if (foundPlan == null) {
@@ -117,9 +117,9 @@ public class MemberPlanService {
         Page<Object[]> results = memberPlanRepository.foundMemberJoinWithPlan(planId, pageable);
 
         return results.map(row -> {
-            MemberResponseDTO object = new MemberResponseDTO();
+            MemberPlanResponseDTO object = new MemberPlanResponseDTO();
             object.setUserId(((Number) row[0]).intValue());
-            object.setGroupId(((Number) row[1]).intValue());
+            object.setPlanId(((Number) row[1]).intValue());
             object.setMemberId(((Number) row[2]).intValue());
             object.setFullname(((String) row[3]));
             object.setAvatar_url((String) row[4]);

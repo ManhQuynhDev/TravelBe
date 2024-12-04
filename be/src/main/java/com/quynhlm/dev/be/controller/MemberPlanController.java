@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberPlanResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.service.MemberPlanService;
@@ -25,7 +26,7 @@ public class MemberPlanController {
     private MemberPlanService memberPlanService;
 
     @GetMapping("/joined/{planId}")
-    public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer planId,
+    public Page<MemberPlanResponseDTO> getListUserByStatus(@PathVariable Integer planId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return memberPlanService.getRequestToJoinPlans(planId, page, size);
