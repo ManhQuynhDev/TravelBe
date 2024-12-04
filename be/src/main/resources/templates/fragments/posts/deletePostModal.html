@@ -1,18 +1,18 @@
-<div class="modal fade" id="lockUserModal" tabindex="-1" aria-labelledby="lockUserModalTitle" style="display: none;" aria-hidden="true">
+<div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="deletePostModalTitle" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="lockUserModalTitle" class="modal-title">Confirm Lock User</h5>
+                <h5 id="deletePostModalTitle" class="modal-title">Confirm Delete Post</h5>
                 <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to lock this user?</p>
+                <p>Are you sure you want to delete this post?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="openAccount" disabled>OPEN</button>
-                <button type="button" id="confirmLock" class="btn btn-danger" disabled>LOCK</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Cancel</button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">Delete</button>
             </div>
         </div>
     </div>

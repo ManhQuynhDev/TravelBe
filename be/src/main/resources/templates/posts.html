@@ -48,56 +48,71 @@
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
 
-            <div class="card">
+            <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Post List</h5>
+                    <h5 class="card-title">Post</h5>
+                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
+                        id="addPost">
+                        <i class="tio-user-add mr-1"></i>Add Post
+                    </button>
                 </div>
                 <div class="card-body">
-                    <table id="modernTable1" class="dataTables_wrapper no-footer" style="width:100%">
-                        <thead class="table-white">
-                            <tr>
-                                <th>#</th>
-                                <th>Content</th>
-                                <th>Created Time</th>
-                                <th>Hashtags</th>
-                                <th>Location ID</th>
-                                <th>Status</th> <!-- Đã thêm cột Status -->
-                                <th>User</th> <!-- Đã thêm cột User ID -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="post : ${postList}">
-                                <td class="text-start" th:text="${post.postId}">ID</td>
-                                <td class="text-start">
-                                    <div class="row">
-                                        <div class="d-flex align-items-center">
-                                            <!-- Hiển thị ảnh nếu có -->
-                                            <img th:if="${post.mediaUrl != null}" th:src="${post.mediaUrl}"
-                                                alt="Content Image" class="img-fluid"
-                                                style="max-width: 70px; height: auto; margin-right: 10px;">
-                                            <!-- Hiển thị nội dung văn bản -->
-                                            <a href="#" data-toggle="modal"
-                                                th:onclick="'loadPostDetails(' + ${post.postId} + ')'"
-                                                data-target="#postDetailModal" class="text-body text-decoration-none">
-                                                <span th:text="${post.content}"></span>
-                                            </a>
+                    <div class="table-responsive">
+                        <table id="modernTable1" class="table-striped table-hover">
+                            <thead class="table-white">
+                                <tr>
+                                    <th>#</th>
+                                    <th style="min-width: 200px;">Content</th>
+                                    <th>Created Time</th>
+                                    <th>Hashtags</th>
+                                    <th>Location ID</th>
+                                    <th>Status</th>
+                                    <th style="min-width: 110px;">User</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="post : ${postList}">
+                                    <td class="text-start" th:text="${post.postId}">ID</td>
+                                    <td class="text-start">
+                                        <div class="row">
+                                            <div class="d-flex align-items-center">
+                                                <img th:if="${post.mediaUrl != null}" th:src="${post.mediaUrl}"
+                                                    alt="Content Image" class="img-fluid"
+                                                    style="max-width: 70px; height: auto; margin-right: 10px;">
+                                                <a href="#" data-toggle="modal"
+                                                    th:onclick="'loadPostDetails(' + ${post.postId} + ')'"
+                                                    data-target="#postDetailModal"
+                                                    class="text-body text-decoration-none">
+                                                    <span th:text="${post.content}"></span>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="text-start" th:text="${post.create_time}">Created Time</td>
-                                <td class="text-start" th:text="${post.comment_count}">Hashtags</td>
-                                <td class="text-start" th:text="${post.locationId}">Location ID</td>
-                                <td class="text-start" th:text="${post.status}">Status</td> <!-- Thêm cột Status -->
-                                <td class="text-start" th:text="${post.fullname}">User ID</td>
-                                <!-- Thêm cột User ID -->
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                    <td class="text-start" th:text="${post.create_time}">Created Time</td>
+                                    <td class="text-start" th:text="${post.comment_count}">Hashtags</td>
+                                    <td class="text-start" th:text="${post.locationId}">Location ID</td>
+                                    <td class="text-start" th:text="${post.status}">Status</td>
+                                    <td class="text-start" th:text="${post.fullname}">User ID</td>
+                                    <td class="text-center">
+
+                                        <button class="btn btn-sm btn-danger mr-2" id="deletePost"
+                                            th:attr="data-id=${post.postId}">
+                                            <i class="tio-delete-outlined mr-1"></i>Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
 
 
             <div th:replace="fragments/posts/postDetailModal"></div>
+            <div th:replace="fragments/posts/addPostModal"></div>
+            <div th:replace="fragments/posts/deletePostModal"></div>
         </div>
     </div>
 
@@ -123,7 +138,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [4],
+                        targets: [7],
                         orderable: false
                     }
                 ],
@@ -151,8 +166,8 @@
                 }
             });
         });
+        const token = localStorage.getItem('authToken');
         function loadPostDetails(id) {
-            const token = localStorage.getItem('authToken');
             fetch(`http://localhost:8080/api/posts/${id}`, {
                 method: 'GET',
                 headers: {
@@ -178,6 +193,111 @@
                     console.error("That bai: ", error);
                 })
         }
+
+
+        // add post
+        document.getElementById('addPost').addEventListener('click', function () {
+            $('#addPostModal').modal('show');  // Mở modal
+        });
+
+        document.getElementById('savePostButton').addEventListener('click', function () {
+            var content = document.getElementById('postContent').value;
+            var status = document.getElementById('postStatus').value;
+            var location = document.getElementById('postLocation').value;
+            var media = document.getElementById('postMediaInput').files[0];
+
+            // Lấy token từ localStorage (hoặc sessionStorage, cookie tùy vào cách bạn lưu trữ)
+            var user_id = localStorage.getItem('user_id');
+
+            // Kiểm tra loại file media (image hoặc video)
+            var type = '';
+            if (media) {
+                var fileType = media.type;  // Kiểm tra loại MIME của tệp
+                if (fileType.startsWith('image/')) {
+                    type = 'image';  // Nếu là ảnh
+                } else if (fileType.startsWith('video/')) {
+                    type = 'video';  // Nếu là video
+                } else {
+                    type = 'other';  // Nếu không phải ảnh hoặc video
+                }
+                console.log("Media file selected:", media);  // Kiểm tra file được chọn
+            } else {
+                console.log("No media file selected");  // Nếu không có file được chọn
+                type = 'none';  // Gán 'none' nếu không có file
+            }
+
+            // Tạo đối tượng FormData để gửi dữ liệu bao gồm media (nếu có)
+            var formData = new FormData();
+            formData.append('post', JSON.stringify({
+                content: content,
+                status: status,
+                location_id: location,
+                user_id: user_id
+            }));
+            if (media) {
+                formData.append('files', media);
+            } else {
+
+                console.log("No media file selected, sending empty file.");
+            }
+            formData.append('type', type);
+
+            fetch('http://localhost:8080/api/posts', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token  // Thêm token vào header Authorization
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Data:', data);
+                    alert('Post created successfully');
+                    $('#addPostModal').modal('hide');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+
+        //delete posst
+        document.querySelectorAll('#deletePost').forEach(button => {
+            button.addEventListener("click", function () {
+                const post_id = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("deletePostModal"));
+                modal.show();
+
+                document.getElementById("confirmDelete").addEventListener("click", () => {
+                    fetch(`http://localhost:8080/api/posts/${post_id}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === "Delete post successfully") {
+                                alert("Delete Successfully");
+                                modal.hide();
+
+                                const storyRow = button.closest('tr');
+                                if (storyRow) {
+                                    storyRow.remove();
+                                }
+                            } else {
+                                alert("Failed to delete post");
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+                })
+            })
+        })
+
+
     </script>
 
 
@@ -200,6 +320,9 @@
                     return false;
                 }
             });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
         });
 
 

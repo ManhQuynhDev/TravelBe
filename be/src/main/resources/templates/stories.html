@@ -88,16 +88,10 @@
                                     <span th:text="${story.fullname}">User</span>
                                 </td>
                                 <td class="text-center">
-                                    <div class="d-flex">
-                                        <button class="btn btn-sm btn-white mr-2" id="editStory"
-                                            th:attr="data-id=${story.storyId}">
-                                            <i class="tio-edit mr-1"></i>Edit
-                                        </button>
-                                        <button class="btn btn-sm btn-danger" id="deleteStory"
-                                            th:attr="data-id=${story.storyId}">
-                                            <i class="tio-delete-outlined mr-1"></i>Delete
-                                        </button>
-                                    </div>
+                                    <button class="btn btn-sm btn-danger" id="deleteStory"
+                                        th:attr="data-id=${story.storyId}">
+                                        <i class="tio-delete-outlined mr-1"></i>Delete
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -106,6 +100,9 @@
                 </div>
             </div>
         </div>
+        <div th:replace="fragments/stories/storyDetailModal"></div>
+        <div th:replace="fragments/stories/deleteStoryModal"></div>
+        <div th:replace="fragments/stories/addStoryModal"></div>
     </div>
 
     <script th:src="@{/assets/js/demo.js}"></script>
@@ -153,7 +150,7 @@
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search posts",
+                    searchPlaceholder: "Search stories",
                     paginate: {
                         previous: "Prev",
                     },
@@ -175,6 +172,139 @@
                 }
             });
         });
+        const token = localStorage.getItem("authToken");
+        const user_id = localStorage.getItem("user_id")
+
+        // details storry
+        function loadStoryDetails(id) {
+            fetch(`http://localhost:8080/api/stories/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const story = data.data;
+
+                    // Cập nhật thông tin trong modal
+                    document.getElementById('storyMediaImgModal').src = story.url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+                    document.getElementById('storyContentDetails').value = story.content || '';
+                    document.getElementById('storyCreatedTimeDetails').value = story.create_time || '';
+                    document.getElementById('storyHashtagDetails').value = story.hastag || '';
+                    document.getElementById('storyStatusDetails').value = story.status || '';
+
+                    const music = document.getElementById("musicDetail");
+                    const audioElement = document.getElementById("storyMusicDetails");
+                    const noMusicMessage = document.getElementById('noMusicMessage');
+                    if (story.music_url) {
+                        audioElement.src = story.music_url;
+                        audioElement.style.display = 'block';
+                        noMusicMessage.style.display = 'none';
+                        audioElement.load();
+                    } else {
+                        audioElement.style.display = 'none';
+                        noMusicMessage.style.display = 'block';
+                    }
+
+                    // Hiển thị modal
+                    const modal = new bootstrap.Modal(document.getElementById("storyDetailModal"));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error("Failed: ", error);
+                });
+        }
+
+        // delete story
+        document.querySelectorAll('#deleteStory').forEach(button => {
+            button.addEventListener("click", function () {
+                const storyId = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+                modal.show();
+
+                document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+                    fetch(`http://localhost:8080/api/stories/${storyId}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === "Delete story successfully") {
+                                alert("Delete Successfully");
+                                modal.hide();
+
+                                const storyRow = button.closest('tr');
+                                if (storyRow) {
+                                    storyRow.remove();
+                                }
+                            } else {
+                                alert("Failed to delete story");
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+                })
+            })
+        })
+
+        //add story
+        document.getElementById('saveStoryButton').addEventListener('click', function () {
+            // Lấy dữ liệu từ các input
+            const content = document.getElementById('storyContent').value;
+            const status = document.getElementById('storyStatus').value;
+            const location = document.getElementById('storyLocation').value;
+            const mediaFile = document.getElementById('storyMediaInput').files[0]; // Hình ảnh/Video
+            const musicFile = document.getElementById('storyMusicFile').files[0]; // Âm thanh
+            const hastag = document.getElementById('storyHashtag').value;  // Lấy giá trị hashtag người dùng nhập
+
+            // Kiểm tra nếu file ảnh không tồn tại
+            if (!mediaFile) {
+                alert('Please select at least one image or video.');
+                return;
+            }
+
+            // Tạo FormData để gửi dữ liệu với file
+            const formData = new FormData();
+            formData.append('story', JSON.stringify({
+                content: content,
+                status: status,
+                location_id: location,
+                hastag: hastag,
+                user_id:user_id  
+            }));
+
+            formData.append('mediaUrl', mediaFile);  // File ảnh là bắt buộc
+
+            // Nếu có file âm nhạc, thêm vào FormData
+            if (musicFile) {
+                formData.append('musicFile', musicFile);
+            }
+
+            // Gửi dữ liệu tới API
+            fetch('http://localhost:8080/api/stories', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Story added successfully!');
+                    $('#addStoryModal').modal('hide'); // Đóng modal sau khi thành công
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to add story.');
+                });
+        });
+
+
     </script>
 
 </body>

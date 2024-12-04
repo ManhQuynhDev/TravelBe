@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-BeApplication<be>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.quynhlm.dev.be.BeApplication",
+            "projectName": "be",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

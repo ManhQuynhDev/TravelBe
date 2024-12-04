@@ -48,12 +48,16 @@
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
 
-            <div class="card">
+            <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Group List</h5>
+                    <h5 class="card-title">Groups List</h5>
+                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
+                        id="addPost">
+                        <i class="tio-user-add mr-1"></i>Add Group
+                    </button>
                 </div>
                 <div class="card-body">
-                    <table id="modernTable2" class="dataTables_wrapper no-footer" style="width:100%">
+                    <table id="modernTable2" class="table-striped table-hover">
                         <thead class="table-white">
                             <tr>
                                 <th>#</th>
@@ -62,6 +66,7 @@
                                 <th>Number of Members</th>
                                 <th>Admin</th>
                                 <th>Created Time</th>
+                                <th>Actions</th> <!-- Thêm cột hành động -->
                             </tr>
                         </thead>
                         <tbody>
@@ -71,12 +76,10 @@
                                     <a class="d-flex align-items-center"
                                         th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
                                         <div class="avatar avatar-circle">
-                                            <img class="avatar-img" th:src="${group.cover_photo}"
-                                                alt="Image Description">
+                                            <img class="avatar-img" th:src="${group.cover_photo}" alt="Image Description">
                                         </div>
                                         <div class="ml-3">
-                                            <span class="d-block h5 text-hover-primary mb-0"
-                                                th:text="${group.group_name}">Amanda Harvey </span>
+                                            <span class="d-block h5 text-hover-primary mb-0" th:text="${group.group_name}">Amanda Harvey</span>
                                         </div>
                                     </a>
                                 </td>
@@ -84,12 +87,21 @@
                                 <td class="ml-5">
                                     <span class="text-start" th:text="${group.member_count}">Bio</span>
                                 </td>
-
                                 <td class="text-start" th:text="${group.admin_name}">User ID</td>
                                 <td class="text-start" th:text="${group.create_time}">Created Time</td>
+                                <td>    
+                                    <button class="btn btn-sm btn-danger" id="deleteGroup" data-id="${group.groupId}">
+                                        Delete
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" id="viewMembers" data-id="${group.groupId}">
+                                        View Members
+                                    </button>
+                                </td>
+                                
                             </tr>
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
         
@@ -189,6 +201,9 @@
                 }
             });
         });
+        $('.js-hs-unfold-invoker').each(function () {
+                var unfold = new HSUnfold($(this)).init();
+            });
 
 
     </script>

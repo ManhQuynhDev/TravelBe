@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.service.ActivitiesService;
+import com.quynhlm.dev.be.service.CommentService;
 import com.quynhlm.dev.be.service.GroupService;
 import com.quynhlm.dev.be.service.PostService;
+import com.quynhlm.dev.be.service.StoryService;
+import com.quynhlm.dev.be.service.TravelPlanService;
 import com.quynhlm.dev.be.service.UserService;
 
 @Controller
@@ -28,6 +32,17 @@ public class HomeController {
     @Autowired
     private GroupService groupService;
 
+    @Autowired
+    private CommentService commentService;
+
+    @Autowired
+    private TravelPlanService travelPlanService;
+
+    @Autowired
+    private ActivitiesService activitiesService;
+
+    @Autowired
+    private StoryService storyService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -71,6 +86,35 @@ public class HomeController {
     public String group(Model model) {
         model.addAttribute("groupList", groupService.getAllGroup(0, 1000));
         return "groups";
+    }
+
+    @GetMapping("/travel-plan")
+    public String travelPlan(Model model) {
+        model.addAttribute("listTravelPlans", travelPlanService.getAllPlans(0, 1000));
+        return "travelplan";
+    }
+
+    @GetMapping("/activity")
+    public String activity(Model model) {
+        model.addAttribute("activityList", activitiesService.getListData(0, 1000));
+        return "activity";
+    }
+
+    @GetMapping("/account-settings")
+    public String accountSetting(Model model) {
+        return "accountSetting";
+    }
+
+    @GetMapping("/stories")
+    public String stories(Model model) {
+        model.addAttribute("storyList", storyService.getAllStory(0, 1000));
+        return "stories";
+    }
+
+    @GetMapping("/comments")
+    public String comments(Model model) {
+        model.addAttribute("listComment", commentService.getListData(0, 1000));
+        return "comments";
     }
 
     @GetMapping("/register")
