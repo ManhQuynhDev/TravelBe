@@ -37,7 +37,8 @@ public class MemberPlanService {
     private UserRepository userRepository;
 
     public MemberPlan requestToJoinPlan(MemberPlan member)
-            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException {
+            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UserWasAlreadyRequest,
+            UnknownException {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
@@ -47,13 +48,6 @@ public class MemberPlanService {
 
         if (!userRepository.existsById(member.getUserId())) {
             throw new UserAccountNotFoundException("User with ID " + member.getUserId() + " not found.");
-        }
-
-        Optional<MemberPlan> existingMember = memberPlanRepository.findByUserIdAndPlanIdAndStatusIn(
-                member.getUserId(), member.getPlanId(), Arrays.asList("APPROVED"));
-
-        if (existingMember.isPresent()) {
-            throw new UnknownException("User has already requested to join or is already a member.");
         }
 
         member.setStatus("APPROVED");

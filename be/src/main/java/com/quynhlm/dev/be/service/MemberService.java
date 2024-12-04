@@ -131,13 +131,6 @@ public class MemberService {
             throw new UserAccountNotFoundException("User with ID " + member.getUserId() + " not found.");
         }
 
-        Optional<Member> existingMember = memberRepository.findByUser_idAndGroup_idAndStatusIn(
-                member.getUserId(), member.getGroupId(), Arrays.asList("PENDING", "APPROVED"));
-
-        if (existingMember.isPresent()) {
-            throw new UnknownException("User has already requested to join or is already a member.");
-        }
-
         member.setStatus("APPROVED");
         Member saveMember = memberRepository.save(member);
 
