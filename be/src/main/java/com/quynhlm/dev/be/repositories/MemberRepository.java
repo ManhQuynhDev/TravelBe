@@ -15,15 +15,19 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member WHERE id = :id", nativeQuery = true)
     Member findMemberById(@Param("id") Integer id);
 
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId", nativeQuery = true)
+    Member findMemberByUserId(@Param("userId") Integer userId,
+    @Param("groupId") Integer groupId);
+    
     @Query(value = "SELECT * FROM Member m WHERE m.user_id = :userId AND m.group_id = :groupId AND m.role <> 'ADMIN'", nativeQuery = true)
     Member foundUserMemberFriend(@Param("userId") Integer userId,
             @Param("groupId") Integer groupId);
 
-    @Query(value = "SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.role <> 'ADMIN' AND m.status = 'APPROVED'", nativeQuery = true)
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId AND role <> 'ADMIN' AND status = 'APPROVED'", nativeQuery = true)
     Member findUserMemberById(@Param("userId") Integer userId,
             @Param("groupId") Integer groupId);
 
-    @Query(value = "SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.role = 'ADMIN'", nativeQuery = true)
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId AND role = 'ADMIN'", nativeQuery = true)
     Member findUserAdminById(@Param("userId") Integer userId,
             @Param("groupId") Integer groupId);
 

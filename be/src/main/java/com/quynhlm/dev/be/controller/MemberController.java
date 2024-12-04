@@ -109,12 +109,12 @@ public class MemberController {
     @PutMapping("/browse")
     public ResponseEntity<ResponseObject<Void>> updateMemberStatus(
             @RequestParam(name = "groupId") Integer groupId,
-            @RequestParam(name = "managerId") Integer memberId,
+            @RequestParam(name = "adminId") Integer adminId,
             @RequestParam(name = "action") String action,
-            @RequestParam(name = "memberSendRequestId") Integer memberSendRequestId) {
+            @RequestParam(name = "memberSendId") Integer memberSendId) {
 
         ResponseObject<Void> result = new ResponseObject<>();
-        memberService.updateMemberStatus(groupId, memberId, memberSendRequestId, action);
+        memberService.updateMemberStatus(groupId, adminId, memberSendId, action);
         result.setMessage("Member has been " + action + "d.");
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);

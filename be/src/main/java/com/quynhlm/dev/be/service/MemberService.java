@@ -189,14 +189,20 @@ public class MemberService {
     }
 
     // member id == managerId
-    public void updateMemberStatus(int groupId, int memberSendRequestId, int memberId, String action)
-            throws UnknownException {
+    public void updateMemberStatus(int groupId, int adminId, int memberSendId, String action)
+            throws UnknownException, UserAccountNotFoundException {
 
-        Member memberManager = memberRepository.findById(memberId) // Find quyền user
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Member memberManager = memberRepository.findUserAdminById(adminId, groupId);
+        if (memberManager == null) {
+            new UserAccountNotFoundException("Member admin not found");
+        }
 
-        Member memberSendRequest = memberRepository.findById(memberSendRequestId) // Find quyền user
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId , groupId);
+        if (memberSendRequest == null) {
+            new UserAccountNotFoundException("Membe send request not found");
+        }
+
+        System.out.println("Member send id group : " + memberManager.getRole());
 
         if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
             throw new UnknownException("You do not have permission to approve/reject members.");
@@ -205,6 +211,9 @@ public class MemberService {
         if (memberSendRequest.getGroupId() != groupId) {
             throw new UnknownException("Group ID does not match");
         }
+
+        System.out.println("Member send id group" + memberSendRequest.getGroupId());
+        System.out.println(action);
 
         if ("approve".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("APPROVED");
