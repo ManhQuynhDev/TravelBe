@@ -53,7 +53,6 @@ public class CommentController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         CommentResponseDTO commentResponse = commentService.insertComment(comment, imageFile);
         ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new comment successfully");
@@ -93,7 +92,7 @@ public class CommentController {
     }
 
     @GetMapping("/postId")
-    public Page<CommentResponseDTO> foundCommentWithPostId(@RequestParam("postId") Integer postId,
+    public Page<CommentResponseDTO> foundCommentWithPostId(@RequestParam Integer postId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return commentService.fetchCommentWithPostId(postId, page, size);

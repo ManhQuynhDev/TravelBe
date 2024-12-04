@@ -113,8 +113,11 @@ public class CommentService {
                 }
             }
             comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
-            commentRepository.save(comment);
-            return findAnComment(comment.getId());
+            Comment saveComment = commentRepository.save(comment);
+            if(saveComment == null) {
+                throw new UnknownException("Transaction cannot be completed!");
+            }
+            return findAnComment(saveComment.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
@@ -159,7 +162,10 @@ public class CommentService {
                 throw new UnknownException("File handling error: " + e.getMessage());
             }
         }
-        commentRepository.save(existingComment);
+        Comment saveComment = commentRepository.save(existingComment);
+        if(saveComment == null) {
+            throw new UnknownException("Transaction cannot be completed!");
+        }
     }
 
 
@@ -184,12 +190,10 @@ public class CommentService {
         comment.setShareId(result[6] != null ? ((Number) result[6]).intValue() : null);
         comment.setCreate_time((String) result[7]);
         comment.setReaction_count(((Number) result[8]).intValue());
-
         return comment;
     }
 
     public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, int page, int size) {
-
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
             throw new PostNotFoundException("Found post with " + postId + " not found please try again");

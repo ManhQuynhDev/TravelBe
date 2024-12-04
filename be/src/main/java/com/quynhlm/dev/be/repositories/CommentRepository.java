@@ -30,14 +30,16 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                 inner join user u on u.id = c.user_id
                 left join comment_reaction cr on cr.comment_id = c.id
                 left join reply r on r.comment_id = c.id
+                where c.id = :comment_id
                 group by c.id , u.id , r.id , cr.id ,c.post_id
       """, nativeQuery = true)
-  List<Object[]> findCommentWithId(@Param("id") Integer id);
+  List<Object[]> findCommentWithId(@Param("comment_id") Integer comment_id);
 
   Page<Comment> findAll(Pageable pageable);
 
   @Query(value = """
          select
+         DISTINCT
          c.id as comment_id,
          u.id as owner_id,
          u.fullname,
@@ -59,6 +61,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
   @Query(value = """
          select
+           DISTINCT
          c.id as comment_id,
          u.id as owner_id,
          u.fullname,
