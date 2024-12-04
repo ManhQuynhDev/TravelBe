@@ -53,6 +53,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserInvitationResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.UserRepository;
@@ -442,5 +443,35 @@ public class UserService {
 
     public List<User> getAllListUser () {
         return userRepository.findAll();
+    }
+
+    public void getAllInvitation (int user_id) throws UserAccountNotFoundException {
+        User user = userRepository.findOneById(user_id);
+        if (user == null) {
+            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
+        }
+    }
+
+    public Page<UserInvitationResponseDTO> getAllInvitation(int user_id , int page, int size) throws UserAccountNotFoundException {
+        User foundUser = userRepository.findOneById(user_id);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = userRepository.findAllUser(pageable);
+
+        return results.map(row -> {
+            UserInvitationResponseDTO user = new UserInvitationResponseDTO();
+            user.setUser_id(((Number) row[0]).intValue());
+            user.setGroup_id(((Number) row[1]).intValue());
+            user.setFullname((String) row[2]);
+            user.setAvatar_url((String) row[3]);
+            user.setGroup_name((String) row[4]);
+            user.setBio((String) row[5]);
+            user.setCover_photo((String) row[6]);
+            user.setAdmin_name((String) row[7]);
+            user.setAdmin_avatar((String) row[8]);
+            return user;
+        });
     }
 }

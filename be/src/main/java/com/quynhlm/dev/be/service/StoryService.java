@@ -74,7 +74,7 @@ public class StoryService {
         storyRepository.updateDelFlag(cutoffTime.toString());
     }
 
-    public void insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
+    public Story insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
             throws UnknownException, UserAccountNotFoundException {
         try {
 
@@ -149,6 +149,7 @@ public class StoryService {
                 if (savedStory.getId() == null) {
                     throw new UnknownException("Transaction cannot complete!");
                 }
+                return savedStory;
             }
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -184,6 +185,45 @@ public class StoryService {
             story.setMediaUrl((String) row[8]);
             story.setCreate_time((String) row[9]);
             story.setReaction_count(((Number) row[10]).intValue());
+
+            String mediaUrl = (String) row[8];
+
+            String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+            ? "IMAGE"
+            : "VIDEO";
+
+            story.setMediaType(mediaType);
+
+            return story;
+        });
+    }
+
+    public Page<StoryResponseDTO> getAllStoryCreateByUserId(Integer user_id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = storyRepository.fetchStoryByUserId(user_id, pageable);
+
+        return results.map(row -> {
+            StoryResponseDTO story = new StoryResponseDTO();
+            story.setOwnerId(((Number) row[0]).intValue());
+            story.setStoryId(((Number) row[1]).intValue());
+            story.setLocationId(((Number) row[2]).intValue());
+            story.setContent((String) row[3]);
+            story.setStatus((String) row[4]);
+            story.setFullname((String) row[5]);
+            story.setAvatar((String) row[6]);
+            story.setMusicUrl((String) row[7]);
+            story.setMediaUrl((String) row[8]);
+            story.setCreate_time((String) row[9]);
+            story.setReaction_count(((Number) row[10]).intValue());
+
+            String mediaUrl = (String) row[8];
+
+            String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+            ? "IMAGE"
+            : "VIDEO";
+
+            story.setMediaType(mediaType);
+
             return story;
         });
     }
@@ -207,18 +247,37 @@ public class StoryService {
             List<Object[]> results = storyRepository.foundStoryByUserId(user.getUserId(), pageable);
 
             List<StoryResponseDTO> storys = results.stream()
-                    .map(u -> new StoryResponseDTO(
-                            ((Number) u[0]).intValue(),
-                            ((Number) u[1]).intValue(),
-                            ((Number) u[2]).intValue(),
-                            (String) u[3],
-                            (String) u[4],
-                            (String) u[5],
-                            (String) u[6],
-                            (String) u[7],
-                            (String) u[8],
-                            (String) u[9],
-                            ((Number) u[0]).intValue()))
+                    .map(u -> {
+                        Integer storyId = ((Number) u[0]).intValue();
+                        Integer ownerId = ((Number) u[1]).intValue();
+                        Integer locationId = ((Number) u[2]).intValue();
+                        String content = (String) u[3];
+                        String status = (String) u[4];
+                        String fullname = (String) u[5];
+                        String avatar = (String) u[6];
+                        String musicUrl = (String) u[7];
+                        String mediaUrl = (String) u[8];
+                        String createTime = (String) u[9];
+                        Integer reactionCount = ((Number) u[10]).intValue();
+
+                        String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                                ? "IMAGE"
+                                : "VIDEO";
+
+                        return new StoryResponseDTO(
+                                storyId,
+                                ownerId,
+                                locationId,
+                                content,
+                                status,
+                                fullname,
+                                avatar,
+                                musicUrl,
+                                mediaUrl,
+                                createTime,
+                                reactionCount,
+                                mediaType);
+                    })
                     .collect(Collectors.toList());
 
             FriendStoryResponseDTO friendResult = new FriendStoryResponseDTO();

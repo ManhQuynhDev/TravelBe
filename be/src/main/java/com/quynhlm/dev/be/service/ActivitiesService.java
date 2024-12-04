@@ -50,12 +50,6 @@ public class ActivitiesService {
         }
 
         activities.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
-        Activities foundActivity = activitiesRepository.findByNameAndPlanId(activities.getName(),
-                activities.getPlanId());
-        if (foundActivity != null) {
-            throw new ActivitiesExistingException(
-                    "Activity with name " + activities.getName() + " already exist !. Please try another!");
-        }
         Activities saveActivity = activitiesRepository.save(activities);
         if (saveActivity.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
@@ -99,6 +93,11 @@ public class ActivitiesService {
         if (saveActivity.getId() == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
+    }
+
+    public Page<Activities> searchActivitiesByName(String keyword,int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return activitiesRepository.searchActivitiesByName(keyword , pageable);
     }
 
     // Get all data

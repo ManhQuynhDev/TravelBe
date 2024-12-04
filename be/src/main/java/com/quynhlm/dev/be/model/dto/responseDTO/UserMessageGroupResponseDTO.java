@@ -10,14 +10,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserMessageResponseDTO {
+public class UserMessageGroupResponseDTO {
     private Integer id;
-    private Integer sender_id;
-    private Integer receiver_id;
+    private Integer userSendId;
+    private Integer groupId;
     private String content;
+    private String mediaUrl;
     private String fullname;
     private String avatarUrl;
-    private String mediaUrl;
     private Boolean status;
     private String send_time;
 }

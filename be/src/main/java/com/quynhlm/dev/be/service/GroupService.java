@@ -173,9 +173,17 @@ public class GroupService {
 
     public void deleteGroup(Integer id) throws GroupNotFoundException {
         Group foundGroup = groupRepository.findGroupById(id);
+        
         if (foundGroup == null) {
             throw new GroupNotFoundException("Group find with " + id + " not found , please try other id");
         }
+
+        List<Member> foundMemberGroup = memberRepository.findByGroupId(foundGroup.getId());
+
+        for (Member member : foundMemberGroup) {
+               memberService.deleleMember(member.getId());
+        }
+
         groupRepository.delete(foundGroup);
     }
 

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+            border: 1px solid #ccc;
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        #seen-users {
+            list-style-type: none;
+            padding: 0;
+            color: gray;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        #chat-form {
+            margin-top: 10px;
+        }
+
+        #chat-mes {
+            padding: 5px;
+            width: 300px;
+            margin-right: 10px;
+        }
+
+        #send-chat {
+            padding: 5px;
+        }
+
+        #typing-status {
+            color: gray;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Chat Application</h1>
+    <h3>Status: <span id="status">Connecting...</span></h3>
+    <ul id="messages"></ul>
+    <div id="typing-status"></div>
+    <form id="chat-form" action="">
+        <input type="text" id="chat-mes" placeholder="Type your message...">
+        <input type="file" id="fileInput" accept="image/*" />
+        <button type="submit" id="send-chat">Send</button>
+    </form>
+    <h3>Seen Users</h3>
+    <ul id="seen-users"></ul>
+
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
+    <script>
+        // Yêu cầu user nhập userId và room
+        const senderId = prompt("Enter your userId:");
+        const receiverId = prompt("Enter your userId 2:");
+
+        const socketUrl = location.protocol + "//" + location.hostname + ":1111/private";
+        console.log(socketUrl);
+
+        const socket = io.connect(socketUrl, {
+            query: { sender: senderId, receiverId: receiverId }
+        });
+
+        const status = document.getElementById("status");
+        const chatForm = document.querySelector('#chat-form');
+        const chatMess = document.querySelector('#chat-mes');
+        const fileInput = document.querySelector("#fileInput");
+        const messages = document.querySelector('#messages');
+        const typingStatus = document.querySelector('#typing-status');
+        const seenUsers = document.querySelector('#seen-users');
+
+        let typingTimeout;
+
+        chatMess.addEventListener('input', () => {
+            clearTimeout(typingTimeout);
+            socket.emit('userTyping', senderId);
+
+            typingTimeout = setTimeout(() => {
+                socket.emit('userStoppedTyping', senderId);
+            }, 3000);
+        });
+
+        socket.on("typingUsers", (usersTyping) => {
+            console.log(usersTyping);
+
+            const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== senderId);
+            if (otherUsersTyping.length > 0) {
+                typingStatus.textContent = `${otherUsersTyping.join(", ")} is typing...`;
+            } else {
+                typingStatus.textContent = '';
+            }
+        });
+
+        socket.on('connect', () => {
+            console.log("Connected with socket ID: ", socket.id);
+            status.textContent = "Connected";
+        });
+
+        socket.on('connect_error', (error) => {
+            console.error('Connection failed: ', error);
+            status.textContent = "Connection failed";
+        });
+
+        // Lắng nghe tin nhắn từ server
+        socket.on('user-chat', (data) => {
+            console.log(data);
+            const chatItem = document.createElement('li');
+            chatItem.textContent = `${data.fullname}: ${data.content}`;
+            messages.appendChild(chatItem);
+
+            if (data.mediaUrl) {
+                const imageElement = document.createElement('img');
+                imageElement.src = data.mediaUrl;
+                imageElement.alt = 'Sent image';
+                imageElement.style.maxWidth = '300px';
+                imageElement.style.marginTop = '10px';
+                chatItem.appendChild(imageElement);
+            }
+
+            socket.emit("message-seen", {
+                messageId: data.id,
+                viewerId: senderId,
+                senderId: data.sender_id,
+                status: true
+            });
+        });
+
+        socket.on("user-seen", (data) => {
+            console.log("Message seen data:", data);
+
+            // Clear and update seen users list
+            seenUsers.innerHTML = '';
+            data.forEach(user => {
+                const userItem = document.createElement('li');
+                userItem.textContent = `User: ${user}`;
+                seenUsers.appendChild(userItem);
+            });
+        });
+
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const message = chatMess.value.trim();
+            const file = fileInput.files[0];
+            let fileBase64 = null;
+
+            if (file) {
+                if (file.size > MAX_FILE_SIZE) {
+                    alert("File is too large. Please upload a smaller file.");
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    fileBase64 = event.target.result;
+                    sendMessage(message, fileBase64);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                sendMessage(message, fileBase64);
+            }
+
+            function sendMessage(message, fileBase64) {
+                const data = {
+                    sender: senderId,
+                    receiver: receiverId,
+                    message: message,
+                    file: fileBase64 ?? null
+                }
+
+                if (message) {
+                    socket.emit('send-message', data);
+                    chatMess.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

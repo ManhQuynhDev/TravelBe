@@ -19,7 +19,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.requestDTO.MessageRequestDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.model.entity.MessageGroup;
 import com.quynhlm.dev.be.model.entity.MessageStatus;
@@ -39,32 +39,32 @@ public class MessageGroupService {
     @Autowired
     private AmazonS3 amazonS3;
 
-    @Autowired
-    private MessageStatusRepositoty messageStatusRepositoty;
-
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
-    // UserMessageResponseDTO
+    @Autowired
+    private MessageStatusRepositoty messageStatusRepositoty;
 
-    public Page<UserMessageResponseDTO> getAllListData(Integer groupId, int page, int size) {
+    public Page<UserMessageGroupResponseDTO> getAllListData(Integer groupId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = messageGroupRepository.findAllMessageGroup(groupId, pageable);
 
         return results.map(row -> {
-            UserMessageResponseDTO object = new UserMessageResponseDTO();
-            object.setUserSendId(((Number) row[0]).intValue());
-            object.setGroupId(((Number) row[1]).intValue());
-            object.setContent(((String) row[2]));
-            object.setFullname(((String) row[3]));
-            object.setAvatarUrl((String) row[4]);
-            object.setStatus(((Boolean) row[5]));
-            object.setSend_time((String) row[6]);
+            UserMessageGroupResponseDTO object = new UserMessageGroupResponseDTO();
+            object.setId(((Number) row[0]).intValue());
+            object.setUserSendId(((Number) row[1]).intValue());
+            object.setGroupId(((Number) row[2]).intValue());
+            object.setContent(((String) row[3]));
+            object.setContent(((String) row[4]));
+            object.setFullname(((String) row[5]));
+            object.setAvatarUrl((String) row[6]);
+            object.setStatus(((Boolean) row[7]));
+            object.setSend_time((String) row[8]);
             return object;
         });
     }
 
-    public UserMessageResponseDTO sendMessage(MessageRequestDTO messageRequestDTO) {
+    public UserMessageGroupResponseDTO sendMessage(MessageRequestDTO messageRequestDTO) {
         try {
             // Đặt thời gian gửi tin nhắn
             messageRequestDTO.getMessage().setSendTime(new Timestamp(System.currentTimeMillis()).toString());
@@ -116,11 +116,11 @@ public class MessageGroupService {
         }
     }
 
-    public UserMessageResponseDTO isSuccess(MessageGroup message, Boolean status, String mediaUrl) {
+    public UserMessageGroupResponseDTO isSuccess(MessageGroup message, Boolean status, String mediaUrl) {
         try {
             // Lưu tin nhắn vào cơ sở dữ liệu
+            message.setMediaUrl(mediaUrl);
             MessageGroup saveMessage = messageGroupRepository.save(message);
-            saveMessage.setMediaUrl(mediaUrl);
             if (saveMessage.getId() == null) {
                 throw new UnknownException("Transaction cannot be completed!");
             }
@@ -136,7 +136,7 @@ public class MessageGroupService {
                 messageStatusRepositoty.save(messageStatus);
             }
 
-            UserMessageResponseDTO userMessageResponseDTO = getAnMessage(saveMessage.getId());
+            UserMessageGroupResponseDTO userMessageResponseDTO = getAnMessage(saveMessage.getId());
 
             return userMessageResponseDTO;
         } catch (Exception e) {
@@ -146,19 +146,21 @@ public class MessageGroupService {
     }
 
 
-    public UserMessageResponseDTO getAnMessage(Integer id){
+    public UserMessageGroupResponseDTO getAnMessage(Integer id){
         List<Object[]> results = messageGroupRepository.findAnMessage(id);
 
         Object[] result = results.get(0);
 
-        Integer user_send_id = ((Number) result[0]).intValue();
-        Integer group_id = ((Number) result[1]).intValue();
-        String content = (String) result[2];
-        String fullname = (String) result[3];
-        String avatar = (String) result[4];
-        Boolean status = (Boolean) result[5];
-        String send_time = (String) result[6];
+        Integer message_id = ((Number) result[0]).intValue();
+        Integer user_send_id = ((Number) result[1]).intValue();
+        Integer group_id = ((Number) result[2]).intValue();
+        String content = (String) result[3];
+        String mediaUrl = (String) result[4];
+        String fullname = (String) result[5];
+        String avatar = (String) result[6];
+        Boolean status = (Boolean) result[7];
+        String send_time = (String) result[8];
 
-        return new UserMessageResponseDTO(user_send_id, group_id,content,fullname,avatar ,status, send_time);
+        return new UserMessageGroupResponseDTO(message_id,user_send_id, group_id,content,mediaUrl,fullname,avatar ,status, send_time);
     }
 }

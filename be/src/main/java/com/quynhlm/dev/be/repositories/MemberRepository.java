@@ -15,6 +15,22 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member WHERE id = :id", nativeQuery = true)
     Member findMemberById(@Param("id") Integer id);
 
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId", nativeQuery = true)
+    Member findMemberByUserId(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
+    @Query(value = "SELECT * FROM Member m WHERE m.user_id = :userId AND m.group_id = :groupId AND m.role <> 'ADMIN'", nativeQuery = true)
+    Member foundUserMemberFriend(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId AND role <> 'ADMIN' AND status = 'APPROVED'", nativeQuery = true)
+    Member findUserMemberById(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
+    @Query(value = "SELECT * FROM Member WHERE user_id = :userId AND group_id = :groupId AND role = 'ADMIN'", nativeQuery = true)
+    Member findUserAdminById(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
     @Query("SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.status IN :status")
     Optional<Member> findByUser_idAndGroup_idAndStatusIn(
             @Param("userId") Integer userId,
@@ -24,8 +40,26 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId AND m.status = :status", nativeQuery = true)
     List<Member> findByGroup_idAndStatus(@Param("groupId") Integer groupId, @Param("status") String status);
 
-    @Query("SELECT m FROM Member m WHERE m.groupId = :groupId AND m.status = :status")
-    Page<Member> getRequestToJoinGroup(
+    @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId", nativeQuery = true)
+    List<Member> findByGroupId(@Param("groupId") Integer groupId);
+
+    @Query(value = """
+                select
+            	u.id as user_id,
+                g.id as group_id,
+                m.id as member_id,
+            	u.fullname,
+                u.avatar_url,
+                m.role,
+                m.join_time
+                FROM member m
+                INNER JOIN user u ON u.id = m.user_id
+                INNER JOIN m_group g ON g.id = m.group_id
+                INNER JOIN user userGroup ON g.user_id = userGroup.id
+                WHERE m.group_id = :groupId AND m.role <> 'ADMIN'
+                AND m.status = :status
+            """, nativeQuery = true)
+    Page<Object[]> getRequestToJoinGroup(
             @Param("groupId") Integer groupId,
             @Param("status") String status,
             Pageable pageable);
@@ -33,10 +67,11 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = """
                 SELECT
                 m.user_id,
-                m.id AS member_id,
                 g.id AS group_id,
+                m.id AS member_id,
                 g.name,
                 userGroup.fullname AS adminName,
+                userGroup.avatar_url,
                 g.cover_photo,
                 g.bio,
                 m.status,

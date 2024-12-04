@@ -119,8 +119,6 @@ public class TravelPlanService {
         });
     }
 
-    // Get Travel with groupId
-
     public Page<PlanResponseDTO> getAllPlansWithGroupId(Integer groupId, int page, int size)
             throws GroupNotFoundException {
 

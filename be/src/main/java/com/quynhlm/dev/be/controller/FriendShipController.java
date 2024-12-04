@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.service.FriendShipService;
 
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/friend")
@@ -27,6 +31,23 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class FriendShipController {
     @Autowired
     private FriendShipService friendShipService;
+
+    @GetMapping("/user_friend")
+    public Page<UserFriendResponseDTO> getAll(
+            @RequestParam(name = "userId") Integer userId,
+            @RequestParam(name = "groupId") Integer groupId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return friendShipService.getAllListUserFriend(userId, groupId, page, size);
+    }
+
+    @PostMapping("/send_invite")
+    public ResponseEntity<ResponseObject<Void>> inviteFriends(@RequestBody InviteRequestDTO inviteRequestDTO) {
+        ResponseObject<Void> result = new ResponseObject<>();
+        friendShipService.inviteFriends(inviteRequestDTO);
+        result.setMessage("Send request add friend successfully");
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
 
     @GetMapping("/{userReceivedId}/status")
     public Page<FriendShip> getListRequestByStatus(@PathVariable Integer userReceivedId, @RequestParam String status,
@@ -61,7 +82,7 @@ public class FriendShipController {
         friendShipService.cancelFriends(userSendId, userReceivedId);
         return ResponseEntity.ok("Friendship canceled successfully.");
     }
-    //ChangeStatus friends 
+    // ChangeStatus friends
 
     @PutMapping("/change-status/{userSendId}/{userReceivedId}/action")
     public ResponseEntity<ResponseObject<Void>> changeStatus(@PathVariable Integer userSendId,

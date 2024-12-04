@@ -34,4 +34,15 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
         List<Object[]> fetchByUserFriends(
                         @Param("userReceivedId") Integer userReceivedId,
                         @Param("status") String status);
+
+        @Query(value = """
+                        SELECT u.id, u.fullname, u.avatar_url
+                        FROM friend_ship f
+                        JOIN user u ON u.id = CASE
+                          WHEN f.user_send_id = :user_id THEN f.user_received_id
+                                   ELSE f.user_send_id
+                                             END
+                             WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
+                          AND f.status = 'APPROVED'""", nativeQuery = true)
+        Page<Object[]> getAllListUserFriends(  @Param("user_id") Integer user_id, Pageable pageable);
 }

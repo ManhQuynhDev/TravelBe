@@ -21,4 +21,5 @@ public class StoryResponseDTO {
     private String mediaUrl;
     private String create_time;
     private Integer reaction_count;
+    private String mediaType;
 }

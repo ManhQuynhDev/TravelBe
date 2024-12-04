@@ -39,30 +39,30 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
             GROUP BY
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
                 """, nativeQuery = true)
-     List<Object[]> findAnGroupById(@Param("group_id") Integer group_id);
+    List<Object[]> findAnGroupById(@Param("group_id") Integer group_id);
 
     @Query(value = """
-        SELECT
-            g.id AS groupId,
-            u.id AS adminId,
-            g.name AS group_name,
-            u.fullname AS admin_name,
-            g.cover_photo,
-            g.bio,
-            g.status,
-            g.create_time,
-            SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count
-        FROM
-            m_group g
-        INNER JOIN
-            member m ON m.group_id = g.id
-        INNER JOIN
-            user u ON g.user_id = u.id
-        WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :q, '%'))
-        GROUP BY
-            g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
-        """, nativeQuery = true)
-Page<Object[]> searchGroupsByName(@Param("q") String keyword , Pageable pageable);
+            SELECT
+                g.id AS groupId,
+                u.id AS adminId,
+                g.name AS group_name,
+                u.fullname AS admin_name,
+                g.cover_photo,
+                g.bio,
+                g.status,
+                g.create_time,
+                SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count
+            FROM
+                m_group g
+            INNER JOIN
+                member m ON m.group_id = g.id
+            INNER JOIN
+                user u ON g.user_id = u.id
+            WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :q, '%'))
+            GROUP BY
+                g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
+            """, nativeQuery = true)
+    Page<Object[]> searchGroupsByName(@Param("q") String keyword, Pageable pageable);
 
     Page<Group> findAll(Pageable pageable);
 

@@ -5,19 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserMessageResponseDTO {
-    private Integer id;
-    private Integer sender_id;
-    private Integer receiver_id;
+public class PostSaveResponseDTO {
+    private Integer ownerId;       
+    private Integer postId;
+    private Integer locationId;
     private String content;
+    private String status;
     private String fullname;
-    private String avatarUrl;
+    private String avatar;
     private String mediaUrl;
-    private Boolean status;
-    private String send_time;
+    private String type;
+    private String create_time;
 }

@@ -42,6 +42,13 @@ public class ActivitiesController {
         return activitiesService.getActivitiesWithPlanId(planId, page, size);
     }
 
+    @GetMapping("/search")
+    public Page<Activities> searchGroups(@RequestParam("q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return activitiesService.searchActivitiesByName(keyword, page, size);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> deleteActivities(@PathVariable Integer id) {
         activitiesService.deleteActivities(id);

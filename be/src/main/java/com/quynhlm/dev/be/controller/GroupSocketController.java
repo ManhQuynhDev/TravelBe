@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.MessageRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.MessageSeenDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageGroupResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 import com.quynhlm.dev.be.service.MessageGroupService;
@@ -24,7 +24,7 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 
 @Component
-public class AppSocketController {
+public class GroupSocketController {
 
     @Autowired
     private MessageGroupService messageService;
@@ -44,8 +44,8 @@ public class AppSocketController {
     public Map<String, Map<String, Boolean>> messageStatus = new HashMap<>();
 
     @Autowired
-    public AppSocketController(SocketIOServer server) {
-        this.namespace = server.addNamespace("/chat");
+    public GroupSocketController(SocketIOServer server) {
+        this.namespace = server.addNamespace("/group");
 
         this.namespace.addConnectListener(onConnectListener);
         this.namespace.addDisconnectListener(onDisconnectListener);
@@ -58,7 +58,6 @@ public class AppSocketController {
     public ConnectListener onConnectListener = client -> {
         System.out.println("User " + client.getSessionId() + " connected");
 
-        // Kiểm tra xem người dùng đã online chưa
         String userId = client.getHandshakeData().getSingleUrlParam("userId");
         if (userId != null && !userId.isEmpty()) {
             if (userSocketMap.containsKey(userId)) {
@@ -105,7 +104,7 @@ public class AppSocketController {
 
             if (room != null && !room.isEmpty()) {
                 // Phát sự kiện tới room
-                UserMessageResponseDTO result = messageService.sendMessage(messageRequestDTO);
+                UserMessageGroupResponseDTO result = messageService.sendMessage(messageRequestDTO);
 
                 this.namespace.getRoomOperations(room).sendEvent("user-chat", result);
 

@@ -79,7 +79,7 @@ public class MemberController {
 
     // Get
     @GetMapping("/{groupId}/status")
-    public Page<Member> getListUserByStatus(@PathVariable Integer groupId, @RequestParam String status,
+    public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer groupId, @RequestParam("status") String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getRequestToJoinGroup(groupId, status, page, size);
@@ -109,15 +109,27 @@ public class MemberController {
     @PutMapping("/browse")
     public ResponseEntity<ResponseObject<Void>> updateMemberStatus(
             @RequestParam(name = "groupId") Integer groupId,
-            @RequestParam(name = "managerId") Integer memberId,
+            @RequestParam(name = "adminId") Integer adminId,
             @RequestParam(name = "action") String action,
-            @RequestParam(name = "memberSendRequestId") Integer memberSendRequestId) {
+            @RequestParam(name = "memberSendId") Integer memberSendId) {
 
         ResponseObject<Void> result = new ResponseObject<>();
-        memberService.updateMemberStatus(groupId, memberId, memberSendRequestId, action);
+        memberService.updateMemberStatus(groupId, adminId, memberSendId, action);
         result.setMessage("Member has been " + action + "d.");
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    
+    @PutMapping("/change-admin")
+    public ResponseEntity<ResponseObject<Void>> changeRoleAdmin(
+            @RequestParam(name = "adminId") Integer adminId,
+            @RequestParam(name = "memberId") Integer memberId,
+            @RequestParam(name = "groupId") Integer groupId) {
 
+        ResponseObject<Void> result = new ResponseObject<>();
+        memberService.changeRoleAdmin(adminId , memberId , groupId);
+        result.setMessage("Change role admin successfully");
+        result.setStatus(true);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 }

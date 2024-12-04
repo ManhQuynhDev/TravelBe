@@ -19,8 +19,8 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
 
    @Query(value = """
             SELECT
-            s.id AS story_id,
             u.id AS owner_id,
+            s.id AS story_id,
             s.location_id,
             s.content,
             s.status,
@@ -66,7 +66,6 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
          GROUP BY s.id, u.id, s.location_id
                 """, nativeQuery = true)
    Page<Object[]> fetchStoryByUserId(@Param("userId") Integer userId, Pageable pageable);
-
 
    @Query(value = """
             SELECT

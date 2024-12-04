@@ -11,19 +11,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Message")
-@Setter
+@Table(name = "Invitation")
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+
+public class Invitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String content;
-    private Integer senderId;
-    private Integer receiverId;
-    private String sendTime;
-    private boolean status;
-    private String mediaUrl;
+    private Integer userSendId;
+    private Integer userReceivedId;
+    private Integer group_id;
+    private String status;
+    private String create_time;
 }

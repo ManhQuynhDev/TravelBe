@@ -12,7 +12,6 @@ public class MessageStatusService {
     private MessageStatusRepositoty messageStatusRepositoty;
 
     public void changeStatusMessage(Integer viewId, Integer messageId, Boolean status) {
-        System.out.println("Gọi vào chỉnh sửa");
         MessageStatus foundMessage = messageStatusRepositoty.getAnMessageStatusWithUserId(viewId, messageId);
 
         if (foundMessage != null) {

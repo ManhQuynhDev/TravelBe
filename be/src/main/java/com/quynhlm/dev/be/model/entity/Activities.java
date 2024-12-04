@@ -20,7 +20,7 @@ public class Activities {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id;//admin
+    private int user_id;
     private int planId;
     private int locationId;
     private String name;
