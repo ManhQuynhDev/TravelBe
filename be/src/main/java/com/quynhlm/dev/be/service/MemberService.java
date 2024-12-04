@@ -181,6 +181,27 @@ public class MemberService {
         }
     }
 
+    public void rejectMember(int groupId, int adminId, int memberSendId)
+            throws UnknownException, UserAccountNotFoundException {
+
+        Member memberManager = memberRepository.findUserAdminById(adminId, groupId);
+        if (memberManager == null) {
+            new UserAccountNotFoundException("Member admin not found");
+        }
+
+        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId, groupId);
+        if (memberSendRequest == null) {
+            new UserAccountNotFoundException("Membe send request not found");
+        }
+
+        if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
+            throw new UnknownException("You do not have permission to approve/reject members.");
+        }
+
+        memberRepository.delete(memberSendRequest);
+    }
+
+
     // member id == managerId
     public void updateMemberStatus(int groupId, int adminId, int memberSendId, String action)
             throws UnknownException, UserAccountNotFoundException {
@@ -190,12 +211,10 @@ public class MemberService {
             new UserAccountNotFoundException("Member admin not found");
         }
 
-        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId , groupId);
+        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId, groupId);
         if (memberSendRequest == null) {
             new UserAccountNotFoundException("Membe send request not found");
         }
-
-        System.out.println("Member send id group : " + memberManager.getRole());
 
         if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
             throw new UnknownException("You do not have permission to approve/reject members.");
@@ -205,14 +224,9 @@ public class MemberService {
             throw new UnknownException("Group ID does not match");
         }
 
-        System.out.println("Member send id group" + memberSendRequest.getGroupId());
-        System.out.println(action);
-
         if ("approve".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("APPROVED");
             memberSendRequest.setRole(Role.USER.name());
-        } else if ("reject".equalsIgnoreCase(action)) {
-            memberRepository.delete(memberSendRequest);
         } else {
             throw new UnknownException("Invalid action");
         }
