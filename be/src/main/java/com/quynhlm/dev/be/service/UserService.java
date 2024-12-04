@@ -450,8 +450,6 @@ public class UserService {
         if (user == null) {
             throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
         }
-
-        
     }
 
     // public Page<UserInvitationResponseDTO> getAllInvitation(int user_id , int page, int size) throws UserAccountNotFoundException {
