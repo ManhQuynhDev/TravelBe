@@ -62,7 +62,7 @@ public class CommentService {
         return commentRepository.findAll(pageable);
     }
 
-    public void insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
+    public Comment insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
             throws UnknownException, PostNotFoundException, UserAccountNotFoundException {
         try {
 
@@ -114,6 +114,7 @@ public class CommentService {
             }
             comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             commentRepository.save(comment);
+            return comment;
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {

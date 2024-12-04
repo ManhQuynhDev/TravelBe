@@ -71,7 +71,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 m.id AS member_id,
                 g.name,
                 userGroup.fullname AS adminName,
-                userGroup.avatar_url,
                 g.cover_photo,
                 g.bio,
                 m.status,

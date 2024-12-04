@@ -13,6 +13,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.service.FriendShipService;
+import com.quynhlm.dev.be.service.InvitationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequestMapping("/api/friend")
 @RequiredArgsConstructor
@@ -32,10 +32,13 @@ public class FriendShipController {
     @Autowired
     private FriendShipService friendShipService;
 
+    @Autowired
+    private InvitationService invitationService;
+
     @GetMapping("/user_friend")
     public Page<UserFriendResponseDTO> getAll(
-            @RequestParam(name = "userId") Integer userId,
-            @RequestParam(name = "groupId") Integer groupId,
+            @RequestParam Integer userId,
+            @RequestParam Integer groupId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.getAllListUserFriend(userId, groupId, page, size);
@@ -46,6 +49,18 @@ public class FriendShipController {
         ResponseObject<Void> result = new ResponseObject<>();
         friendShipService.inviteFriends(inviteRequestDTO);
         result.setMessage("Send request add friend successfully");
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
+
+    @PutMapping("/accept_invitation/{id}")
+    public ResponseEntity<ResponseObject<Void>> acceptInvitation(
+            @RequestParam Integer userId,
+            @RequestParam Integer groupId) {
+        ResponseObject<Void> result = new ResponseObject<>();
+        invitationService.acceptInvitation(userId , groupId);
+        result.setMessage("Accept join group successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
