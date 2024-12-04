@@ -73,6 +73,28 @@ public class MemberService {
         return saveMember;
     }
 
+    public void insertMember(Member member) throws UserAccountNotFoundException, GroupNotFoundException {
+
+        member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
+
+        if (!groupRepository.existsById(member.getGroupId())) {
+            throw new GroupNotFoundException("Group with ID " + member.getGroupId() + " not found.");
+        }
+
+        if (!userRepository.existsById(member.getUserId())) {
+            throw new UserAccountNotFoundException("User with ID " + member.getUserId() + " not found.");
+        }
+
+        member.setRole(Role.USER.name());
+        member.setStatus("APPROVED");
+
+        Member saveMember = memberRepository.save(member);
+
+        if (saveMember.getId() == null) {
+            throw new UnknownException("Transaction cannot be completed!");
+        }
+    }
+
     public Page<MemberResponseDTO> getRequestToJoinGroup(Integer groupId, String status, int page, int size)
             throws GroupNotFoundException {
         Group foundGroup = groupRepository.findGroupById(groupId);
@@ -137,7 +159,7 @@ public class MemberService {
         Member foundUserMember = memberRepository.findUserMemberById(memberId, groupId);
 
         if (foundUserMember == null) {
-            throw new UserAccountNotFoundException( "Found member with " + memberId + " not found please try again");
+            throw new UserAccountNotFoundException("Found member with " + memberId + " not found please try again");
         }
 
         Member memberManager = memberRepository.findUserAdminById(adminId, groupId);
@@ -189,7 +211,6 @@ public class MemberService {
             memberSendRequest.setRole(Role.USER.name());
         } else if ("reject".equalsIgnoreCase(action)) {
             memberRepository.delete(memberSendRequest);
-            // memberSendRequest.setStatus("REJECTED");
         } else {
             throw new UnknownException("Invalid action");
         }

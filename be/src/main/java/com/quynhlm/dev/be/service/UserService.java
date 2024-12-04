@@ -55,6 +55,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.InvitationRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
@@ -443,4 +444,35 @@ public class UserService {
     public List<User> getAllListUser () {
         return userRepository.findAll();
     }
+
+    public void getAllInvitation (int user_id) throws UserAccountNotFoundException {
+        User user = userRepository.findOneById(user_id);
+        if (user == null) {
+            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
+        }
+
+        
+    }
+
+    // public Page<UserInvitationResponseDTO> getAllInvitation(int user_id , int page, int size) throws UserAccountNotFoundException {
+    //     User foundUser = userRepository.findOneById(user_id);
+    //     if (foundUser == null) {
+    //         throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
+    //     }
+    //     Pageable pageable = PageRequest.of(page, size);
+    //     Page<Object[]> results = userRepository.findAllUser(pageable);
+
+    //     return results.map(row -> {
+    //         UserInvitationResponseDTO user = new UserInvitationResponseDTO();
+    //         user.setUser_id();
+    //         user.setGroup_id();
+    //         user.setFullname((String) row[1]); 
+    //         user.setEmail((String) row[2]);    
+    //         user.setPhoneNumber((String) row[3]); 
+    //         user.setIsLocked((String) row[4]);   
+    //         user.setAvatarUrl((String) row[5]);  
+    //         user.setCreate_at(((Timestamp) row[6]));
+    //         return user;
+    //     });
+    // }
 }

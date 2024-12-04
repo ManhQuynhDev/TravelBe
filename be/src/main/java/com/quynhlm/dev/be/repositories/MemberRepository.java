@@ -15,6 +15,10 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member WHERE id = :id", nativeQuery = true)
     Member findMemberById(@Param("id") Integer id);
 
+    @Query(value = "SELECT * FROM Member m WHERE m.user_id = :userId AND m.group_id = :groupId AND m.role <> 'ADMIN'", nativeQuery = true)
+    Member foundUserMemberFriend(@Param("userId") Integer userId,
+            @Param("groupId") Integer groupId);
+
     @Query(value = "SELECT m FROM Member m WHERE m.userId = :userId AND m.groupId = :groupId AND m.role <> 'ADMIN' AND m.status = 'APPROVED'", nativeQuery = true)
     Member findUserMemberById(@Param("userId") Integer userId,
             @Param("groupId") Integer groupId);
@@ -34,6 +38,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId", nativeQuery = true)
     List<Member> findByGroupId(@Param("groupId") Integer groupId);
+
     @Query(value = """
                 select
             	u.id as user_id,

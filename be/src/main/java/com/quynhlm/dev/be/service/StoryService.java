@@ -74,7 +74,7 @@ public class StoryService {
         storyRepository.updateDelFlag(cutoffTime.toString());
     }
 
-    public void insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
+    public Story insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
             throws UnknownException, UserAccountNotFoundException {
         try {
 
@@ -149,6 +149,7 @@ public class StoryService {
                 if (savedStory.getId() == null) {
                     throw new UnknownException("Transaction cannot complete!");
                 }
+                return savedStory;
             }
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());

@@ -57,14 +57,15 @@ public class StoryController {
         ResponseObject<Story> result = new ResponseObject<>();
         result.setMessage("Get an story successfully");
         result.setData(storyService.getAnStory(id));
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Void>> insertStory(
+    public ResponseEntity<ResponseObject<Story>> insertStory(
             @RequestPart("story") String storyJson,
-            @RequestPart(value = "mediaUrl", required = false) MultipartFile mediaUrl,
-            @RequestPart(value = "musicFile", required = false) MultipartFile musicFile) throws Exception {
+            @RequestPart(value = "mediaUrl", required = true) MultipartFile mediaUrl,
+            @RequestPart(value = "musicFile", required = true) MultipartFile musicFile) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
         StoryRequestDTO story = null;
@@ -75,11 +76,12 @@ public class StoryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        storyService.insertStory(story, mediaUrl, musicFile);
-        ResponseObject<Void> result = new ResponseObject<>();
+        Story storyResponse = storyService.insertStory(story, mediaUrl, musicFile);
+        ResponseObject<Story> result = new ResponseObject<>();
         result.setMessage("Create a new story successfully");
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        result.setStatus(true);
+        result.setData(storyResponse);
+        return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
