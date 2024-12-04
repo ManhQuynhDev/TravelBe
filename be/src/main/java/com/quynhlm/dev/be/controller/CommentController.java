@@ -41,7 +41,7 @@ public class CommentController {
     }
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseObject<Comment>> insertComment(
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> insertComment(
             @RequestPart("comment") String commentJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) throws UnknownException {
 
@@ -54,8 +54,8 @@ public class CommentController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Comment commentResponse = commentService.insertComment(comment, imageFile);
-        ResponseObject<Comment> result = new ResponseObject<>();
+        CommentResponseDTO commentResponse = commentService.insertComment(comment, imageFile);
+        ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new comment successfully");
         result.setData(commentResponse);
         result.setStatus(true);
@@ -84,12 +84,12 @@ public class CommentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<Comment>> findAnComment(@PathVariable Integer id) {
-        ResponseObject<Comment> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> findAnComment(@PathVariable Integer id) {
+        ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an comment with id " + id + " successfully");
         result.setData(commentService.findAnComment(id));
         result.setStatus(true);
-        return new ResponseEntity<ResponseObject<Comment>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<CommentResponseDTO>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/postId")

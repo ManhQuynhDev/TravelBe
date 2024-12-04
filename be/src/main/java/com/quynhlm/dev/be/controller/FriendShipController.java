@@ -53,7 +53,7 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/accept_invitation/{id}")
+    @PutMapping("/accept_invitation")
     public ResponseEntity<ResponseObject<Void>> acceptInvitation(
             @RequestParam Integer userId,
             @RequestParam Integer groupId) {

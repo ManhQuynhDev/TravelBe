@@ -32,13 +32,13 @@ public class MemberPlanController {
     }
 
     @DeleteMapping("/remove_member")
-    public ResponseEntity<ResponseObject<Void>> deleteMemberPlan(@RequestParam Integer userId  , @RequestParam Integer planId) {
+    public ResponseEntity<ResponseObject<Void>> deleteMemberPlan(@RequestParam Integer userId , @RequestParam Integer planId) {
         ResponseObject<Void> result = new ResponseObject<>();
         memberPlanService.deleteMemberPlan(userId , planId);
         result.setStatus(true);
         result.setMessage("Delete member plan successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
-    }
+    }   
 
     @PostMapping("/join-plan")      
     public ResponseEntity<ResponseObject<MemberPlan>> requestToJoinPlan(@RequestBody MemberPlan member) {

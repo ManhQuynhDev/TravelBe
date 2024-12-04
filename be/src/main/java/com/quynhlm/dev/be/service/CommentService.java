@@ -62,7 +62,7 @@ public class CommentService {
         return commentRepository.findAll(pageable);
     }
 
-    public Comment insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
+    public CommentResponseDTO insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
             throws UnknownException, PostNotFoundException, UserAccountNotFoundException {
         try {
 
@@ -114,7 +114,7 @@ public class CommentService {
             }
             comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             commentRepository.save(comment);
-            return comment;
+            return findAnComment(comment.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
@@ -162,11 +162,29 @@ public class CommentService {
         commentRepository.save(existingComment);
     }
 
-    public Comment findAnComment(Integer id) throws CommentNotFoundException {
-        Comment comment = commentRepository.findComment(id);
-        if (comment == null) {
-            throw new CommentNotFoundException("Id " + id + " not found . Please try another!");
+
+     public CommentResponseDTO findAnComment(Integer id) throws CommentNotFoundException {
+
+        List<Object[]> results = commentRepository.findCommentWithId(id);
+
+        if (results.isEmpty()) {
+            throw new CommentNotFoundException(
+                    "Id " + id + " not found or invalid data. Please try another!");
         }
+
+        Object[] result = results.get(0);
+
+        CommentResponseDTO comment = new CommentResponseDTO();
+        comment.setCommentId(((Number) result[0]).intValue());
+        comment.setOwnerId(((Number) result[1]).intValue());
+        comment.setFullname((String) result[2]);
+        comment.setAvatar((String) result[3]);
+        comment.setContent((String) result[4]);
+        comment.setPostId(result[5] != null ? ((Number) result[5]).intValue() : null);
+        comment.setShareId(result[6] != null ? ((Number) result[6]).intValue() : null);
+        comment.setCreate_time((String) result[7]);
+        comment.setReaction_count(((Number) result[8]).intValue());
+
         return comment;
     }
 
