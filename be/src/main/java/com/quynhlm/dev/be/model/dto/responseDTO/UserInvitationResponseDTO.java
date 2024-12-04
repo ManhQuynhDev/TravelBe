@@ -15,10 +15,9 @@ public class UserInvitationResponseDTO {
     private Integer group_id;
     private String fullname;
     private String avatar_url;
-    private String name;
+    private String group_name;
     private String bio;
     private String cover_photo;
     private String admin_name;
     private String admin_avatar;
-    private Integer member_count;
 }

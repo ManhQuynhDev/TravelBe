@@ -308,10 +308,10 @@ public class MemberService {
             object.setUserId(((Number) row[0]).intValue());
             object.setGroupId(((Number) row[1]).intValue());
             object.setMemberId(((Number) row[2]).intValue());
-            object.setFullname(((String) row[3]));
-            object.setAvatar_url((String) row[4]);
-            object.setRole((String) row[5]);
-            object.setJoin_time((String) row[6]);
+            object.setFullname(((String) row[4]));
+            object.setAvatar_url((String) row[5]);
+            object.setRole((String) row[9]);
+            object.setJoin_time((String) row[10]);
             return object;
         });
     }
