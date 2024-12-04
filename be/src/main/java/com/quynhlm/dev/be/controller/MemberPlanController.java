@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.service.MemberPlanService;
 
@@ -23,11 +24,11 @@ public class MemberPlanController {
     @Autowired
     private MemberPlanService memberPlanService;
 
-    @GetMapping("/{planId}/status")
-    public Page<MemberPlan> getListUserByStatus(@PathVariable Integer planId, @RequestParam String status,
+    @GetMapping("/joined/{planId}")
+    public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer planId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return memberPlanService.getRequestToJoinPlans(planId, status, page, size);
+        return memberPlanService.getRequestToJoinPlans(planId, page, size);
     }
 
     @DeleteMapping("/remove_member")
@@ -39,12 +40,11 @@ public class MemberPlanController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-
-    @PostMapping("/request-join-plan")      
+    @PostMapping("/join-plan")      
     public ResponseEntity<ResponseObject<MemberPlan>> requestToJoinPlan(@RequestBody MemberPlan member) {
         ResponseObject<MemberPlan> result = new ResponseObject<>();
         MemberPlan memberResponse = memberPlanService.requestToJoinPlan(member);
-        result.setMessage("Send request join plan successfully");
+        result.setMessage("Join plan successfully");
         result.setData(memberResponse);
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<MemberPlan>>(result, HttpStatus.OK);

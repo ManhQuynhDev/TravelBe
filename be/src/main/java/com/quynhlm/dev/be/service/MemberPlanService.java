@@ -17,6 +17,7 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.Role;
+import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.repositories.MemberPlanRepository;
@@ -56,6 +57,7 @@ public class MemberPlanService {
         }
 
         member.setStatus("APPROVED");
+        member.setRole(Role.USER.name());
         MemberPlan saveMember = memberPlanRepository.save(member);
 
         if (saveMember.getId() == null) {
@@ -64,8 +66,8 @@ public class MemberPlanService {
         return saveMember;
     }
 
-    public void deleteMemberPlan(Integer memberId,Integer planId) throws MemberNotFoundException {
-        MemberPlan foundMember = memberPlanRepository.findMemberById(memberId , planId);
+    public void deleteMemberPlan(Integer memberId, Integer planId) throws MemberNotFoundException {
+        MemberPlan foundMember = memberPlanRepository.findMemberById(memberId, planId);
         if (foundMember == null) {
             throw new MemberNotFoundException("Found user not found please try again");
         }
@@ -103,8 +105,7 @@ public class MemberPlanService {
         }
     }
 
-    // Get plan with status
-    public Page<MemberPlan> getRequestToJoinPlans(Integer planId, String status, int page, int size)
+    public Page<MemberResponseDTO> getRequestToJoinPlans(Integer planId, int page, int size)
             throws TravelPlanNotFoundException {
         Travel_Plan foundPlan = travelPlanRepository.getAnTravel_Plan(planId);
         if (foundPlan == null) {
@@ -112,7 +113,20 @@ public class MemberPlanService {
                     "Found member with planId " + planId + " not found , please try again");
         }
         Pageable pageable = PageRequest.of(page, size);
-        return memberPlanRepository.getRequestToJoinPlan(planId, status, pageable);
+
+        Page<Object[]> results = memberPlanRepository.foundMemberJoinWithPlan(planId, pageable);
+
+        return results.map(row -> {
+            MemberResponseDTO object = new MemberResponseDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setGroupId(((Number) row[1]).intValue());
+            object.setMemberId(((Number) row[2]).intValue());
+            object.setFullname(((String) row[3]));
+            object.setAvatar_url((String) row[4]);
+            object.setRole((String) row[5]);
+            object.setJoin_time((String) row[6]);
+            return object;
+        });
     }
 
     // Update status user join plan

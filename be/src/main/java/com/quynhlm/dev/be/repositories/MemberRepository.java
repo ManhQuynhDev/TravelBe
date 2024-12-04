@@ -56,7 +56,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 INNER JOIN user u ON u.id = m.user_id
                 INNER JOIN m_group g ON g.id = m.group_id
                 INNER JOIN user userGroup ON g.user_id = userGroup.id
-                WHERE m.group_id = :groupId
+                WHERE m.group_id = :groupId AND m.role <> 'ADMIN'
                 AND m.status = :status
             """, nativeQuery = true)
     Page<Object[]> getRequestToJoinGroup(
