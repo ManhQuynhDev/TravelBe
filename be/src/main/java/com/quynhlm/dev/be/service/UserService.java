@@ -449,13 +449,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void getAllInvitation(int user_id) throws UserAccountNotFoundException {
-        User user = userRepository.findOneById(user_id);
-        if (user == null) {
-            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
-        }
-    }
-
     public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)
             throws UserAccountNotFoundException {
         User foundUser = userRepository.findOneById(user_id);
