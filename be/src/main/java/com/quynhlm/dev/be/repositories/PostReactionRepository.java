@@ -1,7 +1,5 @@
 package com.quynhlm.dev.be.repositories;
 
-import org.antlr.v4.runtime.atn.SemanticContext.AND;
-import org.eclipse.angus.mail.imap.protocol.INTERNALDATE;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.PostReaction;
 
 public interface PostReactionRepository extends JpaRepository<PostReaction, Integer> {
-
     @Query(value = """
             select * from post_reaction where post_id = :post_id AND user_id = :user_id
             """, nativeQuery = true)
