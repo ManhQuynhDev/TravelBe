@@ -31,5 +31,4 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Inte
             WHERE p.type = :type
             """, nativeQuery = true)
     Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type);
-
 }
