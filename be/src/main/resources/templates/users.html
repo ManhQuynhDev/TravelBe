@@ -178,7 +178,8 @@
                                     <a class="d-flex align-items-center"
                                         th:onclick="'loadUserDetails(' + ${user.id} + ')'">
                                         <div class="avatar avatar-circle">
-                                            <img class="avatar-img" th:src="${user.avatarUrl}" alt="Image Description">
+                                            <img th:src="${user.avatarUrl ?: '/assets/img/avatar.jpg'}" alt="Avatar"
+                                                class="rounded-circle mr-2" style="width: 40px; height: 40px;">
                                         </div>
                                         <div class="ml-3">
                                             <span class="d-block h5 text-hover-primary mb-0"
@@ -191,7 +192,12 @@
 
 
                                 <td class="text-start" th:text="${user.email}">Email</td>
-                                <td class="text-start" th:text="${user.phoneNumber}">Phone</td>
+                                <td class="text-start">
+                                    <span th:if="${user.phoneNumber != null}" th:text="${user.phoneNumber}">Phone</span>
+                                    <span th:unless="${user.phoneNumber != null}"
+                                        th:text="'No phone number'">Phone</span>
+                                </td>
+
                                 <td class="text-start" th:text="${user.roles}">Role</td>
                                 <td class="text-start" th:text="${user.create_at}">Ngày Tạo</td>
                                 <td>
@@ -236,6 +242,9 @@
                 if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
                     return false;
                 }
+            });
+            $('.js-hs-unfold-invoker').each(function () {
+                var unfold = new HSUnfold($(this)).init();
             });
         });
 
@@ -293,7 +302,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [4],
+                        targets: [6],
                         orderable: false
                     }
                 ],

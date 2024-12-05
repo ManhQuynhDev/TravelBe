@@ -1,61 +1,354 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
+<html xmlns:th="http://www.thymeleaf.org"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
 </head>
 
 <body>
-    <h2>Test api</h2>
 
-    <!-- Input để chọn file ảnh -->
-    <input type="file" id="fileInput" accept="image/*" />
-    <!-- Input để nhập nội dung bài viết -->
-    <input type="text" id="postContent" placeholder="Enter your post content" />
-    <!-- Nút để tạo bài viết -->
-    <button onclick="createPost()">Create</button>
+    <div th:replace="fragments/headerMain"></div>
+    <div id="headerFluid" class="d-none">
+        <header id="header" class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered  ">
+            <div class="js-mega-menu navbar-nav-wrap">
+                <div class="navbar-brand-wrapper">
+                    <a class="navbar-brand" th:href="@{/}" aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div id="headerDouble" class="d-none">
+        <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
+        </header>
+    </div>
+    <div th:replace="fragments/sidebarMain"></div>
+    <div id="sidebarCompact" class="d-none">
+        <aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
+            <div class="navbar-vertical-container">
+                <div class="navbar-vertical-content">
+                </div>
+            </div>
+        </aside>
+    </div>
 
+    <div th:replace="fragments/searchDropdown"></div>
+
+    <div id="content" role="main" class="main pointer-event">
+        <div class="container-fluid">
+            <!-- Row 1: 4 Cards Tổng Quan -->
+            <div class="row mt-3 mb-0">
+                <!-- Card 1 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-100" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle">Total Users</h6>
+                            <div class="row align-items-center gx-2 mb-1">
+                                <div class="col-6">
+                                    <span class="card-title h2" th:text="${userCount}">72,540</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-soft-success" th:text="${formattedPercentage} + '%'">
+                                <i class="tio-trending-up"></i>%
+                            </span>
+                            <span class="text-body font-size-sm ml-1">from 9</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-100" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle">Total Groups</h6>
+                            <div class="row align-items-center gx-2 mb-1">
+                                <div class="col-6">
+                                    <span class="card-title h2" >10</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-soft-warning" >
+                                <i class="tio-trending-up"></i>5%</span>
+                            <span class="text-body font-size-sm ml-1">from last month</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-100" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle">Total Posts</h6>
+                            <div class="row align-items-center gx-2 mb-1">
+                                <div class="col-6">
+                                    <span class="card-title h2" >14</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-soft-danger" >
+                                <i class="tio-trending-down"></i>5%</span>
+                            <span class="text-body font-size-sm ml-1">from last month</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-100" href="#">
+                        <div class="card-body">
+                            <h6 class="card-subtitle">Total Comments</h6>
+                            <div class="row align-items-center gx-2 mb-1">
+                                <div class="col-6">
+                                    <span class="card-title h2" >25</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-soft-info" >
+                                <i class="tio-trending-up"></i>13%</span>
+                            <span class="text-body font-size-sm ml-1">from last week</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-md-12 col-lg-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="text-center">Growth Over Time</h4>
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="card-title mb-0">Top 5 Check-in Locations in Vietnam</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Rank</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Check-ins</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#1</td>
+                                        <td>Ha Long Bay</td>
+                                        <td>15,230</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#2</td>
+                                        <td>Hoi An Ancient Town</td>
+                                        <td>12,987</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#3</td>
+                                        <td>Da Nang Beach</td>
+                                        <td>11,453</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#4</td>
+                                        <td>Fansipan Mountain</td>
+                                        <td>9,210</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#5</td>
+                                        <td>Ho Chi Minh City</td>
+                                        <td>8,765</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2: Bảng Top 5 và Nội dung Chính -->
+            <div class="row">
+                <!-- Cột phải: Nội dung khác -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="col-12">
+                                <h4>Top Active Groups</h4>
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Image</th>
+                                            <th>Group Name</th>
+                                            <th>Status</th>
+                                            <th>Admin</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                            </td>
+                                            <td>Nature Lovers</td>
+                                            <td>Active</td>
+                                            <td>Tống Doanh Chính</td>
+                                            <td>2024-11-29 14:08:22.943</td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm">View</a>
+                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                            </td>
+                                            <td>Foodies United</td>
+                                            <td>Active</td>
+                                            <td>112</td>
+                                            <td>2024-11-29 14:07:47.674</td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm">View</a>
+                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                            </td>
+                                            <td>Foodies United</td>
+                                            <td>Active</td>
+                                            <td>Tống Doanh Chính</td>
+                                            <td>2024-11-29 14:07:47.674</td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm">View</a>
+                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                            </td>
+                                            <td>Tech Innovators</td>
+                                            <td>Active</td>
+                                            <td>Lê Mạnh Quỳnh</td>
+                                            <td>2024-11-29 14:07:47.674</td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm">View</a>
+                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Cột trái: Bảng Top 5 -->
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Hàm để gửi bài viết và ảnh lên server
-        const createPost = () => {
-            const content = document.getElementById("postContent").value; // Lấy nội dung bài viết
-            const fileInput = document.getElementById("fileInput"); // Lấy input file
-            const file = fileInput.files[0]; // Lấy file đầu tiên nếu có
-
-            const formData = new FormData(); // Tạo FormData để gửi dữ liệu
-
-            // Thêm nội dung bài viết vào FormData
-            formData.append("comment", JSON.stringify({
-                "content": "Xin chào tôi là bạn tôi  là Minh",
-                "postId": 3,
-                "userId": 2,
-                "type": "POST"
-            }));
-
-            // Thêm file vào FormData
-            formData.append("imageFile", file);
-
-            // Gửi request tới server bằng fetch API
-            fetch("http://localhost:8080/api/comments", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJxdXluaGxtLmRldkBnbWFpbC5jb20iLCJzdWIiOiJMZSBtYW5oIHF1eW5oIiwiZXhwIjoxNzMyODQ2MjQ2LCJpYXQiOjE3MzI3NTk4NDYsInNjb3BlIjoiVVNFUiJ9.W-HbDxaGgSweZo12O7LHPvrWLFOurOwcIVzLkW-Y9KP5DMyCg0oDbHkUjli2UNRZg91dphy7M13AiLbCgen4Lg", // Thêm token nếu cần
+        const ctx = document.getElementById('growthChart').getContext('2d');
+        const growthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], // Tháng
+                datasets: [
+                    {
+                        label: 'Users',
+                        data: [10, 15, 30, 45, 70, 100], // Số lượng người dùng
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        fill: true
+                    },
+                    {
+                        label: 'Posts',
+                        data: [5, 10, 20, 35, 50, 75], // Số lượng bài viết
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: true
+                    },
+                    {
+                        label: 'Groups',
+                        data: [2, 5, 8, 12, 20, 30], // Số lượng nhóm
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
                 },
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Post created successfully:", data);
-                    alert("Post created successfully!");
-                })
-                .catch(error => {
-                    console.error("Error creating post:", error);
-                    alert("Error creating post");
-                });
-        };
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Months'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        suggestedMax: 120, // Giới hạn trục y cho phù hợp với số lượng thấp
+                    }
+                }
+            }
+        });
     </script>
-</body>
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+    <script>
+        $(document).on('ready', function () {
+            $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+                $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+            });
+            var megaMenu = new HSMegaMenu($('.js-mega-menu'), {
+                desktop: {
+                    position: 'left'
+                }
+            }).init();
+            var sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+            $('.js-nav-tooltip-link').tooltip({ boundary: 'window' });
+            $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+                if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                    return false;
+                }
+            });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+                var unfold = new HSUnfold($(this)).init();
+            });
 
-</html>
+
+    </script>
+    <script th:src="@{/assets/js/userjs.js}"></script>
+    <script>
+        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+    </script>
+
+
+</body></html>

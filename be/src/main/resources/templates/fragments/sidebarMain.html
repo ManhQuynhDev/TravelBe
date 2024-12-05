@@ -1,10 +1,10 @@
 <div id="sidebarMain" class="d-none" th:fragment="sidebarMain">
     <aside
-    class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-light navbar-vertical-aside-initialized">
+        class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-light navbar-vertical-aside-initialized">
         <div class="navbar-vertical-container">
             <div class="navbar-vertical-footer-offset">
                 <div class="navbar-brand-wrapper justify-content-between">
-                    <a class="navbar-brand"  aria-label="Front">
+                    <a class="navbar-brand" aria-label="Front">
                         <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
                         <p>Travel With Me</p>
                         <img class="navbar-brand-logo-mini" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
@@ -16,56 +16,85 @@
                 </div>
                 <div class="navbar-vertical-content">
                     <ul class="navbar-nav navbar-nav-lg nav-tabs">
-                        <li class="nav-item ">
-                            <a th:href="@{/web-server/}" class="js-nav-tooltip-link nav-link "  title="Dashboards"
+                        <li class="nav-item">
+                            <a th:href="@{/web-server/}" class="js-nav-tooltip-link nav-link" title="Dashboards"
                                 data-placement="left">
                                 <i class="tio-home-vs-1-outlined nav-icon"></i>
                                 <span
-                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Dashboards</span>
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Dashboard</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <small class="nav-subtitle" title="Manages">Manages</small>
+                            <small class="nav-subtitle" title="Manage">Manage</small>
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>
                         </li>
                         <li class="navbar-vertical-aside-has-menu">
-                            <a th:href="@{/web-server/users}" class="js-navbar-vertical-aside-menu-link nav-link "
+                            <a th:href="@{/web-server/users}" class="js-navbar-vertical-aside-menu-link nav-link"
                                 title="Users">
-                                <i class="tio-group-equal nav-icon"></i>
+                                <i class="tio-user-big nav-icon"></i>
                                 <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Users</span>
                             </a>
                         </li>
-                        <li class="navbar-vertical-aside-has-menu ">
-                            <a class="js-navbar-vertical-aside-menu-link nav-link  " th:href="@{/web-server/posts}"
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/posts}" class="js-navbar-vertical-aside-menu-link nav-link"
                                 title="Posts">
                                 <i class="tio-comment-image nav-icon"></i>
-                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Posts
-                                </span>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Posts</span>
                             </a>
                         </li>
-                        <li class="navbar-vertical-aside-has-menu ">
-                            <a class="js-navbar-vertical-aside-menu-link nav-link  " th:href="@{/web-server/groups}"
-                                title="Posts">
-                                <i class="tio-comment-vs nav-icon"></i>
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/groups}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Groups">
+                                <i class="tio-group-junior nav-icon"></i>
                                 <span
                                     class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Groups</span>
                             </a>
                         </li>
-                        <li class="navbar-vertical-aside-has-menu ">
-                            <a class="js-navbar-vertical-aside-menu-link nav-link  " href="javascript:;"
-                                title="Storys">
-                                <i class="tio-apps nav-icon"></i>
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/comments}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Groups">
+                                <i class="tio-comment-text nav-icon"></i>
                                 <span
-                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Storys</span>
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Comments</span>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <div class="nav-divider"></div>
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/stories}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Stories">
+                                <i class="tio-apps nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Stories</span>
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <small class="nav-subtitle" title="Documentation">Documentation</small>
-                            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+
+
+
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/activity}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Activity">
+                                <i class="tio-calendar nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Activity</span>
+                            </a>
                         </li>
+
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/travel-plan}" th
+                                class="js-navbar-vertical-aside-menu-link nav-link" title="Travel Plan">
+                                <i class="tio-map nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Travel
+                                    Plan</span>
+                            </a>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/account-settings}"
+                                class="js-navbar-vertical-aside-menu-link nav-link" title="Account Settings">
+                                <i class="tio-settings nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Account
+                                    Settings</span>
+                            </a>
+                        </li>
+
 
                     </ul>
                 </div>

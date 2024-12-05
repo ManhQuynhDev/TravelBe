@@ -2,6 +2,10 @@ package com.quynhlm.dev.be.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -174,8 +174,8 @@ public class StoryService {
 
         return results.map(row -> {
             StoryResponseDTO story = new StoryResponseDTO();
-            story.setOwnerId(((Number) row[0]).intValue());
-            story.setStoryId(((Number) row[1]).intValue());
+            story.setStoryId(((Number) row[0]).intValue());
+            story.setOwnerId(((Number) row[1]).intValue());
             story.setLocationId(((Number) row[2]).intValue());
             story.setContent((String) row[3]);
             story.setStatus((String) row[4]);
