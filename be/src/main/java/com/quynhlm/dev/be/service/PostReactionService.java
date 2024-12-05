@@ -70,10 +70,11 @@ public class PostReactionService {
                     "User find with id " + postReaction.getUserId() + " not found. Please try another!");
         }
 
-        PostReaction foundReaction = postReactionRepository.findByPostIdAndUserId(postReaction.getPostId(),
+        PostReaction foundReaction = postReactionRepository.getAnReactionWithUserIdAndPostId(postReaction.getPostId(),
                 postReaction.getUserId());
+
         if (foundReaction != null) {
-            if (foundReaction.getType() == postReaction.getType()) {
+            if (foundReaction.getType().equals(postReaction.getType())) {
                 postReactionRepository.delete(foundReaction);
             } else {
                 foundReaction.setType(postReaction.getType());
