@@ -54,49 +54,66 @@
                     </button>
                 </div>
                 <div class="card-body">
-                    <table id="modernTable2" class="table-striped table-hover">
-                        <thead class="table-white">
-                            <tr>
-                                <th>#</th>
-                                <th style="min-width: 200px;">Content</th>
-                                <th>Media</th>
-                                <th>Created Time</th>
-                                <th>Status</th>
-                                <th>User</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="story : ${storyList}">
-                                <td class="text-start" th:text="${story.storyId}">ID</td>
-                                <td class="text-start">
-                                    <a href="#" data-toggle="modal"
-                                        th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'"
-                                        data-target="#storyDetailModal" class="text-body text-decoration-none">
-                                        <span th:text="${story.content}"></span>
-                                    </a>
-                                </td>
-                                <td class="text-start">
-                                    <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}" alt="Story Media"
-                                        class="img-fluid" style="max-width: 70px; height: auto; margin-right: 10px;">
-                                </td>
-                                <td class="text-start" th:text="${story.create_time}">Created Time</td>
-                                <td class="text-start" th:text="${story.status}">Status</td>
-                                <td class="text-start d-flex align-items-center">
-                                    <img th:src="${story.avatar ?: '/assets/img/avatar.jpg'}" alt="Avatar"
-                                        class="rounded-circle mr-2" style="width: 40px; height: 40px;">
-                                    <span th:text="${story.fullname}">User</span>
-                                </td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-danger" id="deleteStory"
-                                        th:attr="data-id=${story.storyId}">
-                                        <i class="tio-delete-outlined mr-1"></i>Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
+                    <div class="table-responsive">
 
-                    </table>
+                        <table id="modernTable2" class="table-striped table-hover">
+                            <thead class="table-white">
+                                <tr>
+                                    <th>#</th>
+                                    <th style="min-width: 200px;">Content</th>
+                                    <th>Media</th>
+                                    <th>Created Time</th>
+                                    <th>Status</th>
+                                    <th>User</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="story : ${storyList}">
+                                    <td class="text-start" th:text="${story.storyId}">ID</td>
+                                    <td class="text-start">
+                                        <a href="#" data-toggle="modal"
+                                            th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'"
+                                            data-target="#storyDetailModal" class="text-body text-decoration-none">
+                                            <span th:text="${story.content}"></span>
+                                        </a>
+                                    </td>
+                                    <td class="text-start">
+                                        <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}"
+                                            alt="Story Media" class="img-fluid"
+                                            style="max-width: 70px; height: auto; margin-right: 10px;">
+                                    </td>
+                                    <td class="text-start" th:text="${story.create_time}">Created Time</td>
+                                    <td class="text-start" th:text="${story.status}">Status</td>
+                                    <td class="text-start">
+                                        <div class="avatar-wrapper" style="display: flex; align-items: center;">
+                                            <!-- Hiển thị ảnh đại diện nếu có -->
+                                            <img th:if="${story.avatar != null}" th:src="${story.avatar}" alt="Avatar"
+                                                class="rounded-circle mr-2" style="width: 40px; height: 40px;">
+                                    
+                                            <!-- Hiển thị avatar text nếu không có ảnh -->
+                                            <div th:if="${story.avatar == null}" class="avatar-text rounded-circle mr-2"
+                                                style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
+                                                       width: 40px; height: 40px; font-size: 16px; font-weight: bold;">
+                                                <span th:text="${story.fullname != null && !story.fullname.isEmpty() ? story.fullname.substring(0,1).toUpperCase() : 'A'}"></span>
+                                            </div>
+                                            
+                                            <!-- Tên người dùng -->
+                                            <span th:text="${story.fullname != null ? story.fullname : 'User'}" style="margin-left: 10px;"></span>
+                                        </div>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-danger" id="deleteStory"
+                                            th:attr="data-id=${story.storyId}">
+                                            <i class="tio-delete-outlined mr-1"></i>Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,7 +127,6 @@
     <script th:src="@{/assets/js/theme.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script>
@@ -207,7 +223,6 @@
                         noMusicMessage.style.display = 'block';
                     }
 
-                    // Hiển thị modal
                     const modal = new bootstrap.Modal(document.getElementById("storyDetailModal"));
                     modal.show();
                 })
@@ -251,40 +266,34 @@
             })
         })
 
-        //add story
         document.getElementById('saveStoryButton').addEventListener('click', function () {
-            // Lấy dữ liệu từ các input
             const content = document.getElementById('storyContent').value;
             const status = document.getElementById('storyStatus').value;
             const location = document.getElementById('storyLocation').value;
-            const mediaFile = document.getElementById('storyMediaInput').files[0]; // Hình ảnh/Video
-            const musicFile = document.getElementById('storyMusicFile').files[0]; // Âm thanh
-            const hastag = document.getElementById('storyHashtag').value;  // Lấy giá trị hashtag người dùng nhập
+            const mediaFile = document.getElementById('storyMediaInput').files[0];
+            const musicFile = document.getElementById('storyMusicFile').files[0];
+            const hastag = document.getElementById('storyHashtag').value;
 
-            // Kiểm tra nếu file ảnh không tồn tại
             if (!mediaFile) {
                 alert('Please select at least one image or video.');
                 return;
             }
 
-            // Tạo FormData để gửi dữ liệu với file
             const formData = new FormData();
             formData.append('story', JSON.stringify({
                 content: content,
                 status: status,
                 location_id: location,
                 hastag: hastag,
-                user_id:user_id  
+                user_id: user_id
             }));
 
-            formData.append('mediaUrl', mediaFile);  // File ảnh là bắt buộc
+            formData.append('mediaUrl', mediaFile);
 
-            // Nếu có file âm nhạc, thêm vào FormData
             if (musicFile) {
                 formData.append('musicFile', musicFile);
             }
 
-            // Gửi dữ liệu tới API
             fetch('http://localhost:8080/api/stories', {
                 method: 'POST',
                 headers: {

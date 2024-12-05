@@ -105,13 +105,25 @@ public class MemberController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    // Duyệt thành viên memberId = managerId
+    @DeleteMapping("/reject_member")
+    public ResponseEntity<ResponseObject<Void>> rejectMember(
+            @RequestParam Integer groupId,
+            @RequestParam Integer adminId,
+            @RequestParam Integer memberSendId) {
+
+        ResponseObject<Void> result = new ResponseObject<>();
+        memberService.rejectMember(groupId, adminId, memberSendId);
+        result.setMessage("Reject member success fully");
+        result.setStatus(true);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @PutMapping("/browse")
     public ResponseEntity<ResponseObject<Void>> updateMemberStatus(
-            @RequestParam(name = "groupId") Integer groupId,
-            @RequestParam(name = "adminId") Integer adminId,
-            @RequestParam(name = "action") String action,
-            @RequestParam(name = "memberSendId") Integer memberSendId) {
+            @RequestParam Integer groupId,
+            @RequestParam Integer adminId,
+            @RequestParam String action,
+            @RequestParam Integer memberSendId) {
 
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.updateMemberStatus(groupId, adminId, memberSendId, action);
@@ -122,9 +134,9 @@ public class MemberController {
     
     @PutMapping("/change-admin")
     public ResponseEntity<ResponseObject<Void>> changeRoleAdmin(
-            @RequestParam(name = "adminId") Integer adminId,
-            @RequestParam(name = "memberId") Integer memberId,
-            @RequestParam(name = "groupId") Integer groupId) {
+            @RequestParam Integer adminId,
+            @RequestParam Integer memberId,
+            @RequestParam Integer groupId) {
 
         ResponseObject<Void> result = new ResponseObject<>();
         memberService.changeRoleAdmin(adminId , memberId , groupId);

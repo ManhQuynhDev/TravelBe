@@ -61,42 +61,43 @@
                     </button>
                 </div>
                 <div class="card-body">
-                    <table id="travelPlanTable" class="table-striped table-hover">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>#</th>
-                                <th style="min-width: 200px;">Plan Name</th>
-                                <th style="min-width: 80px;">Start Date</th>
-                                <th style="min-width: 80px;">End Date</th>
-                                <th>Status</th>
-                                <th style="min-width: 150px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="plan : ${listTravelPlans}">
-                                <td th:text="${plan.planId}">1</td>
-                                <td th:text="${plan.plan_name}">Go to New York, NY 10024, United States</td>
-                                <td th:text="${plan.start_date}">2024/11/10</td>
-                                <td th:text="${plan.end_date}">2024/11/13</td>
-                                <td th:text="${plan.status}">PRIVATE</td>
-                                <td>
-                                    <div class="d-flex">
-                                        <button class="btn btn-sm btn-white mr-2" id="edit"
-                                            th:attr="data-id=${plan.planId}">
-                                            <i class="tio-edit mr-1"></i>Edit
+                    <div class="table-responsive">
+
+                        <table id="travelPlanTable" class="table-striped table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th style="min-width: 200px;">Plan Name</th>
+                                    <th style="min-width: 80px;">Start Date</th>
+                                    <th style="min-width: 80px;">End Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="plan : ${listTravelPlans}">
+                                    <td th:text="${plan.planId}">1</td>
+                                    <td th:text="${plan.plan_name}">Go to New York, NY 10024, United States</td>
+                                    <td th:text="${plan.start_date}">2024/11/10</td>
+                                    <td th:text="${plan.end_date}">2024/11/13</td>
+                                    <td th:text="${plan.status}">PRIVATE</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" data-plan-id="${plan.planId}">
+                                            Delete
                                         </button>
-                                        <button class="btn btn-sm btn-danger mr-2" id="delete"
+                                        <button class="btn btn-sm btn-secondary" id="viewMemberss"
                                             th:attr="data-id=${plan.planId}">
-                                            <i class="tio-delete-outlined mr-1"></i>Delete
+                                            View Members
                                         </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        <div th:replace="fragments/travel_plan/viewMemberModal"></div>
 
     </div>
     </div>
@@ -106,7 +107,6 @@
     <script th:src="@{/assets/js/theme.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script>
@@ -128,8 +128,8 @@
             });
         });
         $('.js-hs-unfold-invoker').each(function () {
-                var unfold = new HSUnfold($(this)).init();
-            });
+            var unfold = new HSUnfold($(this)).init();
+        });
         $(document).ready(function () {
             var table = $('#travelPlanTable').DataTable({
                 dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
@@ -171,6 +171,73 @@
                 }
             });
         });
+
+
+        document.querySelectorAll('#viewMemberss').forEach(button => {
+            button.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+
+                // Gọi hàm viewMembers để tải dữ liệu
+                viewMembers(id);
+            });
+        });
+
+        function viewMembers(groupId) {
+            const token = localStorage.getItem('authToken');
+            fetch(`http://localhost:8080/api/member-plan/joined/${groupId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received from API:', data);
+
+                    const tableBody = document.getElementById('memberListTable');
+                    tableBody.innerHTML = '';
+
+                    // Kiểm tra xem có dữ liệu hay không trong trường content
+                    if (!data.content || !Array.isArray(data.content) || data.content.length === 0) {
+                        const noDataRow = document.createElement('tr');
+                        noDataRow.innerHTML = `<td colspan="7" class="text-center">No members found</td>`;
+                        tableBody.appendChild(noDataRow);
+                    } else {
+                        // Duyệt qua danh sách thành viên trong content
+                        data.content.forEach(member => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                <td>${member.userId}</td>
+                <td>
+                    <div class="member-info d-flex align-items-center">
+                        <img src="${member.avatar_url || '/assets/img/avatar.jpg'}" alt="Avatar" 
+                            class="rounded-circle mr-2" style="width: 40px; height: 40px;">
+                        <span>${member.fullname}</span>
+                    </div>
+                </td>
+                <td>${member.role}</td>
+                <td>${new Date(member.join_time).toLocaleString()}</td>
+            `;
+                            tableBody.appendChild(row);
+                        });
+                    }
+
+                    // Hiển thị modal nếu có
+                    const modal = new bootstrap.Modal(document.getElementById('memberListModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+        }
+
     </script>
 
 </body>

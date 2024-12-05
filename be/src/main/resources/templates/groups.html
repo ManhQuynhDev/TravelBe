@@ -52,60 +52,73 @@
                 <div class="card-header">
                     <h5 class="card-title">Groups List</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
-                        id="addPost">
+                        id="addGroup">
                         <i class="tio-user-add mr-1"></i>Add Group
                     </button>
                 </div>
                 <div class="card-body">
-                    <table id="modernTable2" class="table-striped table-hover">
-                        <thead class="table-white">
-                            <tr>
-                                <th>#</th>
-                                <th>Group Name</th>
-                                <th>Status</th>
-                                <th>Number of Members</th>
-                                <th>Admin</th>
-                                <th>Created Time</th>
-                                <th>Actions</th> <!-- Thêm cột hành động -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="group : ${groupList}">
-                                <td class="text-start" th:text="${group.groupId}">ID</td>
-                                <td class="table-column-pl-0">
-                                    <a class="d-flex align-items-center"
-                                        th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
-                                        <div class="avatar avatar-circle">
-                                            <img class="avatar-img" th:src="${group.cover_photo}" alt="Image Description">
+                    <div class="table-responsive">
+
+                        <table id="modernTable2" class="table-striped table-hover">
+                            <thead class="table-white">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Group Name</th>
+                                    <th>Status</th>
+                                    <th>Admin</th>
+                                    <th>Created Time</th>
+                                    <th>Actions</th> <!-- Thêm cột hành động -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="group : ${groupList}">
+                                    <td class="text-start" th:text="${group.groupId}">ID</td>
+                                    <td class="table-column-pl-0">
+                                        <a class="d-flex align-items-center"
+                                            th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
+                                            <div>
+                                                <img class="avatar-img" th:src="${group.cover_photo}"
+                                                    alt="Image Description">
+                                            </div>
+                                            <div class="ml-3">
+                                                <span class="d-block h5 text-hover-primary mb-0"
+                                                    th:text="${group.group_name}">Amanda Harvey</span>
+                                            </div>
+                                        </a>
+                                    </td>
+                                    <td class="text-start" th:text="${group.status}">Status</td>
+                                    <td class="text-start" th:text="${group.admin_name}">User ID</td>
+                                    <td class="text-start" th:text="${group.create_time}">Created Time</td>
+                                    <td>
+                                        <div class="d-flex justify-content-start">
+                                            <button class="btn btn-sm btn-danger mr-2" id="deleteGroup"
+                                                th:attr="data-id=${group.groupId}">
+                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary mr-2" id="viewMembers"
+                                                th:attr="data-id=${group.groupId}">
+                                                View Members
+                                            </button>
+                                            <button class="btn btn-sm btn-info" id="viewPlans"
+                                                th:attr="data-id=${group.groupId}">
+                                                View Plans
+                                            </button>
                                         </div>
-                                        <div class="ml-3">
-                                            <span class="d-block h5 text-hover-primary mb-0" th:text="${group.group_name}">Amanda Harvey</span>
-                                        </div>
-                                    </a>
-                                </td>
-                                <td class="text-start" th:text="${group.status}">Status</td>
-                                <td class="ml-5">
-                                    <span class="text-start" th:text="${group.member_count}">Bio</span>
-                                </td>
-                                <td class="text-start" th:text="${group.admin_name}">User ID</td>
-                                <td class="text-start" th:text="${group.create_time}">Created Time</td>
-                                <td>    
-                                    <button class="btn btn-sm btn-danger" id="deleteGroup" data-id="${group.groupId}">
-                                        Delete
-                                    </button>
-                                    <button class="btn btn-sm btn-secondary" id="viewMembers" data-id="${group.groupId}">
-                                        View Members
-                                    </button>
-                                </td>
-                                
-                            </tr>
-                        </tbody>
-                    </table>
-                    
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
-        
+
             <div th:replace="fragments/groups/groupDetailModal"></div>
+            <div th:replace="fragments/groups/viewMemberModal"></div>
+            <div th:replace="fragments/groups/addGroupModal"></div>
+            <div th:replace="fragments/groups/deleteGroupModal"></div>
         </div>
     </div>
 
@@ -115,7 +128,6 @@
     <script th:src="@{/assets/js/theme.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
     <script>
@@ -124,7 +136,6 @@
                 dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
                     '<"row"<"col-sm-12"tr>>' +
                     '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
-                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                 paging: true,
                 searching: true,
                 ordering: true,
@@ -132,7 +143,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [4],
+                        targets: [5],
                         orderable: false
                     }
                 ],
@@ -147,36 +158,177 @@
             });
 
         });
+        document.querySelectorAll('#viewMembers').forEach(button => {
+            button.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                console.log("Group ID:", id);
 
-        function loadGroupDetails(id) {
+                viewMembers(id);
+            });
+        });
+
+        function viewMembers(groupId) {
             const token = localStorage.getItem('authToken');
-            fetch(`http://localhost:8080/api/groups/${id}`, {
+            fetch(`http://localhost:8080/api/groups/${groupId}`, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
-            }).then(res => res.json())
-                .then(data => {
-                    if (data.status) {
-                        const group = data.data;
-
-                        document.getElementById(`groupCoverImgModal`).src = group.cover_photo || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
-                        document.getElementById(`groupAdminDetails`).value = group.admin_name || 'No bio available';
-                        document.getElementById(`groupMemberCountDetails`).value = group.member_count || '';
-                        document.getElementById('groupNameDetails').value = group.group_name || ''; // Cập nhật với tên nhóm
-                        document.getElementById('groupStatusDetails').value = group.status || '';
-                        document.getElementById('groupBioDetails').value = group.bio || '';
-
-                        const modal = new bootstrap.Modal(document.getElementById("groupDetailModal"));
-                        modal.show();
-                    } else {
-                        console.log("Error: " + data.status);
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Data received from API:', data);
+
+                    const tableBody = document.getElementById('memberListTable');
+                    tableBody.innerHTML = '';
+
+                    if (!data.data || !Array.isArray(data.data.userJoined) || data.data.userJoined.length === 0) {
+                        const noDataRow = document.createElement('tr');
+                        noDataRow.innerHTML = `<td colspan="7" class="text-center">No members found</td>`;
+                        tableBody.appendChild(noDataRow);
+                    } else {
+                        data.data.userJoined.forEach(member => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${member.userId}</td>
+                                <td>
+                                    <div class="member-info d-flex align-items-center">
+                                        <img src="${member.avatar_url || '/assets/img/avatar.jpg'}" alt="Avatar" 
+                                            class="rounded-circle mr-2" style="width: 40px; height: 40px;">
+                                        <span>${member.fullname}</span>
+                                    </div>
+                                </td>
+                                <td>${member.role}</td>
+                                <td>${new Date(member.join_time).toLocaleString()}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    }
+
+                    const modal = new bootstrap.Modal(document.getElementById('memberListModal'));
+                    modal.show();
                 })
                 .catch(error => {
-                    console.error("Error: ", error);
+                    console.error('Error fetching member data:', error.message);
                 });
         }
+
+        async function loadGroupDetails(groupId) {
+            try {
+                const response = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch group details: ${response.status}`);
+                }
+
+                const groupData = await response.json();
+                const data = groupData.data;
+
+                document.getElementById('groupCoverImgModal').src = data.cover_photo || 'assets/img/default-image.jpg';
+                document.getElementById('groupNameDetails').value = data.group_name || 'N/A';
+                document.getElementById('groupAdminDetails').value = data.admin_name || 'N/A';
+                document.getElementById('groupMemberCountDetails').value = data.member_count || '0';
+                document.getElementById('groupStatusDetails').value = data.status || 'Unknown';
+                document.getElementById('groupBioDetails').value = data.bio || 'No bio available';
+
+                const modal = new bootstrap.Modal(document.getElementById('groupDetailModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading group details:', error);
+                alert('Could not load group details. Please try again.');
+            }
+        }
+
+        //Add Group
+        document.getElementById('addGroup').addEventListener('click', function () {
+            $('#addGroupModal').modal('show');  // Mở modal
+        });
+        document.getElementById("saveGroupButton").addEventListener("click", () => {
+            const groupData = {
+                coverPhoto: document.getElementById("groupCoverPhoto").files[0],
+                name: document.getElementById("groupName").value,
+                bio: document.getElementById("groupBio").value,
+                status: document.getElementById("groupStatus").value
+            };
+
+            const formData = new FormData();
+            formData.append("group", JSON.stringify({
+                name: groupData.name,
+                bio: groupData.bio,
+                status: groupData.status,
+                user_id: localStorage.getItem("user_id")
+            }))
+            if (groupData.coverPhoto) {
+                formData.append("file", groupData.coverPhoto);
+            }
+            formData.append("file", groupData.coverPhoto);
+            fetch(`http://localhost:8080/api/groups`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("authToken")
+                },
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert("Group created successfully!")
+                    $('#addGroupModal').modal('hide');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.log("Loi fetch:" + error);
+
+                })
+        })
+
+        //delete Group
+        document.querySelectorAll('#deleteGroup').forEach(button => {
+            button.addEventListener("click", function () {
+                const group_id = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("deleteGroupModal"));
+                console.log(group_id);
+                
+                modal.show();
+                document.getElementById("confirmDeleteGroup").addEventListener("click", () => {
+                    fetch(`http://localhost:8080/api/groups/${group_id}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === "Delete group successfully") {
+                                alert("Delete Successfully");
+                                modal.hide();
+
+                                const groupRow = button.closest('tr');
+                                if (groupRow) {
+                                    groupRow.remove();
+                                }
+                            } else {
+                                alert("Failed to delete post");
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+                })
+            })
+        })
+
+
 
     </script>
 
@@ -202,8 +354,8 @@
             });
         });
         $('.js-hs-unfold-invoker').each(function () {
-                var unfold = new HSUnfold($(this)).init();
-            });
+            var unfold = new HSUnfold($(this)).init();
+        });
 
 
     </script>

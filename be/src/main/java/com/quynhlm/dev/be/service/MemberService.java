@@ -181,6 +181,27 @@ public class MemberService {
         }
     }
 
+    public void rejectMember(int groupId, int adminId, int memberSendId)
+            throws UnknownException, UserAccountNotFoundException {
+
+        Member memberManager = memberRepository.findUserAdminById(adminId, groupId);
+        if (memberManager == null) {
+            new UserAccountNotFoundException("Member admin not found");
+        }
+
+        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId, groupId);
+        if (memberSendRequest == null) {
+            new UserAccountNotFoundException("Membe send request not found");
+        }
+
+        if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
+            throw new UnknownException("You do not have permission to approve/reject members.");
+        }
+
+        memberRepository.delete(memberSendRequest);
+    }
+
+
     // member id == managerId
     public void updateMemberStatus(int groupId, int adminId, int memberSendId, String action)
             throws UnknownException, UserAccountNotFoundException {
@@ -190,12 +211,10 @@ public class MemberService {
             new UserAccountNotFoundException("Member admin not found");
         }
 
-        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId , groupId);
+        Member memberSendRequest = memberRepository.findMemberByUserId(memberSendId, groupId);
         if (memberSendRequest == null) {
             new UserAccountNotFoundException("Membe send request not found");
         }
-
-        System.out.println("Member send id group : " + memberManager.getRole());
 
         if (!memberManager.getRole().equals("ADMIN") && !memberManager.getRole().equals("MANAGER")) {
             throw new UnknownException("You do not have permission to approve/reject members.");
@@ -205,14 +224,9 @@ public class MemberService {
             throw new UnknownException("Group ID does not match");
         }
 
-        System.out.println("Member send id group" + memberSendRequest.getGroupId());
-        System.out.println(action);
-
         if ("approve".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("APPROVED");
             memberSendRequest.setRole(Role.USER.name());
-        } else if ("reject".equalsIgnoreCase(action)) {
-            memberRepository.delete(memberSendRequest);
         } else {
             throw new UnknownException("Invalid action");
         }
@@ -294,17 +308,17 @@ public class MemberService {
 
     public Page<MemberResponseDTO> getListMemberFromGroup(Integer groupId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = memberRepository.foundUserJoinGroup(groupId, pageable);
+        Page<Object[]> results = memberRepository.foundMemberJoinGroup(groupId, pageable);
 
         return results.map(row -> {
             MemberResponseDTO object = new MemberResponseDTO();
             object.setUserId(((Number) row[0]).intValue());
             object.setGroupId(((Number) row[1]).intValue());
             object.setMemberId(((Number) row[2]).intValue());
-            object.setFullname(((String) row[4]));
-            object.setAvatar_url((String) row[5]);
-            object.setRole((String) row[9]);
-            object.setJoin_time((String) row[10]);
+            object.setFullname(((String) row[3]));
+            object.setAvatar_url((String) row[4]);
+            object.setRole((String) row[5]);
+            object.setJoin_time((String) row[6]);
             return object;
         });
     }
