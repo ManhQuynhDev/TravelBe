@@ -163,7 +163,6 @@ public class FriendShipService {
             user.setUserReceiedId(((Number) row[4]).intValue());
             user.setStatus((String) row[5]);
             user.setSend_time((String) row[6]);
-
             return user;
         });
     }

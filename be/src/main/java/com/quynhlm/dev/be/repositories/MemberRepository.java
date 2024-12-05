@@ -40,7 +40,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId AND m.status = :status", nativeQuery = true)
     List<Member> findByGroup_idAndStatus(@Param("groupId") Integer groupId, @Param("status") String status);
 
-    @Query(value = "SELECT * FROM Member m WHERE m.groupId = :groupId", nativeQuery = true)
+    @Query(value = "SELECT * FROM Member m WHERE m.group_id = :groupId", nativeQuery = true)
     List<Member> findByGroupId(@Param("groupId") Integer groupId);
 
     @Query(value = """
