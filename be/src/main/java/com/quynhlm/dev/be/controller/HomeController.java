@@ -53,10 +53,14 @@ public class HomeController {
                 .count();
         double percentageChange = ((double) (userCount - 9) / 9) * 100;
         String formattedPercentage = String.format("%.1f", percentageChange);
-        // model.addAttribute("body", "home"); // Gửi fragment home
         model.addAttribute("userCount", userCount);
         model.addAttribute("formattedPercentage", formattedPercentage);
-        return "home"; // Trả về template index.html
+        return "home";
+    }
+
+    @GetMapping("/manager")
+    public String getContentPage(Model model) {
+        return "manager";
     }
 
     @GetMapping("/users")
@@ -71,7 +75,7 @@ public class HomeController {
         model.addAttribute("userList", userService.getListData(0, 1000));
         model.addAttribute("userCount", userCount);
         model.addAttribute("formattedPercentage", formattedPercentage);
-        return "users"; // Trả về template index.html
+        return "users";
     }
 
     @GetMapping("/posts")

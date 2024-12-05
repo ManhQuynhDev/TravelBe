@@ -1,0 +1,80 @@
+<div th:fragment="content">
+    <div class="container-fluid m-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Manager</h5>
+                <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addTravelPlanModal"
+                    id="addTravelPlan">
+                    <i class="tio-add mr-1"></i>Add Manager
+                </button>
+            </div>
+            <div class="card-body">
+                <table id="travelPlanTable" class="table-striped table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th style="min-width: 200px;">Plan Name</th>
+                            <th style="min-width: 80px;">Start Date</th>
+                            <th style="min-width: 80px;">End Date</th>
+                            <th>Status</th>
+                            <th style="min-width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .responsive-table {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f8f9fa;
+    }
+
+    @media (max-width: 768px) {
+        table thead {
+            display: none;
+        }
+
+        table, table tbody, table tr, table td {
+            display: block;
+            width: 100%;
+        }
+
+        table tr {
+            margin-bottom: 15px;
+        }
+
+        table td {
+            text-align: right;
+            position: relative;
+            padding-left: 50%;
+        }
+
+        table td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 10px;
+            font-weight: bold;
+        }
+    }
+</style>

@@ -183,4 +183,10 @@ public class UserController {
         result.setMessage("Create a new account successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
+
+    @GetMapping("/users/manager")
+    public Page<User> getAllManager(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return userService.getAllListManager(page, size);
+    }
 }

@@ -15,6 +15,7 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.FriendRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Group;
@@ -141,7 +142,8 @@ public class FriendShipService {
         }
     }
 
-    public Page<FriendShip> findByUserReceivedIdAndStatus(Integer userReceivedId, String status, int page, int size) {
+    public Page<UserFriendResponse> findByUserReceivedIdAndStatus(Integer userReceivedId, String status, int page , int size) {
+
         User foundUser = userRepository.getAnUser(userReceivedId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
@@ -149,9 +151,22 @@ public class FriendShipService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        return friendShipRepository.findByUserReceivedIdAndStatus(userReceivedId, status, pageable);
-    }
+        Page<Object[]> results = friendShipRepository.findByUserReceivedIdAndStatus(userReceivedId, status, pageable);
 
+        return results.map(row -> {
+            UserFriendResponse user = new UserFriendResponse();
+
+            user.setId(((Number) row[0]).intValue());
+            user.setUserSendId(((Number) row[1]).intValue());
+            user.setUserSendName((String) row[2]);
+            user.setUserSendAvatar((String) row[3]);
+            user.setUserReceiedId(((Number) row[4]).intValue());
+            user.setStatus((String) row[5]);
+            user.setSend_time((String) row[6]);
+
+            return user;
+        });
+    }
     public void acceptFriend(int userSendId, int userReceivedId, String action)
             throws UserAccountNotFoundException, UnknownException {
 

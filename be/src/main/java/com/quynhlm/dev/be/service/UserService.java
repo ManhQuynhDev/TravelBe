@@ -316,7 +316,6 @@ public class UserService {
             }
         }
     }
-
     // ChangeProfile
     public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
@@ -447,6 +446,11 @@ public class UserService {
 
     public List<User> getAllListUser() {
         return userRepository.findAll();
+    }
+
+    public Page<User> getAllListManager(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAllManager(pageable);
     }
 
     public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)

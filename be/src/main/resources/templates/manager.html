@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+    <style>
+        table {
+            width: 100%;
+            table-layout: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="fragments/headerMain"></div>
+    <div id="headerFluid" class="d-none">
+        <header id="header"
+            class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+            <div class="js-mega-menu navbar-nav-wrap">
+                <div class="navbar-brand-wrapper">
+                    <a class="navbar-brand" th:href="@{/}" aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div id="headerDouble" class="d-none">
+        <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
+        </header>
+    </div>
+    <div th:replace="fragments/sidebarMain"></div>
+    <div id="sidebarCompact" class="d-none">
+        <aside
+            class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered">
+            <div class="navbar-vertical-container">
+                <div class="navbar-vertical-content">
+                </div>
+            </div>
+        </aside>
+    </div>
+    <div th:replace="fragments/searchDropdown"></div>
+    <div id="content" role="main" class="main pointer-event">
+        <div th:include="fragments/managerPage :: content"></div>
+    </div>
+    </div>
+
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script>
+        $(document).on('ready', function () {
+            $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+                $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+            });
+            var megaMenu = new HSMegaMenu($('.js-mega-menu'), {
+                desktop: {
+                    position: 'left'
+                }
+            }).init();
+            var sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+            $('.js-nav-tooltip-link').tooltip({ boundary: 'window' });
+            $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+                if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                    return false;
+                }
+            });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
+        });
+
+    </script>
+
+</body>
+
+</html>

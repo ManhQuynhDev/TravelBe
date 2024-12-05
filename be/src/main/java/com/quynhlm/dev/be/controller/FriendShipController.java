@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
-import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.service.FriendShipService;
 import com.quynhlm.dev.be.service.InvitationService;
 
@@ -65,7 +65,7 @@ public class FriendShipController {
     }
 
     @GetMapping("/{userReceivedId}/status")
-    public Page<FriendShip> getListRequestByStatus(@PathVariable Integer userReceivedId, @RequestParam String status,
+    public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userReceivedId, @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.findByUserReceivedIdAndStatus(userReceivedId, status, page, size);
