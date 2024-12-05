@@ -19,7 +19,7 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                         @Param("status") String status);
 
         @Query(value = """
-                        SELECT f.id , u.id as user_send_id, u.fullname as user_send_name , u.avatar_url as user_send_avatar , f.user_received_id , f.status , create_at FROM friend_ship f
+                        SELECT f.id , u.id as user_send_id, u.fullname as user_send_name , u.avatar_url as user_send_avatar , f.user_received_id , f.status , f.create_time FROM friend_ship f
                         INNER JOIN User u on u.id = f.user_send_id
                         WHERE f.user_received_id = :userReceivedId AND f.status = :status;""", nativeQuery = true)
         Page<Object[]> findByUserReceivedIdAndStatus(
