@@ -13,7 +13,7 @@ import com.quynhlm.dev.be.model.entity.PostReaction;
 public interface PostReactionRepository extends JpaRepository<PostReaction, Integer> {
 
     @Query(value = """
-            select * from post_reaction where post_id = 2 AND user_id = 2
+            select * from post_reaction where post_id = :post_id AND user_id = :user_id
             """, nativeQuery = true)
     PostReaction getAnReactionWithUserIdAndPostId(@Param("post_id") Integer post_id, @Param("user_id") Integer user_id);
 
