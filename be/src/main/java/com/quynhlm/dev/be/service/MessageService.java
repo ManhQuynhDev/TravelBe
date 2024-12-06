@@ -10,6 +10,8 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -31,11 +33,21 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public void changeStatusMessage(Integer messageId, Boolean status) {
+    public void changeStatusMessage(Integer messageId) {
         Message foundMessage = messageRepository.findByMessageId(messageId);
 
         if (foundMessage != null) {
-            foundMessage.setStatus(status);
+            foundMessage.setStatus(true);
+
+            messageRepository.save(foundMessage);
+        }
+    }
+
+    public void updateMessage(Integer messageId, String content) {
+        Message foundMessage = messageRepository.findByMessageId(messageId);
+
+        if (foundMessage != null) {
+            foundMessage.setContent(content);
 
             messageRepository.save(foundMessage);
         }
@@ -113,5 +125,24 @@ public class MessageService {
         return new UserMessageResponseDTO(message_id, sender_id, receiver_id, content, fullname, avatar, mediaUrl,
                 status,
                 send_time);
+    }
+
+    public Page<UserMessageResponseDTO> getAllMessageUser(Integer senderId, Integer receiverId, Pageable pageable) {
+        Page<Object[]> results = messageRepository.getAllMessageWithTwoUser(senderId, receiverId, pageable);
+
+        return results.map(row -> {
+            Integer message_id = ((Number) row[0]).intValue();
+            Integer sender_id = ((Number) row[1]).intValue();
+            Integer receiver_id = ((Number) row[2]).intValue();
+            String content = (String) row[3];
+            String fullname = (String) row[4];
+            String avatar = (String) row[5];
+            String mediaUrl = (String) row[6];
+            Boolean status = (Boolean) row[7];
+            String send_time = (String) row[8];
+            return new UserMessageResponseDTO(message_id, sender_id, receiver_id, content, fullname, avatar, mediaUrl,
+                    status,
+                    send_time);
+        });
     }
 }

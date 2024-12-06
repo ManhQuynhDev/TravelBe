@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -31,7 +33,28 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
     List<Object[]> findAnMessage(@Param("id") Integer id);
 
     @Query(value = """
-             select m from message m WHERE m.id = :id
+                SELECT
+                m.id,
+                m.sender_id,
+                m.receiver_id,
+                m.content,
+                u.fullname,
+                u.avatar_url,
+                m.media_url,
+                m.status,
+                m.send_time
+            FROM
+                message m
+            INNER JOIN
+                User u ON u.id = m.sender_id
+            WHERE
+                m.sender_id = :senderId AND m.receiver_id = :receiverId
                 """, nativeQuery = true)
+    Page<Object[]> getAllMessageWithTwoUser(@Param("senderId") Integer senderId,
+            @Param("receiverId") Integer receiverId, Pageable pageable);
+
+    @Query(value = """
+            select m from message m WHERE m.id = :id
+               """, nativeQuery = true)
     Message findByMessageId(@Param("id") Integer id);
 }
