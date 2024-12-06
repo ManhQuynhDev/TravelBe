@@ -4,15 +4,77 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Home</title>
+    <title>Quản lý nhân viên</title>
     <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+
     <style>
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .responsive-table {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         table {
             width: 100%;
-            table-layout: auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            table thead {
+                display: none;
+            }
+
+            table,
+            table tbody,
+            table tr,
+            table td {
+                display: block;
+                width: 100%;
+            }
+
+            table tr {
+                margin-bottom: 15px;
+            }
+
+            table td {
+                text-align: right;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            table td:before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                font-weight: bold;
+            }
         }
     </style>
 </head>

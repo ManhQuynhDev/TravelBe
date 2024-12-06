@@ -41,6 +41,14 @@ public class MessageService {
         }
     }
 
+    public void deleteMessage(Integer messageId) {
+        Message foundMessage = messageRepository.findByMessageId(messageId);
+
+        if (foundMessage != null) {
+            messageRepository.delete(foundMessage);
+        }
+    }
+
     public UserMessageResponseDTO sendMessage(Message message) {
         message.setSendTime(new Timestamp(System.currentTimeMillis()).toString());
         message.setStatus(false);
@@ -102,7 +110,8 @@ public class MessageService {
         Boolean status = (Boolean) result[7];
         String send_time = (String) result[8];
 
-        return new UserMessageResponseDTO(message_id,sender_id, receiver_id, content, fullname, avatar, mediaUrl, status,
+        return new UserMessageResponseDTO(message_id, sender_id, receiver_id, content, fullname, avatar, mediaUrl,
+                status,
                 send_time);
     }
 }

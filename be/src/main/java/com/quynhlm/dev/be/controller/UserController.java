@@ -188,5 +188,5 @@ public class UserController {
     public Page<User> getAllManager(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return userService.getAllListManager(page, size);
-    }
+    }                                                               
 }

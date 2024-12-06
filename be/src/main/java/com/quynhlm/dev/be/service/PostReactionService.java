@@ -98,8 +98,8 @@ public class PostReactionService {
     }
 
     // Get Reaction with type
-    public Page<UserReactionDTO> getAllUserReactionWithType(String type, Pageable pageable) {
-        Page<Object[]> results = postReactionRepository.getUserReactionByType(pageable, type);
+    public Page<UserReactionDTO> getAllUserReactionWithType(Integer post_id , String type, Pageable pageable) {
+        Page<Object[]> results = postReactionRepository.getUserReactionByType(pageable, type , post_id);
 
         return results.map(row -> {
             UserReactionDTO userReactionDTO = new UserReactionDTO();

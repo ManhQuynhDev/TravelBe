@@ -19,8 +19,8 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
 
    @Query(value = """
             SELECT
-            u.id AS owner_id,
             s.id AS story_id,
+            u.id AS owner_id,
             s.location_id,
             s.content,
             s.status,
