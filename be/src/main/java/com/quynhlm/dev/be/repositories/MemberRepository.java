@@ -67,8 +67,8 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = """
                 SELECT
                 m.user_id,
-                g.id AS group_id,
                 m.id AS member_id,
+                g.id AS group_id,
                 g.name,
                 userGroup.fullname AS adminName,
                 g.cover_photo,
