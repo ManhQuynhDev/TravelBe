@@ -470,7 +470,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     // Pageable pageable);
 
     @Query(value = """
-                SELECT * FROM (
+                SELECT DISTINCT * FROM (
                     (
                         SELECT
                              DISTINCT

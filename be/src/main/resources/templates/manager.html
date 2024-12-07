@@ -108,7 +108,7 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div th:include="fragments/managerPage :: content"></div>
-        <div th:replace="fragments/users/userDetailsModal"></div>
+        <div th:replace="fragments/users/managerDetailsModel"></div>
     </div>
     </div>
 
@@ -120,12 +120,50 @@
 
     <script>
 
-        const detailsManager = document.querySelector('#detailsManager');
+        function loadUserDetails(userId) {
+            const token = localStorage.getItem('authToken');
+            // Gửi yêu cầu HTTP đến API để lấy thông tin người dùng
+            fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                }
+            })
+                .then(response => response.json())  // Phân tích cú pháp JSON từ phản hồi
+                .then(data => {
+                    if (data.status) {
+                        const user = data.data; // Lấy dữ liệu người dùng từ API response
 
-        detailsManager.addEventListener('click', () => {
-            const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
-            modal.show();
-        });
+                        // Lấy phần tử DOM
+                        const fullname = document.getElementById('managerFullNameDetails');
+
+                        // Kiểm tra nếu phần tử tồn tại
+                        if (fullname) {
+                            fullname.innerText = user.fullname || 'Full name not available';
+                        }
+
+                        // Gán giá trị cho 'managerRolesDetails'
+                        const managerRolesDetails = document.getElementById('managerRolesDetails');
+                        if (managerRolesDetails) {
+                            managerRolesDetails.innerText = user.roles || 'Role not available';
+                        }
+
+                        const managerCreateTimeDetails = document.getElementById('managerCreateTimeDetails');
+                        if(managerCreateTimeDetails){
+                            managerCreateTimeDetails.innerText = 'Joined ' + user.create_at.toString().substring(0, 4) || 'Role not available';
+                        }
+
+                        // Mở modal
+                        const modal = new bootstrap.Modal(document.getElementById('managerDetailsModel'));
+                        modal.show();
+                    } else {
+                        console.error('Lỗi khi tải thông tin người dùng');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi mạng:', error);
+                });
+        }
 
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {

@@ -23,8 +23,8 @@
                             <th>COUNTRY</th>
                             <th>STATUS</th>
                             <th>ROLE</th>
-                            <th>LOOKER</th>
-                            <th>CREATE TIME</th>
+                            <th>ACCOUNT</th>
+                            <th>JOINED</th>
 
                             <th>
                                 ACTIONS
@@ -41,7 +41,7 @@
                             </td>
                             <td class="table-column-pl-0">
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-soft-primary avatar-circle" id="detailsManager" th:attr="data-id=${manager}">
+                                    <div class="avatar avatar-soft-primary avatar-circle" th:onclick="'loadUserDetails(' + ${manager.id} + ')'">
                                         <span class="avatar-initials">Q</span>
                                     </div>
                                     <div class="ml-3">
@@ -70,7 +70,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span th:text="${manager.create_at.toString().substring(0, 19)}"></span>
+                                    <span th:text="'Joined ' + ${manager.create_at.toString().substring(0, 4)}"></span>
                                 </div>
                             </td>
 
