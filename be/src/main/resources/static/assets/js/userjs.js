@@ -15,6 +15,7 @@ $(document).on('ready', function () {
         });
     }
 
+
 });
 
 const API_BASE_URL = 'http://localhost:8080/onboarding';
@@ -437,4 +438,8 @@ function userCreatedGroups(userId) {
             console.error('Error fetching user-created groups:', error);
         });
 }
+
+
+    
+
 
