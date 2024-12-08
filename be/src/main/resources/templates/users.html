@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 
-
 </head>
 
 <body>
+    <div th:replace="fragments/buildertoggle"></div>
     <div th:replace="fragments/headerMain"></div>
     <div id="headerFluid" class="d-none">
         <header id="header"
@@ -251,6 +251,7 @@
         });
 
 
+
     </script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -287,7 +288,6 @@
                 var rows = table.rows({ 'search': 'applied' }).nodes();
                 $('input[type="checkbox"]', rows).prop('checked', this.checked);
             });
-
 
         });
     </script>
@@ -516,30 +516,24 @@
             modal.show();
         })
 
-        // Hàm này sẽ được gọi khi nhấn vào liên kết người dùng
         function loadUserDetails(userId) {
-            // Gửi yêu cầu HTTP đến API để lấy thông tin người dùng
             fetch(`${API_BASE_URL}/users/${userId}`, {
                 method: 'GET',
                 headers: AUTH_HEADER
             })
-                .then(response => response.json())  // Phân tích cú pháp JSON từ phản hồi
+                .then(response => response.json())
                 .then(data => {
                     if (data.status) {
-                        const user = data.data; // Lấy dữ liệu người dùng từ API response
+                        const user = data.data;
                         console.log(user);
                         console.log(user.fullname);
 
-                        // Cập nhật thông tin người dùng vào các phần tử trong modal
                         document.getElementById('editAvatarImgModal').src = user.avatarUrl
-                        document.getElementById('userFullNameDetails').value = user.fullname || 'Full name not available'; // Gán giá trị fullname hoặc hiển thị thông báo nếu không có
-                        document.getElementById('userPhoneDetails').value = user.phoneNumber || 'Phone number not available'; // Gán giá trị phone hoặc hiển thị thông báo nếu không có
-                        document.getElementById('userBioDetails').value = user.bio || 'No bio available'; // Gán giá trị bio hoặc hiển thị thông báo nếu không có
-                        document.getElementById('userDOBDetails').value = user.dob || 'Date of birth not available'; // Gán giá trị ngày sinh hoặc hiển thị thông báo nếu không có
+                        document.getElementById('userFullNameDetails').value = user.fullname || 'Full name not available';
+                        document.getElementById('userPhoneDetails').value = user.phoneNumber || 'Phone number not available';
+                        document.getElementById('userBioDetails').value = user.bio || 'No bio available';
+                        document.getElementById('userDOBDetails').value = user.dob || 'Date of birth not available';
 
-
-
-                        // Mở modal
                         const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
                         modal.show();
                     } else {
@@ -552,9 +546,7 @@
         }
 
         document.getElementById("logoutLink").addEventListener("click", function () {
-            // sessionStorage.removeItem("authToken"); // Xóa token trong sessionStorage
             window.location.replace("/web-server/login");
-
         });
 
 

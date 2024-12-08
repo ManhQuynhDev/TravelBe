@@ -145,8 +145,7 @@ public class MessageGroupService {
         }
     }
 
-
-    public UserMessageGroupResponseDTO getAnMessage(Integer id){
+    public UserMessageGroupResponseDTO getAnMessage(Integer id) {
         List<Object[]> results = messageGroupRepository.findAnMessage(id);
 
         Object[] result = results.get(0);
@@ -161,6 +160,15 @@ public class MessageGroupService {
         Boolean status = (Boolean) result[7];
         String send_time = (String) result[8];
 
-        return new UserMessageGroupResponseDTO(message_id,user_send_id, group_id,content,mediaUrl,fullname,avatar ,status, send_time);
+        return new UserMessageGroupResponseDTO(message_id, user_send_id, group_id, content, mediaUrl, fullname, avatar,
+                status, send_time);
+    }
+
+    public void deleteMessage(Integer messageId) {
+        MessageGroup foundMessage = messageGroupRepository.findByMessageId(messageId);
+
+        if (foundMessage != null) {
+            messageGroupRepository.delete(foundMessage);
+        }
     }
 }

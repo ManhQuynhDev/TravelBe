@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import com.quynhlm.dev.be.model.entity.MessageGroup;
 
 public interface MessageGroupRepository extends JpaRepository<MessageGroup, Integer> {
@@ -57,4 +58,10 @@ public interface MessageGroupRepository extends JpaRepository<MessageGroup, Inte
                 g.id = :id
                 """, nativeQuery = true)
     List<Object[]> findAnMessage(@Param("id") Integer id);
+
+
+    @Query(value = """
+             select m from message_group m WHERE m.id = :id
+                """, nativeQuery = true)
+    MessageGroup findByMessageId(@Param("id") Integer id);
 }

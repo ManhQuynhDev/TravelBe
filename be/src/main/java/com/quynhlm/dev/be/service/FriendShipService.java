@@ -15,6 +15,7 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.FriendRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Group;
@@ -44,9 +45,6 @@ public class FriendShipService {
 
     @Autowired
     private GroupRepository groupRepository;
-
-    @Autowired
-    private NotificationHelper notificationHelper;
 
     @Autowired
     private InvitationRepository invitationRepository;
@@ -135,13 +133,11 @@ public class FriendShipService {
         FriendShip saveFriendShip = friendShipRepository.save(friendShip);
         if (saveFriendShip.getId() == null) {
             throw new UnknownException("Transaction cannot be completed!");
-        } else {
-            notificationHelper.pushNotification(friendShip.getUserSendId(), friendShip.getUserReceivedId(),
-                    " đã gửi cho bạn một lời mời kết bạn", "Lời mời kết bạn từ ");
         }
     }
 
-    public Page<FriendShip> findByUserReceivedIdAndStatus(Integer userReceivedId, String status, int page, int size) {
+    public Page<UserFriendResponse> findByUserReceivedIdAndStatus(Integer userReceivedId, String status, int page , int size) {
+
         User foundUser = userRepository.getAnUser(userReceivedId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
@@ -149,9 +145,21 @@ public class FriendShipService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        return friendShipRepository.findByUserReceivedIdAndStatus(userReceivedId, status, pageable);
-    }
+        Page<Object[]> results = friendShipRepository.findByUserReceivedIdAndStatus(userReceivedId, status, pageable);
 
+        return results.map(row -> {
+            UserFriendResponse user = new UserFriendResponse();
+
+            user.setId(((Number) row[0]).intValue());
+            user.setUserSendId(((Number) row[1]).intValue());
+            user.setUserSendName((String) row[2]);
+            user.setUserSendAvatar((String) row[3]);
+            user.setUserReceiedId(((Number) row[4]).intValue());
+            user.setStatus((String) row[5]);
+            user.setSend_time((String) row[6]);
+            return user;
+        });
+    }
     public void acceptFriend(int userSendId, int userReceivedId, String action)
             throws UserAccountNotFoundException, UnknownException {
 
@@ -177,12 +185,8 @@ public class FriendShipService {
 
         if ("approved".equalsIgnoreCase(action)) {
             foundFriendShip.setStatus("friend");
-            notificationHelper.pushNotification(foundFriendShip.getUserSendId(), foundFriendShip.getUserReceivedId(),
-                    "đã chấp nhận lời mời kết bạn", "Lời mời kết bạn được chấp nhận từ ");
         } else if ("reject".equalsIgnoreCase(action)) {
             friendShipRepository.delete(foundFriendShip);
-            notificationHelper.pushNotification(foundFriendShip.getUserSendId(), foundFriendShip.getUserReceivedId(),
-                    "đã từ chối lời mời kết bạn", "Lời mời kết bạn bị từ chối từ ");
         } else {
             throw new IllegalArgumentException("Invalid action");
         }
@@ -213,8 +217,6 @@ public class FriendShipService {
         }
 
         friendShipRepository.delete(foundFriendShip);
-        notificationHelper.pushNotification(foundFriendShip.getUserReceivedId(), foundFriendShip.getUserSendId(),
-                "đã hủy kết bạn với bạn", "Kết bạn đã bị hủy từ ");
     }
 
     public void changeStatusFriend(int userSendId, int userReceivedId, String action)

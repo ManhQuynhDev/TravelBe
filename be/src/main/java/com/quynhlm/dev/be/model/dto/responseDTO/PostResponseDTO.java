@@ -27,6 +27,7 @@ public class PostResponseDTO {
     private Integer comment_count;
     private Integer share_count;
     private Integer isTag;
+    private String user_reaction_type;
     
     private List<String> mediaUrls;
     private List<UserTagPostResponse> tags;

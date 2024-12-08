@@ -70,10 +70,11 @@ public class PostReactionService {
                     "User find with id " + postReaction.getUserId() + " not found. Please try another!");
         }
 
-        PostReaction foundReaction = postReactionRepository.findByPostIdAndUserId(postReaction.getPostId(),
+        PostReaction foundReaction = postReactionRepository.getAnReactionWithUserIdAndPostId(postReaction.getPostId(),
                 postReaction.getUserId());
+
         if (foundReaction != null) {
-            if (foundReaction.getType() == postReaction.getType()) {
+            if (foundReaction.getType().equals(postReaction.getType())) {
                 postReactionRepository.delete(foundReaction);
             } else {
                 foundReaction.setType(postReaction.getType());
@@ -97,8 +98,8 @@ public class PostReactionService {
     }
 
     // Get Reaction with type
-    public Page<UserReactionDTO> getAllUserReactionWithType(String type, Pageable pageable) {
-        Page<Object[]> results = postReactionRepository.getUserReactionByType(pageable, type);
+    public Page<UserReactionDTO> getAllUserReactionWithType(Integer post_id , String type, Pageable pageable) {
+        Page<Object[]> results = postReactionRepository.getUserReactionByType(pageable, type , post_id);
 
         return results.map(row -> {
             UserReactionDTO userReactionDTO = new UserReactionDTO();

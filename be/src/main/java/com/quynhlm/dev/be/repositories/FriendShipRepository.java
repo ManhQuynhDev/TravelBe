@@ -18,8 +18,11 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                         @Param("userReceivedId") Integer userReceivedId,
                         @Param("status") String status);
 
-        @Query(value = "SELECT * FROM friend_ship f WHERE f.user_received_id = :userReceivedId AND f.status = :status", nativeQuery = true)
-        Page<FriendShip> findByUserReceivedIdAndStatus(
+        @Query(value = """
+                        SELECT f.id , u.id as user_send_id, u.fullname as user_send_name , u.avatar_url as user_send_avatar , f.user_received_id , f.status , f.create_time FROM friend_ship f
+                        INNER JOIN User u on u.id = f.user_send_id
+                        WHERE f.user_received_id = :userReceivedId AND f.status = :status;""", nativeQuery = true)
+        Page<Object[]> findByUserReceivedIdAndStatus(
                         @Param("userReceivedId") Integer userReceivedId,
                         @Param("status") String status, Pageable pageable);
 
@@ -44,5 +47,5 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                                              END
                              WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
                           AND f.status = 'APPROVED'""", nativeQuery = true)
-        Page<Object[]> getAllListUserFriends(  @Param("user_id") Integer user_id, Pageable pageable);
+        Page<Object[]> getAllListUserFriends(@Param("user_id") Integer user_id, Pageable pageable);
 }

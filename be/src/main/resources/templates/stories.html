@@ -15,6 +15,7 @@
 </head>
 
 <body>
+    <div th:replace="fragments/buildertoggle"></div>
     <div th:replace="fragments/headerMain"></div>
     <div id="headerFluid" class="d-none">
         <header id="header"
@@ -90,16 +91,18 @@
                                             <!-- Hiển thị ảnh đại diện nếu có -->
                                             <img th:if="${story.avatar != null}" th:src="${story.avatar}" alt="Avatar"
                                                 class="rounded-circle mr-2" style="width: 40px; height: 40px;">
-                                    
+
                                             <!-- Hiển thị avatar text nếu không có ảnh -->
                                             <div th:if="${story.avatar == null}" class="avatar-text rounded-circle mr-2"
                                                 style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
                                                        width: 40px; height: 40px; font-size: 16px; font-weight: bold;">
-                                                <span th:text="${story.fullname != null && !story.fullname.isEmpty() ? story.fullname.substring(0,1).toUpperCase() : 'A'}"></span>
+                                                <span
+                                                    th:text="${story.fullname != null && !story.fullname.isEmpty() ? story.fullname.substring(0,1).toUpperCase() : 'A'}"></span>
                                             </div>
-                                            
+
                                             <!-- Tên người dùng -->
-                                            <span th:text="${story.fullname != null ? story.fullname : 'User'}" style="margin-left: 10px;"></span>
+                                            <span th:text="${story.fullname != null ? story.fullname : 'User'}"
+                                                style="margin-left: 10px;"></span>
                                         </div>
                                     </td>
 
@@ -278,6 +281,10 @@
                 alert('Please select at least one image or video.');
                 return;
             }
+            if (!musicFile) {
+                alert('Please select a music file.');
+                return;
+            }
 
             const formData = new FormData();
             formData.append('story', JSON.stringify({
@@ -290,9 +297,7 @@
 
             formData.append('mediaUrl', mediaFile);
 
-            if (musicFile) {
-                formData.append('musicFile', musicFile);
-            }
+            formData.append('musicFile', musicFile);
 
             fetch('http://localhost:8080/api/stories', {
                 method: 'POST',

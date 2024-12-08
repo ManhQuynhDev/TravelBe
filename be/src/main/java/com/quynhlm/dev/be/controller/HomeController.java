@@ -3,12 +3,14 @@ package com.quynhlm.dev.be.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
@@ -54,10 +56,16 @@ public class HomeController {
                 .count();
         double percentageChange = ((double) (userCount - 9) / 9) * 100;
         String formattedPercentage = String.format("%.1f", percentageChange);
-        // model.addAttribute("body", "home"); // Gửi fragment home
         model.addAttribute("userCount", userCount);
         model.addAttribute("formattedPercentage", formattedPercentage);
-        return "home"; // Trả về template index.html
+        return "home";
+    }
+
+    @GetMapping("/manager")
+    public String getContentPage(Model model, @RequestParam int page, @RequestParam int size) {
+        Page<User> managers = userService.getAllListManager(page, size);
+        model.addAttribute("managers", managers);
+        return "manager";
     }
 
     @GetMapping("/users")
@@ -72,7 +80,7 @@ public class HomeController {
         model.addAttribute("userList", userService.getListData(0, 1000));
         model.addAttribute("userCount", userCount);
         model.addAttribute("formattedPercentage", formattedPercentage);
-        return "users"; // Trả về template index.html
+        return "users";
     }
 
     @GetMapping("/posts")

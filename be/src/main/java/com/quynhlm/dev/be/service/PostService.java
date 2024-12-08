@@ -151,6 +151,7 @@ public class PostService {
             post.setComment_count(((Number) row[13]).intValue());
             post.setShare_count(((Number) row[14]).intValue());
             post.setIsTag(((Number) row[15]).intValue());
+            post.setUser_reaction_type((String) row[16]);
 
             List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
 

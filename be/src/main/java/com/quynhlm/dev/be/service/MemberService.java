@@ -46,8 +46,6 @@ public class MemberService {
             throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException,
             UserWasAlreadyRequest {
 
-        member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
-
         if (!groupRepository.existsById(member.getGroupId())) {
             throw new GroupNotFoundException("Group with ID " + member.getGroupId() + " not found.");
         }
@@ -201,7 +199,6 @@ public class MemberService {
         memberRepository.delete(memberSendRequest);
     }
 
-
     // member id == managerId
     public void updateMemberStatus(int groupId, int adminId, int memberSendId, String action)
             throws UnknownException, UserAccountNotFoundException {
@@ -227,6 +224,7 @@ public class MemberService {
         if ("approve".equalsIgnoreCase(action)) {
             memberSendRequest.setStatus("APPROVED");
             memberSendRequest.setRole(Role.USER.name());
+            memberSendRequest.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
         } else {
             throw new UnknownException("Invalid action");
         }

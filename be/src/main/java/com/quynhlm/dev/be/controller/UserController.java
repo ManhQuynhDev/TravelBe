@@ -25,6 +25,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserInvitationResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
@@ -78,6 +79,14 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return userService.getListData(page, size);
+    }
+
+    @GetMapping("/get_all_invitation/{user_id}")
+    public Page<UserInvitationResponseDTO> getAllInvitation(
+            @PathVariable Integer user_id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return userService.getAllInvitation(user_id, page, size);
     }
 
     @PostMapping("/send")
@@ -174,4 +183,10 @@ public class UserController {
         result.setMessage("Create a new account successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
+
+    @GetMapping("/users/manager")
+    public Page<User> getAllManager(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return userService.getAllListManager(page, size);
+    }                                                               
 }

@@ -23,7 +23,9 @@ public class Report {
     private int postId;
     private int userId;
     private String status;
+    private String mediaUrl;
     private String reason;
+    private String violationType;
     private String create_time;
     private String response_time;
 }

@@ -9,7 +9,10 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.PostReaction;
 
 public interface PostReactionRepository extends JpaRepository<PostReaction, Integer> {
-    PostReaction findByPostIdAndUserId(int postId, int userId);
+    @Query(value = """
+            select * from post_reaction where post_id = :post_id AND user_id = :user_id
+            """, nativeQuery = true)
+    PostReaction getAnReactionWithUserIdAndPostId(@Param("post_id") Integer post_id, @Param("user_id") Integer user_id);
 
     @Query(value = """
             SELECT
@@ -20,13 +23,7 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Inte
                 p.create_time
             FROM post_reaction p
             INNER JOIN user u ON p.user_id = u.id
-            WHERE p.type = :type
-            """, countQuery = """
-            SELECT COUNT(*)
-            FROM post_reaction p
-            INNER JOIN user u ON p.user_id = u.id
-            WHERE p.type = :type
+            WHERE p.type = :type AND p.post_id =:id
             """, nativeQuery = true)
-    Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type);
-
+    Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type, @Param("id") Integer id);
 }

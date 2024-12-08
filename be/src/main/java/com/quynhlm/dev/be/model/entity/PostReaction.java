@@ -26,8 +26,8 @@ public class PostReaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int userId;
-    private int postId;
+    private Integer userId;
+    private Integer postId;
     @ValidReactionType
     private String type;
     private String create_time;

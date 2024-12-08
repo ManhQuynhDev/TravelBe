@@ -56,6 +56,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserInvitationResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.InvitationRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
@@ -69,6 +70,9 @@ public class UserService {
 
     @Autowired
     private AmazonS3 amazonS3;
+
+    @Autowired
+    private InvitationRepository invitationRepository;
 
     @Value("${aws.s3.bucketName}")
     private String bucketName;
@@ -134,18 +138,18 @@ public class UserService {
         return userResponseDTO;
     }
 
-     public Page<UserResponseDTO> getListData(int page, int size) {
+    public Page<UserResponseDTO> getListData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = userRepository.findAllUser(pageable);
 
         return results.map(row -> {
             UserResponseDTO user = new UserResponseDTO();
             user.setId(((Number) row[0]).intValue());
-            user.setFullname((String) row[1]); 
-            user.setEmail((String) row[2]);    
-            user.setPhoneNumber((String) row[3]); 
-            user.setIsLocked((String) row[4]);   
-            user.setAvatarUrl((String) row[5]);  
+            user.setFullname((String) row[1]);
+            user.setEmail((String) row[2]);
+            user.setPhoneNumber((String) row[3]);
+            user.setIsLocked((String) row[4]);
+            user.setAvatarUrl((String) row[5]);
             user.setCreate_at(((Timestamp) row[6]));
             return user;
         });
@@ -312,7 +316,6 @@ public class UserService {
             }
         }
     }
-
     // ChangeProfile
     public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
@@ -358,7 +361,7 @@ public class UserService {
                 foundUser.setDob(updateUser.getDob());
             }
 
-            if(updateUser.getPhoneNumber() != null){
+            if (updateUser.getPhoneNumber() != null) {
                 foundUser.setPhoneNumber(updateUser.getPhoneNumber());
             }
 
@@ -441,24 +444,23 @@ public class UserService {
         }
     }
 
-    public List<User> getAllListUser () {
+    public List<User> getAllListUser() {
         return userRepository.findAll();
     }
 
-    public void getAllInvitation (int user_id) throws UserAccountNotFoundException {
-        User user = userRepository.findOneById(user_id);
-        if (user == null) {
-            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
-        }
+    public Page<User> getAllListManager(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAllManager(pageable);
     }
 
-    public Page<UserInvitationResponseDTO> getAllInvitation(int user_id , int page, int size) throws UserAccountNotFoundException {
+    public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)
+            throws UserAccountNotFoundException {
         User foundUser = userRepository.findOneById(user_id);
         if (foundUser == null) {
             throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
         }
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = userRepository.findAllUser(pageable);
+        Page<Object[]> results = invitationRepository.getAllInvitaionWithUserId(user_id, pageable);
 
         return results.map(row -> {
             UserInvitationResponseDTO user = new UserInvitationResponseDTO();

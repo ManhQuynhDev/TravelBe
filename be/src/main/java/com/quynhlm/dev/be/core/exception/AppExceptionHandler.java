@@ -87,6 +87,9 @@ public class AppExceptionHandler {
             case "TagNotFoundException":
                 errorCode = AppError.ErrorCode.REPORT_NOT_FOUND;
                 break;
+            case "NotificationNotFoundException":
+                errorCode = AppError.ErrorCode.NOTIFICATION_NOT_FOUND;
+                break;
             default:
                 errorCode = AppError.ErrorCode.UNKNOWN;
                 break;

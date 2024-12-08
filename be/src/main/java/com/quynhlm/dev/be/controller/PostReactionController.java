@@ -30,11 +30,14 @@ public class PostReactionController {
         ResponseObject<Void> result = new ResponseObject<>();
         postReactionService.updateReaction(postReaction);
         result.setMessage("Update reaction successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
-    }
+    }                                                                                                                           
 
-    @GetMapping("/type")
-    public Page<UserReactionDTO> getAllPostTypeVideo(@RequestParam String type, Pageable pageable) {
-        return postReactionService.getAllUserReactionWithType(type, pageable);
+    @GetMapping("")
+    public Page<UserReactionDTO> getAllUserReactionWithType(
+            @RequestParam Integer postId,
+            @RequestParam String type, Pageable pageable) {
+        return postReactionService.getAllUserReactionWithType(postId, type, pageable);
     }
 }

@@ -69,14 +69,13 @@ public class MemberController {
 
     // Search group user join
     @GetMapping("/group-join/search")
-    public ResponseEntity<Page<MemberJoinGroupResponseDTO>> searchGroups(@RequestParam("user_id") Integer user_id,
+    public ResponseEntity<Page<MemberJoinGroupResponseDTO>> searchGroups(@RequestParam Integer user_id,
             @RequestParam("q") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         Page<MemberJoinGroupResponseDTO> groups = memberService.searchGroupMemberJoin(user_id, keyword, page, size);
         return ResponseEntity.ok(groups);
     }
-
     // Get
     @GetMapping("/{groupId}/status")
     public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer groupId, @RequestParam("status") String status,

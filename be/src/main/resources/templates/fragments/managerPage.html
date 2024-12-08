@@ -1,0 +1,93 @@
+<div th:fragment="content">
+    <div class="container-fluid m-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Manager</h5>
+                <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addTravelPlanModal"
+                    id="addTravelPlan">
+                    <i class="tio-add mr-1"></i>Add Manager
+                </button>
+            </div>
+            <div class="card-body">
+                <table class="table align-middle mb-0 bg-white">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="table-column-pr-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input id="datatableCheckAll" type="checkbox" class="custom-control-input">
+                                    <label class="custom-control-label" for="datatableCheckAll"></label>
+                                </div>
+                            </th>
+                            <th class="table-column-pl-0">NAME</th>
+                            <th>PHONE</th>
+                            <th>COUNTRY</th>
+                            <th>STATUS</th>
+                            <th>ROLE</th>
+                            <th>LOOKER</th>
+                            <th>CREATE TIME</th>
+
+                            <th>
+                                ACTIONS
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="manager : ${managers}">
+                            <td class="table-column-pr-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="usersDataCheck1">
+                                    <label class="custom-control-label" for="usersDataCheck1"></label>
+                                </div>
+                            </td>
+                            <td class="table-column-pl-0">
+                                <a class="d-flex align-items-center" href="user-profile.html">
+                                    <div class="avatar avatar-soft-primary avatar-circle">
+                                        <span class="avatar-initials">Q</span>
+                                    </div>
+                                    <div class="ml-3">
+                                        <span class="d-block h5 text-hover-primary mb-0"
+                                            th:text="${manager.fullname}"><i class="tio-verified text-primary"
+                                                data-placement="top" title="Top endorsed"></i></span>
+                                        <span class="d-block font-size-sm text-body" th:text="${manager.email}"></span>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="d-block font-size-sm" th:if="${manager.phoneNumber == null}"
+                                    th:text="'No Phone Number'"></span>
+                                <span class="d-block font-size-sm" th:unless="${manager.phoneNumber == null}"
+                                    th:text="${manager.phoneNumber}"></span>
+
+                            </td>
+                            <td>vietnamese<span class="text-hide">Code: VN</span></td>
+                            <td>
+                                <span class="legend-indicator bg-success"></span>Active
+                            </td>
+                            <td th:text="${manager.roles.iterator().next()}">Employee</td>
+
+                            <td>
+                                <span th:text="${manager.isLocked}">hello</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span th:text="${manager.create_at.toString().substring(0, 19)}"></span>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div id="editUserPopover" data-toggle="popover-dark" data-placement="left"
+                                    title="<div class='d-flex align-items-center'>Edit user <a href='#!' class='close close-light ml-auto'><i id='closeEditUserPopover' class='tio-clear'></i></a></div>"
+                                    data-content="Check out this Edit user modal example." data-html="true">
+                                    <a class="btn btn-sm btn-white" href="javascript:;" data-toggle="modal"
+                                        data-target="#editUserModal">
+                                        <i class="tio-edit"></i> Edit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

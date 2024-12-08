@@ -21,9 +21,11 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer userId;
+    private int userSendId;
+    private Integer userReceivedId;
     private String title;
     @NotBlank(message = "Please input your content")
     private String message;
+    private Boolean status;
     private String notificationTime;
 }
