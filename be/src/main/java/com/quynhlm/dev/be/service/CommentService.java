@@ -114,7 +114,7 @@ public class CommentService {
             }
             comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Comment saveComment = commentRepository.save(comment);
-            if(saveComment == null) {
+            if (saveComment == null) {
                 throw new UnknownException("Transaction cannot be completed!");
             }
             return findAnComment(saveComment.getId());
@@ -163,13 +163,12 @@ public class CommentService {
             }
         }
         Comment saveComment = commentRepository.save(existingComment);
-        if(saveComment == null) {
+        if (saveComment == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
     }
 
-
-     public CommentResponseDTO findAnComment(Integer id) throws CommentNotFoundException {
+    public CommentResponseDTO findAnComment(Integer id) throws CommentNotFoundException {
 
         List<Object[]> results = commentRepository.findCommentWithId(id);
 
@@ -193,14 +192,20 @@ public class CommentService {
         return comment;
     }
 
-    public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, int page, int size) {
+    public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, Integer userId, int page, int size)
+            throws PostNotFoundException, UserAccountNotFoundException {
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
             throw new PostNotFoundException("Found post with " + postId + " not found please try again");
         }
 
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again");
+        }
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
+        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId, userId);
 
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
@@ -213,8 +218,9 @@ public class CommentService {
             comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setCreate_time((String) row[7]);
             comment.setReaction_count(((Number) row[8]).intValue());
+            comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
@@ -229,7 +235,7 @@ public class CommentService {
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
 
                         List<Object[]> rawReplys = replyToReplyRepositoty
-                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue()); 
+                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue());
 
                         List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
                                 .map(result -> {
@@ -242,7 +248,8 @@ public class CommentService {
                                     reply_to_reply.setContent((String) result[5]);
                                     reply_to_reply.setCreate_time((String) result[6]);
 
-                                    reply_to_reply.setIsAuthor(foundPost.getUser_id() == ((Number) result[2]).intValue());
+                                    reply_to_reply
+                                            .setIsAuthor(foundPost.getUser_id() == ((Number) result[2]).intValue());
 
                                     return reply_to_reply;
                                 }).collect(Collectors.toList());
@@ -260,16 +267,21 @@ public class CommentService {
         });
     }
 
-    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, int page, int size)
-            throws PostNotFoundException {
+    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, Integer userId, int page, int size)
+            throws PostNotFoundException, UserAccountNotFoundException {
 
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
             throw new PostNotFoundException("Post with ID " + postId + " not found. Please try again.");
         }
 
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again");
+        }
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId);
+        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId, userId);
 
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
@@ -282,8 +294,9 @@ public class CommentService {
             comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setCreate_time((String) row[7]);
             comment.setReaction_count(((Number) row[8]).intValue());
+            comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
@@ -298,7 +311,7 @@ public class CommentService {
 
                         // Fetch reply-to-reply data
                         List<Object[]> rawReplys = replyToReplyRepositoty
-                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue()); // Sửa tham số truy vấn
+                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue());
 
                         List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
                                 .map(result -> {

@@ -58,14 +58,15 @@ public class FriendShipController {
             @RequestParam Integer userId,
             @RequestParam Integer groupId) {
         ResponseObject<Void> result = new ResponseObject<>();
-        invitationService.acceptInvitation(userId , groupId);
+        invitationService.acceptInvitation(userId, groupId);
         result.setMessage("Accept join group successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
     @GetMapping("/{userReceivedId}/status")
-    public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userReceivedId, @RequestParam String status,
+    public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userReceivedId,
+            @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.findByUserReceivedIdAndStatus(userReceivedId, status, page, size);
@@ -92,10 +93,14 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @DeleteMapping("/cancel")
-    public ResponseEntity<String> cancelFriend(@PathVariable Integer userSendId, @PathVariable Integer userReceivedId) {
+    @DeleteMapping("/cancel/{userSendId}/{userReceivedId}")
+    public ResponseEntity<ResponseObject<Void>> cancelFriend(@PathVariable Integer userSendId,
+            @PathVariable Integer userReceivedId) {
+        ResponseObject<Void> result = new ResponseObject<>();
         friendShipService.cancelFriends(userSendId, userReceivedId);
-        return ResponseEntity.ok("Friendship canceled successfully.");
+        result.setMessage("Delete friend successfully");
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
     // ChangeStatus friends
 

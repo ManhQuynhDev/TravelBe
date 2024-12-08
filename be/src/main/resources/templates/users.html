@@ -309,18 +309,70 @@
 
 
 
-        // Hàm lấy dữ liệu người dùng và cập nhật các input trong modal
-        // async function fetchOneUseData(userId) {
-        //     const token = localStorage.getItem('authToken');
-        //     try {
-        //         const response = await fetch(`http://localhost:8080/onboarding/users/${userId}`, {
-        //             method: 'GET',
-        //             headers: {
-        //                 'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
-        //             }
-        //         });
-        //         const data = await response.json();
-        //         console.log(data.data.fullname);
+        async function fetchOneUseData(userId) {
+            const token = localStorage.getItem('authToken');
+            try {
+                const response = await fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                    }
+                });
+                const data = await response.json();
+                console.log(data.data.fullname);
+
+                // Cập nhật các ô input trong modal với dữ liệu người dùng
+                // document.getElementById('editFullnameModal').value = data.data.fullname || '';  // Điền fullname vào input
+                document.getElementById('editPhoneModal').value = data.data.phoneNumber || '';  // Điền phone number vào input
+                document.getElementById('editBioModalLabel').value = data.data.bio || '';  // Điền email vào input
+
+
+
+            } catch (error) {
+                console.error('Có lỗi xảy ra khi tải dữ liệu người dùng:', error);
+            }
+        }
+
+        document.querySelectorAll('#edit').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                modal.show();  // Hiển thị modal khi nhấn nút
+
+
+                fetchOneUseData(userId);
+
+                // Lấy và cập nhật dữ liệu từ API (nếu cần)
+                const updateProfile = async (id) => {
+                    try {
+                        // Tạo DTO từ form
+                        const token = localStorage.getItem('authToken');
+                        const phoneNumber = document.getElementById('editPhoneModal')?.value?.trim();
+                        const birthDate = document.getElementById('editBirthDayModalLabel')?.value?.trim();
+                        const bio = document.getElementById('editBioModalLabel')?.value?.trim();
+                        const avatarFile = document.getElementById('editAvatarUploaderModal')?.files[0];
+                        if (!phoneNumber || !birthDate || !bio) {
+                            throw new Error("Please fill in all fields.");
+                        }
+
+                        var dateParts = birthDate.split("-");
+                        var formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
+
+                        const updateDTO = {
+                            phoneNumber: phoneNumber,
+                            dob: formattedDate,
+                            bio: bio
+                        };
+
+                        const linkAPI = `http://localhost:8080/onboarding/change-profile/${id}`;
+                        const formData = new FormData();
+
+                        formData.append("updateDTO", new Blob([JSON.stringify(updateDTO)], { type: "application/json" }));
+
+                        // Thêm avatar nếu có
+                        if (avatarFile) {
+                            formData.append("imageFile", avatarFile);
+                        }
 
 
 

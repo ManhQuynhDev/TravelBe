@@ -23,8 +23,8 @@
                             <th>COUNTRY</th>
                             <th>STATUS</th>
                             <th>ROLE</th>
-                            <th>LOOKER</th>
-                            <th>CREATE TIME</th>
+                            <th>ACCOUNT</th>
+                            <th>JOINED</th>
 
                             <th>
                                 ACTIONS
@@ -40,8 +40,8 @@
                                 </div>
                             </td>
                             <td class="table-column-pl-0">
-                                <a class="d-flex align-items-center" href="user-profile.html">
-                                    <div class="avatar avatar-soft-primary avatar-circle">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-soft-primary avatar-circle" th:onclick="'loadUserDetails(' + ${manager.id} + ')'">
                                         <span class="avatar-initials">Q</span>
                                     </div>
                                     <div class="ml-3">
@@ -50,7 +50,7 @@
                                                 data-placement="top" title="Top endorsed"></i></span>
                                         <span class="d-block font-size-sm text-body" th:text="${manager.email}"></span>
                                     </div>
-                                </a>
+                                </div>
                             </td>
                             <td>
                                 <span class="d-block font-size-sm" th:if="${manager.phoneNumber == null}"
@@ -70,7 +70,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <span th:text="${manager.create_at.toString().substring(0, 19)}"></span>
+                                    <span th:text="'Joined ' + ${manager.create_at.toString().substring(0, 4)}"></span>
                                 </div>
                             </td>
 

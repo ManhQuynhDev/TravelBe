@@ -23,4 +23,5 @@ public class PostMediaDTO {
     private Integer reaction_count;
     private Integer comment_count;
     private Integer share_count;
+    private String user_reaction_type;
 }

@@ -22,5 +22,6 @@ public class ReplyResponseDTO {
     private String create_time;
     private Integer reaction_count;
     private Boolean isAuthor;
+    private String user_reaction_type;
     private List<ReplyToReplyReponseDTO> replys;
 }

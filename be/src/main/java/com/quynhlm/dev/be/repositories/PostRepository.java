@@ -11,12 +11,12 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.Post;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
-    @Query(value = "SELECT p.id, p.content, p.status, p.location_id, p.hastag, m.media_url, m.type " +
+    @Query(value = "SELECT DISTINCT p.id, p.content, p.status, p.location_id, p.hastag, m.media_url, m.type " +
             "FROM Post p " +
             "INNER JOIN Media m ON p.id = m.post_id", countQuery = "SELECT COUNT(*) FROM Post p INNER JOIN Media m ON p.id = m.post_id", nativeQuery = true)
     Page<Object[]> fetchPostWithMedia(Pageable pageable);
 
-    @Query(value = "SELECT * FROM Post WHERE id= :id", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id", nativeQuery = true)
     Post getAnPost(@Param("id") int id);
 
     @Query(value = """
@@ -38,7 +38,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             	FROM comment c
             	WHERE c.type = 'POST' AND c.post_id = p.id
             ) AS comment_count,
-                        COUNT(DISTINCT s.id) AS share_count
+                        COUNT(DISTINCT s.id) AS share_count,
+                          MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
                     FROM
                         post p
                     INNER JOIN
@@ -55,7 +56,46 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     GROUP BY
                         p.id , m.media_url , u.id , m.type
                     """, nativeQuery = true)
-    List<Object[]> getPost(@Param("post_id") Integer post_id);
+    List<Object[]> getPost(@Param("post_id") Integer post_id, @Param("userId") Integer userId);
+
+    @Query(value = """
+                    SELECT
+                    DISTINCT
+                        p.id AS post_id,
+                        u.id as owner_id,
+                        p.location_id,
+                        p.content,
+                        p.status,
+                        u.fullname AS fullname,
+                        u.avatar_url as avatar,
+                        m.media_url AS mediaUrl,
+                        m.type,
+                        p.create_time,
+                        COUNT(DISTINCT r.id) AS reaction_count,
+                        (
+                SELECT COUNT(*)
+                FROM comment c
+                WHERE c.type = 'POST' AND c.post_id = p.id
+            ) AS comment_count,
+                        COUNT(DISTINCT s.id) AS share_count,
+                          MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
+                    FROM
+                        post p
+                    INNER JOIN
+                        user u ON p.user_id = u.id
+                    INNER JOIN
+                        media m ON p.id = m.post_id
+                    LEFT JOIN
+                        post_reaction r ON p.id = r.post_id
+                    LEFT JOIN
+                        comment c ON p.id = c.post_id
+                    LEFT JOIN
+                        share s ON p.id = s.post_id
+                    WHERE p.id = :post_id
+                    GROUP BY
+                        p.id , m.media_url , u.id , m.type
+                    """, nativeQuery = true)
+    List<Object[]> getPostSave(@Param("post_id") Integer post_id);
 
     @Query(value = """
                     (SELECT
@@ -470,7 +510,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     // Pageable pageable);
 
     @Query(value = """
-                SELECT * FROM (
+                SELECT DISTINCT * FROM (
                     (
                         SELECT
                              DISTINCT
@@ -834,6 +874,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value = """
             SELECT
+                DISTINCT
                 p.id AS post_id,
                 u.id as owner_id,
                 p.location_id,
@@ -865,6 +906,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value = """
             SELECT
+                DISTINCT
                 p.id AS post_id,
                 u.id as owner_id,
                 p.location_id,
