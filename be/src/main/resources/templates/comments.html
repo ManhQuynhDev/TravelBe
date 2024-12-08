@@ -79,8 +79,14 @@
                                     <td th:text="${comment.content}">This is a test comment.</td>
                                     <td class="text-center">
                                         <img th:if="${comment.url != null}" th:src="${comment.url}" alt="Comment Image"
+
                                             style="max-width: 50px;"
                                             onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
+                                        <span th:if="${comment.url == null}">No Image</span>
+                                    </td>
+
+
+                                           style="max-width: 50px;">
                                         <span th:if="${comment.url == null}">No Image</span>
                                     </td>
 

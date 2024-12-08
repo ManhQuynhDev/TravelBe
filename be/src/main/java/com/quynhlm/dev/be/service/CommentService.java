@@ -228,10 +228,11 @@ public class CommentService {
                         reply.setCommentId(((Number) r[1]).intValue());
                         reply.setOwnerId(((Number) r[2]).intValue());
                         reply.setFullname((String) r[3]);
-                        reply.setAvatar((String) r[4]);
+                        reply.setAvatar((String) r[4]); 
                         reply.setContent((String) r[5]);
                         reply.setCreate_time((String) r[6]);
                         reply.setReaction_count(((Number) r[7]).intValue());
+                        reply.setUser_reaction_type((String) r[8]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
 
                         List<Object[]> rawReplys = replyToReplyRepositoty

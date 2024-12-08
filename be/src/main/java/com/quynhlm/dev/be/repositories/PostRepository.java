@@ -22,8 +22,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = """
                     SELECT
                     DISTINCT
-                        p.id AS post_id,
                         u.id as owner_id,
+                        p.id AS post_id,
                         p.location_id,
                         p.content,
                         p.status,
