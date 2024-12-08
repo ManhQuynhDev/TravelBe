@@ -1,21 +1,91 @@
-<div class="modal fade" id="userDetailModal" tabindex="-1" aria-labelledby="userDetailModalTitle" style="display: none;"
+<div class="modal fade" id="userDetailModal" tabindex="-1" aria-labelledby="userDetailModalTitle" style="display: none;min-height: 200px;"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
+            <!-- Header -->
             <div class="modal-header">
                 <h4 id="userDetailModalTitle" class="modal-title">User Details</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal"
                     aria-label="Close">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
+
+
+            <div class="content container-fluid">
+                <div class="row justify-content-lg-center">
+                    <div class="col-lg-10">
+                        <div class="d-flex flex-column align-items-center text-center mb-5">
+                            <img id="userAvatarImgModal"
+                                class="avatar-img avatar-xxl avatar-circle avatar-border-lg mb-5"
+                                src="/assets/img/avatar.jpg" alt="Image Description" style="display: none;">
+
+                            <div id="userAvatarTextModal"
+                                class="d-flex justify-content-center align-items-center text-dark rounded-circle mb-5"
+                                style="background-color: #f0f0f0; color: #555; display: none; justify-content: center; align-items: center;
+                                                width: 120px; height: 120px; font-size: 16px; font-weight: bold; border-radius: 50%;">
+
+                                <span id="avatarInitial" style="font-size: 32px; font-weight: bold;"></span>
+                            </div>
+
+
+                            <h1 class="page-header-title" id="managerFullNameDetails"> </h1>
+
+                            <!-- List -->
+                            <ul class="list-inline list-inline-m-1">
+                                <li class="list-inline-item">
+                                    <i class="tio-city mr-1"></i>
+                                    <span id="managerRolesDetails">Htmlstream</span>
+                                </li>
+                                <li class="list-inline-item">
+                                    <i class="tio-poi-outlined mr-1"></i>
+                                    <a href="#">Hà Nội,</a>
+                                    <a href="#">Việt Nam</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <i class="tio-date-range mr-1"></i>
+                                    <span id="managerCreateTimeDetails">Joined March 2017</span>
+                                </li>
+                            </ul>
+
             <div class="modal-body">
                 <div class="tab-content" id="userDetailModalTabContent">
                     <div class="tab-pane fade active show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                         <div class="avatar-container text-center mb-5">
                             <img id="userAvatarImgModal" class="avatar-img avatar-xxl avatar-circle avatar-border-lg"
                                 src="/assets/img/avatar.jpg" alt="Image Description">
+
                         </div>
+                        <!-- Tab links -->
+                        <ul class="nav nav-tabs justify-content-center" id="profileTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile1"
+                                    role="tab" aria-controls="profile" aria-selected="true">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="joined-groups-tab" data-bs-toggle="tab" href="#joined-groups"
+                                    role="tab" aria-controls="joined-groups" aria-selected="false">Joined Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="created-groups-tab" data-bs-toggle="tab" href="#created-groups"
+                                    role="tab" aria-controls="created-groups" aria-selected="false">Created Groups</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab"
+                                    aria-controls="friends" aria-selected="false">Friends</a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content -->
+                        <div class="tab-content" id="profileTabContent" style="margin-top: 10px; min-height: 133px;  ">
+                            <!-- Tab Profile -->
+                            <div class="tab-pane fade show active" id="profile1" role="tabpanel"
+                                aria-labelledby="profile-tab">
+                                <div class="container profile">
+                                    <h3 id="userFullNamePro">Full Name: Not Available</h3>
+                                    <p id="userPosition">Role: Not Available</p>
+                                    <p id="userBio">Bio: Not Available</p>
+                                    <p id="userDOB">Date of Birth: Not Available</p>
 
                         <div class="row form-group">
                             <label for="userFullNameDetails" class="col-sm-3 col-form-label input-label">Full
@@ -24,9 +94,16 @@
                                 <div class="js-form-message">
                                     <input type="text" class="form-control" id="userFullNameDetails" readonly
                                         aria-label="Full Name">
+
                                 </div>
                             </div>
-                        </div>
+
+
+                            <div class="tab-pane fade" id="joined-groups" role="tabpanel"
+                                aria-labelledby="joined-groups-tab">
+                                <div class="container">
+                                    <ul id="joined-groups-list">
+                                    </ul>
 
                         <div class="row form-group">
                             <label for="userPhoneDetails" class="col-sm-3 col-form-label input-label">Phone
@@ -35,18 +112,39 @@
                                 <div class="js-form-message">
                                     <input type="tel" class="form-control" id="userPhoneDetails" readonly
                                         aria-label="Phone Number">
+
                                 </div>
                             </div>
-                        </div>
+
+
+                            <div class="tab-pane fade" id="created-groups" role="tabpanel"
+                                aria-labelledby="created-groups-tab">
+                                <div class="container">
+                                    <h3>Created Groups</h3>
+                                    <div id="created-groups-list">
+                                        <!-- Nội dung danh sách nhóm sẽ được thêm vào đây thông qua JS -->
+                                    </div>
 
                         <div class="row form-group">
                             <label for="userBioDetails" class="col-sm-3 col-form-label input-label">Bio</label>
                             <div class="col-sm-9">
                                 <div class="js-form-message">
                                     <textarea class="form-control" id="userBioDetails" readonly rows="3"></textarea>
+
                                 </div>
                             </div>
-                        </div>
+
+
+
+
+                            <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
+                                <div class="container">
+                                    <h3>Friends</h3>
+                                    <ul>
+                                        <li>Friend 1: Alice</li>
+                                        <li>Friend 2: Bob</li>
+                                        <li>Friend 3: Charlie</li>
+                                    </ul>
 
                         <div class="row form-group">
                             <label for="userDOBDetails" class="col-sm-3 col-form-label input-label">Date of
@@ -55,18 +153,14 @@
                                 <div class="js-form-message">
                                     <input type="text" class="form-control" id="userDOBDetails" readonly
                                         aria-label="Date of Birth">
+
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary mr-2" data-dismiss="modal"
-                                aria-label="Close">Close</button>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-

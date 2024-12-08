@@ -143,76 +143,83 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Users</h5>
-                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
+                    <button class="btn btn-primary float-right"
                         id="addUser">
                         <i class="tio-user-add mr-1"></i>Add User
                     </button>
+
                 </div>
                 <div class="card-body">
-                    <table id="modernTable" class="dataTables_wrapper no-footer" style="width:100%">
-                        <thead class="table-white">
-                            <tr>
-                                <th>#</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Phone Number</th>
-                                <th>Role</th>
-                                <th>Creation Date</th>
-                                <th>Actions</th>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="user : ${userList}">
-                                <td class="text-start" th:text="${user.id}">ID</td>
+                    <div class="table-responsive">
 
-                                <td class="table-column-pl-0">
-                                    <a class="d-flex align-items-center"
-                                        th:onclick="'loadUserDetails(' + ${user.id} + ')'">
-                                        <div id="avatar-container" class="avatar avatar-circle"
-                                            style="width: 40px; height: 40px;">
-                                            <!-- Hiển thị ảnh nếu có -->
-                                            <img th:if="${user.avatarUrl != null && !user.avatarUrl.isEmpty()}"
-                                                th:src="${user.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
+                        <table id="modernTable" class="table align-middle mb-0 bg-white">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Phone Number</th>
+                                    <th>Role</th>
+                                    <th>Creation Date</th>
+                                    <th>Actions</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${userList}">
+                                    <td class="text-start" th:text="${user.id}">ID</td>
+
+                                    <td class="table-column-pl-0">
+                                        <a class="d-flex align-items-center"
+                                            th:onclick="'loadUserDetails(' + ${user.id} + ')'">
+                                            <div id="avatar-container" class="avatar avatar-circle"
                                                 style="width: 40px; height: 40px;">
-                                            <!-- Hiển thị chữ cái đầu tiên nếu không có ảnh -->
-                                            <div th:if="${user.avatarUrl == null || user.avatarUrl.isEmpty()}"
-                                                class="avatar-text"
-                                                style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
+                                                <!-- Hiển thị ảnh nếu có -->
+                                                <img th:if="${user.avatarUrl != null && !user.avatarUrl.isEmpty()}"
+                                                    th:src="${user.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
+                                                    style="width: 40px; height: 40px;">
+                                                <!-- Hiển thị chữ cái đầu tiên nếu không có ảnh -->
+                                                <div th:if="${user.avatarUrl == null || user.avatarUrl.isEmpty()}"
+                                                    class="avatar-text"
+                                                    style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
                                                 width: 40px; height: 40px; font-size: 16px; font-weight: bold; border-radius: 50%;">
-                                                <span
-                                                    th:text="${user.fullname != null ? user.fullname.substring(0,1).toUpperCase() : 'N'}"></span>
+                                                    <span
+                                                        th:text="${user.fullname != null ? user.fullname.substring(0,1).toUpperCase() : 'N'}"></span>
+                                                </div>
                                             </div>
-                                        </div>
 
 
-                                        <div class="ml-3">
-                                            <span class="d-block h5 text-hover-primary mb-0"
-                                                th:text="${user.fullname}">Amanda Harvey </span>
-                                            <span class="d-block font-size-sm text-body"
-                                                th:text="${user.email}">amanda@example.com</span>
-                                        </div>
-                                    </a>
-                                </td>
+                                            <div class="ml-3">
+                                                <span class="d-block h5 text-hover-primary mb-0"
+                                                    th:text="${user.fullname}">Amanda Harvey </span>
+                                                <span class="d-block font-size-sm text-body"
+                                                    th:text="${user.email}">amanda@example.com</span>
+                                            </div>
+                                        </a>
+                                    </td>
 
 
-                                <td class="text-start" th:text="${user.email}">Email</td>
-                                <td class="text-start">
-                                    <span th:if="${user.phoneNumber != null}" th:text="${user.phoneNumber}">Phone</span>
-                                    <span th:unless="${user.phoneNumber != null}"
-                                        th:text="'No phone number'">Phone</span>
-                                </td>
+                                    <td class="text-start" th:text="${user.email}">Email</td>
+                                    <td class="text-start">
+                                        <span th:if="${user.phoneNumber != null}"
+                                            th:text="${user.phoneNumber}">Phone</span>
+                                        <span th:unless="${user.phoneNumber != null}"
+                                            th:text="'No phone number'">Phone</span>
+                                    </td>
 
-                                <td class="text-start" th:text="${user.roles}">Role</td>
-                                <td class="text-start" th:text="${user.create_at}">Ngày Tạo</td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
-                                        <i class="tio-users-switch mr-1"></i>Switch
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    <td class="text-start" th:text="${user.roles[0]}">Role</td>
+                                    <td class="text-start" th:text="${user.create_at}">Ngày Tạo</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
+                                            <i class="tio-users-switch mr-1"></i>Switch
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
 
@@ -253,9 +260,13 @@
 
 
     </script>
+
+    <script th:src="@{/assets/js/userjs.js}"></script>
+
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function () {
             var table = $('#modernTable').DataTable({
@@ -291,321 +302,8 @@
 
         });
     </script>
-    <script>
-        const API_BASE_URL = 'http://localhost:8080/onboarding';
-        const AUTH_HEADER = { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` };
-
-        document.getElementById('editAvatarUploaderModal').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const avatarImage = document.getElementById('editAvatarImgModal');
-                    avatarImage.src = e.target.result;  // Thay đổi src của hình ảnh
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
 
-
-        async function fetchOneUseData(userId) {
-            const token = localStorage.getItem('authToken');
-            try {
-                const response = await fetch(`http://localhost:8080/onboarding/users/${userId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
-                    }
-                });
-                const data = await response.json();
-                console.log(data.data.fullname);
-
-                // Cập nhật các ô input trong modal với dữ liệu người dùng
-                // document.getElementById('editFullnameModal').value = data.data.fullname || '';  // Điền fullname vào input
-                document.getElementById('editPhoneModal').value = data.data.phoneNumber || '';  // Điền phone number vào input
-                document.getElementById('editBioModalLabel').value = data.data.bio || '';  // Điền email vào input
-
-
-
-            } catch (error) {
-                console.error('Có lỗi xảy ra khi tải dữ liệu người dùng:', error);
-            }
-        }
-
-        document.querySelectorAll('#edit').forEach(button => {
-            button.addEventListener('click', function () {
-                const userId = this.getAttribute('data-id');
-                const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-                modal.show();  // Hiển thị modal khi nhấn nút
-
-
-                fetchOneUseData(userId);
-
-                // Lấy và cập nhật dữ liệu từ API (nếu cần)
-                const updateProfile = async (id) => {
-                    try {
-                        // Tạo DTO từ form
-                        const token = localStorage.getItem('authToken');
-                        const phoneNumber = document.getElementById('editPhoneModal')?.value?.trim();
-                        const birthDate = document.getElementById('editBirthDayModalLabel')?.value?.trim();
-                        const bio = document.getElementById('editBioModalLabel')?.value?.trim();
-                        const avatarFile = document.getElementById('editAvatarUploaderModal')?.files[0];
-                        if (!phoneNumber || !birthDate || !bio) {
-                            throw new Error("Please fill in all fields.");
-                        }
-
-                        var dateParts = birthDate.split("-");
-                        var formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
-
-                        const updateDTO = {
-                            phoneNumber: phoneNumber,
-                            dob: formattedDate,
-                            bio: bio
-                        };
-
-                        const linkAPI = `http://localhost:8080/onboarding/change-profile/${id}`;
-                        const formData = new FormData();
-
-                        formData.append("updateDTO", new Blob([JSON.stringify(updateDTO)], { type: "application/json" }));
-
-                        // Thêm avatar nếu có
-                        if (avatarFile) {
-                            formData.append("imageFile", avatarFile);
-                        }
-
-
-
-        //         // Cập nhật các ô input trong modal với dữ liệu người dùng
-        //         // document.getElementById('editFullnameModal').value = data.data.fullname || '';  // Điền fullname vào input
-        //         document.getElementById('editPhoneModal').value = data.data.phoneNumber || '';  // Điền phone number vào input
-        //         document.getElementById('editBioModalLabel').value = data.data.bio || '';  // Điền email vào input
-
-
-
-        //     } catch (error) {
-        //         console.error('Có lỗi xảy ra khi tải dữ liệu người dùng:', error);
-        //     }
-        // }
-
-        // document.querySelectorAll('#edit').forEach(button => {
-        //     button.addEventListener('click', function () {
-        //         const userId = this.getAttribute('data-id');
-        //         const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-        //         modal.show();  // Hiển thị modal khi nhấn nút
-
-
-        //         fetchOneUseData(userId);
-
-        //         // Lấy và cập nhật dữ liệu từ API (nếu cần)
-        //         const updateProfile = async (id) => {
-        //             try {
-        //                 // Tạo DTO từ form
-        //                 const token = localStorage.getItem('authToken');
-        //                 const phoneNumber = document.getElementById('editPhoneModal')?.value?.trim();
-        //                 const birthDate = document.getElementById('editBirthDayModalLabel')?.value?.trim();
-        //                 const bio = document.getElementById('editBioModalLabel')?.value?.trim();
-        //                 const avatarFile = document.getElementById('editAvatarUploaderModal')?.files[0];
-        //                 if (!phoneNumber || !birthDate || !bio) {
-        //                     throw new Error("Please fill in all fields.");
-        //                 }
-
-        //                 var dateParts = birthDate.split("-");
-        //                 var formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
-
-        //                 const updateDTO = {
-        //                     phoneNumber: phoneNumber,
-        //                     dob: formattedDate,
-        //                     bio: bio
-        //                 };
-
-        //                 const linkAPI = `http://localhost:8080/onboarding/change-profile/${id}`;
-        //                 const formData = new FormData();
-
-        //                 formData.append("updateDTO", new Blob([JSON.stringify(updateDTO)], { type: "application/json" }));
-
-        //                 // Thêm avatar nếu có
-        //                 if (avatarFile) {
-        //                     formData.append("imageFile", avatarFile);
-        //                 }
-
-        //                 // Gửi yêu cầu POST
-        //                 const response = await fetch(linkAPI, {
-        //                     method: "POST",
-        //                     body: formData,
-        //                     headers: {
-        //                         'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
-        //                     }
-        //                 });
-        //                 const data = await response.json();
-
-        //                 console.log(data);
-
-
-        //                 if (data.status !== false) {
-        //                     modal.hide(); // Ẩn modal khi cập nhật thành công
-        //                     alert("Cập nhật thành công!");
-
-
-        //                 } else {
-        //                     throw new Error("Lỗi :" + data.error.message);
-        //                 }
-        //             } catch (error) {
-        //                 console.error("Error:", error);
-        //                 alert(error.message || "Đã có lỗi xảy ra.");
-        //             }
-        //         };
-        //         // Xử lý khi nhấn "Save Changes"
-        //         document.getElementById("submit").addEventListener("click", (e) => {
-        //             e.preventDefault();
-        //             if (userId) {
-        //                 updateProfile(userId);  // Gọi hàm cập nhật khi nhấn lưu
-        //             } else {
-        //                 alert("Không có ID người dùng!");
-        //             }
-        //         });
-        //     });
-        // });
-
-
-        function checkStatus(userId) {
-            const openButton = document.getElementById('openAccount');
-            const lockButton = document.getElementById('confirmLock');
-
-            return fetch(`${API_BASE_URL}/users/${userId}`, {
-                method: 'GET',
-                headers: AUTH_HEADER
-            })
-                .then(res => res.json())
-                .then(data => {
-                    const userAccount = data.data.isLocked; // Lấy trạng thái tài khoản
-                    if (userAccount === "LOOK") {
-                        openButton.disabled = false;
-                        lockButton.disabled = true;
-                    } else {
-                        openButton.disabled = true;
-                        lockButton.disabled = false;
-                    }
-                    return userAccount; // Trả về trạng thái tài khoản
-                })
-                .catch(error => {
-                    console.error("Có lỗi xảy ra khi lấy thông tin người dùng:", error);
-                    alert("Có lỗi xảy ra khi lấy thông tin người dùng.");
-                    throw error; // Quăng lỗi để xử lý bên ngoài
-                });
-        }
-
-        document.querySelectorAll('.btn-outline-success').forEach(button => {
-            button.addEventListener('click', function () {
-                const userId = this.getAttribute('data-id');
-                const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
-                modal.show();
-
-                const openButton = document.getElementById('openAccount');
-                const lockButton = document.getElementById('confirmLock');
-
-                // Xóa các sự kiện cũ trước khi gắn sự kiện mới
-                const newOpenButton = replaceButtonWithClone(openButton);
-                const newLockButton = replaceButtonWithClone(lockButton);
-
-                // Kiểm tra trạng thái tài khoản
-                checkStatus(userId)
-                    .then(userAccount => {
-                        if (userAccount === "LOOK") {
-                            newOpenButton.addEventListener("click", () => {
-                                fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
-                                    method: "PUT",
-                                    headers: AUTH_HEADER
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data) {
-                                            modal.hide();
-                                            alert("OPEN Succesfully")
-                                            location.reload();
-                                        } else {
-                                            alert("Có lỗi xảy ra khi mở khóa tài khoản.");
-                                        }
-                                    })
-                                    .catch(error => console.error("Lỗi:", error));
-                            });
-                        } else {
-                            newLockButton.addEventListener("click", () => {
-                                fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOOK`, {
-                                    method: "PUT",
-                                    headers: AUTH_HEADER
-                                })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data) {
-                                            modal.hide();
-                                            alert("LOCK Succesfully")
-                                            location.reload();
-                                        } else {
-                                            alert("Có lỗi xảy ra khi khóa tài khoản.");
-                                        }
-                                    })
-                                    .catch(error => console.error("Lỗi:", error));
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Không thể kiểm tra trạng thái tài khoản:", error);
-                    });
-            });
-        });
-
-        function replaceButtonWithClone(button) {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-            return newButton;
-        }
-
-
-
-        document.getElementById("addUser").addEventListener("click", () => {
-            const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
-            modal.show();
-        })
-
-        function loadUserDetails(userId) {
-            fetch(`${API_BASE_URL}/users/${userId}`, {
-                method: 'GET',
-                headers: AUTH_HEADER
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status) {
-                        const user = data.data;
-                        console.log(user);
-                        console.log(user.fullname);
-
-                        document.getElementById('editAvatarImgModal').src = user.avatarUrl
-                        document.getElementById('userFullNameDetails').value = user.fullname || 'Full name not available';
-                        document.getElementById('userPhoneDetails').value = user.phoneNumber || 'Phone number not available';
-                        document.getElementById('userBioDetails').value = user.bio || 'No bio available';
-                        document.getElementById('userDOBDetails').value = user.dob || 'Date of birth not available';
-
-                        const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
-                        modal.show();
-                    } else {
-                        console.error('Lỗi khi tải thông tin người dùng');
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi mạng:', error);
-                });
-        }
-
-        document.getElementById("logoutLink").addEventListener("click", function () {
-            window.location.replace("/web-server/login");
-        });
-
-
-
-    </script>
-
-    <script th:src="@{/assets/js/userjs.js}"></script>
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
