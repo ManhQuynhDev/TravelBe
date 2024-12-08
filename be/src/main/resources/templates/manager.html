@@ -9,9 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
-
-    <style>
-
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <!-- <style>
         .avatar {
             width: 50px;
             height: 50px;
@@ -76,7 +76,7 @@
                 font-weight: bold;
             }
         }
-    </style>
+    </style> -->
 </head>
 
 <body>
@@ -110,15 +110,64 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div th:include="fragments/managerPage :: content"></div>
+        <div th:replace="fragments/users/managerDetailsModel"></div>
     </div>
     </div>
 
     <script th:src="@{/assets/js/demo.js}"></script>
     <script th:src="@{/assets/js/vendor.min.js}"></script>
     <script th:src="@{/assets/js/theme.min.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
     <script>
+
+        function loadUserDetails(userId) {
+            const token = localStorage.getItem('authToken');
+            // Gửi yêu cầu HTTP đến API để lấy thông tin người dùng
+            fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
+                }
+            })
+                .then(response => response.json())  // Phân tích cú pháp JSON từ phản hồi
+                .then(data => {
+                    if (data.status) {
+                        const user = data.data; // Lấy dữ liệu người dùng từ API response
+
+                        // Lấy phần tử DOM
+                        const fullname = document.getElementById('managerFullNameDetails');
+
+                        // Kiểm tra nếu phần tử tồn tại
+                        if (fullname) {
+                            fullname.innerText = user.fullname || 'Full name not available';
+                        }
+
+                        // Gán giá trị cho 'managerRolesDetails'
+                        const managerRolesDetails = document.getElementById('managerRolesDetails');
+                        if (managerRolesDetails) {
+                            managerRolesDetails.innerText = user.roles || 'Role not available';
+                        }
+
+                        const managerCreateTimeDetails = document.getElementById('managerCreateTimeDetails');
+                        if (managerCreateTimeDetails) {
+                            managerCreateTimeDetails.innerText = 'Joined ' + user.create_at.toString().substring(0, 4) || 'Role not available';
+                        }
+
+                        // Mở modal
+                        const modal = new bootstrap.Modal(document.getElementById('managerDetailsModel'));
+                        modal.show();
+                    } else {
+                        console.error('Lỗi khi tải thông tin người dùng');
+                    }
+                })
+                .catch(error => {
+                    console.error('Lỗi mạng:', error);
+                });
+        }
+
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
                 $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
@@ -139,7 +188,43 @@
         $('.js-hs-unfold-invoker').each(function () {
             var unfold = new HSUnfold($(this)).init();
         });
+    </script>
 
+
+    <script src="/be/src/main/resources/static/assets/js/manager.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#managerTable').DataTable({
+                dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
+                paging: true,
+                searching: true,
+                ordering: true,
+                order: [],
+                pageLength: 5,
+                columnDefs: [
+                    {
+                        targets: [7],
+                        orderable: false
+                    }
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search managers",
+                    paginate: {
+                        previous: "Prev",
+                    },
+
+                }
+            });
+
+            $('#selectAll').on('click', function () {
+                var rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
+
+        });
     </script>
 
 </body>

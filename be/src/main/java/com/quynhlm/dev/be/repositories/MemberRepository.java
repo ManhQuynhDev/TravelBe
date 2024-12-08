@@ -67,8 +67,8 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     @Query(value = """
                 SELECT
                 m.user_id,
-                g.id AS group_id,
                 m.id AS member_id,
+                g.id AS group_id,
                 g.name,
                 userGroup.fullname AS adminName,
                 g.cover_photo,
@@ -133,6 +133,36 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 g.id, u.id, g.name, u.fullname, g.cover_photo, g.bio, g.create_time;
                         """, nativeQuery = true)
     Page<Object[]> fetchGroupUserCreate(@Param("userId") Integer userId, Pageable pageable);
+
+    @Query(value = """
+                SELECT
+                g.id AS group_id
+            FROM
+                member m
+            INNER JOIN
+                m_group g ON g.id = m.group_id
+            INNER JOIN
+                user u ON u.id = m.user_id
+            WHERE
+                m.user_id = :userId
+                AND m.role = 'ADMIN'
+            GROUP BY
+                g.id;
+                """, nativeQuery = true)
+    List<Integer> fetchGroupIdUserCreate(@Param("userId") Integer userId);
+
+    @Query(value = """
+                SELECT
+                g.id AS group_id
+                FROM member m
+                INNER JOIN user u ON u.id = m.user_id
+                INNER JOIN m_group g ON g.id = m.group_id
+                INNER JOIN user userGroup ON g.user_id = userGroup.id
+                WHERE m.user_id = :userId
+                AND m.status = 'APPROVED'
+                AND m.role <> 'ADMIN'
+            """, nativeQuery = true)
+    List<Integer> foundUserJoinGroupId(@Param("userId") Integer userId);
 
     @Query(value = """
                 SELECT

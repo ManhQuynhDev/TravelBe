@@ -40,7 +40,8 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
                 u.avatar_url as avatar,
                 r.content,
                 r.create_time,
-                COUNT(DISTINCT r.id) AS reaction_count
+                COUNT(DISTINCT reaction.id) AS reaction_count,
+                MAX(CASE WHEN reaction.user_id = :userId THEN reaction.type ELSE NULL END) AS user_reaction_type
             from reply r
             inner join user u on u.id = r.user_id
             inner join comment m on m.id = r.comment_id
@@ -48,5 +49,5 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
             where m.id = :comment_id
             GROUP BY r.id, m.id, u.id, u.fullname, u.avatar_url, r.content, r.create_time
             """, nativeQuery = true)
-    List<Object[]> fetchReplyByCommentId(@Param("comment_id") Integer comment_id);
+    List<Object[]> fetchReplyByCommentId(@Param("comment_id") Integer comment_id , @Param("userId") Integer userId);
 }

@@ -93,15 +93,17 @@ public class CommentController {
 
     @GetMapping("/postId")
     public Page<CommentResponseDTO> foundCommentWithPostId(@RequestParam Integer postId,
+            @RequestParam Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return commentService.fetchCommentWithPostId(postId, page, size);
+        return commentService.fetchCommentWithPostId(postId, userId, page, size);
     }
 
     @GetMapping("/shareId")
     public Page<CommentResponseDTO> foundCommentWithShareId(@RequestParam("shareId") Integer shareId,
+            @RequestParam Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return commentService.fetchCommentWithShareId(shareId, page, size);
+        return commentService.fetchCommentWithShareId(shareId, userId, page, size);
     }
 }

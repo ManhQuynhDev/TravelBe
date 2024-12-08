@@ -1,6 +1,6 @@
 <div id="sidebarMain" class="d-none" th:fragment="sidebarMain">
     <aside
-        class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-light navbar-vertical-aside-initialized">
+        class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-default navbar-vertical-aside-initialized">
         <div class="navbar-vertical-container">
             <div class="navbar-vertical-footer-offset">
                 <div class="navbar-brand-wrapper justify-content-between">
@@ -67,6 +67,14 @@
                             </a>
                         </li>
 
+                        <li class="navbar-vertical-aside-has-menu">
+                            <a th:href="@{/web-server/manager?page=0&size=10}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Stories">
+                                <i class="tio-apps nav-icon"></i>
+                                <span
+                                    class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Manager</span>
+                            </a>
+                        </li>
 
 
                         <li class="navbar-vertical-aside-has-menu">

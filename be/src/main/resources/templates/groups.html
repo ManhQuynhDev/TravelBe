@@ -79,8 +79,10 @@
                                             th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
                                             <div>
                                                 <img class="avatar-img" th:src="${group.cover_photo}"
-                                                    alt="Image Description">
+                                                    alt="Image Description"
+                                                    onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                             </div>
+
                                             <div class="ml-3">
                                                 <span class="d-block h5 text-hover-primary mb-0"
                                                     th:text="${group.group_name}">Amanda Harvey</span>
@@ -299,7 +301,7 @@
                 const group_id = this.getAttribute("data-id");
                 const modal = new bootstrap.Modal(document.getElementById("deleteGroupModal"));
                 console.log(group_id);
-                
+
                 modal.show();
                 document.getElementById("confirmDeleteGroup").addEventListener("click", () => {
                     fetch(`http://localhost:8080/api/groups/${group_id}`, {

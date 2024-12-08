@@ -184,7 +184,7 @@ public class FriendShipService {
         }
 
         if ("approved".equalsIgnoreCase(action)) {
-            foundFriendShip.setStatus("friend");
+            foundFriendShip.setStatus("APPROVED");
         } else if ("reject".equalsIgnoreCase(action)) {
             friendShipRepository.delete(foundFriendShip);
         } else {
@@ -208,7 +208,7 @@ public class FriendShipService {
         }
 
         FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
-                userReceivedId, "friend");
+                userReceivedId, "APPROVED");
 
         if (foundFriendShip == null) {
             throw new UnknownException(
@@ -235,7 +235,7 @@ public class FriendShipService {
         }
 
         FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
-                userReceivedId, "friend");
+                userReceivedId, "APPROVED");
 
         if (foundFriendShip == null) {
             throw new UnknownException(
@@ -243,7 +243,7 @@ public class FriendShipService {
                             " and userReceivedId " + userReceivedId);
         }
 
-        String[] statusUser = { "Friend", "Following", "Blocked" };
+        String[] statusUser = {"Blocked" };
 
         Boolean isCheck = action == null || Arrays.asList(statusUser).contains(action);
 
