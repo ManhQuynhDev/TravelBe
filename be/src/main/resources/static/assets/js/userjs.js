@@ -441,6 +441,4 @@ function userCreatedGroups(userId) {
 
 
     
-});
-
 

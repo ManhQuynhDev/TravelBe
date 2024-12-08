@@ -1,31 +1,31 @@
 <div id="headerMain" class="d-none" th:fragment="headerMain">
 
-  <header id="header"
-    class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
-    <div class="navbar-nav-wrap">
-      <div class="navbar-brand-wrapper">
-        <a class="navbar-brand" href="index.html" aria-label="Front">
-          <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
-          <p>Travel</p>
-          <!-- <img class="navbar-brand-logo-mini" th:src="@{/assets/svg/logos/logo-short.svg}" alt="Logo"> -->
-        </a>
-      </div>
-      <div class="navbar-nav-wrap-content-left">
-        <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3">
-          <i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
-            data-placement="right" title="Collapse"></i>
-          <i class="tio-last-page navbar-vertical-aside-toggle-full-align"
-            data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
-            data-toggle="tooltip" data-placement="right" title="Expand"></i>
-        </button>
-        <div class="d-none d-md-block">
-          <form class="position-relative">
-            <div
-              class="input-group input-group-merge input-group-borderless input-group-hover-light navbar-input-group">
-              <div class="input-group-prepend">
-                <div class="input-group-text">
-                  <i class="tio-search"></i>
-
+    <header id="header"
+      class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+      <div class="navbar-nav-wrap">
+        <div class="navbar-brand-wrapper">
+          <a class="navbar-brand" href="index.html" aria-label="Front">
+            <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+            <p>Travel</p>
+            <!-- <img class="navbar-brand-logo-mini" th:src="@{/assets/svg/logos/logo-short.svg}" alt="Logo"> -->
+          </a>
+        </div>
+        <div class="navbar-nav-wrap-content-left">
+          <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3">
+            <i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
+              data-placement="right" title="Collapse"></i>
+            <i class="tio-last-page navbar-vertical-aside-toggle-full-align"
+              data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
+              data-toggle="tooltip" data-placement="right" title="Expand"></i>
+          </button>
+          <div class="d-none d-md-block">
+            <form class="position-relative">
+              <div
+                class="input-group input-group-merge input-group-borderless input-group-hover-light navbar-input-group">
+                <div class="input-group-prepend">
+                  <div class="input-group-text">
+                    <i class="tio-search"></i>
+                  </div>
                 </div>
               </div>
               <input type="search" class="js-form-search form-control" placeholder="Search in front"
