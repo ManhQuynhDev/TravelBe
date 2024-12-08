@@ -46,6 +46,7 @@ public class HomeController {
     @Autowired
     private StoryService storyService;
 
+
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();

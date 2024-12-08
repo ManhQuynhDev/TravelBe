@@ -1,0 +1,55 @@
+<div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="addGroupModalTitle" class="modal-title">Add New Group</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="addGroupModalTabContent">
+                    <div class="tab-pane fade active show" id="addGroup" role="tabpanel" aria-labelledby="addGroup-tab">
+                        <div class="row form-group">
+                            <label for="groupCoverPhoto" class="col-sm-3 col-form-label input-label">Cover Photo</label>
+                            <div class="col-sm-9">
+                                <input type="file" id="groupCoverPhoto" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="groupName" class="col-sm-3 col-form-label input-label">Group Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="groupName" placeholder="Enter group name">
+                            </div>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="row form-group">
+                            <label for="groupBio" class="col-sm-3 col-form-label input-label">Bio</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="groupBio" rows="3" placeholder="Enter group bio"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="row form-group">
+                            <label for="groupStatus" class="col-sm-3 col-form-label input-label">Status</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="groupStatus">
+                                    <option value="public">Public</option>
+                                    <option value="private">Private</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary mr-2" id="saveGroupButton">Save Group</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

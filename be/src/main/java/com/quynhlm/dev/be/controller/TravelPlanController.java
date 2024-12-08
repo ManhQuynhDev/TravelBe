@@ -36,7 +36,7 @@ public class TravelPlanController {
     @GetMapping("/by-group-id/{groupId}")
     public Page<PlanResponseDTO> getAllPlanWithGroupId(
             @PathVariable Integer groupId,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "0") int page,      
             @RequestParam(defaultValue = "2") int size) {
         return travelPlanService.getAllPlansWithGroupId(groupId, page, size);
     }

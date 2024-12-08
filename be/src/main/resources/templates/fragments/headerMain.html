@@ -1,165 +1,166 @@
 <div id="headerMain" class="d-none" th:fragment="headerMain">
-    <header id="header"
-      class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
-      <div class="navbar-nav-wrap">
-        <div class="navbar-brand-wrapper">
-          <a class="navbar-brand" href="index.html" aria-label="Front">
-            <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
-            <p>Travel</p>
-          </a>
-        </div>
-        <div class="navbar-nav-wrap-content-left">
-          <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3">
-            <i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
-              data-placement="right" title="Collapse"></i>
-            <i class="tio-last-page navbar-vertical-aside-toggle-full-align"
-              data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
-              data-toggle="tooltip" data-placement="right" title="Expand"></i>
-          </button>
-          <div class="d-none d-md-block">
-            <form class="position-relative">
-              <div
-                class="input-group input-group-merge input-group-borderless input-group-hover-light navbar-input-group">
-                <div class="input-group-prepend">
-                  <div class="input-group-text">
-                    <i class="tio-search"></i>
-                  </div>
+  <header id="header"
+    class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+    <div class="navbar-nav-wrap">
+      <div class="navbar-brand-wrapper">
+        <a class="navbar-brand" href="index.html" aria-label="Front">
+          <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+          <p>Travel</p>
+          <!-- <img class="navbar-brand-logo-mini" th:src="@{/assets/svg/logos/logo-short.svg}" alt="Logo"> -->
+        </a>
+      </div>
+      <div class="navbar-nav-wrap-content-left">
+        <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3">
+          <i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
+            data-placement="right" title="Collapse"></i>
+          <i class="tio-last-page navbar-vertical-aside-toggle-full-align"
+            data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
+            data-toggle="tooltip" data-placement="right" title="Expand"></i>
+        </button>
+        <div class="d-none d-md-block">
+          <form class="position-relative">
+            <div
+              class="input-group input-group-merge input-group-borderless input-group-hover-light navbar-input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="tio-search"></i>
                 </div>
-                <input type="search" class="js-form-search form-control" placeholder="Search in front"
-                  aria-label="Search in front" data-hs-form-search-options='{
+              </div>
+              <input type="search" class="js-form-search form-control" placeholder="Search in front"
+                aria-label="Search in front" data-hs-form-search-options='{
                      "clearIcon": "#clearSearchResultsIcon",
                      "dropMenuElement": "#searchDropdownMenu",
                      "dropMenuOffset": 20,
                      "toggleIconOnFocus": true,
                      "activeClass": "focus"
                    }'>
-                <a class="input-group-append" href="javascript:;">
-                  <span class="input-group-text">
-                    <i id="clearSearchResultsIcon" class="tio-clear" style="display: none;"></i>
+              <a class="input-group-append" href="javascript:;">
+                <span class="input-group-text">
+                  <i id="clearSearchResultsIcon" class="tio-clear" style="display: none;"></i>
+                </span>
+              </a>
+            </div>
+            <div id="searchDropdownMenu"
+              class="hs-form-search-menu-content card dropdown-menu dropdown-card overflow-hidden">
+              <div class="card-body-height py-3">
+                <small class="dropdown-header mb-n2">Recent searches</small>
+                <div class="dropdown-item bg-transparent text-wrap my-2">
+                  <span class="h4 mr-1">
+                    <a class="btn btn-xs btn-soft-dark btn-pill" href="index.html">
+                      Gulp <i class="tio-search ml-1"></i>
+                    </a>
                   </span>
-                </a>
-              </div>
-              <div id="searchDropdownMenu"
-                class="hs-form-search-menu-content card dropdown-menu dropdown-card overflow-hidden">
-                <div class="card-body-height py-3">
-                  <small class="dropdown-header mb-n2">Recent searches</small>
-                  <div class="dropdown-item bg-transparent text-wrap my-2">
-                    <span class="h4 mr-1">
-                      <a class="btn btn-xs btn-soft-dark btn-pill" href="index.html">
-                        Gulp <i class="tio-search ml-1"></i>
-                      </a>
-                    </span>
-                    <span class="h4">
-                      <a class="btn btn-xs btn-soft-dark btn-pill" href="index.html">
-                        Notification panel <i class="tio-search ml-1"></i>
-                      </a>
-                    </span>
-                  </div>
-                  <div class="dropdown-divider my-3"></div>
-                  <small class="dropdown-header mb-n2">Tutorials</small>
-                  <a class="dropdown-item my-2" href="index.html">
-                    <div class="media align-items-center">
-                      <span class="icon icon-xs icon-soft-dark icon-circle mr-2">
-                        <i class="tio-tune"></i>
-                      </span>
-                      <div class="media-body text-truncate">
-                        <span>How to set up Gulp?</span>
-                      </div>
-                    </div>
-                  </a>
-                  <a class="dropdown-item my-2" href="index.html">
-                    <div class="media align-items-center">
-                      <span class="icon icon-xs icon-soft-dark icon-circle mr-2">
-                        <i class="tio-paint-bucket"></i>
-                      </span>
-                      <div class="media-body text-truncate">
-                        <span>How to change theme color?</span>
-                      </div>
-                    </div>
-                  </a>
-                  <div class="dropdown-divider my-3"></div>
-                  <small class="dropdown-header mb-n2">Members</small>
-                  <a class="dropdown-item my-2" href="index.html">
-                    <div class="media align-items-center">
-                      <img class="avatar avatar-xs avatar-circle mr-2" th:src="@{/assets/img/160x1/0/img10.jpg}"
-                        alt="Image Description">
-                      <div class="media-body text-truncate">
-                        <span>Amanda Harvey <i class="tio-verified text-primary" data-toggle="tooltip"
-                            data-placement="top" title="Top endorsed"></i></span>
-                      </div>
-                    </div>
-                  </a>
-                  <a class="dropdown-item my-2" href="index.html">
-                    <div class="media align-items-center">
-                      <img class="avatar avatar-xs avatar-circle mr-2" th:src="@{/assets/img/160x160/img3.jpg}"
-                        alt="Image Description">
-                      <div class="media-body text-truncate">
-                        <span>David Harrison</span>
-                      </div>
-                    </div>
-                  </a>
-                  <a class="dropdown-item my-2" href="index.html">
-                    <div class="media align-items-center">
-                      <div class="avatar avatar-xs avatar-soft-info avatar-circle mr-2">
-                        <span class="avatar-initials">A</span>
-                      </div>
-                      <div class="media-body text-truncate">
-                        <span>Anne Richard</span>
-                      </div>
-                    </div>
-                  </a>
+                  <span class="h4">
+                    <a class="btn btn-xs btn-soft-dark btn-pill" href="index.html">
+                      Notification panel <i class="tio-search ml-1"></i>
+                    </a>
+                  </span>
                 </div>
-                <a class="card-footer text-center" href="index.html">
-                  See all results
-                  <i class="tio-chevron-right"></i>
+                <div class="dropdown-divider my-3"></div>
+                <small class="dropdown-header mb-n2">Tutorials</small>
+                <a class="dropdown-item my-2" href="index.html">
+                  <div class="media align-items-center">
+                    <span class="icon icon-xs icon-soft-dark icon-circle mr-2">
+                      <i class="tio-tune"></i>
+                    </span>
+                    <div class="media-body text-truncate">
+                      <span>How to set up Gulp?</span>
+                    </div>
+                  </div>
+                </a>
+                <a class="dropdown-item my-2" href="index.html">
+                  <div class="media align-items-center">
+                    <span class="icon icon-xs icon-soft-dark icon-circle mr-2">
+                      <i class="tio-paint-bucket"></i>
+                    </span>
+                    <div class="media-body text-truncate">
+                      <span>How to change theme color?</span>
+                    </div>
+                  </div>
+                </a>
+                <div class="dropdown-divider my-3"></div>
+                <small class="dropdown-header mb-n2">Members</small>
+                <a class="dropdown-item my-2" href="index.html">
+                  <div class="media align-items-center">
+                    <img class="avatar avatar-xs avatar-circle mr-2" th:src="@{/assets/img/160x1/0/img10.jpg}"
+                      alt="Image Description">
+                    <div class="media-body text-truncate">
+                      <span>Amanda Harvey <i class="tio-verified text-primary" data-toggle="tooltip"
+                          data-placement="top" title="Top endorsed"></i></span>
+                    </div>
+                  </div>
+                </a>
+                <a class="dropdown-item my-2" href="index.html">
+                  <div class="media align-items-center">
+                    <img class="avatar avatar-xs avatar-circle mr-2" th:src="@{/assets/img/160x160/img3.jpg}"
+                      alt="Image Description">
+                    <div class="media-body text-truncate">
+                      <span>David Harrison</span>
+                    </div>
+                  </div>
+                </a>
+                <a class="dropdown-item my-2" href="index.html">
+                  <div class="media align-items-center">
+                    <div class="avatar avatar-xs avatar-soft-info avatar-circle mr-2">
+                      <span class="avatar-initials">A</span>
+                    </div>
+                    <div class="media-body text-truncate">
+                      <span>Anne Richard</span>
+                    </div>
+                  </div>
                 </a>
               </div>
-            </form>
-          </div>
+              <a class="card-footer text-center" href="index.html">
+                See all results
+                <i class="tio-chevron-right"></i>
+              </a>
+            </div>
+          </form>
         </div>
-        <div class="navbar-nav-wrap-content-right">
-          <ul class="navbar-nav align-items-center flex-row">
-            <li class="nav-item d-md-none">
-              <div class="hs-unfold">
-                <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
-                  data-hs-unfold-options='{
+      </div>
+      <div class="navbar-nav-wrap-content-right">
+        <ul class="navbar-nav align-items-center flex-row">
+          <li class="nav-item d-md-none">
+            <div class="hs-unfold">
+              <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
+                data-hs-unfold-options='{
                  "target": "#searchDropdown",
                  "type": "css-animation",
                  "animationIn": "fadeIn",
                  "hasOverlay": "rgba(46, 52, 81, 0.1)",
                  "closeBreakpoint": "md"
                }'>
-                  <i class="tio-search"></i>
-                </a>
-              </div>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              <div class="hs-unfold">
-                <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
-                  data-hs-unfold-options='{
+                <i class="tio-search"></i>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item d-none d-sm-inline-block">
+            <div class="hs-unfold">
+              <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
+                data-hs-unfold-options='{
                  "target": "#notificationDropdown",
                  "type": "css-animation"
                }'>
-                  <i class="tio-notifications-on-outlined"></i>
-                  <span class="btn-status btn-sm-status btn-status-danger"></span>
-                </a>
-              </div>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              <div class="hs-unfold">
-                <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
-                  data-hs-unfold-options='{
+                <i class="tio-notifications-on-outlined"></i>
+                <span class="btn-status btn-sm-status btn-status-danger"></span>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item d-none d-sm-inline-block">
+            <div class="hs-unfold">
+              <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
+                data-hs-unfold-options='{
                  "target": "#appsDropdown",
                  "type": "css-animation"
                }'>
-                  <i class="tio-menu-vs-outlined"></i>
-                </a>
-              </div>
-            </li>
-            <li class="nav-item d-none d-sm-inline-block">
-              <div class="hs-unfold">
-                <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
-                  data-hs-unfold-options='{
+                <i class="tio-menu-vs-outlined"></i>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item d-none d-sm-inline-block">
+            <div class="hs-unfold">
+              <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" href="javascript:;"
+                data-hs-unfold-options='{
                 "target": "#activitySidebar",
                 "type": "css-animation",
                 "animationIn": "fadeInRight",
@@ -167,132 +168,167 @@
                 "hasOverlay": true,
                 "smartPositionOff": true
                }'>
-                  <i class="tio-voice-line"></i>
-                </a>
-              </div>
-            </li>
-            <li class="nav-item">
-              <div class="hs-unfold">
-                <a class="js-hs-unfold-invoker navbar-dropdown-account-wrapper" href="javascript:;" data-hs-unfold-options='{
+                <i class="tio-voice-line"></i>
+              </a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <div class="hs-unfold">
+              <a class="js-hs-unfold-invoker navbar-dropdown-account-wrapper" href="javascript:;"
+                data-hs-unfold-options='{
                      "target": "#accountNavbarDropdown",
                      "type": "css-animation"
                    }'>
-                  <div class="avatar avatar-sm avatar-circle">
-                    <img class="avatar-img" src="assets\img\160x160\img6.jpg" alt="Image Description">
-                    <span class="avatar-status avatar-sm-status avatar-status-success"></span>
-                  </div>
-                </a>
-    
-                <div id="accountNavbarDropdown" class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu navbar-dropdown-account" style="width: 16rem;">
-                  <div class="dropdown-item-text">
-                    <div class="media align-items-center">
-                      <div class="avatar avatar-sm avatar-circle mr-2">
-                        <img class="avatar-img" src="assets\img\160x160\img6.jpg" alt="Image Description">
-                      </div>
-                      <div class="media-body">
-                        <span class="card-title h5">Mark Williams</span>
-                        <span class="card-text">mark@example.com</span>
-                      </div>
+                <div class="avatar avatar-sm avatar-circle">
+                  <img class="avatar-img" src="assets\img\160x160\img6.jpg" id="userAvatar1" alt="Image Description">
+                  <span class="avatar-status avatar-sm-status avatar-status-success"></span>
+                </div>
+              </a>
+
+              <div id="accountNavbarDropdown"
+                class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu navbar-dropdown-account"
+                style="width: 16rem;">
+                <div class="dropdown-item-text">
+                  <div class="media align-items-center">
+                    <div class="avatar avatar-sm avatar-circle mr-2">
+                      <img id="userAvatar" class="avatar-img" src="assets\img\160x160\img6.jpg" alt="Image Description">
+                    </div>
+                    <div class="media-body">
+                      <span id="userName" class="card-title h5">Mark Williams</span>
+                      <span id="userEmail" class="card-text">mark@example.com</span>
                     </div>
                   </div>
-    
-                  <div class="dropdown-divider"></div>
-    
-                  <!-- Unfold -->
-                  <div class="hs-unfold w-100">
-                    <a class="js-hs-unfold-invoker navbar-dropdown-submenu-item dropdown-item d-flex align-items-center" href="javascript:;" data-hs-unfold-options='{
+                </div>
+
+                <div class="dropdown-divider"></div>
+
+                <!-- Unfold -->
+                <div class="hs-unfold w-100">
+                  <a class="js-hs-unfold-invoker navbar-dropdown-submenu-item dropdown-item d-flex align-items-center"
+                    href="javascript:;" data-hs-unfold-options='{
                          "target": "#navSubmenuPagesAccountDropdown1",
                          "event": "hover"
                        }'>
-                      <span class="text-truncate pr-2" title="Set status">Set status</span>
-                      <i class="tio-chevron-right navbar-dropdown-submenu-item-invoker ml-auto"></i>
+                    <span class="text-truncate pr-2" title="Set status">Set status</span>
+                    <i class="tio-chevron-right navbar-dropdown-submenu-item-invoker ml-auto"></i>
+                  </a>
+
+                  <div id="navSubmenuPagesAccountDropdown1"
+                    class="hs-unfold-content hs-unfold-has-submenu dropdown-unfold dropdown-menu navbar-dropdown-sub-menu">
+                    <a class="dropdown-item" href="#">
+                      <span class="legend-indicator bg-success mr-1"></span>
+                      <span class="text-truncate pr-2" title="Available">Available</span>
                     </a>
-    
-                    <div id="navSubmenuPagesAccountDropdown1" class="hs-unfold-content hs-unfold-has-submenu dropdown-unfold dropdown-menu navbar-dropdown-sub-menu">
-                      <a class="dropdown-item" href="#">
-                        <span class="legend-indicator bg-success mr-1"></span>
-                        <span class="text-truncate pr-2" title="Available">Available</span>
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <span class="legend-indicator bg-danger mr-1"></span>
-                        <span class="text-truncate pr-2" title="Busy">Busy</span>
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <span class="legend-indicator bg-warning mr-1"></span>
-                        <span class="text-truncate pr-2" title="Away">Away</span>
-                      </a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#">
-                        <span class="text-truncate pr-2" title="Reset status">Reset status</span>
-                      </a>
+                    <a class="dropdown-item" href="#">
+                      <span class="legend-indicator bg-danger mr-1"></span>
+                      <span class="text-truncate pr-2" title="Busy">Busy</span>
+                    </a>
+                    <a class="dropdown-item" href="#">
+                      <span class="legend-indicator bg-warning mr-1"></span>
+                      <span class="text-truncate pr-2" title="Away">Away</span>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">
+                      <span class="text-truncate pr-2" title="Reset status">Reset status</span>
+                    </a>
+                  </div>
+                </div>
+                <!-- End Unfold -->
+
+                <a class="dropdown-item" href="#">
+                  <span class="text-truncate pr-2" title="Profile &amp; account">Profile &amp; account</span>
+                </a>
+
+                <a class="dropdown-item" href="#">
+                  <span class="text-truncate pr-2" title="Settings">Settings</span>
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <a class="dropdown-item" href="#">
+                  <div class="media align-items-center">
+                    <div class="avatar avatar-sm avatar-dark avatar-circle mr-2">
+                      <span class="avatar-initials">HS</span>
+                    </div>
+                    <div class="media-body">
+                      <span class="card-title h5">Htmlstream <span
+                          class="badge badge-primary badge-pill text-uppercase ml-1">PRO</span></span>
+                      <span class="card-text">hs.example.com</span>
                     </div>
                   </div>
-                  <!-- End Unfold -->
-    
-                  <a class="dropdown-item" href="#">
-                    <span class="text-truncate pr-2" title="Profile &amp; account">Profile &amp; account</span>
-                  </a>
-    
-                  <a class="dropdown-item" href="#">
-                    <span class="text-truncate pr-2" title="Settings">Settings</span>
-                  </a>
-    
-                  <div class="dropdown-divider"></div>
-    
-                  <a class="dropdown-item" href="#">
-                    <div class="media align-items-center">
-                      <div class="avatar avatar-sm avatar-dark avatar-circle mr-2">
-                        <span class="avatar-initials">HS</span>
-                      </div>
-                      <div class="media-body">
-                        <span class="card-title h5">Htmlstream <span class="badge badge-primary badge-pill text-uppercase ml-1">PRO</span></span>
-                        <span class="card-text">hs.example.com</span>
-                      </div>
-                    </div>
-                  </a>
-    
-                  <div class="dropdown-divider"></div>
-    
-                  <!-- Unfold -->
-                  <div class="hs-unfold w-100">
-                    <a class="js-hs-unfold-invoker navbar-dropdown-submenu-item dropdown-item d-flex align-items-center" href="javascript:;" data-hs-unfold-options='{
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <!-- Unfold -->
+                <div class="hs-unfold w-100">
+                  <a class="js-hs-unfold-invoker navbar-dropdown-submenu-item dropdown-item d-flex align-items-center"
+                    href="javascript:;" data-hs-unfold-options='{
                          "target": "#navSubmenuPagesAccountDropdown2",
                          "event": "hover"
                        }'>
-                      <span class="text-truncate pr-2" title="Customization">Customization</span>
-                      <i class="tio-chevron-right navbar-dropdown-submenu-item-invoker  ml-auto"></i>
+                    <span class="text-truncate pr-2" title="Customization">Customization</span>
+                    <i class="tio-chevron-right navbar-dropdown-submenu-item-invoker  ml-auto"></i>
+                  </a>
+
+                  <div id="navSubmenuPagesAccountDropdown2"
+                    class="hs-unfold-content hs-unfold-has-submenu dropdown-unfold dropdown-menu navbar-dropdown-sub-menu">
+                    <a class="dropdown-item" href="#">
+                      <span class="text-truncate pr-2" title="Invite people">Invite people</span>
                     </a>
-    
-                    <div id="navSubmenuPagesAccountDropdown2" class="hs-unfold-content hs-unfold-has-submenu dropdown-unfold dropdown-menu navbar-dropdown-sub-menu">
-                      <a class="dropdown-item" href="#">
-                        <span class="text-truncate pr-2" title="Invite people">Invite people</span>
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <span class="text-truncate pr-2" title="Analytics">Analytics</span>
-                        <i class="tio-open-in-new"></i>
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <span class="text-truncate pr-2" title="Customize Front">Customize Front</span>
-                        <i class="tio-open-in-new"></i>
-                      </a>
-                    </div>
+                    <a class="dropdown-item" href="#">
+                      <span class="text-truncate pr-2" title="Analytics">Analytics</span>
+                      <i class="tio-open-in-new"></i>
+                    </a>
+                    <a class="dropdown-item" href="#">
+                      <span class="text-truncate pr-2" title="Customize Front">Customize Front</span>
+                      <i class="tio-open-in-new"></i>
+                    </a>
                   </div>
-                  <!-- End Unfold -->
-    
-                  <a class="dropdown-item" href="#">
-                    <span class="text-truncate pr-2" title="Manage team">Manage team</span>
-                  </a>
-    
-                  <div class="dropdown-divider"></div>
-    
-                  <a class="dropdown-item" href="#">
-                    <span class="text-truncate pr-2" title="Sign out">Sign out</span>
-                  </a>
                 </div>
+                <!-- End Unfold -->
+
+                <a class="dropdown-item" href="#">
+                  <span class="text-truncate pr-2" title="Manage team">Manage team</span>
+                </a>
+
+                <div class="dropdown-divider"></div>
+
+                <a class="dropdown-item" href="#" id="logoutLink">
+                  <span class="text-truncate pr-2" title="Sign out">Sign out</span>
+                </a>
+
               </div>
-            </li>
-          </ul>
-        </div>
+            </div>
+          </li>
+        </ul>
       </div>
-    </header>
-  </div>
+    </div>
+  </header>
+</div>
+<script>
+
+  fetch(`http://localhost:8080/onboarding/users/${localStorage.getItem('user_id')}`, {
+    method: "GET",
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+
+      const user = data.data;
+
+      const avatarUrl = user.avatarUrl ? user.avatarUrl : `https://ui-avatars.com/api/?name=${user.fullname}&size=128&background=random`;
+      document.getElementById("userAvatar1").src = avatarUrl;  // Sử dụng avatar từ API hoặc tạo avatar mặc định
+      document.getElementById("userAvatar").src = avatarUrl;  // Sử dụng avatar từ API hoặc tạo avatar mặc định
+      document.getElementById("userName").textContent = user.fullname || "Tên người dùng";  // Cập nhật tên người dùng
+      document.getElementById("userEmail").textContent = user.email || "email@example.com";  // Cập nhật email người dùng
+    })
+    .catch(error => {
+      console.error('Có lỗi khi lấy thông tin người dùng:', error);
+    });
+
+
+
+</script>

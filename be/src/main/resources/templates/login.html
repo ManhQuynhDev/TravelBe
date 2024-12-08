@@ -23,7 +23,7 @@
         </div>
 
         <div class="container py-5 py-sm-7">
-            <a class="d-flex justify-content-center mb-5" >
+            <a class="d-flex justify-content-center mb-5">
                 <img class="z-index-2" src="/assets/svg/logos/logo.svg" alt="Image Description" style="width: 8rem;">
 
             </a>
@@ -128,10 +128,11 @@
                         body: JSON.stringify(formData),
                     });
 
-                    // Kiểm tra mã trạng thái HTTP
                     if (!response.ok) {
-                        throw new Error('Login failed! Please try again.');
+                        const errorData = await response.json();
+                        throw new Error(errorData.error.message || "HTTP error " + errorData.message);
                     }
+
 
                     const data = await response.json();
                     console.log(data);

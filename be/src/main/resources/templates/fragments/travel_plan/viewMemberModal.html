@@ -1,0 +1,37 @@
+<div class="modal fade" id="memberListModal" tabindex="-1" aria-labelledby="memberListModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="memberListModalLabel">Member List</h5>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th style="width: 200px;">Full Name</th> <!-- Kết hợp Full Name & Avatar -->
+                            <th>Role</th>
+                            <th>Join Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memberListTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    td img {
+        max-width: 30px;
+        max-height: 30px;
+        width: auto;
+        height: auto;
+        margin-right: 10px;
+    }
+</style>
