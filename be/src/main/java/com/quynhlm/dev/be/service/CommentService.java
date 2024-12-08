@@ -220,7 +220,7 @@ public class CommentService {
             comment.setReaction_count(((Number) row[8]).intValue());
             comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
@@ -296,7 +296,7 @@ public class CommentService {
             comment.setReaction_count(((Number) row[8]).intValue());
             comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue());
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
@@ -311,7 +311,7 @@ public class CommentService {
 
                         // Fetch reply-to-reply data
                         List<Object[]> rawReplys = replyToReplyRepositoty
-                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue()); // Sửa tham số truy vấn
+                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue());
 
                         List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
                                 .map(result -> {

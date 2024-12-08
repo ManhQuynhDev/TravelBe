@@ -362,6 +362,24 @@ public class MemberService {
         });
     }
 
+    public List<Integer> fetchGroupIdUserCreate(Integer userId) {
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found , please try again !");
+        }
+
+        return memberRepository.fetchGroupIdUserCreate(userId);
+    }
+
+    public List<Integer> foundUserJoinGroupId(Integer userId) {
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found , please try again !");
+        }
+
+        return memberRepository.foundUserJoinGroupId(userId);
+    }
+
     public Page<GroupResponseDTO> searchGroupUserCreate(Integer userId, String keyworld, int page, int size)
             throws UserAccountNotFoundException {
 

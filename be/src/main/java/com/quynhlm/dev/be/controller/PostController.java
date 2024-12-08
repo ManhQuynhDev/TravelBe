@@ -78,10 +78,10 @@ public class PostController {
         return postService.getAllPostsAndSharedPosts(userId, pageable);
     }
 
-    @GetMapping("/{post_id}")
-    public ResponseEntity<ResponseObject<PostMediaDTO>> getMethodName(@PathVariable int post_id) {
+    @GetMapping("/{post_id}/{user_id}")
+    public ResponseEntity<ResponseObject<PostMediaDTO>> getMethodName(@PathVariable Integer post_id , @PathVariable Integer user_id) {
         ResponseObject<PostMediaDTO> result = new ResponseObject<>();
-        result.setData(postService.getAnPost(post_id));
+        result.setData(postService.getAnPost(post_id , user_id));
         result.setMessage("Get an post by " + post_id + " successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<PostMediaDTO>>(result, HttpStatus.OK);

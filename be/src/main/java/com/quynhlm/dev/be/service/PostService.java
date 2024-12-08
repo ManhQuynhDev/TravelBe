@@ -187,8 +187,8 @@ public class PostService {
         postRepository.delete(foundPost);
     }
 
-    public PostMediaDTO getAnPost(Integer post_id) throws PostNotFoundException {
-        List<Object[]> results = postRepository.getPost(post_id);
+    public PostMediaDTO getAnPost(Integer post_id, Integer user_id) throws PostNotFoundException {
+        List<Object[]> results = postRepository.getPost(post_id, user_id);
 
         if (results.isEmpty()) {
             throw new PostNotFoundException(
@@ -210,13 +210,14 @@ public class PostService {
         Integer reaction_count = ((Number) result[10]).intValue();
         Integer comment_count = ((Number) result[11]).intValue();
         Integer share_count = ((Number) result[12]).intValue();
+        String user_reaction_type = (String) result[13];
 
-        return new PostMediaDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time , reaction_count , comment_count , share_count);
+        return new PostMediaDTO(ownerId, postId, locationId, content, status, fullname, avatar, mediaUrl, type,
+                create_time, reaction_count, comment_count, share_count, user_reaction_type);
     }
 
-
     public PostSaveResponseDTO getAnPostReturnSave(Integer post_id) throws PostNotFoundException {
-        List<Object[]> results = postRepository.getPost(post_id);
+        List<Object[]> results = postRepository.getPostSave(post_id);
 
         if (results.isEmpty()) {
             throw new PostNotFoundException(
@@ -236,7 +237,8 @@ public class PostService {
         String type = (String) result[8];
         String create_time = (String) result[9];
 
-        return new PostSaveResponseDTO(ownerId, postId, locationId,content,status,fullname,avatar , mediaUrl , type , create_time);
+        return new PostSaveResponseDTO(ownerId, postId, locationId, content, status, fullname, avatar, mediaUrl, type,
+                create_time);
     }
 
     // Update post
@@ -313,7 +315,7 @@ public class PostService {
 
         return results.map(row -> {
             VideoPostDTO post = new VideoPostDTO();
-            
+
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
@@ -336,7 +338,7 @@ public class PostService {
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
-            
+
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
@@ -354,13 +356,12 @@ public class PostService {
         });
     }
 
-
-    public Page<PostMediaDTO> foundPostByUserId(Integer user_id , Pageable pageable) {
-        Page<Object[]> results = postRepository.foundPostByUserId(user_id , pageable);
+    public Page<PostMediaDTO> foundPostByUserId(Integer user_id, Pageable pageable) {
+        Page<Object[]> results = postRepository.foundPostByUserId(user_id, pageable);
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
-            
+
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
