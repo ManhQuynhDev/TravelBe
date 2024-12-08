@@ -24,7 +24,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                  u.avatar_url as avatar,
                  c.content,
                  c.post_id,
-                 c.share_id,
+                 c.share_id,  
                  c.create_time,
                  COUNT(DISTINCT cr.id) AS reaction_count
               from comment c
