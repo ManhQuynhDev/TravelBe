@@ -11,11 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class UserFriendResponse {
-    private Integer id;
-    private Integer userSendId;
-    private String userSendName;
-    private String userSendAvatar;
-    private Integer userReceiedId;
+    private Integer userId;
+    private String fullname;
+    private String avatarUrl;
     private String status;
     private String send_time;
 }

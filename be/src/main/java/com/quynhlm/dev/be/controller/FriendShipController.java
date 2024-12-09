@@ -64,12 +64,12 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{userReceivedId}/status")
-    public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userReceivedId,
+    @GetMapping("/get-all-friends/{userId}")
+    public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userId,
             @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return friendShipService.findByUserReceivedIdAndStatus(userReceivedId, status, page, size);
+        return friendShipService.findByGetListFriends(userId,status, page, size);
     }
 
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")

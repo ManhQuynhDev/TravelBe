@@ -18,14 +18,6 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                         @Param("userReceivedId") Integer userReceivedId,
                         @Param("status") String status);
 
-        @Query(value = """
-                        SELECT f.id , u.id as user_send_id, u.fullname as user_send_name , u.avatar_url as user_send_avatar , f.user_received_id , f.status , f.create_time FROM friend_ship f
-                        INNER JOIN User u on u.id = f.user_send_id
-                        WHERE f.user_received_id = :userReceivedId AND f.status = :status;""", nativeQuery = true)
-        Page<Object[]> findByUserReceivedIdAndStatus(
-                        @Param("userReceivedId") Integer userReceivedId,
-                        @Param("status") String status, Pageable pageable);
-
         @Query(value = "SELECT * FROM friend_ship f WHERE f.user_received_id = :userReceivedId AND f.status = :status", nativeQuery = true)
         List<FriendShip> fetchByUserReceivedIdAndStatus(
                         @Param("userReceivedId") Integer userReceivedId,
@@ -48,4 +40,17 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                              WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
                           AND f.status = 'APPROVED'""", nativeQuery = true)
         Page<Object[]> getAllListUserFriends(@Param("user_id") Integer user_id, Pageable pageable);
+
+        @Query(value = """
+                        SELECT u.id, u.fullname, u.avatar_url , f.status , f.create_time
+                                        FROM friend_ship f
+                                        JOIN user u ON u.id = CASE
+                                          WHEN f.user_send_id = :user_id THEN f.user_received_id
+                                                   ELSE f.user_send_id
+                                                             END
+                                             WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
+                                          AND f.status = :status""", nativeQuery = true)
+        Page<Object[]> findByUserFriends(@Param("user_id") Integer user_id, @Param("status") String status,
+                        Pageable pageable);
+
 }

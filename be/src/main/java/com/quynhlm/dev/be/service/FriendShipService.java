@@ -136,30 +136,28 @@ public class FriendShipService {
         }
     }
 
-    public Page<UserFriendResponse> findByUserReceivedIdAndStatus(Integer userReceivedId, String status, int page , int size) {
+    public Page<UserFriendResponse> findByGetListFriends(Integer userId, String status, int page, int size) {
 
-        User foundUser = userRepository.getAnUser(userReceivedId);
+        User foundUser = userRepository.getAnUser(userId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
-                    "Find user send request with " + userReceivedId + " not found , please try again !");
+                    "Find user send request with " + userId + " not found , please try again !");
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = friendShipRepository.findByUserReceivedIdAndStatus(userReceivedId, status, pageable);
+        Page<Object[]> results = friendShipRepository.findByUserFriends(userId,status, pageable);
 
         return results.map(row -> {
-            UserFriendResponse user = new UserFriendResponse();
-
-            user.setId(((Number) row[0]).intValue());
-            user.setUserSendId(((Number) row[1]).intValue());
-            user.setUserSendName((String) row[2]);
-            user.setUserSendAvatar((String) row[3]);
-            user.setUserReceiedId(((Number) row[4]).intValue());
-            user.setStatus((String) row[5]);
-            user.setSend_time((String) row[6]);
-            return user;
+            UserFriendResponse object = new UserFriendResponse();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setFullname(((String) row[1]));
+            object.setAvatarUrl((String) row[2]);
+            object.setStatus(((String) row[3]));
+            object.setSend_time((String) row[4]);
+            return object;
         });
     }
+
     public void acceptFriend(int userSendId, int userReceivedId, String action)
             throws UserAccountNotFoundException, UnknownException {
 
@@ -243,7 +241,7 @@ public class FriendShipService {
                             " and userReceivedId " + userReceivedId);
         }
 
-        String[] statusUser = {"Blocked" };
+        String[] statusUser = { "Blocked" };
 
         Boolean isCheck = action == null || Arrays.asList(statusUser).contains(action);
 
