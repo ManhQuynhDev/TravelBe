@@ -80,7 +80,10 @@
                                             <div class="d-flex align-items-center">
                                                 <img th:if="${post.mediaUrl != null}" th:src="${post.mediaUrl}"
                                                     alt="Content Image" class="img-fluid"
-                                                    style="max-width: 70px; height: auto; margin-right: 10px;">
+                                                    style="max-width: 70px; height: auto; margin-right: 10px;"
+                                                    onerror="console.log('Image load failed'); this.onerror=null; this.src='/assets/img/anhload.jpg';">
+
+
                                                 <a href="#" data-toggle="modal"
                                                     th:onclick="'loadPostDetails(' + ${post.postId} + ')'"
                                                     data-target="#postDetailModal"
@@ -176,7 +179,7 @@
             }).then(res => res.json())
                 .then(data => {
                     console.log(data.data);
-                    
+
                     if (data.status) {
                         const post = data.data;
                         document.getElementById(`postMediaImgModal`).src = post.mediaUrl || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
@@ -236,7 +239,6 @@
             if (media) {
                 formData.append('files', media);
             } else {
-
                 console.log("No media file selected, sending empty file.");
             }
             formData.append('type', type);

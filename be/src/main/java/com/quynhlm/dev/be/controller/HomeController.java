@@ -77,7 +77,7 @@ public class HomeController {
                 .count();
         double percentageChange = ((double) (userCount - 9) / 9) * 100;
         String formattedPercentage = String.format("%.1f", percentageChange);
-        model.addAttribute("userList", userService.getListData(0, 1000));
+        model.addAttribute("userList", userService.getAllListUser());
         model.addAttribute("userCount", userCount);
         model.addAttribute("formattedPercentage", formattedPercentage);
         return "users";

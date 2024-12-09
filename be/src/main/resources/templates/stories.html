@@ -82,7 +82,8 @@
                                     <td class="text-start">
                                         <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}"
                                             alt="Story Media" class="img-fluid"
-                                            style="max-width: 70px; height: auto; margin-right: 10px;">
+                                            style="max-width: 70px; height: auto; margin-right: 10px;"
+                                            onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                     </td>
                                     <td class="text-start" th:text="${story.create_time}">Created Time</td>
                                     <td class="text-start" th:text="${story.status}">Status</td>
