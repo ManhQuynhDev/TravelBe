@@ -1,0 +1,59 @@
+<div class="modal fade" id="editManagerModal" tabindex="-1" aria-labelledby="editUserModalTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content rounded-lg shadow-lg">
+            <div class="modal-header border-bottom-0">
+                <h4 id="editUserModalTitle" class="modal-title text-primary font-weight-bold">Edit Manager</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="profileForm">
+                    <div class="text-center mb-4">
+                        <div class="profile-cover-img-wrapper position-relative">
+                            <img id="editProfileCoverImgModal" class="profile-cover-img rounded" src="" alt="Image Description">
+                            <div class="profile-cover-content profile-cover-btn p-3 position-absolute bottom-0 left-0 w-100 text-center">
+                                <label for="editProfileCoverUploaderModal" class="btn btn-sm btn-outline-light">Change Cover</label>
+                                <input type="file" class="d-none" id="editProfileCoverUploaderModal" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader mb-5" for="editAvatarUploaderModal">
+                        <img id="editAvatarImgModal" class="avatar-img" src="assets/img/160x160/img9.jpg" alt="Image Description">
+                        <input type="file" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" data-hs-file-attach-options="{
+                            &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
+                            &quot;mode&quot;: &quot;image&quot;,
+                            &quot;targetAttr&quot;: &quot;src&quot;,
+                            &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
+                        }">
+                        <span class="avatar-uploader-trigger position-absolute bottom-0 right-0 p-1 bg-light rounded-circle shadow-sm">
+                            <i class="tio-edit avatar-uploader-icon text-dark"></i>
+                        </span>
+                    </label>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="editPhoneModalLabel" class="input-label">Phone Number</label>
+                            <input type="tel" class="form-control" name="editPhoneModal" id="editPhoneModal" placeholder="Enter Phone Number" required pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Phone Number">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="editBioModalLabel" class="input-label">Bio</label>
+                            <input class="form-control" name="editBioModal" id="editBioModalLabel" placeholder="Enter Bio" aria-label="Bio" rows="3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editBirthDayModalLabel" class="input-label">Birthday</label>
+                        <input type="date" class="form-control" name="editBirthDayModal" id="editBirthDayModalLabel" placeholder="Enter BirthDay" aria-label="BirthDay">
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

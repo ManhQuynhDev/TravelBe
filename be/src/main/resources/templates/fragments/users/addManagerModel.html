@@ -1,0 +1,57 @@
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header border-bottom-0">
+                <h5 id="addUserModalTitle" class="modal-title">Add New User</h5>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <!-- Full Name -->
+                    <div class="form-group row">
+                        <label for="userFullName" class="col-sm-3 col-form-label input-label">Full Name</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="userFullName" id="userFullName" placeholder="Enter Full Name" required>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group row">
+                        <label for="userEmail" class="col-sm-3 col-form-label input-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control" name="userEmail" id="userEmail" placeholder="Enter Email" required>
+                        </div>
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group row">
+                        <label for="userPhone" class="col-sm-3 col-form-label input-label">Phone Number</label>
+                        <div class="col-sm-9">
+                            <input type="tel" class="form-control" name="userPhone" id="userPhone" placeholder="Enter Phone Number" required
+                                   pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Phone Number">
+                        </div>
+                    </div>
+
+                    <!-- Birthday -->
+                    <div class="form-group row">
+                        <label for="userBirthDay" class="col-sm-3 col-form-label input-label">Birthday</label>
+                        <div class="col-sm-9">
+                            <input type="date" class="form-control" name="userBirthDay" id="userBirthDay" placeholder="Enter Birthday" aria-label="Birthday">
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer (Buttons) -->
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-outline-secondary mr-2" data-dismiss="modal" aria-label="Close">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="submitAddUserForm">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

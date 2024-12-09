@@ -52,5 +52,4 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                                           AND f.status = :status""", nativeQuery = true)
         Page<Object[]> findByUserFriends(@Param("user_id") Integer user_id, @Param("status") String status,
                         Pageable pageable);
-
 }
