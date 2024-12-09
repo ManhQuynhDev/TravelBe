@@ -33,6 +33,7 @@ import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.TagRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -60,6 +61,7 @@ public class PostService {
     @Autowired
     private FriendShipRepository friendShipRepository;
 
+    @Transactional
     public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
             throws UnknownException {
         try {
