@@ -33,115 +33,6 @@ document.getElementById('editAvatarUploaderModal').addEventListener('change', fu
     }
 });
 
-
-
-// Hàm lấy dữ liệu người dùng và cập nhật các input trong modal
-// async function fetchOneUseData(userId) {
-//     const token = localStorage.getItem('authToken');
-//     try {
-//         const response = await fetch(`http://localhost:8080/onboarding/users/${userId}`, {
-//             method: 'GET',
-//             headers: {
-//                 'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
-//             }
-//         });
-//         const data = await response.json();
-//         console.log(data.data.fullname);
-
-
-
-//         // Cập nhật các ô input trong modal với dữ liệu người dùng
-//         // document.getElementById('editFullnameModal').value = data.data.fullname || '';  // Điền fullname vào input
-//         document.getElementById('editPhoneModal').value = data.data.phoneNumber || '';  // Điền phone number vào input
-//         document.getElementById('editBioModalLabel').value = data.data.bio || '';  // Điền email vào input
-
-
-
-//     } catch (error) {
-//         console.error('Có lỗi xảy ra khi tải dữ liệu người dùng:', error);
-//     }
-// }
-
-// document.querySelectorAll('#edit').forEach(button => {
-//     button.addEventListener('click', function () {
-//         const userId = this.getAttribute('data-id');
-//         const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
-//         modal.show();  // Hiển thị modal khi nhấn nút
-
-
-//         fetchOneUseData(userId);
-
-//         // Lấy và cập nhật dữ liệu từ API (nếu cần)
-//         const updateProfile = async (id) => {
-//             try {
-//                 // Tạo DTO từ form
-//                 const token = localStorage.getItem('authToken');
-//                 const phoneNumber = document.getElementById('editPhoneModal')?.value?.trim();
-//                 const birthDate = document.getElementById('editBirthDayModalLabel')?.value?.trim();
-//                 const bio = document.getElementById('editBioModalLabel')?.value?.trim();
-//                 const avatarFile = document.getElementById('editAvatarUploaderModal')?.files[0];
-//                 if (!phoneNumber || !birthDate || !bio) {
-//                     throw new Error("Please fill in all fields.");
-//                 }
-
-//                 var dateParts = birthDate.split("-");
-//                 var formattedDate = dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0];
-
-//                 const updateDTO = {
-//                     phoneNumber: phoneNumber,
-//                     dob: formattedDate,
-//                     bio: bio
-//                 };
-
-//                 const linkAPI = `http://localhost:8080/onboarding/change-profile/${id}`;
-//                 const formData = new FormData();
-
-//                 formData.append("updateDTO", new Blob([JSON.stringify(updateDTO)], { type: "application/json" }));
-
-//                 // Thêm avatar nếu có
-//                 if (avatarFile) {
-//                     formData.append("imageFile", avatarFile);
-//                 }
-
-//                 // Gửi yêu cầu POST
-//                 const response = await fetch(linkAPI, {
-//                     method: "POST",
-//                     body: formData,
-//                     headers: {
-//                         'Authorization': `Bearer ${token}`  // Thêm token vào header của yêu cầu
-//                     }
-//                 });
-//                 const data = await response.json();
-
-//                 console.log(data);
-
-
-//                 if (data.status !== false) {
-//                     modal.hide(); // Ẩn modal khi cập nhật thành công
-//                     alert("Cập nhật thành công!");
-
-
-//                 } else {
-//                     throw new Error("Lỗi :" + data.error.message);
-//                 }
-//             } catch (error) {
-//                 console.error("Error:", error);
-//                 alert(error.message || "Đã có lỗi xảy ra.");
-//             }
-//         };
-//         // Xử lý khi nhấn "Save Changes"
-//         document.getElementById("submit").addEventListener("click", (e) => {
-//             e.preventDefault();
-//             if (userId) {
-//                 updateProfile(userId);  // Gọi hàm cập nhật khi nhấn lưu
-//             } else {
-//                 alert("Không có ID người dùng!");
-//             }
-//         });
-//     });
-// });
-
-
 function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
     const lockButton = document.getElementById('confirmLock');
@@ -283,6 +174,7 @@ function loadUserDetails(userId) {
 
                 joinedGroup(userId)
                 userCreatedGroups(userId)
+                getFriendsList(userId)
 
 
             } else {
@@ -340,33 +232,28 @@ function getGroupDetails(groupId) {
 }
 
 function joinedGroup(userId) {
-    // Tạo URL từ groupId
     const url = `http://localhost:8080/api/member/group-join-id/${userId}`;
 
-    // Gửi yêu cầu GET tới API để lấy danh sách groupId mà người dùng tham gia
     fetch(url, {
         method: 'GET',
-        headers: AUTH_HEADER, // Thêm header nếu cần
+        headers: AUTH_HEADER, // Thêm header xác thực nếu cần
     })
         .then(response => {
-            // Kiểm tra mã trạng thái HTTP
             if (!response.ok) {
                 throw new Error(`Failed to fetch user group IDs, Status: ${response.status}`);
             }
-            return response.json(); // Chuyển phản hồi thành JSON
+            return response.json();
         })
         .then(data => {
             const groupIds = data.data; // Mảng các groupId
-            const groupList = document.getElementById('joined-groups-list');
+            const groupTableBody = document.getElementById('joined-groups-table-body');
 
-            // Xóa các phần tử cũ trước khi thêm mới
-            groupList.innerHTML = '';
+            groupTableBody.innerHTML = ''; // Xóa các phần tử cũ trước khi thêm mới
 
             if (!groupIds || groupIds.length === 0) {
-                // Nếu không có groupId, hiển thị thông báo
-                const noGroupItem = document.createElement('li');
-                noGroupItem.textContent = 'User has not joined any groups';
-                groupList.appendChild(noGroupItem);
+                const noGroupsRow = document.createElement('tr');
+                noGroupsRow.innerHTML = '<td colspan="3" class="text-center">User has not joined any groups</td>';
+                groupTableBody.appendChild(noGroupsRow);
                 return;
             }
 
@@ -375,12 +262,18 @@ function joinedGroup(userId) {
 
             Promise.all(groupNamesPromises)
                 .then(groupNames => {
-                    // Thêm các tên nhóm vào danh sách
-                    groupNames.forEach(groupName => {
+                    groupNames.forEach((groupName, index) => {
                         if (groupName) {
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `Group: ${groupName}`;
-                            groupList.appendChild(listItem);
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <th scope="row">${index + 1}</th>
+                                <td>${groupName}</td>
+                                <td>
+                                    <button class="btn btn-outline-info btn-sm">View</button>
+                                    <button class="btn btn-outline-danger btn-sm">Leave</button>
+                                </td>
+                            `;
+                            groupTableBody.appendChild(row);
                         }
                     });
                 })
@@ -389,13 +282,13 @@ function joinedGroup(userId) {
                 });
         })
         .catch(error => {
-            console.error('Error joining group:', error);
+            console.error('Error fetching user joined groups:', error);
         });
 }
 
 
+
 function userCreatedGroups(userId) {
-    // URL API để lấy danh sách groupId mà người dùng đã tạo
     const url = `http://localhost:8080/api/member/user-create-id/${userId}`;
 
     fetch(url, {
@@ -414,18 +307,27 @@ function userCreatedGroups(userId) {
 
             Promise.all(groupDetailsPromises)
                 .then(groupNames => {
-                    const groupList = document.getElementById('created-groups-list');
-                    groupList.innerHTML = ''; // Xóa nội dung cũ nếu có
+                    const groupTableBody = document.getElementById('created-groups-table-body');
+                    groupTableBody.innerHTML = ''; // Xóa danh sách cũ
 
+                    // Nếu không có nhóm
                     if (groupNames.length === 0) {
-                        groupList.innerHTML = `<div>Người dùng chưa tạo nhóm nào</div>`;
+                        const noGroupsRow = document.createElement('tr');
+                        noGroupsRow.innerHTML = '<td colspan="3" class="text-center">The user has not created any groups</td>';
+                        groupTableBody.appendChild(noGroupsRow);
                     } else {
-                        groupNames.forEach(groupName => {
+                        groupNames.forEach((groupName, index) => {
                             if (groupName) {
-                                const groupDiv = document.createElement('div');
-                                groupDiv.textContent = `Group: ${groupName}`;
-                                groupDiv.className = 'group-item'; // Thêm class nếu cần để CSS
-                                groupList.appendChild(groupDiv);
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <th scope="row">${index + 1}</th>
+                                    <td>${groupName}</td>
+                                    <td>
+                                        <button class="btn btn-outline-info btn-sm">View</button>
+                                        <button class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </td>
+                                `;
+                                groupTableBody.appendChild(row);
                             }
                         });
                     }
@@ -440,5 +342,51 @@ function userCreatedGroups(userId) {
 }
 
 
-    
+
+function getFriendsList(userId) {
+    fetch(`http://localhost:8080/api/friend/get-all-friends/${userId}?status=APPROVED&page=0&size=100`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}` // Nếu cần xác thực
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch friends list: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(friendsData => {
+            const friendsList = document.getElementById('friendsList');
+            if (friendsData && friendsData.content && friendsData.content.length > 0) {
+                friendsList.innerHTML = ''; // Xóa danh sách cũ
+                friendsData.content.forEach((friend, index) => {
+                    const row = document.createElement('tr');
+                    const avatarContent = friend.fullname ? friend.fullname.charAt(0).toUpperCase() : '';
+                    row.innerHTML = `
+                    <th scope="row">${index + 1}</th>
+                    <td class="text-center">
+                        ${friend.avatarUrl ?
+                            `<img src="${friend.avatarUrl}" alt="Avatar" class="img-fluid rounded-circle" style="width: 40px; height: 40px; background-color: #f0f0f0; color: #555; font-size: 32px; font-weight: bold; display: flex; justify-content: center; align-items: center;">` :
+                            `<span class="d-flex justify-content-center align-items-center" style="background-color: #f0f0f0; color: #555; width: 40px; height: 40px; font-size: 20px; font-weight: bold; border-radius: 50%;">${avatarContent}</span>`
+                        }
+                    </td>
+                    <td>${friend.fullname}</td>
+                    <td>${friend.status || 'Online'}</td>
+                `;
+                    friendsList.appendChild(row);
+                });
+            } else {
+                friendsList.innerHTML = '<tr><td colspan="4" class="text-center">No friends available</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching friends list:', error);
+            document.getElementById('friendsList').innerHTML = '<tr><td colspan="4" class="text-center">Error loading friends list</td></tr>';
+        });
+}
+
+
+
+
 

@@ -79,7 +79,6 @@
                                             th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
                                             <div>
                                                 <img class="avatar-img" th:src="${group.cover_photo}"
-
                                                     alt="Image Description"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                             </div>
@@ -243,7 +242,11 @@
                 const groupData = await response.json();
                 const data = groupData.data;
 
-                document.getElementById('groupCoverImgModal').src = data.cover_photo || 'assets/img/default-image.jpg';
+                const groupCoverImg = document.getElementById('groupCoverImgModal');
+                groupCoverImg.src = data.cover_photo || 'assets/img/default-image.jpg';
+                groupCoverImg.onerror = function () {
+                    this.src = '/assets/img/anhload.jpg'; // ảnh thay thế khi có lỗi
+                };
                 document.getElementById('groupNameDetails').value = data.group_name || 'N/A';
                 document.getElementById('groupAdminDetails').value = data.admin_name || 'N/A';
                 document.getElementById('groupMemberCountDetails').value = data.member_count || '0';

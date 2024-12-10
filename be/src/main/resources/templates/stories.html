@@ -207,8 +207,13 @@
                 .then(data => {
                     const story = data.data;
 
-                    // Cập nhật thông tin trong modal
-                    document.getElementById('storyMediaImgModal').src = story.url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+                    const storyMediaImg = document.getElementById('storyMediaImgModal');
+                    storyMediaImg.src = story.url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+
+                    storyMediaImg.onerror = function () {
+                        storyMediaImg.src = '/assets/img/anhload.jpg'; // Ảnh mặc định khi có lỗi
+                    };
+
                     document.getElementById('storyContentDetails').value = story.content || '';
                     document.getElementById('storyCreatedTimeDetails').value = story.create_time || '';
                     document.getElementById('storyHashtagDetails').value = story.hastag || '';
