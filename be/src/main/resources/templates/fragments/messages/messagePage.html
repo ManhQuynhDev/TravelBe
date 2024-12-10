@@ -10,8 +10,8 @@
                     <input type="text" class="form-control" placeholder="Search or start a new chat">
                 </div>
 
-                <div class="chat-list" th:each="manager : ${managers}">
-                    <div class="chat-item d-flex align-items-center" th:onclick="'showMessage(' + ${manager.id} + ')'">
+                <tr class="chat-list" th:each="manager : ${managers}">
+                    <td class="chat-item d-flex align-items-center" th:onclick="'showMessage(' + ${manager.id} + ')'">
                         <img th:if="${manager.avatarUrl != null && !manager.avatarUrl.isEmpty()}"
                             th:src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
                             style="width: 45px; height: 45px;">
@@ -25,8 +25,8 @@
                             <h6 th:text="${manager.fullname}">Ammi Watts</h6>
                             <span>I will check it and get back to you soon.</span>
                         </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
             </div>
 
             <!-- Chat -->

@@ -18,7 +18,7 @@ public class PostMediaDTO {
     private String fullname;
     private String avatar;
     private String mediaUrl;
-    private String type;
+    private String type;    
     private String create_time;
     private Integer reaction_count;
     private Integer comment_count;
