@@ -68,6 +68,13 @@ public class HomeController {
         return "manager";
     }
 
+    @GetMapping("/message-group")
+    public String getMessagePage(Model model) {
+        Page<User> managers = userService.getAllListManager(0, 1000);
+        model.addAttribute("managers", managers);
+        return "messageGroup";
+    }
+
     @GetMapping("/users")
     public String user(Model model) {
         List<User> userList = userService.getAllListUser();

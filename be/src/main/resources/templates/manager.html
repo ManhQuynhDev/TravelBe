@@ -224,7 +224,6 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div th:include="fragments/managerPage :: content"></div>
-        <div th:replace="fragments/users/managerDetailsModel"></div>
     </div>
     </div>
 
@@ -236,65 +235,6 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
 
     <script>
-        function loadUserDetails(userId) {
-            const token = localStorage.getItem('authToken');
-
-            // Gửi yêu cầu HTTP đến API
-            fetch(`http://localhost:8080/onboarding/users/${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status) {
-                        const user = data.data;
-
-                        // Hiển thị thông tin vào các phần tử DOM
-                        document.getElementById('managerFullNameDetails').innerText = user.fullname || 'Full name not available';
-
-                        const managerRolesDetails = document.getElementById('managerRolesDetails');
-                        managerRolesDetails.innerText = user.roles ? user.roles.join(", ") : 'Role not available';
-
-                        const managerEmailDetails = document.getElementById('managerEmailDetails');
-                        managerEmailDetails.innerText = user.email;
-
-                        const managerPhoneNumberDetails = document.getElementById('managerPhoneNumberDetails');
-                        managerPhoneNumberDetails.innerText = user.phoneNumber;
-                        const status = user.isLocked === 'OPEN' ? 'Tài khoản mở' : 'Bị khóa';
-                        const managerStatusDetails = document.getElementById('managerStatusDetails');
-                        managerStatusDetails.innerText = status;
-
-                        const managerBioDetails = document.getElementById('managerBioDetails');
-                        managerBioDetails.innerText = user.bio ?? "";
-
-                        const managerDioDetails = document.getElementById('managerDioDetails');
-                        managerDioDetails.innerText = user.dob ?? "";
-
-                        const managerCreateTimeDetails = document.getElementById('managerCreateTimeDetails');
-                        if (managerCreateTimeDetails) {
-                            managerCreateTimeDetails.innerText = 'Joined ' + user.create_at.toString().substring(0, 4) || 'Role not available';
-                        }
-
-                        // Hiển thị modal
-                        const modal = new bootstrap.Modal(document.getElementById('managerDetailsModel'));
-                        modal.show();
-                    } else {
-                        console.error('API Error:', data.message || 'Unknown error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Lỗi khi tải thông tin người dùng:', error.message);
-                });
-        }
-
-
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
                 $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
