@@ -25,6 +25,7 @@ import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
+import com.quynhlm.dev.be.repositories.MemberPlanRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
@@ -41,6 +42,9 @@ public class MemberService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MemberPlanRepository memberPlanRepository;
 
     public Member requestToJoinGroup(Member member)
             throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException,

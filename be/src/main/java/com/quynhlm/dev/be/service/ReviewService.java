@@ -148,9 +148,6 @@ public class ReviewService {
             }
             foundReview.setContent(newReview.getContent());
             foundReview.setStar(newReview.getStar());
-            if (newReview.getLocation_id() == null) {
-                foundReview.setLocation_id(newReview.getLocation_id());
-            }
             isSuccess(foundReview);
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
