@@ -90,6 +90,9 @@ public class AppExceptionHandler {
             case "NotificationNotFoundException":
                 errorCode = AppError.ErrorCode.NOTIFICATION_NOT_FOUND;
                 break;
+            case "LocationNotFoundException":
+                errorCode = AppError.ErrorCode.LOCATION_NOT_FOUND;
+                break;
             default:
                 errorCode = AppError.ErrorCode.UNKNOWN;
                 break;

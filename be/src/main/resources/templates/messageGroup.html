@@ -288,16 +288,35 @@
         });
     </script>
 
-
     <script>
         const chatbody = document.querySelector('.chat-body');
         const user_received = document.querySelector('#user_received');
-        const userInfo = document.querySelector('.userInfo');        
+        const userInfo = document.querySelector('.userInfo');
+        const chatMess = document.querySelector('#chat-mes');
+        const submit = document.querySelector('#btnSubmit');
+        const fileInput = document.querySelector("#fileInput");
+
+        const managerItems = document.querySelectorAll('.managerItem');
+
+        function handleClick(event) {
+            const manager_id = event.currentTarget.dataset.parent;
+            showMessage(manager_id);
+
+            event.currentTarget.removeEventListener('click', handleClick);
+        }
+
+        managerItems.forEach(managerItem => {
+            managerItem.addEventListener('click', handleClick);
+        });
 
         const showMessage = (user_id) => {
+            const userId = user_id.toString();
             const senderId = localStorage.getItem('user_id');
             const token = localStorage.getItem('authToken');
-            fetch(`http://localhost:8080/onboarding/users/fullname/${user_id}`, {
+
+            console.log("hello");
+            console.log(userId);
+            fetch(`http://localhost:8080/onboarding/users/fullname/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -340,8 +359,9 @@
 
             const socketUrl = location.protocol + "//" + location.hostname + ":1111/private";
             console.log(socketUrl);
+
             const socket = io.connect(socketUrl, {
-                query: { sender: senderId, receiverId: user_id }
+                query: { sender: senderId, receiverId: userId }
             });
 
             socket.on('connect', () => {
@@ -353,10 +373,7 @@
             });
 
             const content = `<div id="messageArea" class="col s12">
-				<!-- <div class="incoming col s12">
-					<div style="background-color: #f23c00" class="avatar tooltipped" data-position="left" data-tooltip="System">S</div>
-					<div style="background-color: #f23c00; color: white" class="message">Welcome to Socket Chat, have fun!</div>
-				</div> -->
+				
 			</div>`;
 
             chatbody.innerHTML = content;
@@ -364,9 +381,9 @@
             function scrollToBottom() {
                 const messageArea = document.getElementById('messageArea');
                 messageArea.scrollTop = messageArea.scrollHeight;
-            }            
+            }
 
-            fetch(`http://localhost:8080/api/messages?senderId=${senderId}&receiverId=${user_id}&page=0&size=1000`, {
+            fetch(`http://localhost:8080/api/messages?senderId=${senderId}&receiverId=${userId}&page=0&size=1000`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -380,7 +397,6 @@
                     return res.json();
                 })
                 .then(data => {
-                    console.log(data.content);
                     data.content.forEach(message => {
                         if (message.sender_id == senderId) {
                             displayMyMessage(message);
@@ -392,12 +408,11 @@
                 })
                 .catch(err => console.error('Error:', err));
 
-            const chatMess = document.querySelector('#chat-mes');
-            const submit = document.querySelector('#btnSubmit');
-
             socket.on('user-chat', (data) => {
+
+                console.log(data);
+
                 if (data.sender_id == senderId) {
-                    console.log(true);
                     displayMyMessage(data)
                 } else {
                     displayMessage(data)
@@ -411,37 +426,65 @@
                     status: true
                 });
             });
-
+            const MAX_FILE_SIZE = 5 * 1024 * 1024;
             submit.addEventListener('click', () => {
-                const message = chatMess.value;
-                const data = {
-                    sender: 1,
-                    receiver: user_id,
-                    message: message,
-                    file: null
+                const message = chatMess.value.trim();
+                const file = fileInput.files[0];
+                let fileBase64 = null;
+
+
+                if (file) {
+                    if (file.size > MAX_FILE_SIZE) {
+                        alert("File is too large. Please upload a smaller file.");
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        fileBase64 = event.target.result;
+                        sendMessage(message, fileBase64);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    sendMessage(message, fileBase64);
                 }
 
-                if (message) {
-                    socket.emit('send-message', data);
-                    chatMess.value = '';
+
+                function sendMessage(message, fileBase64) {
+                    const data = {
+                        sender: senderId,
+                        receiver: userId,
+                        message: message,
+                        file: fileBase64 ?? null
+                    }
+
+                    if (message) {
+                        socket.emit('send-message', data);
+                        chatMess.value = '';
+                    }
                 }
             })
 
             function displayMyMessage(message) {
+                let imageElement = '';
+                if (message.media_url) {
+                    imageElement = `<img src="${message.media_url}" alt="User Image" class="message-image" />`;
+                }
+
                 var div = `
-                        <div class='me'>
-                            <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
-                                ${message.fullname.charAt(0).toLocaleUpperCase()}
-                            </div>
-                            <div class='message'>
-                                ${message.content}
-                                <div class="message-time">${message.send_time.substring(11,19)}</div>
-                            </div>
-                        
+                    <div class='me'>
+                        <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                            ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
+                        <div class='message'>
+                            ${imageElement}
+                            ${message.content}
+                            <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                        </div>
+                    </div>
                     `;
                 $("#messageArea").append(div);
             }
+
 
             function displayMessage(message) {
                 var div = `
@@ -451,7 +494,7 @@
                             </div>
                             <div class='message'>
                                 ${message.content}
-                                <div class="message-time">${message.send_time.substring(11,19)}</div>
+                                <div class="message-time">${message.send_time.substring(11, 19)}</div>
                             </div>
                         
                         </div>

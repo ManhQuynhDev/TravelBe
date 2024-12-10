@@ -28,7 +28,8 @@ public class AppError {
         TAG_NOT_FOUND,        
         METHOD_NOT_ALLOWED,
         USER_ALREADY,
-        NOTIFICATION_NOT_FOUND
+        NOTIFICATION_NOT_FOUND,
+        LOCATION_NOT_FOUND
     }
 
     private ErrorCode code;

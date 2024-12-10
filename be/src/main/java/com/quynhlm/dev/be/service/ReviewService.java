@@ -14,17 +14,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.quynhlm.dev.be.core.exception.LocationNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReViewNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.requestDTO.ReViewRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReviewUpdateDTO;
+import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Review;
+import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.ReviewRepository;
+import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
 public class ReviewService {
 
     @Autowired
     private ReviewRepository repository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private LocationRepository locationRepository;
 
     @Autowired
     private AmazonS3 amazonS3;
@@ -37,8 +50,28 @@ public class ReviewService {
         return repository.findAll(pageable);
     }
 
-    public void insertReview(Review review, MultipartFile file) throws UnknownException {
+    public Review insertReview(ReViewRequestDTO reViewRequestDTO, MultipartFile file)
+            throws UserAccountNotFoundException, LocationNotFoundException, UnknownException {
         try {
+
+            User foundUser = userRepository.getAnUser(reViewRequestDTO.getUser_id());
+            if (foundUser == null) {
+                throw new UserAccountNotFoundException(
+                        "Found user with id " + reViewRequestDTO.getUser_id() + " not found , please try again");
+            }
+
+            Location foundLocation = locationRepository.getAnLocation(reViewRequestDTO.getLocation_id());
+            if (foundLocation == null) {
+                throw new LocationNotFoundException("Found location with id " + reViewRequestDTO.getLocation_id()
+                        + " not found , please try again");
+            }
+
+            Review review = new Review();
+            review.setContent(reViewRequestDTO.getContent());
+            review.setUser_id(reViewRequestDTO.getUser_id());
+            review.setLocation_id(reViewRequestDTO.getLocation_id());
+            review.setStar(reViewRequestDTO.getStar());
+
             if (file != null && !file.isEmpty()) {
                 String fileName = file.getOriginalFilename();
                 long fileSize = file.getSize();
@@ -56,13 +89,13 @@ public class ReviewService {
                 }
             }
 
-            // Dù có file hay không, review vẫn sẽ được lưu với thời gian hiện tại
             review.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Review savedReview = repository.save(review);
 
             if (savedReview.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");
             }
+            return review;
 
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());

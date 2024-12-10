@@ -103,7 +103,6 @@ public class MessageSocketController {
 
     public DataListener<MessageDTO> onSendMessage = (client, data, ackRequest) -> {
         try {
-
             String senderId = client.getHandshakeData().getSingleUrlParam("sender");
             String receiverId = client.getHandshakeData().getSingleUrlParam("receiverId");
 
@@ -114,6 +113,8 @@ public class MessageSocketController {
             saveMessage.setSenderId(data.getSender());
             saveMessage.setReceiverId(data.getReceiver());
             saveMessage.setMediaUrl(data.getFile());
+
+            System.out.println("Tin nhắn :" + data.toString());
 
             UserMessageResponseDTO result = messageService.sendMessage(saveMessage);
 
