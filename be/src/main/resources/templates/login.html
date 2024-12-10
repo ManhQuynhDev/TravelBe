@@ -141,20 +141,26 @@
                     localStorage.setItem('authToken', token);
                     localStorage.setItem('user_id', user_id);
 
-                    // Kiểm tra nếu userInfo và roles tồn tại
                     if (data.userInfo && Array.isArray(data.userInfo.roles) && data.userInfo.roles.length > 0) {
                         const userRole = data.userInfo.roles[0];
 
+                        localStorage.setItem('userRole', userRole);
+
                         // Kiểm tra vai trò
-                        if (userRole === "ADMIN" || userRole === "MANAGER") {
+                        if (userRole === "ADMIN") {
                             alert("Login successful!");
-                            window.location.href = '/web-server/'; // Điều hướng sau khi đăng nhập thành công
+                            window.location.href = '/web-server/'; 
+                        } else if (userRole === "MANAGER") {
+                            alert("Login successful!");
+                            window.location.href = '/web-server/'; 
                         } else {
                             throw new Error("You do not have the required permissions.");
                         }
                     } else {
                         throw new Error("User roles not found or invalid.");
                     }
+
+
 
                 } catch (error) {
                     alert(error.message);  // Hiển thị thông báo lỗi nếu có

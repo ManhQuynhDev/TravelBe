@@ -79,7 +79,6 @@
                                     <td th:text="${comment.content}">This is a test comment.</td>
                                     <td class="text-center">
                                         <img th:if="${comment.url != null}" th:src="${comment.url}" alt="Comment Image"
-
                                             style="max-width: 50px;"
                                             onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                         <span th:if="${comment.url == null}">No Image</span>
@@ -188,9 +187,12 @@
             var unfold = new HSUnfold($(this)).init();
         });
 
-
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
     </script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
+
+
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>

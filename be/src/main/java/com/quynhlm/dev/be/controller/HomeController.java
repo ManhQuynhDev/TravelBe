@@ -50,7 +50,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();
-
+        
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();

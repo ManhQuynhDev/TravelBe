@@ -170,6 +170,10 @@
         $('.js-hs-unfold-invoker').each(function () {
             var unfold = new HSUnfold($(this)).init();
         });
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
+
     </script>
 
 </body>

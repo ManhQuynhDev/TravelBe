@@ -151,6 +151,9 @@
                 }
             });
         });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
+        });
         $(document).ready(function () {
             var table = $('#modernTable2').DataTable({
                 dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
@@ -322,6 +325,9 @@
                     console.error('Error:', error);
                     alert('Failed to add story.');
                 });
+        });
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
         });
 
 

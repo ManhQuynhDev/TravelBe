@@ -67,9 +67,9 @@
                             </a>
                         </li>
 
-                        <li class="navbar-vertical-aside-has-menu">
+                        <li class="navbar-vertical-aside-has-menu" id="managerSection">
                             <a th:href="@{/web-server/manager?page=0&size=10}"
-                                class="js-navbar-vertical-aside-menu-link nav-link" title="Stories">
+                                class="js-navbar-vertical-aside-menu-link nav-link" title="Manager">
                                 <i class="tio-apps nav-icon"></i>
                                 <span
                                     class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Manager</span>
@@ -181,3 +181,23 @@
         </div>
     </aside>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Lấy vai trò người dùng từ localStorage
+        const userRole = localStorage.getItem('userRole');
+        console.log(userRole);
+        
+
+        // Kiểm tra xem vai trò người dùng có phải là "MANAGER"
+        if (userRole === "MANAGER") {
+            const managerSection = document.getElementById("managerSection"); // Lấy thanh menu của Manager
+            if (managerSection) {
+                managerSection.style.display = 'none'; // Ẩn thanh menu của Manager
+            }
+        }
+
+        // Nếu là ADMIN hoặc vai trò khác, giữ nguyên sidebar
+    });
+
+</script>
