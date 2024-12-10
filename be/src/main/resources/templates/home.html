@@ -1,4 +1,7 @@
-<html xmlns:th="http://www.thymeleaf.org"><head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Home</title>
@@ -12,7 +15,8 @@
     <div th:replace="fragments/buildertoggle"></div>
     <div th:replace="fragments/headerMain"></div>
     <div id="headerFluid" class="d-none">
-        <header id="header" class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered  ">
+        <header id="header"
+            class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered  ">
             <div class="js-mega-menu navbar-nav-wrap">
                 <div class="navbar-brand-wrapper">
                     <a class="navbar-brand" th:href="@{/}" aria-label="Front">
@@ -28,7 +32,8 @@
     </div>
     <div th:replace="fragments/sidebarMain"></div>
     <div id="sidebarCompact" class="d-none">
-        <aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
+        <aside
+            class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
             <div class="navbar-vertical-container">
                 <div class="navbar-vertical-content">
                 </div>
@@ -67,10 +72,10 @@
                             <h6 class="card-subtitle">Total Groups</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
-                                    <span class="card-title h2" >10</span>
+                                    <span class="card-title h2">10</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-warning" >
+                            <span class="badge badge-soft-warning">
                                 <i class="tio-trending-up"></i>5%</span>
                             <span class="text-body font-size-sm ml-1">from last month</span>
                         </div>
@@ -84,10 +89,10 @@
                             <h6 class="card-subtitle">Total Posts</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
-                                    <span class="card-title h2" >14</span>
+                                    <span class="card-title h2">14</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-danger" >
+                            <span class="badge badge-soft-danger">
                                 <i class="tio-trending-down"></i>5%</span>
                             <span class="text-body font-size-sm ml-1">from last month</span>
                         </div>
@@ -101,10 +106,10 @@
                             <h6 class="card-subtitle">Total Comments</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
-                                    <span class="card-title h2" >25</span>
+                                    <span class="card-title h2">25</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-info" >
+                            <span class="badge badge-soft-info">
                                 <i class="tio-trending-up"></i>13%</span>
                             <span class="text-body font-size-sm ml-1">from last week</span>
                         </div>
@@ -191,7 +196,8 @@
                                         <tr>
                                             <td>1</td>
                                             <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
+                                                    class="img-fluid rounded-circle">
                                             </td>
                                             <td>Nature Lovers</td>
                                             <td>Active</td>
@@ -205,7 +211,8 @@
                                         <tr>
                                             <td>2</td>
                                             <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
+                                                    class="img-fluid rounded-circle">
                                             </td>
                                             <td>Foodies United</td>
                                             <td>Active</td>
@@ -219,7 +226,8 @@
                                         <tr>
                                             <td>3</td>
                                             <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
+                                                    class="img-fluid rounded-circle">
                                             </td>
                                             <td>Foodies United</td>
                                             <td>Active</td>
@@ -233,7 +241,8 @@
                                         <tr>
                                             <td>4</td>
                                             <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers" class="img-fluid rounded-circle">
+                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
+                                                    class="img-fluid rounded-circle">
                                             </td>
                                             <td>Tech Innovators</td>
                                             <td>Active</td>
@@ -250,13 +259,16 @@
                         </div>
                     </div>
                 </div>
-            
+
                 <!-- Cột trái: Bảng Top 5 -->
-                
+
             </div>
-            
+
         </div>
     </div>
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -318,9 +330,7 @@
             }
         });
     </script>
-    <script th:src="@{/assets/js/demo.js}"></script>
-    <script th:src="@{/assets/js/vendor.min.js}"></script>
-    <script th:src="@{/assets/js/theme.min.js}"></script>
+
     <script>
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
@@ -340,15 +350,16 @@
             });
         });
         $('.js-hs-unfold-invoker').each(function () {
-                var unfold = new HSUnfold($(this)).init();
-            });
+            var unfold = new HSUnfold($(this)).init();
+        });
 
 
     </script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
 
-</body></html>
+</body>
+
+</html>
