@@ -28,9 +28,7 @@ public class LocationService {
     }
 
 
-    public Location insertLocation(String locationJson) throws LocationExistingException, UnknownException {
-        Location location = new Location();
-        location.setAddress(locationJson);
+    public Location insertLocation(Location location) throws LocationExistingException, UnknownException {
         Location saveLocation = locationRepository.save(location);
         if (saveLocation.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
