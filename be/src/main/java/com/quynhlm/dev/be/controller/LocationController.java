@@ -9,7 +9,6 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.service.LocationService;
 
-import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +22,12 @@ public class LocationController {
     private LocationService locationService;
 
     @PostMapping(path = "")
-    public ResponseEntity<ResponseObject<Void>> createLocation(@RequestBody @Valid Location location) {
-        locationService.insertLocation(location);
-        ResponseObject<Void> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<Location>> createLocation(@RequestBody String location) {
+        Location locationResponse = locationService.insertLocation(location);
+        ResponseObject<Location> result = new ResponseObject<>();
         result.setMessage("Create a location successfully");
-        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+        result.setStatus(true);
+        result.setData(locationResponse);
+        return new ResponseEntity<ResponseObject<Location>>(result, HttpStatus.OK);
     }
 }

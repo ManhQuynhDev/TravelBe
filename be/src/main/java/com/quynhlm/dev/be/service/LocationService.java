@@ -19,15 +19,13 @@ public class LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public void insertLocation(Location location) throws LocationExistingException, UnknownException {
-        List<Location> foundLocation = locationRepository.findByName(location.getName());
-        if (!foundLocation.isEmpty()) {
-            throw new LocationExistingException(
-                    "Location with " + location.getName() + " already exist !. Please try another!");
-        }
+    public Location insertLocation(String locationJson) throws LocationExistingException, UnknownException {
+        Location location = new Location();
+        location.setAddress(locationJson);
         Location saveLocation = locationRepository.save(location);
         if (saveLocation.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
         }
+        return saveLocation;
     }
 }
