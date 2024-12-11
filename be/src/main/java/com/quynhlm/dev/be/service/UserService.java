@@ -448,6 +448,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
+
+    public String getUserFullname (Integer id) {
+        return userRepository.findUserFullname(id);
+    }
+
     public Page<User> getAllListManager(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAllManager(pageable);

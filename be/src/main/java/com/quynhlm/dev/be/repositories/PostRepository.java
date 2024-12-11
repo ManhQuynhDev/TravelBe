@@ -23,7 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     SELECT
                     DISTINCT
                         u.id as owner_id,
-                        p.id AS post_id,
+                        p.id as post_id,
                         p.location_id,
                         p.content,
                         p.status,
@@ -61,8 +61,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = """
                     SELECT
                     DISTINCT
-                        p.id AS post_id,
                         u.id as owner_id,
+                        p.id AS post_id,
                         p.location_id,
                         p.content,
                         p.status,

@@ -109,77 +109,83 @@
         document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById("signinSrEmail");
             const password = document.getElementById("signupSrPassword");
+            const rememberMe = document.getElementById("termsCheckbox"); // Checkbox "Remember me"
             const submit = document.getElementById("submit");
+
+            // Tải thông tin từ Local Storage nếu có
+            if (localStorage.getItem("rememberMe") === "true") {
+                email.value = localStorage.getItem("savedEmail") || "";
+                password.value = localStorage.getItem("savedPassword") || "";
+                rememberMe.checked = true;
+            }
 
             const login = async () => {
                 const formData = {
                     email: email.value.trim(),
                     password: password.value.trim(),
                 };
+
                 submit.disabled = true;
                 submit.textContent = 'Logging in...';
 
                 try {
                     const response = await fetch("http://localhost:8080/onboarding/login", {
                         method: "POST",
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(formData),
                     });
 
                     if (!response.ok) {
                         const errorData = await response.json();
-                        throw new Error(errorData.error.message || "HTTP error " + errorData.message);
+                        throw new Error(errorData.error.message || "HTTP error");
                     }
 
-
                     const data = await response.json();
-                    console.log(data);
-                    const token = data.token
-                    const user_id = data.userInfo.id
+                    const token = data.token;
+                    const user_id = data.userInfo.id;
+
                     localStorage.setItem('authToken', token);
                     localStorage.setItem('user_id', user_id);
 
-                    if (data.userInfo && Array.isArray(data.userInfo.roles) && data.userInfo.roles.length > 0) {
-                        const userRole = data.userInfo.roles[0];
-
-                        localStorage.setItem('userRole', userRole);
-
-                        // Kiểm tra vai trò
-                        if (userRole === "ADMIN") {
-                            alert("Login successful!");
-                            window.location.href = '/web-server/'; 
-                        } else if (userRole === "MANAGER") {
-                            alert("Login successful!");
-                            window.location.href = '/web-server/'; 
-                        } else {
-                            throw new Error("You do not have the required permissions.");
-                        }
+                    if (rememberMe.checked) {
+                        localStorage.setItem("rememberMe", "true");
+                        localStorage.setItem("savedEmail", email.value);
+                        localStorage.setItem("savedPassword", password.value);
                     } else {
-                        throw new Error("User roles not found or invalid.");
+                        localStorage.removeItem("rememberMe");
+                        localStorage.removeItem("savedEmail");
+                        localStorage.removeItem("savedPassword");
                     }
 
-
+                    // Chuyển hướng dựa vào vai trò
+                    const userRole = data.userInfo.roles[0];
+                    localStorage.setItem('userRole', userRole);
+                    if (userRole === "ADMIN" || userRole === "MANAGER") {
+                        alert("Login successful!");
+                        window.location.href = '/web-server/';
+                    } else {
+                        throw new Error("You do not have the required permissions.");
+                    }
 
                 } catch (error) {
-                    alert(error.message);  // Hiển thị thông báo lỗi nếu có
+                    alert(error.message);
                 } finally {
                     submit.disabled = false;
-                    submit.textContent = 'Log in';  // Đặt lại trạng thái của nút submit
+                    submit.textContent = 'Log in';
                 }
-            }
+            };
 
             submit.addEventListener('click', (e) => {
                 e.preventDefault();
-                const isValid = $('.js-validate').valid(); // Kiểm tra tính hợp lệ của form
+                const isValid = $('.js-validate').valid();
                 if (isValid) {
-                    login();  // Nếu form hợp lệ, gọi hàm đăng nhập
+                    login();
                 } else {
                     alert('Please check your input and try again.');
                 }
             });
         });
+
 
 
     </script>

@@ -30,6 +30,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "SELECT * FROM User WHERE roles = BINARY :param1 OR roles = BINARY :param2", nativeQuery = true)
     List<User> findUserWithRole(@Param("param1") String param1, @Param("param2") String param2);
 
+    @Query(value = "SELECT fullname FROM User WHERE id = :userId", nativeQuery = true)
+    String findUserFullname(@Param("userId") Integer userId);
+
     @Query(value = """
                    SELECT u.id,
                    u.fullname,

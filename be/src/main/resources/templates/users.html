@@ -143,8 +143,7 @@
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Users</h5>
-                    <button class="btn btn-primary float-right"
-                        id="addUser">
+                    <button class="btn btn-primary float-right" id="addUser">
                         <i class="tio-user-add mr-1"></i>Add User
                     </button>
 
@@ -161,6 +160,7 @@
                                     <th>Email</th>
                                     <th>Phone Number</th>
                                     <th>Role</th>
+                                    <th>Status</th>
                                     <th>Creation Date</th>
                                     <th>Actions</th>
 
@@ -207,7 +207,10 @@
                                     </td>
 
                                     <td class="text-start" th:text="${user.roles[0]}">Role</td>
-                                    <td class="text-start" th:text="${user.create_at}">Ngày Tạo</td>
+                                    <td class="text-start" th:text="${user.isLocked}">Role</td>
+                                    <td class="text-start"
+                                        th:text="${#dates.format(user.create_at, 'dd-MM-yyyy HH:mm:ss')}">Ngày Tạo</td>
+
                                     <td>
                                         <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
                                             <i class="tio-users-switch mr-1"></i>Switch

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Quản lý nhân viên</title>
+    <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .chat-sidebar {
+            border-right: 1px solid #e0e0e0;
+            background-color: #ffffff;
+        }
+
+        .chat-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .chat-sidebar-header h5 {
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .chat-search {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .chat-search input {
+            border-radius: 20px;
+        }
+
+        .chat-list {
+            overflow-y: auto;
+            height: calc(100vh - 140px);
+            /* Adjust height */
+        }
+
+        .chat-item {
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-item:hover {
+            background-color: #f0f4f8;
+        }
+
+        .chat-item img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .chat-item .chat-info h6 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .chat-item .chat-info small {
+            color: #777;
+        }
+
+        .chat-main {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f9fafe;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h5 {
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .chat-body {
+            height: 720px;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message.received .bubble {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+        }
+
+        .message.sent .bubble {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .bubble {
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 60%;
+            font-size: 14px;
+        }
+
+        .chat-footer {
+            padding: 15px;
+            background-color: #ffffff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-footer input {
+            border-radius: 20px;
+            margin-right: 10px;
+        }
+
+        .chat-footer button {
+            border-radius: 20px;
+        }
+
+        #messageArea {
+            height: 700px;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            color: white;
+            font-size: 26px;
+            line-height: 45px;
+            text-align: center;
+        }
+
+        .message {
+            max-width: 80%;
+            min-height: 100;
+            border-radius: 25px;
+            color: black;
+            font-size: 20px;
+            line-height: 30px;
+            padding-left: 20px;
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .incoming,
+        .me {
+            margin: 5px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: left;
+        }
+
+        .incoming .avatar,
+        .typing .avatar {
+            background-color: #0f6ab4;
+            float: left;
+        }
+
+        .me .avatar {
+            background-color: #10a54a;
+            float: right;
+        }
+
+        .incoming .message {
+            background-color: #d7e3f0;
+            float: left;
+            margin-left: 10px;
+        }
+
+        .me .message {
+            background-color: #c1f3d2;
+            float: right;
+            margin-right: 10px;
+        }
+
+        .joined {
+            text-align: center;
+            background-color: rgb(176, 255, 229);
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        .left {
+            text-align: center;
+            background-color: rgb(255, 152, 174);
+            margin: 10px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div th:replace="fragments/headerMain"></div>
+    <div id="headerFluid" class="d-none">
+        <header id="header"
+            class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+            <div class="js-mega-menu navbar-nav-wrap">
+                <div class="navbar-brand-wrapper">
+                    <a class="navbar-brand" th:href="@{/}" aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div id="headerDouble" class="d-none">
+        <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
+        </header>
+    </div>
+    <div th:replace="fragments/sidebarMain"></div>
+    <div id="sidebarCompact" class="d-none">
+        <aside
+            class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered">
+            <div class="navbar-vertical-container">
+                <div class="navbar-vertical-content">
+                </div>
+            </div>
+        </aside>
+    </div>
+    <div th:replace="fragments/searchDropdown"></div>
+    <div id="content" role="main" class="main pointer-event">
+        <div th:include="fragments/messages/messagePage :: content"></div>
+    </div>
+    </div>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/socket.io.js"></script>
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+
+    <script>
+        $(document).on('ready', function () {
+            $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+                $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+            });
+            var megaMenu = new HSMegaMenu($('.js-mega-menu'), {
+                desktop: {
+                    position: 'left'
+                }
+            }).init();
+            var sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+            $('.js-nav-tooltip-link').tooltip({ boundary: 'window' });
+            $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+                if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                    return false;
+                }
+            });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
+        });
+    </script>
+
+
+    <script>
+        const chatbody = document.querySelector('.chat-body');
+        const user_received = document.querySelector('#user_received');
+        const userInfo = document.querySelector('.userInfo');        
+
+        const showMessage = (user_id) => {
+            const senderId = localStorage.getItem('user_id');
+            const token = localStorage.getItem('authToken');
+            fetch(`http://localhost:8080/onboarding/users/fullname/${user_id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! Status: ${res.status}`);
+                    }
+                    return res.text();
+                })
+                .then(data => {
+                    userInfo.innerHTML = `
+                        <div class="d-flex justify-content-center align-items-center" 
+                            style="display: flex; flex-direction: row; align-items: center; justify-content: center; text-align: center;">
+                            <div class="avatar-text" 
+                                style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; 
+                                        width: 45px; height: 45px; font-size: 16px; font-weight: bold; border-radius: 50%; margin-right: 10px;">
+                                <span>${data.substring(0, 1).toUpperCase()}</span>
+                            </div>
+                            <h5>${data}</h5>
+                        </div>
+                        <div>
+                        <button class="btn" style="background-color: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 5px;">
+                            <i class="fas fa-video"></i>
+                        </button>
+
+                        <button class="btn" style="background-color: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 5px;">
+                            <i class="fas fa-phone"></i>
+                        </button>
+
+                        <button class="btn" style="background-color: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 5px;">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                     `;
+                })
+                .catch(err => console.error('Error:', err));
+
+            const socketUrl = location.protocol + "//" + location.hostname + ":1111/private";
+            console.log(socketUrl);
+            const socket = io.connect(socketUrl, {
+                query: { sender: senderId, receiverId: user_id }
+            });
+
+            socket.on('connect', () => {
+                console.log("Connected with socket ID: ", socket.id);
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('Connection failed: ', error);
+            });
+
+            const content = `<div id="messageArea" class="col s12">
+				<!-- <div class="incoming col s12">
+					<div style="background-color: #f23c00" class="avatar tooltipped" data-position="left" data-tooltip="System">S</div>
+					<div style="background-color: #f23c00; color: white" class="message">Welcome to Socket Chat, have fun!</div>
+				</div> -->
+			</div>`;
+
+            chatbody.innerHTML = content;
+
+            function scrollToBottom() {
+                const messageArea = document.getElementById('messageArea');
+                messageArea.scrollTop = messageArea.scrollHeight;
+            }            
+
+            fetch(`http://localhost:8080/api/messages?senderId=${senderId}&receiverId=${user_id}&page=0&size=1000`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! Status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data.content);
+                    data.content.forEach(message => {
+                        if (message.sender_id == senderId) {
+                            displayMyMessage(message);
+                        } else {
+                            displayMessage(message)
+                        }
+                    });
+                    scrollToBottom();
+                })
+                .catch(err => console.error('Error:', err));
+
+            const chatMess = document.querySelector('#chat-mes');
+            const submit = document.querySelector('#btnSubmit');
+
+            socket.on('user-chat', (data) => {
+                if (data.sender_id == senderId) {
+                    console.log(true);
+                    displayMyMessage(data)
+                } else {
+                    displayMessage(data)
+                }
+                scrollToBottom();
+
+                socket.emit("message-seen", {
+                    messageId: data.id,
+                    viewerId: senderId,
+                    senderId: data.sender_id,
+                    status: true
+                });
+            });
+
+            submit.addEventListener('click', () => {
+                const message = chatMess.value;
+                const data = {
+                    sender: 1,
+                    receiver: user_id,
+                    message: message,
+                    file: null
+                }
+
+                if (message) {
+                    socket.emit('send-message', data);
+                    chatMess.value = '';
+                }
+            })
+
+            function displayMyMessage(message) {
+                var div = `
+                        <div class='me'>
+                            <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                                ${message.fullname.charAt(0).toLocaleUpperCase()}
+                            </div>
+                            <div class='message'>
+                                ${message.content}
+                                <div class="message-time">${message.send_time.substring(11,19)}</div>
+                            </div>
+                        
+                        </div>
+                    `;
+                $("#messageArea").append(div);
+            }
+
+            function displayMessage(message) {
+                var div = `
+                        <div class='incoming'>
+                            <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                                ${message.fullname.charAt(0).toLocaleUpperCase()}
+                            </div>
+                            <div class='message'>
+                                ${message.content}
+                                <div class="message-time">${message.send_time.substring(11,19)}</div>
+                            </div>
+                        
+                        </div>
+                    `;
+
+                $("#messageArea").append(div);
+            }
+        }
+
+
+        $(document).ready(function () {
+            var table = $('#managerTable').DataTable({
+                dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
+                paging: true,
+                searching: true,
+                ordering: true,
+                order: [],
+                pageLength: 5,
+                columnDefs: [
+                    {
+                        targets: [7],
+                        orderable: false
+                    }
+                ],
+                language: {
+                    search: "",
+                    searchPlaceholder: "Search managers",
+                    paginate: {
+                        previous: "Prev",
+                    },
+
+                }
+            });
+
+            $('#selectAll').on('click', function () {
+                var rows = table.rows({ 'search': 'applied' }).nodes();
+                $('input[type="checkbox"]', rows).prop('checked', this.checked);
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

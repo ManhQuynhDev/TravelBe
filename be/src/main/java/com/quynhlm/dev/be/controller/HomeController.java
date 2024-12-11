@@ -62,10 +62,17 @@ public class HomeController {
     }
 
     @GetMapping("/manager")
-    public String getContentPage(Model model, @RequestParam int page, @RequestParam int size) {
-        Page<User> managers = userService.getAllListManager(page, size);
+    public String getContentPage(Model model) {
+        Page<User> managers = userService.getAllListManager(0, 1000);
         model.addAttribute("managers", managers);
         return "manager";
+    }
+
+    @GetMapping("/message-group")
+    public String getMessagePage(Model model) {
+        Page<User> managers = userService.getAllListManager(0, 1000);
+        model.addAttribute("managers", managers);
+        return "messageGroup";
     }
 
     @GetMapping("/users")

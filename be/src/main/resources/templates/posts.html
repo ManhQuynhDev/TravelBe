@@ -100,7 +100,7 @@
                                     <td class="text-start" th:text="${post.fullname}">User ID</td>
                                     <td class="text-center">
 
-                                        <button class="btn btn-sm btn-danger mr-2" id="deletePost"
+                                        <button class="btn btn-sm btn-outline-danger mr-2" id="deletePost"
                                             th:attr="data-id=${post.postId}">
                                             <i class="tio-delete-outlined mr-1"></i>Delete
                                         </button>
@@ -212,6 +212,13 @@
             var media = document.getElementById('postMediaInput').files[0];
 
             var user_id = localStorage.getItem('user_id');
+            var token = localStorage.getItem('token'); // Giả sử token lưu trữ ở localStorage
+
+            // Kiểm tra nếu các trường bắt buộc bị bỏ trống
+            if (!content || !status || !location) {
+                alert('Please fill in all required fields!');
+                return;  // Dừng không gửi dữ liệu nếu có trường bị bỏ trống
+            }
 
             var type = '';
             if (media) {
@@ -259,8 +266,10 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert('An error occurred while creating the post.');
                 });
         });
+
 
 
         //delete posst
