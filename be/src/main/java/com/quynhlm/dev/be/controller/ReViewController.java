@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReViewRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReviewUpdateDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReviewResponseDTO;
 import com.quynhlm.dev.be.model.entity.Review;
 import com.quynhlm.dev.be.service.ReviewService;
 
@@ -33,14 +34,22 @@ public class ReViewController {
     private final ReviewService reviewService;
 
     @GetMapping("/")
-    public Page<Review> getUsers(
+    public Page<Review> getReviews(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return reviewService.getListData(page, size);
     }
 
+    @GetMapping("/user_create/{userId}")
+    public Page<ReviewResponseDTO> getReviewUserCreate(
+            @PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return reviewService.getAllReviewUserCreate(userId,page, size);
+    }
+
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Review>> insertReview(@RequestPart("review") String reviewJson,
+    public ResponseEntity<ResponseObject<ReviewResponseDTO>> insertReview(@RequestPart("review") String reviewJson,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -52,12 +61,12 @@ public class ReViewController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Review response = reviewService.insertReview(review, file);
-        ResponseObject<Review> result = new ResponseObject<>();
+        ReviewResponseDTO response = reviewService.insertReview(review, file);
+        ResponseObject<ReviewResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new review successfully");
         result.setStatus(true);
         result.setData(response);
-        return new ResponseEntity<ResponseObject<Review>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<ReviewResponseDTO>>(result, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -82,12 +91,12 @@ public class ReViewController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<Review>> findAnReview(@PathVariable Integer id) {
-        ResponseObject<Review> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<ReviewResponseDTO>> findAnReview(@PathVariable Integer id) {
+        ResponseObject<ReviewResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an review with id " + id + " successfully");
         result.setStatus(true);
         result.setData(reviewService.findAnReview(id));
-        return new ResponseEntity<ResponseObject<Review>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<ReviewResponseDTO>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
