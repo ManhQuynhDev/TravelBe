@@ -45,7 +45,15 @@ public class ReViewController {
             @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return reviewService.getAllReviewUserCreate(userId,page, size);
+        return reviewService.getAllReviewUserCreate(userId, page, size);
+    }
+
+    @GetMapping("/location/{locationId}")
+    public Page<ReviewResponseDTO> getReviewWithLocation(
+            @PathVariable Integer locationId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return reviewService.getAllReviewWithLocation(locationId, page, size);
     }
 
     @PostMapping("")

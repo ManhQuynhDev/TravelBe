@@ -31,4 +31,12 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             WHERE r.user_id = :user_id;
                                 """, nativeQuery = true)
     Page<Object[]> getReviewWithUserId(@Param("user_id") Integer user_id, Pageable pageable);
+
+    @Query(value = """
+            select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
+            inner join User u ON u.id = r.user_id
+            INNER JOIN Location l ON l.id = r.location_id
+            WHERE r.location_id = :location_id;
+                                """, nativeQuery = true)
+    Page<Object[]> getReviewWithLocationId(@Param("location_id") Integer location_id, Pageable pageable);
 }

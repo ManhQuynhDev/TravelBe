@@ -130,6 +130,7 @@
             border-top: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .chat-footer input {
@@ -219,6 +220,54 @@
             margin: 10px;
             border-radius: 10px;
         }
+
+        .file-upload-icon-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .file-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-icon:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .file-icon:active {
+            background-color: #004080;
+            transform: scale(1);
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .message-image {
+            width: 200px;
+            /* Chiều rộng */
+            height: 200px;
+            /* Chiều cao */
+            object-fit: cover;
+            /* Đảm bảo hình ảnh không bị méo */
+            border-radius: 8px;
+            /* Tùy chọn: bo góc */
+        }
     </style>
 </head>
 
@@ -297,6 +346,8 @@
         const fileInput = document.querySelector("#fileInput");
 
         const managerItems = document.querySelectorAll('.managerItem');
+        console.log(fileInput);
+
 
         function handleClick(event) {
             const manager_id = event.currentTarget.dataset.parent;
@@ -426,6 +477,30 @@
                     status: true
                 });
             });
+
+            let typingTimeout;
+            chatMess.addEventListener('input', () => {
+                clearTimeout(typingTimeout);
+                socket.emit('userTyping', senderId);
+
+                typingTimeout = setTimeout(() => {
+                    socket.emit('userStoppedTyping', senderId);
+                }, 3000);
+            });
+
+
+            socket.on("typingUsers", (usersTyping) => {
+                const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== senderId);
+                if (otherUsersTyping.length > 0) {
+                    var div = "<div class='typing col s12'>";
+                    div += "   <img src='/img/typing.gif' alt='is typing.' style='margin-left: 10px; height: 50px'>";
+                    div += "</div>";
+                    $("#messageArea").append(div);
+                } else {
+                    $("#messageArea").append("");
+                }
+            });
+
             const MAX_FILE_SIZE = 5 * 1024 * 1024;
             submit.addEventListener('click', () => {
                 const message = chatMess.value.trim();
@@ -466,8 +541,8 @@
 
             function displayMyMessage(message) {
                 let imageElement = '';
-                if (message.media_url) {
-                    imageElement = `<img src="${message.media_url}" alt="User Image" class="message-image" />`;
+                if (message.mediaUrl) {
+                    imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
                 }
 
                 var div = `

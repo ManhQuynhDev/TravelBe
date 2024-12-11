@@ -16,15 +16,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.LocationNotFoundException;
-import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReViewNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReViewRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReviewUpdateDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReviewResponseDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Review;
 import com.quynhlm.dev.be.model.entity.User;
@@ -72,7 +69,9 @@ public class ReviewService {
             }
 
             Review review = new Review();
-            review.setContent(reViewRequestDTO.getContent());
+            if (reViewRequestDTO.getContent() != null) {
+                review.setContent(reViewRequestDTO.getContent());
+            }
             review.setUser_id(reViewRequestDTO.getUser_id());
             review.setLocation_id(reViewRequestDTO.getLocation_id());
             review.setStar(reViewRequestDTO.getStar());
@@ -145,6 +144,37 @@ public class ReviewService {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = repository.getReviewWithUserId(userId, pageable);
+        return results.map(row -> {
+
+            Integer review_id = ((Number) row[0]).intValue();
+            Integer user_id = ((Number) row[1]).intValue();
+            Integer location_id = ((Number) row[2]).intValue();
+            String location = (String) row[3];
+            String fullname = (String) row[4];
+            String avatarUrl = (String) row[5];
+            String content = (String) row[6];
+            String mediaUrl = (String) row[7];
+            double star = (Double) row[8];
+            String create_time = (String) row[9];
+
+            return new ReviewResponseDTO(review_id, user_id, location_id, location, fullname, avatarUrl, content,
+                    mediaUrl,
+                    star,
+                    create_time);
+        });
+    }
+
+    public Page<ReviewResponseDTO> getAllReviewWithLocation(Integer locationId, Integer page, Integer size)
+            throws LocationNotFoundException {
+
+        User foundUser = userRepository.getAnUser(locationId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException(
+                    "Found user with id " + locationId + " not found , please try again");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = repository.getReviewWithLocationId(locationId, pageable);
         return results.map(row -> {
 
             Integer review_id = ((Number) row[0]).intValue();

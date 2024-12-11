@@ -39,14 +39,14 @@
                 </div>
                 <div class="chat-footer">
                     <input type="text" id="chat-mes" class="form-control" placeholder="Type your message here...">
-                    <label for="file-input" class="file-label mr-1"
-                        style="cursor: pointer; display: flex; align-items: center;">
-                        <div
-                            class="background-color: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 5px;">
-                            <i class="fas fa-upload" style="margin-right: 10px;"></i>
-                        </div>
-                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
-                    </label>
+
+                    <div class="file-upload-icon-container mr-2">
+                        <label for="fileInput" class="file-icon">
+                            <i class="fas fa-image upload-icon"></i>
+                        </label>
+                        <input type="file" id="fileInput" accept="image/*" />
+                    </div>
+
 
                     <button class="btn btn-primary" id="btnSubmit">Send</button>
                 </div>
