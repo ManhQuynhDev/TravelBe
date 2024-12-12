@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.LocationStatisticsDTO;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.service.LocationService;
 
@@ -22,6 +25,15 @@ public class LocationController {
 
     @Autowired
     private LocationService locationService;
+
+    @GetMapping("/top5_hot")
+    public ResponseEntity<ResponseObject<List<LocationStatisticsDTO>>> touristStatisticsTop5() {
+        ResponseObject<List<LocationStatisticsDTO>> result = new ResponseObject<>();
+        result.setMessage("Get top 5 hot checkin successfully");
+        result.setStatus(true);
+        result.setData(locationService.touristStatisticsTop5());
+        return new ResponseEntity<ResponseObject<List<LocationStatisticsDTO>>>(result, HttpStatus.OK);
+    }
 
     @GetMapping("")
     public Page<Location> getAllLoation(@RequestParam(defaultValue = "0") int page,

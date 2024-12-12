@@ -96,6 +96,7 @@ public class MemberService {
 
         member.setRole(Role.USER.name());
         member.setStatus("APPROVED");
+        member.setEnableNotification(true);
 
         Member saveMember = memberRepository.save(member);
 
@@ -157,8 +158,8 @@ public class MemberService {
         List<MemberPlan> members = memberPlanRepository.findMemberByUserId(foundMember.getUserId());
 
         for (MemberPlan member : members) {
-            if(member.getRole() == Role.ADMIN.name()){
-                   travelPlanService.deleteTravelPlan(member.getPlanId());
+            if (member.getRole() == Role.ADMIN.name()) {
+                travelPlanService.deleteTravelPlan(member.getPlanId());
             }
             memberPlanService.deleteMemberPlan(member.getId(), member.getPlanId());
         }

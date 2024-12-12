@@ -274,6 +274,47 @@
             font-size: 14px;
             color: #888;
         }
+
+
+        .seenMe {
+            justify-content: flex-end;
+            /* Căn phải cho người gửi */
+            text-align: right;
+            /* Căn nội dung về bên phải */
+        }
+
+        .seenIncoming {
+            justify-content: flex-start;
+            /* Căn trái cho người nhận */
+            text-align: left;
+            /* Căn nội dung về bên trái */
+        }
+
+        .emoji-popup {
+            display: none;
+            /* Hide initially */
+            position: absolute;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 45px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .emoji-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .emoji {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .emoji:hover {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 
@@ -467,6 +508,17 @@
 			</div>
             <div id="seen-users"></div>
             <ul id="typing-status"></ul>
+           <div id="emojiPopup" class="emoji-popup">
+                <div class="emoji-container">
+                    <span class="emoji" data-emoji="👍">👍</span>
+                    <span class="emoji" data-emoji="😀">😀</span>
+                    <span class="emoji" data-emoji="😂">😂</span>
+                    <span class="emoji" data-emoji="😍">😍</span>
+                    <span class="emoji" data-emoji="😎">😎</span>
+                    <span class="emoji" data-emoji="😊">😊</span>
+                    <span class="emoji" data-emoji="🥺">🥺</span>
+                </div>
+            </div>
             `;
 
             chatbody.innerHTML = content;
@@ -526,10 +578,34 @@
                 console.log("Message seen data:", data);
 
                 seenUsers.innerHTML = '';
-                data.forEach(user => {
-                    const userItem = document.createElement('li');
-                    seenUsers.appendChild(userItem);
+                Object.entries(data).forEach(([key, value]) => {
+                    if (key != senderId) {
+                        const userItem = document.createElement('div');
+                        userItem.style.display = 'flex';
+                        userItem.style.justifyContent = 'flex-end';
+                        userItem.style.paddingLeft = '100px';
+                        userItem.style.paddingRight = '100px';
+
+                        userItem.innerHTML = `<div class="seenIncoming" style="display: flex; justify-content: flex-start; align-items: center;">
+                            <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; 
+                                    width: 20px; height: 20px; font-size: 8px; font-weight: bold; border-radius: 50%; margin-right: 10px;">
+                                <span>${value.substring(0, 1).toUpperCase()}</span>
+                            </div>
+                          </div>`;
+                        seenUsers.appendChild(userItem);
+                    }
                 });
+
+                // data.forEach(user => {
+                //     const userItem = document.createElement('li');
+                //     userItem.style.listStyleType = 'none';
+                //     userItem.innerHTML = `<div class="avatar-text" 
+                //                 style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; 
+                //                         width: 20px; height: 20px; font-size: 8px; font-weight: bold; border-radius: 50%; margin-right: 10px;">
+                //                 <span>${user.substring(0, 1).toUpperCase()}</span>
+                //             </div>`;
+                //     seenUsers.appendChild(userItem);
+                // });
             });
 
             const typingStatus = document.querySelector('#typing-status');
@@ -548,12 +624,24 @@
             socket.on("typingUsers", (usersTyping) => {
                 const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== senderId);
                 if (otherUsersTyping.length > 0) {
+                    console.log("1 " + otherUsersTyping);
                     scrollToBottom();
-                    typingStatus.textContent = `${otherUsersTyping.join(", ")} is typing...`;
+                    typingStatus.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        ${otherUsersTyping.map(user => `
+                            <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; 
+                                width: 20px; height: 20px; font-size: 8px; font-weight: bold; border-radius: 50%; margin-right: 10px;">
+                                <span>${user.substring(0, 1).toUpperCase()}</span>
+                            </div>
+                        `).join('')}
+                        <img src="/assets/img/typing.gif" alt="Typing..." style="width: 24px; height: 24px;" />
+                    </div>
+                     `;
                 } else {
                     typingStatus.textContent = '';
                     scrollToBottom();
                 }
+
             });
 
             const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -615,27 +703,76 @@
             }
 
 
+
             function displayMessage(message) {
                 let imageElement = '';
                 if (message.mediaUrl) {
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
                 }
+
                 var div = `
-                        <div class='incoming'>
-                            <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
-                                ${message.fullname.charAt(0).toLocaleUpperCase()}
-                            </div>
-                            <div class='message'>
-                                ${imageElement}
-                                ${message.content}
-                                <div class="message-time">${message.send_time.substring(11, 19)}</div>
-                            </div>
-                        
+                    <div class='incoming' id="incomingMessage-${message.id}" data-message-id="${message.id}">
+                        <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                            ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
-                    `;
+                        <div class='message'>
+                            ${imageElement}
+                            ${message.content}
+                            <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                        </div>
+                    </div>  
+                `;
 
                 $("#messageArea").append(div);
+
+                // Add an event listener to the message element
+                const incomingMessage = document.querySelector(`#incomingMessage-${message.id}`);
+                incomingMessage.addEventListener('click', function (event) {
+                    openEmojiPopup(event);
+                });
+
+                function openEmojiPopup(event) {
+                    const emojiPopup = document.getElementById('emojiPopup');
+                    const rect = event.currentTarget.getBoundingClientRect();
+
+                    emojiPopup.style.top = `${rect.bottom + window.scrollY - 190}px`;
+                    emojiPopup.style.left = `${rect.left + window.scrollX - 260}px`;
+
+                    emojiPopup.style.display = 'block';
+
+                    function selectEmoji(emoji) {
+                        console.log(emoji);
+                        const emojiPopup = document.getElementById('emojiPopup');
+                        emojiPopup.style.display = 'none';
+                    }
+                }
             }
+
+            function selectEmoji(event) {
+                const selectedEmoji = event.target.getAttribute('data-emoji');
+                // const messageInput = document.querySelector('#messageInput'); // Assuming there's a message input element
+                // if (messageInput) {
+                //     messageInput.value += selectedEmoji;  // Append the selected emoji to the message input
+                // }
+                console.log(selectedEmoji);
+                
+                // Hide the emoji popup after selection
+                const emojiPopup = document.getElementById('emojiPopup');
+                emojiPopup.style.display = 'none';
+            }
+
+            document.querySelectorAll('.emoji').forEach(function (emoji) {
+                emoji.addEventListener('click', function (event) {
+                    selectEmoji(event);  // Trigger emoji selection when clicked
+                });
+            });
+
+            document.addEventListener('click', function (event) {
+                const emojiPopup = document.getElementById('emojiPopup');
+                if (!emojiPopup.contains(event.target) && !event.target.closest('.incoming')) {
+                    emojiPopup.style.display = 'none';
+                }
+            });
         }
 
 

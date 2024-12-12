@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.amazonaws.services.s3.AmazonS3;
@@ -94,16 +95,16 @@ public class PostService {
             post.setUser_id(postRequestDTO.getUser_id());
 
             Location foundLocation = locationRepository.getLocationWithLocation(postRequestDTO.getLocation());
-            if(foundLocation == null){
+            if (foundLocation == null) {
                 Location location = new Location();
                 location.setAddress(postRequestDTO.getLocation());
                 Location saveLocation = locationRepository.save(location);
-    
+
                 post.setLocation_id(saveLocation.getId());
-            }else{
+            } else {
                 post.setLocation_id(foundLocation.getId());
             }
-        
+
             post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Post savedPost = postRepository.save(post);
             if (files != null && !files.isEmpty()) {
@@ -273,6 +274,40 @@ public class PostService {
         return postMediaDTO;
     }
 
+    public Page<PostMediaDTO> searchPostWithContent(Integer user_id, String keyword, int page, int size)
+            throws PostNotFoundException {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = postRepository.searchPostWithContent(keyword, user_id, pageable);
+
+        return results.map(row -> {
+            PostMediaDTO postMediaDTO = new PostMediaDTO();
+
+            postMediaDTO.setOwnerId(((Number) row[0]).intValue());
+            postMediaDTO.setPostId(((Number) row[1]).intValue());
+            postMediaDTO.setLocationId(((Number) row[2]).intValue());
+            postMediaDTO.setLocation((String) row[3]);
+            postMediaDTO.setContent((String) row[4]);
+            postMediaDTO.setStatus((String) row[5]);
+            postMediaDTO.setFullname((String) row[6]);
+            postMediaDTO.setAvatar((String) row[7]);
+            postMediaDTO.setType((String) row[8]);
+            postMediaDTO.setCreate_time((String) row[9]);
+            postMediaDTO.setReaction_count(((Number) row[10]).intValue());
+            postMediaDTO.setComment_count(((Number) row[11]).intValue());
+            postMediaDTO.setShare_count(((Number) row[12]).intValue());
+            postMediaDTO.setUser_reaction_type((String) row[13]);
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
+
+            postMediaDTO.setHashtags(hashtags);
+
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+
+            postMediaDTO.setMediaUrls(medias);
+            return postMediaDTO;
+        });
+    }
+
     public PostSaveResponseDTO getAnPostReturnSave(Integer post_id) throws PostNotFoundException {
         log.info("post id : " + post_id);
         List<Object[]> results = postRepository.getPostSave(post_id);
@@ -309,17 +344,17 @@ public class PostService {
     // Update post
 
     public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files, String newType)
-            throws PostNotFoundException,LocationNotFoundException, UnknownException {
+            throws PostNotFoundException, LocationNotFoundException, UnknownException {
         try {
             Post foundPost = postRepository.getAnPost(post_id);
             if (foundPost == null) {
                 throw new PostNotFoundException(
                         "Id " + post_id + " not found or invalid data. Please try another!");
             }
-            
+
             Location location = locationRepository.getAnLocation(foundPost.getLocation_id());
 
-            if(postRequestDTO.getLocation() != null){
+            if (postRequestDTO.getLocation() != null) {
                 location.setAddress(postRequestDTO.getLocation());
                 locationRepository.save(location);
             }
@@ -468,4 +503,5 @@ public class PostService {
         });
     }
     // Feature Search
+
 }
