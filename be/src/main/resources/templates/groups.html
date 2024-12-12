@@ -96,15 +96,15 @@
                                     <td class="text-start" th:text="${group.create_time}">Created Time</td>
                                     <td>
                                         <div class="d-flex justify-content-start">
-                                            <button class="btn btn-sm btn-danger mr-2" id="deleteGroup"
+                                            <button class="btn btn-sm btn-outline-danger mr-2" id="deleteGroup"
                                                 th:attr="data-id=${group.groupId}">
                                                 <i class="tio-delete-outlined mr-1"></i>Delete
                                             </button>
-                                            <button class="btn btn-sm btn-secondary mr-2" id="viewMembers"
+                                            <button class="btn btn-sm btn-outline-secondary mr-2" id="viewMembers"
                                                 th:attr="data-id=${group.groupId}">
                                                 View Members
                                             </button>
-                                            <button class="btn btn-sm btn-info" id="viewPlans"
+                                            <button class="btn btn-sm btn-outline-info" id="viewPlans"
                                                 th:attr="data-id=${group.groupId}">
                                                 View Plans
                                             </button>
@@ -266,6 +266,7 @@
             $('#addGroupModal').modal('show');  // Mở modal
         });
         document.getElementById("saveGroupButton").addEventListener("click", () => {
+            // Lấy dữ liệu từ form
             const groupData = {
                 coverPhoto: document.getElementById("groupCoverPhoto").files[0],
                 name: document.getElementById("groupName").value,
@@ -273,17 +274,26 @@
                 status: document.getElementById("groupStatus").value
             };
 
+            // Kiểm tra xem các trường bắt buộc có bị bỏ trống không
+            if (!groupData.name || !groupData.status || !groupData.bio) {
+                alert("Please fill in all required fields!");
+                return;  // Dừng nếu có trường bị bỏ trống
+            }
+
             const formData = new FormData();
             formData.append("group", JSON.stringify({
                 name: groupData.name,
                 bio: groupData.bio,
                 status: groupData.status,
                 user_id: localStorage.getItem("user_id")
-            }))
+            }));
+
+            // Kiểm tra xem có ảnh được chọn không, nếu có thì append ảnh vào FormData
             if (groupData.coverPhoto) {
                 formData.append("file", groupData.coverPhoto);
             }
-            formData.append("file", groupData.coverPhoto);
+
+            // Gửi yêu cầu POST đến server
             fetch(`http://localhost:8080/api/groups`, {
                 method: "POST",
                 body: formData,
@@ -293,15 +303,16 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    alert("Group created successfully!")
+                    alert("Group created successfully!");
                     $('#addGroupModal').modal('hide');
                     window.location.reload();
                 })
                 .catch(error => {
-                    console.log("Loi fetch:" + error);
+                    console.log("Error with fetch:", error);
+                    alert("An error occurred while creating the group.");
+                });
+        });
 
-                })
-        })
 
         //delete Group
         document.querySelectorAll('#deleteGroup').forEach(button => {
@@ -337,6 +348,10 @@
                 })
             })
         })
+
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
 
 
 

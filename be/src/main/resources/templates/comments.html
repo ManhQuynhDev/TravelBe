@@ -79,7 +79,6 @@
                                     <td th:text="${comment.content}">This is a test comment.</td>
                                     <td class="text-center">
                                         <img th:if="${comment.url != null}" th:src="${comment.url}" alt="Comment Image"
-
                                             style="max-width: 50px;"
                                             onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                         <span th:if="${comment.url == null}">No Image</span>
@@ -89,10 +88,10 @@
                                     <td th:text="${comment.userId}">1</td>
                                     <td th:text="${comment.create_time}">2024-12-02 22:28:40</td>
                                     <td>
-                                        <button class="btn btn-sm btn-white" id="edit" th:attr="data-id=${comment.id}">
-                                            <i class="tio-edit mr-1"></i>Edit
+                                        <button class="btn btn-sm btn-outline-primary" id="edit" th:attr="data-id=${comment.id}">
+                                            <i class="tio-edit "></i>Edit
                                         </button>
-                                        <button class="btn btn-sm btn-danger" id="delete"
+                                        <button class="btn btn-sm btn-outline-danger" id="delete"
                                             th:attr="data-id=${comment.id}">
                                             <i class="tio-delete-outlined mr-1"></i>Delete
                                         </button>
@@ -188,9 +187,12 @@
             var unfold = new HSUnfold($(this)).init();
         });
 
-
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
     </script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
+
+
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>

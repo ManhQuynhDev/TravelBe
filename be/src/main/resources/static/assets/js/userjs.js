@@ -132,6 +132,64 @@ document.getElementById("addUser").addEventListener("click", function () {
     const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
     modal.show();
 });
+document.getElementById("submitAddUserButton").addEventListener("click", () => {
+    const fullname = document.getElementById('managerFullName').value;
+    const email = document.getElementById('managerEmail').value;
+    const phone = document.getElementById('managerPhone').value;
+    const password = document.getElementById('managerPassword').value;
+
+    if (!fullname || !email || !phone || !password) {
+        alert("Please fill in all fields!");
+        return;
+    }
+
+    if (fullname.length < 3) {
+        alert("Full Name must be at least 3 characters long.");
+        return;
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+    }
+
+    const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
+    if (!phoneRegex.test(phone)) {
+        alert("Please enter a valid phone number.");
+        return;
+    }
+
+    const userData = {
+        fullname: fullname,
+        email: email,
+        phoneNumber: phone,
+        password: password
+    };
+
+    fetch('http://localhost:8080/onboarding/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(userData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                alert("User created successfully!");
+                var addManagerModal = new bootstrap.Modal(document.getElementById("addUserModal"));
+                addManagerModal.hide();
+                window.location.reload();
+            } else {
+                alert("Failed to create user: " + data.error.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the user.');
+        });
+})
 
 function loadUserDetails(userId) {
     fetch(`${API_BASE_URL}/users/${userId}`, {
@@ -191,17 +249,17 @@ document.getElementById("logoutLink").addEventListener("click", function () {
 });
 
 
-document.querySelectorAll('.nav-link').forEach(tab => {
-    tab.addEventListener('click', function () {
-        // Ẩn phần tử profile khi chuyển sang tab khác
-        document.querySelector('#profile').style.display = 'none';
+// document.querySelectorAll('.nav-link').forEach(tab => {
+//     tab.addEventListener('click', function () {
+//         // Ẩn phần tử profile khi chuyển sang tab khác
+//         document.querySelector('#profile').style.display = 'none';
 
-        // Hiển thị lại profile khi tab Profile được chọn
-        if (this.id === 'profile-tab') {
-            document.querySelector('#profile').style.display = 'block';
-        }
-    });
-});
+//         // Hiển thị lại profile khi tab Profile được chọn
+//         if (this.id === 'profile-tab') {
+//             document.querySelector('#profile').style.display = 'block';
+//         }
+//     });
+// });
 
 // Hàm lấy tên nhóm theo groupId
 function getGroupDetails(groupId) {

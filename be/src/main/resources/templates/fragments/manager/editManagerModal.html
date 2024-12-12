@@ -1,0 +1,106 @@
+<div class="modal fade" id="editManagerModal" tabindex="-1" aria-labelledby="editUserModalTitle" style="display: none;"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="editUserModalTitle" class="modal-title">Edit Manager</h4>
+
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal"
+                    aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body nav-mobile-mode-on">
+                <div class="tab-content" id="editUserModalTabContent">
+                    <div class="tab-pane fade active show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                        <form id="profileForm">
+                            <div class="profile-cover">
+                                <div class="profile-cover-img-wrapper">
+                                    <img id="editProfileCoverImgModal" class="profile-cover-img"
+                                        th:src="@{'/assets/img/1920x400/img1.jpg'}" alt="Image Description">
+                                    <div class="profile-cover-content profile-cover-btn p-3">
+                                        <div class="custom-file-btn">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label
+                                class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader profile-cover-avatar mb-5"
+                                for="editAvatarUploaderModal">
+                                <img id="editAvatarImgModal" class="avatar-img"
+                                    th:src="@{'/assets/img/160x160/img9.jpg'}" alt="Image Description">
+
+                                <input type="file" class="js-file-attach avatar-uploader-input"
+                                    id="editAvatarUploaderModal" data-hs-file-attach-options="{
+                                        &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
+                                        &quot;mode&quot;: &quot;image&quot;,
+                                        &quot;targetAttr&quot;: &quot;src&quot;,
+                                        &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
+                                            }">
+
+                                <span class="avatar-uploader-trigger">
+                                    <i class="tio-edit avatar-uploader-icon shadow-soft"></i>
+                                </span>
+                            </label>
+                            <div class="row form-group">
+                                <label for="editPhoneModalLabel" class="col-sm-3 col-form-label input-label">Full
+                                    Name</label>
+                                <div class="col-sm-9">
+                                    <div class="js-form-message">
+                                        <input type="tel" class="form-control" name="editPhoneModal" id="editFullName"
+                                            placeholder="Enter Full Name" required
+                                            aria-label="Phone Number">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row form-group">
+                                <label for="editPhoneModalLabel" class="col-sm-3 col-form-label input-label">Phone
+                                    Number</label>
+                                <div class="col-sm-9">
+                                    <div class="js-form-message">
+                                        <input type="tel" class="form-control" name="editPhoneModal" id="editPhoneModal"
+                                            placeholder="Enter Phone Number" required
+                                            pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$"
+                                            aria-label="Phone Number">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row form-group">
+                                <label for="editBioModalLabel" class="col-sm-3 col-form-label input-label">Bio</label>
+                                <div class="col-sm-9">
+                                    <div class="js-form-message">
+                                        <input class="form-control" name="editBioModal" id="editBioModalLabel"
+                                            placeholder="Enter Bio" aria-label="Bio" rows="3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="editBirthDayModalLabel"
+                                    class="col-sm-3 col-form-label input-label">BirthDay</label>
+                                <div class="col-sm-9">
+                                    <div class="js-form-message">
+                                        <input type="date" class="form-control" name="editBirthDayModal"
+                                            id="editBirthDayModalLabel" placeholder="Enter BirthDay"
+                                            aria-label="BirthDay">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-white mr-2" data-bs-dismiss="modal"
+                                    aria-label="Close">Cancel</button>
+                                <!-- <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Close"> -->
+                                <button id="submit" class="btn btn-primary" type="submit">Save
+                                    changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
