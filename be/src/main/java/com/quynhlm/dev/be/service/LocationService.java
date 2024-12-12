@@ -25,8 +25,9 @@ public class LocationService {
         return locationRepository.findAllLocation(pageable);
     }
 
-
-    public Location insertLocation(Location location) throws LocationExistingException, UnknownException {
+    public Location insertLocation(String locationText) throws LocationExistingException, UnknownException {
+        Location location = new Location();
+        location.setAddress(locationText);
         Location saveLocation = locationRepository.save(location);
         if (saveLocation.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");

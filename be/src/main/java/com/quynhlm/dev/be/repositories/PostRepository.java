@@ -737,7 +737,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 p.status,
                 u.fullname AS fullname,
                 u.avatar_url as avatar,
-                m.media_url AS mediaUrl,
                 m.type,
                 p.create_time,
                 COUNT(DISTINCT r.id) AS reaction_count,
@@ -758,7 +757,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             LEFT JOIN
                 share s ON p.id = s.post_id
             GROUP BY
-                p.id, u.id, p.location_id, p.content, p.status, u.fullname, u.avatar_url, m.media_url, m.type, p.create_time
+                p.id, u.id, p.location_id, p.content, p.status, u.fullname, u.avatar_url, m.type, p.create_time
             """, nativeQuery = true)
     Page<Object[]> fetchAllPost(Pageable pageable);
 
