@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.quynhlm.dev.be.core.exception.LocationNotFoundException;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
@@ -26,11 +27,13 @@ import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.HashTag;
+import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
+import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.TagRepository;
@@ -65,6 +68,9 @@ public class PostService {
     private UserRepository userRepository;
 
     @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
     private FriendShipRepository friendShipRepository;
 
     @Autowired
@@ -72,8 +78,21 @@ public class PostService {
 
     @Transactional
     public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files)
-            throws UnknownException {
+            throws UnknownException , UserAccountNotFoundException , LocationNotFoundException {
         try {
+
+            User foundUser = userRepository.getAnUser(postRequestDTO.getUser_id());
+
+            if (foundUser == null) {
+                throw new UserAccountNotFoundException("Found user with " + postRequestDTO.getUser_id() + " not found . Please try again !");
+            }
+
+            Location foundLocation = locationRepository.getAnLocation(postRequestDTO.getLocation_id());
+
+            if (foundLocation == null) {
+                throw new LocationNotFoundException("Found user with " + postRequestDTO.getUser_id() + " not found . Please try again !");
+            }
+
             Post post = new Post();
             post.setContent(postRequestDTO.getContent());
             post.setStatus(postRequestDTO.getStatus());

@@ -89,7 +89,7 @@ public class PostController {
 
     @DeleteMapping("/{post_id}")
     public ResponseEntity<ResponseObject<?>> deleteStory(@PathVariable Integer post_id) {
-        postService.deletePost(post_id);
+    postService.deletePost(post_id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete post successfully");
         result.setStatus(true);
