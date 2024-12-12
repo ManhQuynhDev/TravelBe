@@ -223,7 +223,13 @@
     </div>
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
-        <div th:include="fragments/managerPage :: content"></div>
+        <div class="container-fluid">
+            <div th:include="fragments/managerPage :: content"></div>
+        </div>
+        <div th:replace="fragments/manager/managerDetailsModal"></div>
+        <div th:replace="fragments/manager/addManagerModal"></div>
+        <div th:replace="fragments/manager/switchManagerModal"></div>
+        <div th:replace="fragments/manager/editManagerModal"></div>
     </div>
     </div>
 
@@ -233,6 +239,8 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script>
         $(document).on('ready', function () {
@@ -258,13 +266,14 @@
     </script>
 
 
-    <script src="/be/src/main/resources/static/assets/js/manager.js"></script>
+    <script th:src="@{/assets/js/manager.js}"></script>
     <script>
         $(document).ready(function () {
-            var table = $('#managerTable').DataTable({
+            var table = $('#modernTableMana').DataTable({
                 dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
                     '<"row"<"col-sm-12"tr>>' +
                     '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
                 paging: true,
                 searching: true,
                 ordering: true,
@@ -272,7 +281,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [7],
+                        targets: [6],
                         orderable: false
                     }
                 ],
@@ -292,6 +301,10 @@
             });
 
         });
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
+
     </script>
 
 </body>

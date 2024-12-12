@@ -85,16 +85,17 @@
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center align-items-center">
                                             <!-- Nút Delete -->
-                                            <button class="btn btn-sm btn-danger mr-2" data-plan-id="${plan.planId}">
-                                                Delete
+                                            <button class="btn btn-sm btn-outline-danger mr-2 deleteTravelPlanButton"
+                                                th:attr="data-id=${plan.planId}">
+                                                <i class="tio-delete-outlined mr-1"></i>Delete
                                             </button>
                                             <!-- Nút View Members -->
-                                            <button class="btn btn-sm btn-secondary mr-2" id="viewMemberss"
+                                            <button class="btn btn-sm btn-outline-secondary mr-2" id="viewMemberss"
                                                 th:attr="data-id=${plan.planId}">
                                                 View Members
                                             </button>
                                             <!-- Nút View Activity -->
-                                            <button class="btn btn-sm btn-primary" id="viewActivity"
+                                            <button class="btn btn-sm btn-outline-primary" id="viewActivity"
                                                 th:attr="data-id=${plan.planId}">
                                                 View Activity
                                             </button>
@@ -109,6 +110,7 @@
         </div>
         <div th:replace="fragments/travel_plan/viewMemberModal"></div>
         <div th:replace="fragments/travel_plan/viewActivitiesModal"></div>
+        <div th:replace="fragments/travel_plan/deleteTravelPlanModal"></div>
 
     </div>
     </div>
@@ -278,13 +280,11 @@
                     const tableBody = document.getElementById('activityListTable');
                     tableBody.innerHTML = '';
 
-                    // Kiểm tra dữ liệu trả về
                     if (!data || !Array.isArray(data.content) || data.content.length === 0) {
                         const noDataRow = document.createElement('tr');
                         noDataRow.innerHTML = `<td colspan="4" class="text-center">No activities found</td>`;
                         tableBody.appendChild(noDataRow);
                     } else {
-                        // Duyệt qua danh sách activity
                         data.content.forEach((activity, index) => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
@@ -298,7 +298,6 @@
                         });
                     }
 
-                    // Hiển thị modal
                     const modal = new bootstrap.Modal(document.getElementById('activityListModal'));
                     modal.show();
                 })
@@ -306,6 +305,33 @@
                     console.error('Error:', error);
                 });
         }
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
+
+        document.querySelectorAll('.deleteTravelPlanButton').forEach(button => {
+            button.addEventListener('click', function () {
+                const travelPlanId = this.getAttribute('data-id');  // Lấy ID của Travel Plan từ thuộc tính data-id
+                const deleteTravelPlanModal = new bootstrap.Modal(document.getElementById('deleteTravelPlanModal'));
+                deleteTravelPlanModal.show();
+                console.log(travelPlanId);
+
+                // document.getElementById("confirmDeleteTravelPlan").addEventListener("click", () => {
+                //     fetch(`http://localhost:8080/api/travel-plan/${travelPlanId}`, {
+                //         method: "DELETE",
+                //         headers: {
+                //             'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                //         }
+                //     })
+                //         .then(res => res.json())
+                //         .then(data => {
+                //             alert("Delete Successfully");
+                //             window.location.reload();
+                //         })
+                //         .catch(err => console.log(err))
+                // })
+            });
+        });
 
 
     </script>

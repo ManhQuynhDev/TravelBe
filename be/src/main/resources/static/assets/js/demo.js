@@ -246,6 +246,17 @@ function HSDemo() {
   document.getElementById("headerDouble").parentNode.removeChild(document.getElementById("headerDouble"));
   document.getElementById("sidebarMain").parentNode.removeChild(document.getElementById("sidebarMain"));
   document.getElementById("sidebarCompact").parentNode.removeChild(document.getElementById("sidebarCompact"));
+  document.getElementById("toggleNavbar").addEventListener("click", function () {
+    const navbarText = document.getElementById("navbarText");
+
+    // Kiểm tra trạng thái hiện tại và ẩn/hiện
+    if (navbarText.style.display === "none") {
+      navbarText.style.display = "block"; // Hiện lại thẻ <p>
+    } else {
+      navbarText.style.display = "none"; // Ẩn thẻ <p>
+    }
+  });
+
 }
 
 HSDemo();

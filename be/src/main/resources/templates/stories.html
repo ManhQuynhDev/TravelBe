@@ -108,7 +108,7 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <button class="btn btn-sm btn-danger" id="deleteStory"
+                                        <button class="btn btn-sm btn-outline-danger" id="deleteStory"
                                             th:attr="data-id=${story.storyId}">
                                             <i class="tio-delete-outlined mr-1"></i>Delete
                                         </button>
@@ -150,6 +150,9 @@
                     return false;
                 }
             });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
         });
         $(document).ready(function () {
             var table = $('#modernTable2').DataTable({
@@ -322,6 +325,9 @@
                     console.error('Error:', error);
                     alert('Failed to add story.');
                 });
+        });
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
         });
 
 

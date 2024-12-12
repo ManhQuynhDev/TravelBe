@@ -50,7 +50,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();
-
+        
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();
@@ -62,8 +62,8 @@ public class HomeController {
     }
 
     @GetMapping("/manager")
-    public String getContentPage(Model model, @RequestParam int page, @RequestParam int size) {
-        Page<User> managers = userService.getAllListManager(page, size);
+    public String getContentPage(Model model) {
+        Page<User> managers = userService.getAllListManager(0, 1000);
         model.addAttribute("managers", managers);
         return "manager";
     }
