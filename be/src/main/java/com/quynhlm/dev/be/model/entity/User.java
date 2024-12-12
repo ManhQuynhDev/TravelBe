@@ -45,5 +45,6 @@ public class User {
     @Column(updatable = false)
     private Timestamp create_at;
     private String isLocked;
+    private String deviceToken;
     private LocalDateTime lastNameChangeDate;
 }

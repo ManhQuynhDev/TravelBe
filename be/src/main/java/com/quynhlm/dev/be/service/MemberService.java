@@ -23,8 +23,10 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
+import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
+import com.quynhlm.dev.be.repositories.MemberPlanRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
@@ -41,6 +43,15 @@ public class MemberService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MemberPlanRepository memberPlanRepository;
+
+    @Autowired
+    private MemberPlanService memberPlanService;
+
+    @Autowired
+    private TravelPlanService travelPlanService;
 
     public Member requestToJoinGroup(Member member)
             throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UnknownException,
@@ -142,6 +153,16 @@ public class MemberService {
         if (foundMember == null) {
             throw new GroupNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
         }
+
+        List<MemberPlan> members = memberPlanRepository.findMemberByUserId(foundMember.getUserId());
+
+        for (MemberPlan member : members) {
+            if(member.getRole() == Role.ADMIN.name()){
+                   travelPlanService.deleteTravelPlan(member.getPlanId());
+            }
+            memberPlanService.deleteMemberPlan(member.getId(), member.getPlanId());
+        }
+
         memberRepository.delete(foundMember);
     }
 

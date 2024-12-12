@@ -45,9 +45,19 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                             """, nativeQuery = true)
     Page<Object[]> findAllUser(Pageable pageable);
 
+    // @Query(value = """
+    // SELECT *
+    // FROM User
+    // WHERE HEX(roles) =
+    // 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400074D414E4147455278';""",
+    // nativeQuery = true)
+    // Page<User> findAllManager(Pageable pageable);
+
     @Query(value = """
             SELECT *
             FROM User
-            WHERE HEX(roles) = 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400074D414E4147455278';""", nativeQuery = true)
+            WHERE HEX(roles) <> 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400045553455278';
+             """, nativeQuery = true)
     Page<User> findAllManager(Pageable pageable);
+
 }

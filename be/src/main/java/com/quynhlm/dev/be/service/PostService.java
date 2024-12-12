@@ -25,18 +25,24 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.FriendShip;
+import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.FriendShipRepository;
+import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.TagRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 
+@Slf4j
 @Service
 public class PostService {
 
@@ -61,8 +67,11 @@ public class PostService {
     @Autowired
     private FriendShipRepository friendShipRepository;
 
+    @Autowired
+    private HashTagRespository hashTagRespository;
+
     @Transactional
-    public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files, String type)
+    public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files)
             throws UnknownException {
         try {
             Post post = new Post();
@@ -73,7 +82,6 @@ public class PostService {
 
             post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Post savedPost = postRepository.save(post);
-
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
                     if (file.isEmpty()) {
@@ -95,15 +103,29 @@ public class PostService {
                             throw new UnknownException("Transaction cannot complete!");
                         }
 
+                        String mediaType = (fileName != null && fileName.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                                ? "IMAGE"
+                                : "VIDEO";
+
                         Media media = new Media(null, savedPost.getId(),
                                 String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s", fileName),
-                                type);
+                                mediaType);
 
                         mediaRepository.save(media);
                     }
                 }
             }
-
+            if (savedPost.getId() == null) {
+                throw new UnknownException("Transaction cannot complete!");
+            }
+            if (!postRequestDTO.getHashtags().isEmpty()) {
+                for (String hashtag : postRequestDTO.getHashtags()) {
+                    HashTag newHashTag = new HashTag();
+                    newHashTag.setPostId(savedPost.getId());
+                    newHashTag.setHashtag(hashtag);
+                    hashTagRespository.save(newHashTag);
+                }
+            }
             return getAnPostReturnSave(savedPost.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -128,10 +150,6 @@ public class PostService {
                 .map(FriendShip::getUserSendId)
                 .collect(Collectors.toList());
 
-        System.out.println("UserId :" + userId);
-        System.out.println("Friends 2" + friendShips.size());
-        System.out.println("Friends" + friendUserIds.size());
-
         Page<Object[]> results = postRepository.getAllPostsExceptFriends(friendUserIds, userId, pageable);
 
         return results.map(row -> {
@@ -140,10 +158,10 @@ public class PostService {
             post.setOwnerId(((Number) row[0]).intValue());
             post.setPostId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
-            post.setAdminName((String) row[3]);
-            post.setAvatarUrl((String) row[4]);
-            post.setContent((String) row[5]);
-            post.setHastag((String) row[6]);
+            post.setLocation((String) row[3]);
+            post.setOwnerName((String) row[4]);
+            post.setAvatarUrl((String) row[5]);
+            post.setContent((String) row[6]);
             post.setStatus((String) row[7]);
             post.setType((String) row[8]);
             post.setIsShare(((Number) row[9]).intValue());
@@ -158,6 +176,10 @@ public class PostService {
             List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
 
             post.setMediaUrls(medias);
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
+
+            post.setHashtags(hashtags);
 
             if (((Number) row[15]).intValue() >= 1) {
                 List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number) row[1]).intValue());
@@ -199,26 +221,36 @@ public class PostService {
 
         Object[] result = results.get(0);
 
-        Integer ownerId = ((Number) result[0]).intValue();
-        Integer postId = ((Number) result[1]).intValue();
-        Integer locationId = ((Number) result[2]).intValue();
-        String content = (String) result[3];
-        String status = (String) result[4];
-        String fullname = (String) result[5];
-        String avatar = (String) result[6];
-        String mediaUrl = (String) result[7];
-        String type = (String) result[8];
-        String create_time = (String) result[9];
-        Integer reaction_count = ((Number) result[10]).intValue();
-        Integer comment_count = ((Number) result[11]).intValue();
-        Integer share_count = ((Number) result[12]).intValue();
-        String user_reaction_type = (String) result[13];
+        PostMediaDTO postMediaDTO = new PostMediaDTO();
 
-        return new PostMediaDTO(ownerId, postId, locationId, content, status, fullname, avatar, mediaUrl, type,
-                create_time, reaction_count, comment_count, share_count, user_reaction_type);
+        postMediaDTO.setOwnerId(((Number) result[0]).intValue());
+        postMediaDTO.setPostId(((Number) result[1]).intValue());
+        postMediaDTO.setLocationId(((Number) result[2]).intValue());
+        postMediaDTO.setLocation((String) result[3]);
+        postMediaDTO.setContent((String) result[4]);
+        postMediaDTO.setStatus((String) result[5]);
+        postMediaDTO.setFullname((String) result[6]);
+        postMediaDTO.setAvatar((String) result[7]);
+        postMediaDTO.setType((String) result[8]);
+        postMediaDTO.setCreate_time((String) result[9]);
+        postMediaDTO.setReaction_count(((Number) result[10]).intValue());
+        postMediaDTO.setComment_count(((Number) result[11]).intValue());
+        postMediaDTO.setShare_count(((Number) result[12]).intValue());
+        postMediaDTO.setUser_reaction_type((String) result[13]);
+
+        List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) result[1]).intValue());
+
+        postMediaDTO.setHashtags(hashtags);
+
+        List<String> medias = mediaRepository.findMediaByPostId(((Number) result[1]).intValue());
+
+        postMediaDTO.setMediaUrls(medias);
+
+        return postMediaDTO;
     }
 
     public PostSaveResponseDTO getAnPostReturnSave(Integer post_id) throws PostNotFoundException {
+        log.info("post id : " + post_id);
         List<Object[]> results = postRepository.getPostSave(post_id);
 
         if (results.isEmpty()) {
@@ -227,20 +259,28 @@ public class PostService {
         }
 
         Object[] result = results.get(0);
+        PostSaveResponseDTO postSaveResponseDTO = new PostSaveResponseDTO();
+        postSaveResponseDTO.setOwnerId(((Number) result[0]).intValue());
+        postSaveResponseDTO.setPostId(((Number) result[1]).intValue());
+        postSaveResponseDTO.setLocationId(((Number) result[2]).intValue());
+        postSaveResponseDTO.setLocation((String) result[3]);
+        postSaveResponseDTO.setContent((String) result[4]);
+        postSaveResponseDTO.setStatus((String) result[5]);
+        postSaveResponseDTO.setFullname((String) result[6]);
+        postSaveResponseDTO.setAvatar((String) result[7]);
+        postSaveResponseDTO.setType((String) result[8]);
+        postSaveResponseDTO.setCreate_time((String) result[9]);
 
-        Integer ownerId = ((Number) result[0]).intValue();
-        Integer postId = ((Number) result[1]).intValue();
-        Integer locationId = ((Number) result[2]).intValue();
-        String content = (String) result[3];
-        String status = (String) result[4];
-        String fullname = (String) result[5];
-        String avatar = (String) result[6];
-        String mediaUrl = (String) result[7];
-        String type = (String) result[8];
-        String create_time = (String) result[9];
+        List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) result[1]).intValue());
 
-        return new PostSaveResponseDTO(ownerId, postId, locationId, content, status, fullname, avatar, mediaUrl, type,
-                create_time);
+        postSaveResponseDTO.setHashtags(hashtags);
+
+
+        List<String> medias = mediaRepository.findMediaByPostId(((Number) result[1]).intValue());
+
+        postSaveResponseDTO.setMediaUrls(medias);
+        
+        return postSaveResponseDTO;
     }
 
     // Update post
@@ -321,15 +361,20 @@ public class PostService {
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
-            post.setContent((String) row[3]);
-            post.setStatus((String) row[4]);
-            post.setFullname((String) row[5]);
-            post.setAvatar((String) row[6]);
-            post.setVideo((String) row[7]);
-            post.setCreate_time((String) row[8]);
-            post.setReaction_count(((Number) row[9]).intValue());
-            post.setComment_count(((Number) row[10]).intValue());
-            post.setShare_count(((Number) row[11]).intValue());
+            post.setLocation((String) row[3]);
+            post.setContent((String) row[4]);
+            post.setStatus((String) row[5]);
+            post.setFullname((String) row[6]);
+            post.setAvatar((String) row[7]);
+            post.setVideo((String) row[8]);
+            post.setCreate_time((String) row[9]);
+            post.setReaction_count(((Number) row[10]).intValue());
+            post.setComment_count(((Number) row[11]).intValue());
+            post.setShare_count(((Number) row[12]).intValue());
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
+
+            post.setHashtags(hashtags);
             return post;
         });
     }
@@ -340,20 +385,28 @@ public class PostService {
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
-
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
-            post.setContent((String) row[3]);
-            post.setStatus((String) row[4]);
-            post.setFullname((String) row[5]);
-            post.setAvatar((String) row[6]);
-            post.setMediaUrl((String) row[7]);
+            post.setLocation((String) row[3]);
+            post.setContent((String) row[4]);
+            post.setStatus((String) row[5]);
+            post.setFullname((String) row[6]);
+            post.setAvatar((String) row[7]);
             post.setType((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
+
+            post.setHashtags(hashtags);
+
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[0]).intValue());
+
+            post.setMediaUrls(medias);
+
             return post;
         });
     }
@@ -363,20 +416,28 @@ public class PostService {
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
-
             post.setPostId(((Number) row[0]).intValue());
             post.setOwnerId(((Number) row[1]).intValue());
             post.setLocationId(((Number) row[2]).intValue());
-            post.setContent((String) row[3]);
-            post.setStatus((String) row[4]);
-            post.setFullname((String) row[5]);
-            post.setAvatar((String) row[6]);
-            post.setMediaUrl((String) row[7]);
+            post.setLocation((String) row[3]);
+            post.setContent((String) row[4]);
+            post.setStatus((String) row[5]);
+            post.setFullname((String) row[6]);
+            post.setAvatar((String) row[7]);
             post.setType((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
+
+            post.setHashtags(hashtags);
+
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[0]).intValue());
+
+            post.setMediaUrls(medias);
+
             return post;
         });
     }

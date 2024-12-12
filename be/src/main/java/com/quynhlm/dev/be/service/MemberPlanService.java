@@ -74,7 +74,7 @@ public class MemberPlanService {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
-        member.setRole(Role.ADMIN.name()); // default admin
+        member.setRole(Role.ADMIN.name());
 
         if (!travelPlanRepository.existsById(member.getPlanId())) {
             throw new GroupNotFoundException("Plan with ID " + member.getPlanId() + " not found.");

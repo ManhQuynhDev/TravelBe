@@ -82,6 +82,12 @@ public class TravelPlanService {
             throw new TravelPlanNotFoundException(
                     "Found travel by id " + id + " not found , please try again with other id");
         }
+
+        List<MemberPlan> members = memberPlanRepository.findMemberByPlanId(id);
+        for (MemberPlan memberPlan : members) {
+            memberPlanService.deleteMemberPlan(memberPlan.getId(), memberPlan.getPlanId());
+        }
+        
         travelPlanRepository.delete(foundPlan);
     }
 

@@ -1,5 +1,4 @@
 package com.quynhlm.dev.be.model.entity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,5 +27,4 @@ public class Post {
     private String create_time;
     private Integer user_id;
     private Integer location_id;
-    private String hastag;
 }

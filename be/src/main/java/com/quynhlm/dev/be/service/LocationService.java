@@ -1,8 +1,9 @@
 package com.quynhlm.dev.be.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.quynhlm.dev.be.core.exception.LocationExistingException;
@@ -19,9 +20,13 @@ public class LocationService {
     @Autowired
     private LocationRepository locationRepository;
 
-    public Location insertLocation(String locationJson) throws LocationExistingException, UnknownException {
-        Location location = new Location();
-        location.setAddress(locationJson);
+    public Page<Location> getAllLocation (int page , int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return locationRepository.findAllLocation(pageable);
+    }
+
+
+    public Location insertLocation(Location location) throws LocationExistingException, UnknownException {
         Location saveLocation = locationRepository.save(location);
         if (saveLocation.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");

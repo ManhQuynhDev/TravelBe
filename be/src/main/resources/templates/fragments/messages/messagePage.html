@@ -10,8 +10,9 @@
                     <input type="text" class="form-control" placeholder="Search or start a new chat">
                 </div>
 
-                <tr class="chat-list" th:each="manager : ${managers}">
-                    <td class="chat-item d-flex align-items-center" th:onclick="'showMessage(' + ${manager.id} + ')'">
+                <!-- <ul style="padding-inline-start: 0px;" th:each="manager : ${managers}"> -->
+                    <!-- <li class="chat-item d-flex align-items-center" th:onclick="'showMessage(' + ${manager.id} + ')'"> -->
+                    <!-- <li class="chat-item d-flex align-items-center managerItem" th:data-parent="${manager.id}">
                         <img th:if="${manager.avatarUrl != null && !manager.avatarUrl.isEmpty()}"
                             th:src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
                             style="width: 45px; height: 45px;">
@@ -25,8 +26,10 @@
                             <h6 th:text="${manager.fullname}">Ammi Watts</h6>
                             <span>I will check it and get back to you soon.</span>
                         </div>
-                    </td>
-                </tr>
+                    </li>
+                </ul> -->
+
+                <ul id="managerList" style="padding-inline-start: 0px;"></ul>
             </div>
 
             <!-- Chat -->
@@ -38,13 +41,14 @@
                 </div>
                 <div class="chat-footer">
                     <input type="text" id="chat-mes" class="form-control" placeholder="Type your message here...">
-                    <label for="file-input" class="file-label mr-1"
-                        style="cursor: pointer; display: flex; align-items: center;">
-                        <div class="background-color: #00b894; color: white; border: none; padding: 10px 20px; border-radius: 5px;">
-                            <i class="fas fa-upload" style="margin-right: 10px;"></i>
-                        </div>
-                        <input type="file" id="file-input" style="display: none;">
-                    </label>
+
+                    <div class="file-upload-icon-container mr-2">
+                        <label for="fileInput" class="file-icon">
+                            <i class="fas fa-image upload-icon"></i>
+                        </label>
+                        <input type="file" id="fileInput" accept="image/*" />
+                    </div>
+
 
                     <button class="btn btn-primary" id="btnSubmit">Send</button>
                 </div>

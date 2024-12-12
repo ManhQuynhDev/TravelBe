@@ -78,7 +78,7 @@
         .chat-main {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 80vh;
             background-color: #f9fafe;
         }
 
@@ -99,7 +99,6 @@
         .chat-body {
             height: 720px;
             padding: 10px;
-            overflow-y: auto;
         }
 
         .message {
@@ -130,6 +129,7 @@
             border-top: 1px solid #e0e0e0;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
 
         .chat-footer input {
@@ -142,7 +142,7 @@
         }
 
         #messageArea {
-            height: 700px;
+            height: 685px;
             overflow: auto;
             display: flex;
             flex-direction: column;
@@ -219,6 +219,61 @@
             margin: 10px;
             border-radius: 10px;
         }
+
+        .file-upload-icon-container {
+            display: inline-block;
+            position: relative;
+        }
+
+        .file-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            background-color: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-icon:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .file-icon:active {
+            background-color: #004080;
+            transform: scale(1);
+        }
+
+        .upload-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .message-image {
+            width: 200px;
+            /* Chiều rộng */
+            height: 200px;
+            /* Chiều cao */
+            object-fit: cover;
+            /* Đảm bảo hình ảnh không bị méo */
+            border-radius: 8px;
+            /* Tùy chọn: bo góc */
+        }
+
+        .typing-status {
+            height: 20px;
+            padding-bottom: 10px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 
@@ -288,16 +343,70 @@
         });
     </script>
 
-
     <script>
+        const managerList = document.querySelector('#managerList');
         const chatbody = document.querySelector('.chat-body');
         const user_received = document.querySelector('#user_received');
-        const userInfo = document.querySelector('.userInfo');        
+        const userInfo = document.querySelector('.userInfo');
+        const chatMess = document.querySelector('#chat-mes');
+        const submit = document.querySelector('#btnSubmit');
+        const fileInput = document.querySelector("#fileInput");
+        const token = localStorage.getItem('authToken');
+        const senderId = localStorage.getItem('user_id');
+
+        const handelCallData = () => {
+            fetch(`http://localhost:8080/onboarding/users/manager?page=0&size=1000`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! Status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+
+                    const managers = data.content.filter(manager => manager.id.toString() !== senderId.toString());
+
+                    console.log(managers);
+
+
+                    managers.forEach(manager => {
+                        const li = document.createElement('li');
+                        li.className = 'chat-item d-flex align-items-center managerItem';
+                        li.setAttribute('data-parent', manager.id);
+
+                        li.innerHTML = `
+                            ${manager.avatarUrl ? `
+                                <img src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2" style="width: 45px; height: 45px;">
+                            ` : `
+                                <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 45px; height: 45px; font-size: 16px; font-weight: bold; border-radius: 50%;">
+                                    <span>${manager.fullname ? manager.fullname.charAt(0).toUpperCase() : 'N'}</span>
+                                </div>
+                            `}
+                            <div class="chat-info ml-2">
+                                <h6>${manager.fullname}</h6>
+                                <span>I will check it and get back to you soon.</span>
+                            </div>
+                        `;
+                        li.addEventListener('click', () => showMessage(manager.id));
+                        managerList.appendChild(li);
+                    });
+                })
+                .catch(err => console.error('Error:', err));
+        }
+
+        handelCallData();
 
         const showMessage = (user_id) => {
-            const senderId = localStorage.getItem('user_id');
-            const token = localStorage.getItem('authToken');
-            fetch(`http://localhost:8080/onboarding/users/fullname/${user_id}`, {
+            const userId = user_id.toString();
+            console.log("hello");
+            console.log(userId);
+            fetch(`http://localhost:8080/onboarding/users/fullname/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -340,8 +449,9 @@
 
             const socketUrl = location.protocol + "//" + location.hostname + ":1111/private";
             console.log(socketUrl);
+
             const socket = io.connect(socketUrl, {
-                query: { sender: senderId, receiverId: user_id }
+                query: { sender: senderId, receiverId: userId }
             });
 
             socket.on('connect', () => {
@@ -353,20 +463,20 @@
             });
 
             const content = `<div id="messageArea" class="col s12">
-				<!-- <div class="incoming col s12">
-					<div style="background-color: #f23c00" class="avatar tooltipped" data-position="left" data-tooltip="System">S</div>
-					<div style="background-color: #f23c00; color: white" class="message">Welcome to Socket Chat, have fun!</div>
-				</div> -->
-			</div>`;
+				
+			</div>
+            <div id="seen-users"></div>
+            <ul id="typing-status"></ul>
+            `;
 
             chatbody.innerHTML = content;
 
             function scrollToBottom() {
                 const messageArea = document.getElementById('messageArea');
                 messageArea.scrollTop = messageArea.scrollHeight;
-            }            
+            }
 
-            fetch(`http://localhost:8080/api/messages?senderId=${senderId}&receiverId=${user_id}&page=0&size=1000`, {
+            fetch(`http://localhost:8080/api/messages?senderId=${senderId}&receiverId=${userId}&page=0&size=1000`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -380,7 +490,6 @@
                     return res.json();
                 })
                 .then(data => {
-                    console.log(data.content);
                     data.content.forEach(message => {
                         if (message.sender_id == senderId) {
                             displayMyMessage(message);
@@ -392,12 +501,11 @@
                 })
                 .catch(err => console.error('Error:', err));
 
-            const chatMess = document.querySelector('#chat-mes');
-            const submit = document.querySelector('#btnSubmit');
-
             socket.on('user-chat', (data) => {
+
+                console.log(data);
+
                 if (data.sender_id == senderId) {
-                    console.log(true);
                     displayMyMessage(data)
                 } else {
                     displayMessage(data)
@@ -412,46 +520,115 @@
                 });
             });
 
+            const seenUsers = document.querySelector('#seen-users');
+
+            socket.on("user-seen", (data) => {
+                console.log("Message seen data:", data);
+
+                seenUsers.innerHTML = '';
+                data.forEach(user => {
+                    const userItem = document.createElement('li');
+                    seenUsers.appendChild(userItem);
+                });
+            });
+
+            const typingStatus = document.querySelector('#typing-status');
+
+            let typingTimeout;
+
+            chatMess.addEventListener('input', () => {
+                clearTimeout(typingTimeout);
+                socket.emit('userTyping', senderId);
+
+                typingTimeout = setTimeout(() => {
+                    socket.emit('userStoppedTyping', senderId);
+                }, 3000);
+            });
+
+            socket.on("typingUsers", (usersTyping) => {
+                const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== senderId);
+                if (otherUsersTyping.length > 0) {
+                    scrollToBottom();
+                    typingStatus.textContent = `${otherUsersTyping.join(", ")} is typing...`;
+                } else {
+                    typingStatus.textContent = '';
+                    scrollToBottom();
+                }
+            });
+
+            const MAX_FILE_SIZE = 5 * 1024 * 1024;
             submit.addEventListener('click', () => {
-                const message = chatMess.value;
-                const data = {
-                    sender: 1,
-                    receiver: user_id,
-                    message: message,
-                    file: null
+                const message = chatMess.value.trim();
+                const file = fileInput.files[0];
+                let fileBase64 = null;
+
+                if (file) {
+                    if (file.size > MAX_FILE_SIZE) {
+                        alert("File is too large. Please upload a smaller file.");
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function (event) {
+                        fileBase64 = event.target.result;
+                        sendMessage(message, fileBase64);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    sendMessage(message, fileBase64);
                 }
 
-                if (message) {
-                    socket.emit('send-message', data);
-                    chatMess.value = '';
+
+                function sendMessage(message, fileBase64) {
+                    const data = {
+                        sender: senderId,
+                        receiver: userId,
+                        message: message,
+                        file: fileBase64 ?? null
+                    }
+
+                    if (message) {
+                        socket.emit('send-message', data);
+                        chatMess.value = '';
+                    }
                 }
             })
 
             function displayMyMessage(message) {
+                let imageElement = '';
+                if (message.mediaUrl) {
+                    imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
+                }
+
                 var div = `
-                        <div class='me'>
-                            <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
-                                ${message.fullname.charAt(0).toLocaleUpperCase()}
-                            </div>
-                            <div class='message'>
-                                ${message.content}
-                                <div class="message-time">${message.send_time.substring(11,19)}</div>
-                            </div>
-                        
+                    <div class='me'>
+                        <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                            ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
+                        <div class='message'>
+                            ${imageElement}
+                            ${message.content}
+                            <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                        </div>
+                    </div>
                     `;
                 $("#messageArea").append(div);
             }
 
+
             function displayMessage(message) {
+                let imageElement = '';
+                if (message.mediaUrl) {
+                    imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
+                }
                 var div = `
                         <div class='incoming'>
                             <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
                                 ${message.fullname.charAt(0).toLocaleUpperCase()}
                             </div>
                             <div class='message'>
+                                ${imageElement}
                                 ${message.content}
-                                <div class="message-time">${message.send_time.substring(11,19)}</div>
+                                <div class="message-time">${message.send_time.substring(11, 19)}</div>
                             </div>
                         
                         </div>

@@ -14,5 +14,4 @@ public interface MediaRepository extends JpaRepository<Media, Integer> {
 
     @Query(value = "SELECT media_url FROM Media WHERE post_id= :post_id", nativeQuery = true)
     List<String> findMediaByPostId(@Param("post_id") int post_id);
-
 }

@@ -48,10 +48,13 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             INNER JOIN
                 User u ON u.id = m.sender_id
             WHERE
-                m.sender_id = :senderId AND m.receiver_id = :receiverId
-                """, nativeQuery = true)
-    Page<Object[]> getAllMessageWithTwoUser(@Param("senderId") Integer senderId,
-            @Param("receiverId") Integer receiverId, Pageable pageable);
+                (m.sender_id = :senderId AND m.receiver_id = :receiverId)
+                OR (m.sender_id = :receiverId AND m.receiver_id = :senderId)
+            """, nativeQuery = true)
+    Page<Object[]> getAllMessageWithTwoUser(
+            @Param("senderId") Integer senderId,
+            @Param("receiverId") Integer receiverId,
+            Pageable pageable);
 
     @Query(value = """
             select m from message m WHERE m.id = :id

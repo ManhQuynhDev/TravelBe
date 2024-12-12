@@ -194,4 +194,14 @@ public class UserController {
     public String getUserFullName(@PathVariable Integer userId) {
         return userService.getUserFullname(userId);
     }
+
+    @PutMapping("/register-device")
+    public ResponseEntity<ResponseObject<Void>> registerDevice(@RequestParam Integer userId,
+            @RequestParam String deviceToken) {
+        userService.registerDevice(userId, deviceToken);
+        ResponseObject<Void> response = new ResponseObject<>();
+        response.setStatus(true);   
+        response.setMessage("Device token registered successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -12,5 +12,4 @@ import lombok.Setter;
 public class ReviewUpdateDTO {
     public String content;
     private double star;
-    private Integer location_id;
 }

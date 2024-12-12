@@ -316,6 +316,7 @@ public class UserService {
             }
         }
     }
+
     // ChangeProfile
     public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
@@ -448,8 +449,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-
-    public String getUserFullname (Integer id) {
+    public String getUserFullname(Integer id) {
         return userRepository.findUserFullname(id);
     }
 
@@ -480,5 +480,18 @@ public class UserService {
             user.setAdmin_avatar((String) row[8]);
             return user;
         });
+    }
+
+    public void registerDevice(Integer user_id, String deviceToken)
+            throws UserAccountNotFoundException, UnknownException {
+        User foundUser = userRepository.findOneById(user_id);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException("ID: " + user_id + " not found. Please try another!");
+        }
+        foundUser.setDeviceToken(deviceToken);
+        User saveUser = userRepository.save(foundUser);
+        if (saveUser.getId() == null) {
+            throw new UnknownException("Transaction cannot complete!");
+        }
     }
 }
