@@ -14,10 +14,10 @@ public class PostResponseDTO {
     private Integer postId;
     private Integer ownerId;
     private Integer locationId;
-    private String adminName;
+    private String location;
+    private String ownerName;
     private String avatarUrl;
     private String content;
-    private String hastag;
     private String status;
     private String type;
     private Integer isShare;
@@ -29,6 +29,7 @@ public class PostResponseDTO {
     private Integer isTag;
     private String user_reaction_type;
     
+    private List<String> hashtags;
     private List<String> mediaUrls;
     private List<UserTagPostResponse> tags;
 }

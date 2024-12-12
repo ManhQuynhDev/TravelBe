@@ -200,7 +200,7 @@ public class UserController {
             @RequestParam String deviceToken) {
         userService.registerDevice(userId, deviceToken);
         ResponseObject<Void> response = new ResponseObject<>();
-        response.setStatus(true);
+        response.setStatus(true);   
         response.setMessage("Device token registered successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

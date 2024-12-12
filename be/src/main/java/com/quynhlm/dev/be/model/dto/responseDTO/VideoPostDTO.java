@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ public class VideoPostDTO {
     private Integer ownerId;       
     private Integer postId;
     private Integer locationId;
+    private String location;
     private String content;
     private String status;
     private String fullname;
@@ -22,4 +25,5 @@ public class VideoPostDTO {
     private Integer reaction_count;
     private Integer comment_count;
     private Integer share_count;
+    private List<String> hashtags;
 }

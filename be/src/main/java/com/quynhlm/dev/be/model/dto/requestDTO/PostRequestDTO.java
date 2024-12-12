@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.model.dto.requestDTO;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +16,6 @@ public class PostRequestDTO {
     private String status;
     private Integer user_id;    
     private Integer location_id;
+    private List<String> hashtags;
 }
+    

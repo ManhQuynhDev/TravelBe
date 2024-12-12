@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.quynhlm.dev.be.model.entity.Location;
-import com.quynhlm.dev.be.model.entity.User;
 
 import java.util.List;
 

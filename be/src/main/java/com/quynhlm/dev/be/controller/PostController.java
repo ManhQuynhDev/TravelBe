@@ -51,7 +51,6 @@ public class PostController {
     public ResponseEntity<ResponseObject<?>> insertPost(
             @RequestPart("post") String postJson,
             @RequestPart(value = "files") List<MultipartFile> files,
-            @RequestPart("type") String type,
             HttpServletRequest request) {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -63,7 +62,7 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        PostSaveResponseDTO postResponse = postService.insertPost(post, files, type);
+        PostSaveResponseDTO postResponse = postService.insertPost(post, files);
 
         ResponseObject<PostSaveResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
@@ -79,9 +78,10 @@ public class PostController {
     }
 
     @GetMapping("/{post_id}/{user_id}")
-    public ResponseEntity<ResponseObject<PostMediaDTO>> getMethodName(@PathVariable Integer post_id , @PathVariable Integer user_id) {
+    public ResponseEntity<ResponseObject<PostMediaDTO>> getAnPost(@PathVariable Integer post_id,
+            @PathVariable Integer user_id) {
         ResponseObject<PostMediaDTO> result = new ResponseObject<>();
-        result.setData(postService.getAnPost(post_id , user_id));
+        result.setData(postService.getAnPost(post_id, user_id));
         result.setMessage("Get an post by " + post_id + " successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<PostMediaDTO>>(result, HttpStatus.OK);

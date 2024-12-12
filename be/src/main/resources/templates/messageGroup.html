@@ -78,7 +78,7 @@
         .chat-main {
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            height: 80vh;
             background-color: #f9fafe;
         }
 
@@ -99,7 +99,6 @@
         .chat-body {
             height: 720px;
             padding: 10px;
-            overflow-y: auto;
         }
 
         .message {
@@ -143,7 +142,7 @@
         }
 
         #messageArea {
-            height: 700px;
+            height: 685px;
             overflow: auto;
             display: flex;
             flex-direction: column;
@@ -268,6 +267,13 @@
             border-radius: 8px;
             /* Tùy chọn: bo góc */
         }
+
+        .typing-status {
+            height: 20px;
+            padding-bottom: 10px;
+            font-size: 14px;
+            color: #888;
+        }
     </style>
 </head>
 
@@ -338,33 +344,66 @@
     </script>
 
     <script>
+        const managerList = document.querySelector('#managerList');
         const chatbody = document.querySelector('.chat-body');
         const user_received = document.querySelector('#user_received');
         const userInfo = document.querySelector('.userInfo');
         const chatMess = document.querySelector('#chat-mes');
         const submit = document.querySelector('#btnSubmit');
         const fileInput = document.querySelector("#fileInput");
+        const token = localStorage.getItem('authToken');
+        const senderId = localStorage.getItem('user_id');
 
-        const managerItems = document.querySelectorAll('.managerItem');
-        console.log(fileInput);
+        const handelCallData = () => {
+            fetch(`http://localhost:8080/onboarding/users/manager?page=0&size=1000`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! Status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+
+                    const managers = data.content.filter(manager => manager.id.toString() !== senderId.toString());
+
+                    console.log(managers);
 
 
-        function handleClick(event) {
-            const manager_id = event.currentTarget.dataset.parent;
-            showMessage(manager_id);
+                    managers.forEach(manager => {
+                        const li = document.createElement('li');
+                        li.className = 'chat-item d-flex align-items-center managerItem';
+                        li.setAttribute('data-parent', manager.id);
 
-            event.currentTarget.removeEventListener('click', handleClick);
+                        li.innerHTML = `
+                            ${manager.avatarUrl ? `
+                                <img src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2" style="width: 45px; height: 45px;">
+                            ` : `
+                                <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 45px; height: 45px; font-size: 16px; font-weight: bold; border-radius: 50%;">
+                                    <span>${manager.fullname ? manager.fullname.charAt(0).toUpperCase() : 'N'}</span>
+                                </div>
+                            `}
+                            <div class="chat-info ml-2">
+                                <h6>${manager.fullname}</h6>
+                                <span>I will check it and get back to you soon.</span>
+                            </div>
+                        `;
+                        li.addEventListener('click', () => showMessage(manager.id));
+                        managerList.appendChild(li);
+                    });
+                })
+                .catch(err => console.error('Error:', err));
         }
 
-        managerItems.forEach(managerItem => {
-            managerItem.addEventListener('click', handleClick);
-        });
+        handelCallData();
 
         const showMessage = (user_id) => {
             const userId = user_id.toString();
-            const senderId = localStorage.getItem('user_id');
-            const token = localStorage.getItem('authToken');
-
             console.log("hello");
             console.log(userId);
             fetch(`http://localhost:8080/onboarding/users/fullname/${userId}`, {
@@ -425,7 +464,10 @@
 
             const content = `<div id="messageArea" class="col s12">
 				
-			</div>`;
+			</div>
+            <div id="seen-users"></div>
+            <ul id="typing-status"></ul>
+            `;
 
             chatbody.innerHTML = content;
 
@@ -478,7 +520,22 @@
                 });
             });
 
+            const seenUsers = document.querySelector('#seen-users');
+
+            socket.on("user-seen", (data) => {
+                console.log("Message seen data:", data);
+
+                seenUsers.innerHTML = '';
+                data.forEach(user => {
+                    const userItem = document.createElement('li');
+                    seenUsers.appendChild(userItem);
+                });
+            });
+
+            const typingStatus = document.querySelector('#typing-status');
+
             let typingTimeout;
+
             chatMess.addEventListener('input', () => {
                 clearTimeout(typingTimeout);
                 socket.emit('userTyping', senderId);
@@ -488,16 +545,14 @@
                 }, 3000);
             });
 
-
             socket.on("typingUsers", (usersTyping) => {
                 const otherUsersTyping = Object.keys(usersTyping).filter(user => user !== senderId);
                 if (otherUsersTyping.length > 0) {
-                    var div = "<div class='typing col s12'>";
-                    div += "   <img src='/img/typing.gif' alt='is typing.' style='margin-left: 10px; height: 50px'>";
-                    div += "</div>";
-                    $("#messageArea").append(div);
+                    scrollToBottom();
+                    typingStatus.textContent = `${otherUsersTyping.join(", ")} is typing...`;
                 } else {
-                    $("#messageArea").append("");
+                    typingStatus.textContent = '';
+                    scrollToBottom();
                 }
             });
 
@@ -506,7 +561,6 @@
                 const message = chatMess.value.trim();
                 const file = fileInput.files[0];
                 let fileBase64 = null;
-
 
                 if (file) {
                     if (file.size > MAX_FILE_SIZE) {
@@ -562,12 +616,17 @@
 
 
             function displayMessage(message) {
+                let imageElement = '';
+                if (message.mediaUrl) {
+                    imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
+                }
                 var div = `
                         <div class='incoming'>
                             <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
                                 ${message.fullname.charAt(0).toLocaleUpperCase()}
                             </div>
                             <div class='message'>
+                                ${imageElement}
                                 ${message.content}
                                 <div class="message-time">${message.send_time.substring(11, 19)}</div>
                             </div>

@@ -10,9 +10,9 @@
                     <input type="text" class="form-control" placeholder="Search or start a new chat">
                 </div>
 
-                <ul style="padding-inline-start: 0px;" th:each="manager : ${managers}">
+                <!-- <ul style="padding-inline-start: 0px;" th:each="manager : ${managers}"> -->
                     <!-- <li class="chat-item d-flex align-items-center" th:onclick="'showMessage(' + ${manager.id} + ')'"> -->
-                    <li class="chat-item d-flex align-items-center managerItem" th:data-parent="${manager.id}">
+                    <!-- <li class="chat-item d-flex align-items-center managerItem" th:data-parent="${manager.id}">
                         <img th:if="${manager.avatarUrl != null && !manager.avatarUrl.isEmpty()}"
                             th:src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
                             style="width: 45px; height: 45px;">
@@ -27,7 +27,9 @@
                             <span>I will check it and get back to you soon.</span>
                         </div>
                     </li>
-                </ul>
+                </ul> -->
+
+                <ul id="managerList" style="padding-inline-start: 0px;"></ul>
             </div>
 
             <!-- Chat -->
