@@ -15,7 +15,7 @@ public class PostRequestDTO {
     private String content;
     private String status;
     private Integer user_id;    
-    private Integer location_id;
+    private String location;
     private List<String> hashtags;
 }
     

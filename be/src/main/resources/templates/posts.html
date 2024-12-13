@@ -64,25 +64,23 @@
                                 <tr>
                                     <th>#</th>
                                     <th style="min-width: 200px;">Content</th>
-                                    <th>Created Time</th>
                                     <th>Hashtags</th>
-                                    <th>Location ID</th>
+                                    <th>Location</th>
                                     <th>Status</th>
-                                    <th style="min-width: 110px;">User</th>
-                                    <th></th>
+                                    <th>User</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="post : ${postList}">
-                                    <td class="text-start" th:text="${post.postId}">ID</td>
+                                <tr th:each="post, iterStat : ${postList}">
+                                    <td class="text-start" th:text="${iterStat.index + 1}">ID</td>
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-                                                <img th:if="${post.mediaUrl != null}" th:src="${post.mediaUrl}"
-                                                    alt="Content Image" class="img-fluid"
+                                                <img th:if="${post.mediaUrls != null and post.mediaUrls.size() > 0}"
+                                                    th:src="${post.mediaUrls[0]}" alt="Content Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;"
                                                     onerror="console.log('Image load failed'); this.onerror=null; this.src='/assets/img/anhload.jpg';">
-
 
                                                 <a href="#" data-toggle="modal"
                                                     th:onclick="'loadPostDetails(' + ${post.postId} + ')'"
@@ -93,17 +91,29 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-start" th:text="${post.create_time}">Created Time</td>
-                                    <td class="text-start" th:text="${post.comment_count}">Hashtags</td>
-                                    <td class="text-start" th:text="${post.locationId}">Location ID</td>
+                                    <td class="text-start">
+                                        <span th:if="${post.hashtags != null}">
+                                            <span th:each="hashtag : ${post.hashtags}" th:text="'#' + ${hashtag}">No
+                                                Hashtags</span>
+                                        </span>
+                                        <span th:if="${post.hashtags == null}">No Hashtags</span>
+                                    </td>
+
+                                    <td class="text-start" th:text="${post.location}">Location ID</td>
                                     <td class="text-start" th:text="${post.status}">Status</td>
                                     <td class="text-start" th:text="${post.fullname}">User ID</td>
                                     <td class="text-center">
-
-                                        <button class="btn btn-sm btn-outline-danger mr-2" id="deletePost"
-                                            th:attr="data-id=${post.postId}">
-                                            <i class="tio-delete-outlined mr-1"></i>Delete
-                                        </button>
+                                        <div class="d-flex justify-content-center align-items-center"
+                                            style="gap: 5px; flex-wrap: nowrap;">
+                                            <button class="btn btn-sm btn-outline-danger mr-2"
+                                                th:attr="data-id=${post.postId}">
+                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary mr-2 viewComments"
+                                                th:attr="data-id=${post.postId}">
+                                                View Comments
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -117,6 +127,7 @@
             <div th:replace="fragments/posts/postDetailModal"></div>
             <div th:replace="fragments/posts/addPostModal"></div>
             <div th:replace="fragments/posts/deletePostModal"></div>
+            <div th:replace="fragments/posts/viewCommentModal"></div>
         </div>
     </div>
 
@@ -141,7 +152,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [7],
+                        targets: [6],
                         orderable: false
                     }
                 ],
@@ -171,104 +182,181 @@
         });
         const token = localStorage.getItem('authToken');
         function loadPostDetails(id) {
-            fetch(`http://localhost:8080/api/posts/${id}`, {
+            fetch(`http://localhost:8080/api/posts/${id}/1`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
-            }).then(res => res.json())
+            })
+                .then(res => res.json())
                 .then(data => {
-                    console.log(data.data);
-
                     if (data.status) {
                         const post = data.data;
-                        document.getElementById(`postMediaImgModal`).src = post.mediaUrl || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
-                        document.getElementById(`postContentDetails`).value = post.content || '';
-                        document.getElementById(`postCreatedTimeDetails`).value = post.create_time || '';
-                        document.getElementById('postLocationDetails').value = post.locationId || '';
-                        document.getElementById('postStatusDetails').value = post.status || '';
+
+                        const mediaContainer = document.getElementById('mediaContainer');
+                        mediaContainer.innerHTML = '';
+                        if (post.mediaUrls && post.mediaUrls.length > 0) {
+                            post.mediaUrls.forEach(url => {
+                                const img = document.createElement('img');
+                                img.src = url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+                                img.className = 'img-fluid rounded mb-2';
+                                img.style.width = '200px';
+                                img.style.height = 'auto';
+                                mediaContainer.appendChild(img);
+                            });
+                        } else {
+                            const defaultImg = document.createElement('img');
+                            defaultImg.src = '/assets/img/anhload.jpg';
+                            defaultImg.className = 'img-fluid rounded mb-2';
+                            defaultImg.style.width = '200px';
+                            defaultImg.style.height = 'auto';
+                            mediaContainer.appendChild(defaultImg);
+                        }
+
+                        document.getElementById('postContentDetails').innerText = post.content || 'No content available';
+
+                        const date = new Date(post.create_time);
+                        if (!isNaN(date.getTime())) {
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            const seconds = String(date.getSeconds()).padStart(2, '0');
+                            document.getElementById('postCreatedTimeDetails').innerText = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+                        } else {
+                            document.getElementById('postCreatedTimeDetails').innerText = 'No time available';
+                        }
+
+                        document.getElementById('postLocationDetails').innerText = post.location || 'No location available';
+                        document.getElementById('postStatusDetails').innerText = post.status || 'No status available';
+                        document.getElementById('postFullnameDetails').innerText = post.fullname || 'Anonymous';
+                        document.getElementById('postReactionCountDetails').innerText = post.reaction_count || '0';
+                        document.getElementById('postCommentCountDetails').innerText = post.comment_count || '0';
+
+                        const hashtagsContainer = document.getElementById('postHashtagsDetails');
+                        hashtagsContainer.innerHTML = '';
+                        if (post.hashtags && post.hashtags.length > 0) {
+                            hashtagsContainer.innerText = post.hashtags.map(tag => `#${tag}`).join(', ');
+                        } else {
+                            hashtagsContainer.innerText = 'No hashtags available';
+                        }
 
                         const modal = new bootstrap.Modal(document.getElementById("postDetailModal"));
                         modal.show();
                     } else {
-                        console.log("Error: " + data.status);
+                        console.log("Error: " + data.message);
                     }
                 })
                 .catch(error => {
-                    console.error("That bai: ", error);
-                })
+                    console.error("Failed: ", error);
+                });
         }
-
 
         // add post
         document.getElementById('addPost').addEventListener('click', function () {
             $('#addPostModal').modal('show');  // Mở modal
         });
 
+        document.getElementById('addPost').addEventListener('click', function () {
+            $('#addPostModal').modal('show');
+        });
+
+        document.getElementById('postMediaInput').addEventListener('change', function (event) {
+            const files = event.target.files;
+            const previewContainer = document.getElementById('mediaPreview');
+            previewContainer.innerHTML = '';
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const fileType = file.type;
+                    let previewElement;
+
+                    if (fileType.startsWith('image/')) {
+                        previewElement = document.createElement('img');
+                        previewElement.src = e.target.result;
+                        previewElement.style.width = '100%';
+                    } else if (fileType.startsWith('video/')) {
+                        previewElement = document.createElement('video');
+                        previewElement.src = e.target.result;
+                        previewElement.controls = true;
+                        previewElement.style.width = '100%';
+                    }
+                    previewContainer.appendChild(previewElement);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
         document.getElementById('savePostButton').addEventListener('click', function () {
             var content = document.getElementById('postContent').value;
             var status = document.getElementById('postStatus').value;
             var location = document.getElementById('postLocation').value;
+            var hashtags = document.getElementById('postHashtags').value;
             var media = document.getElementById('postMediaInput').files[0];
 
             var user_id = localStorage.getItem('user_id');
-            var token = localStorage.getItem('token'); // Giả sử token lưu trữ ở localStorage
+            var token = localStorage.getItem('token');
 
-            // Kiểm tra nếu các trường bắt buộc bị bỏ trống
             if (!content || !status || !location) {
                 alert('Please fill in all required fields!');
-                return;  // Dừng không gửi dữ liệu nếu có trường bị bỏ trống
+                return;
             }
+
+            var postData = {
+                content: content,
+                status: status,
+                location: location,
+                hashtags: hashtags,
+                user_id: user_id
+            };
 
             var type = '';
             if (media) {
-                var fileType = media.type;  // Kiểm tra loại MIME của tệp
+                var fileType = media.type;
                 if (fileType.startsWith('image/')) {
-                    type = 'image';  // Nếu là ảnh
+                    type = 'image';
                 } else if (fileType.startsWith('video/')) {
-                    type = 'video';  // Nếu là video
+                    type = 'video';
                 } else {
-                    type = 'other';  // Nếu không phải ảnh hoặc video
+                    type = 'other';
                 }
-                console.log("Media file selected:", media);  // Kiểm tra file được chọn
             } else {
-                console.log("No media file selected");  // Nếu không có file được chọn
-                type = 'none';  // Gán 'none' nếu không có file
+                type = 'none';
             }
 
             var formData = new FormData();
-            formData.append('post', JSON.stringify({
-                content: content,
-                status: status,
-                location_id: location,
-                user_id: user_id
-            }));
+            formData.append('post', JSON.stringify(postData));
+
             if (media) {
                 formData.append('files', media);
-            } else {
-                console.log("No media file selected, sending empty file.");
             }
-            formData.append('type', type);
 
             fetch('http://localhost:8080/api/posts', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + token  // Thêm token vào header Authorization
+                    'Authorization': 'Bearer ' + token
                 },
                 body: formData
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Data:', data);
-                    alert('Post created successfully');
-                    $('#addPostModal').modal('hide');
-                    window.location.reload();
+                    if (data.success) {
+                        alert('Post created successfully');
+                        $('#addPostModal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert('Failed to create post: ' + data.message);
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     alert('An error occurred while creating the post.');
                 });
         });
+
+
 
 
 
@@ -310,6 +398,66 @@
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+
+        // viewComent
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".viewComments").forEach(button => {
+                button.addEventListener("click", function () {
+                    const postId = this.getAttribute("data-id");
+
+                    fetch(`http://localhost:8080/api/comments/postId?postId=${postId}&userId=1`, {
+                        method: "GET",
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                        }
+                    })
+                        .then(response => {
+                            return response.json();
+                        })
+                        .then(data => {
+                            const commentsListTable = document.getElementById("commentsListTable");
+                            commentsListTable.innerHTML = '';
+
+                            if (data.content.length === 0) {
+                                commentsListTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">No comments found</td></tr>';
+                            } else {
+                                data.content.forEach((comment, index) => {
+                                    const row = document.createElement("tr");
+                                    const avatarUrl = comment.avatar;
+                                    const avatar = comment.avatar ?
+                                        `<img src="${avatarUrl}" alt="${comment.fullname}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` :
+                                        `<div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ddd; display: flex; justify-content: center; align-items: center; margin-right: 10px;">
+                                ${comment.fullname.charAt(0).toUpperCase()}
+                            </div>`;
+
+                                    row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td style="display: flex; align-items: center;">
+                                ${avatar}
+                                ${comment.fullname}
+                            </td>
+                            <td>${comment.content}</td>
+                            <td>${comment.create_time}</td>
+                        `;
+
+                                    commentsListTable.appendChild(row);
+                                });
+                            }
+
+                            $('#commentsModal').modal('show');
+                        })
+                        .catch(error => {
+                            console.error('Error fetching comments:', error);
+                            alert('Có lỗi xảy ra khi tải bình luận.');
+                        });
+                });
+            });
+        });
+
+
+
+
+
 
     </script>
 

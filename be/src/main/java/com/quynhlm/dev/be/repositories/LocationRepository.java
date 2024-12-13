@@ -16,6 +16,9 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
     @Query(value = "SELECT * FROM Location WHERE id = :id", nativeQuery = true)
     Location getAnLocation(@Param("id") Integer id);
 
+    @Query(value = "SELECT * FROM Location WHERE address = :address", nativeQuery = true)
+    Location getLocationWithLocation(@Param("address") String address);
+
     @Query(value = """
             SELECT *
             FROM Location""", nativeQuery = true)

@@ -78,27 +78,32 @@ public class PostService {
 
     @Transactional
     public PostSaveResponseDTO insertPost(PostRequestDTO postRequestDTO, List<MultipartFile> files)
-            throws UnknownException , UserAccountNotFoundException , LocationNotFoundException {
+            throws UnknownException, UserAccountNotFoundException {
         try {
 
             User foundUser = userRepository.getAnUser(postRequestDTO.getUser_id());
 
             if (foundUser == null) {
-                throw new UserAccountNotFoundException("Found user with " + postRequestDTO.getUser_id() + " not found . Please try again !");
-            }
-
-            Location foundLocation = locationRepository.getAnLocation(postRequestDTO.getLocation_id());
-
-            if (foundLocation == null) {
-                throw new LocationNotFoundException("Found user with " + postRequestDTO.getUser_id() + " not found . Please try again !");
+                throw new UserAccountNotFoundException(
+                        "Found user with " + postRequestDTO.getUser_id() + " not found . Please try again !");
             }
 
             Post post = new Post();
             post.setContent(postRequestDTO.getContent());
             post.setStatus(postRequestDTO.getStatus());
             post.setUser_id(postRequestDTO.getUser_id());
-            post.setLocation_id(postRequestDTO.getLocation_id());
 
+            Location foundLocation = locationRepository.getLocationWithLocation(postRequestDTO.getLocation());
+            if(foundLocation == null){
+                Location location = new Location();
+                location.setAddress(postRequestDTO.getLocation());
+                Location saveLocation = locationRepository.save(location);
+    
+                post.setLocation_id(saveLocation.getId());
+            }else{
+                post.setLocation_id(foundLocation.getId());
+            }
+        
             post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             Post savedPost = postRepository.save(post);
             if (files != null && !files.isEmpty()) {
@@ -294,31 +299,33 @@ public class PostService {
 
         postSaveResponseDTO.setHashtags(hashtags);
 
-
         List<String> medias = mediaRepository.findMediaByPostId(((Number) result[1]).intValue());
 
         postSaveResponseDTO.setMediaUrls(medias);
-        
+
         return postSaveResponseDTO;
     }
 
     // Update post
 
     public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files, String newType)
-            throws PostNotFoundException, UnknownException {
+            throws PostNotFoundException,LocationNotFoundException, UnknownException {
         try {
-
             Post foundPost = postRepository.getAnPost(post_id);
             if (foundPost == null) {
                 throw new PostNotFoundException(
                         "Id " + post_id + " not found or invalid data. Please try another!");
             }
+            
+            Location location = locationRepository.getAnLocation(foundPost.getLocation_id());
+
+            if(postRequestDTO.getLocation() != null){
+                location.setAddress(postRequestDTO.getLocation());
+                locationRepository.save(location);
+            }
 
             if (postRequestDTO.getContent() != null) {
                 foundPost.setContent(postRequestDTO.getContent());
-            }
-            if (postRequestDTO.getLocation_id() != null) {
-                foundPost.setLocation_id(postRequestDTO.getLocation_id());
             }
             if (postRequestDTO.getStatus() != null) {
                 foundPost.setStatus(postRequestDTO.getStatus());
