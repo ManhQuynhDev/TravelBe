@@ -11,32 +11,45 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
-    Page<Review> findAll(Pageable pageable);
+        Page<Review> findAll(Pageable pageable);
 
-    @Query(value = "SELECT * FROM Review WHERE id = :id", nativeQuery = true)
-    Review getAnReview(@Param("id") Integer id);
+        @Query(value = "SELECT * FROM Review WHERE id = :id", nativeQuery = true)
+        Review getAnReview(@Param("id") Integer id);
 
-    @Query(value = """
-            select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
-            inner join User u ON u.id = r.user_id
-            INNER JOIN Location l ON l.id = r.location_id
-            WHERE r.id = :id;
-                            """, nativeQuery = true)
-    List<Object[]> getAnReviewDetails(@Param("id") Integer id);
+        @Query(value = "SELECT * FROM Review WHERE user_id = :user_id AND location_id = :location_id", nativeQuery = true)
+        Review foundExitsReview(@Param("user_id") Integer user_id, @Param("location_id") Integer location_id);
 
-    @Query(value = """
-            select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
-            inner join User u ON u.id = r.user_id
-            INNER JOIN Location l ON l.id = r.location_id
-            WHERE r.user_id = :user_id;
-                                """, nativeQuery = true)
-    Page<Object[]> getReviewWithUserId(@Param("user_id") Integer user_id, Pageable pageable);
+        @Query(value = """
+                        select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
+                        inner join User u ON u.id = r.user_id
+                        INNER JOIN Location l ON l.id = r.location_id
+                        WHERE r.id = :id;
+                                        """, nativeQuery = true)
+        List<Object[]> getAnReviewDetails(@Param("id") Integer id);
 
-    @Query(value = """
-            select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
-            inner join User u ON u.id = r.user_id
-            INNER JOIN Location l ON l.id = r.location_id
-            WHERE r.location_id = :location_id;
-                                """, nativeQuery = true)
-    Page<Object[]> getReviewWithLocationId(@Param("location_id") Integer location_id, Pageable pageable);
+        @Query(value = """
+                        select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
+                        inner join User u ON u.id = r.user_id
+                        INNER JOIN Location l ON l.id = r.location_id
+                        WHERE r.user_id = :user_id;
+                                            """, nativeQuery = true)
+        Page<Object[]> getReviewWithUserId(@Param("user_id") Integer user_id, Pageable pageable);
+
+        @Query(value = """
+                        select r.id as review_id , r.user_id , r.location_id ,l.address, u.fullname , u.avatar_url ,  r.content , r.media_url , r.star , r.create_time from review r
+                        inner join User u ON u.id = r.user_id
+                        INNER JOIN Location l ON l.id = r.location_id
+                        WHERE r.location_id = :location_id;
+                                            """, nativeQuery = true)
+        Page<Object[]> getReviewWithLocationId(@Param("location_id") Integer location_id, Pageable pageable);
+
+        @Query(value = """
+                        SELECT
+                        ROUND(SUM(r.star) * 1.0 / COUNT(*), 2) AS average_star
+                        FROM review r
+                        INNER JOIN Location l ON l.id = r.location_id
+                        WHERE r.location_id = 1
+                        GROUP BY r.location_id, l.address;
+                                                                """, nativeQuery = true)
+        double averageStarWithLocation(@Param("location_id") Integer location_id);
 }

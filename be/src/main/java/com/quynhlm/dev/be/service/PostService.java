@@ -37,6 +37,7 @@ import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
+import com.quynhlm.dev.be.repositories.ReviewRepository;
 import com.quynhlm.dev.be.repositories.TagRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
@@ -58,6 +59,9 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private MediaRepository mediaRepository;
@@ -197,6 +201,8 @@ public class PostService {
             post.setShare_count(((Number) row[14]).intValue());
             post.setIsTag(((Number) row[15]).intValue());
             post.setUser_reaction_type((String) row[16]);
+
+            post.setAverageRating(reviewRepository.averageStarWithLocation(((Number) row[2]).intValue()));
 
             List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
 

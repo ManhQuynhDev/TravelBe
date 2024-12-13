@@ -17,6 +17,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.LocationNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReViewNotFoundException;
+import com.quynhlm.dev.be.core.exception.ReviewExitstingException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReViewRequestDTO;
@@ -53,7 +54,7 @@ public class ReviewService {
     }
 
     public ReviewResponseDTO insertReview(ReViewRequestDTO reViewRequestDTO, MultipartFile file)
-            throws UserAccountNotFoundException, LocationNotFoundException, UnknownException {
+            throws UserAccountNotFoundException, LocationNotFoundException, ReviewExitstingException, UnknownException {
         try {
 
             User foundUser = userRepository.getAnUser(reViewRequestDTO.getUser_id());
@@ -66,6 +67,13 @@ public class ReviewService {
             if (foundLocation == null) {
                 throw new LocationNotFoundException("Found location with id " + reViewRequestDTO.getLocation_id()
                         + " not found , please try again");
+            }
+
+            Review exitsReview = repository.foundExitsReview(reViewRequestDTO.getUser_id(),
+                    reViewRequestDTO.getLocation_id());
+            if (exitsReview != null) {
+                throw new ReviewExitstingException("Review was from user " + reViewRequestDTO.getUser_id()
+                        + " already exits , please try again");
             }
 
             Review review = new Review();

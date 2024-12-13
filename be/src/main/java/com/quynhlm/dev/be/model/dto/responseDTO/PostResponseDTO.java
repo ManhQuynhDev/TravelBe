@@ -28,6 +28,7 @@ public class PostResponseDTO {
     private Integer share_count;
     private Integer isTag;
     private String user_reaction_type;
+    private double averageRating;
     
     private List<String> hashtags;
     private List<String> mediaUrls;
