@@ -15,6 +15,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
   @Query(value = "SELECT DISTINCT * FROM Comment WHERE id = :id", nativeQuery = true)
   Comment findComment(@Param("id") Integer id);
 
+  @Query(value = "SELECT * FROM Comment WHERE post_id = : post_id", nativeQuery = true)
+  List<Comment> findCommentWithPostId(@Param("post_id") Integer post_id);
   @Query(value = """
        select
                  DISTINCT

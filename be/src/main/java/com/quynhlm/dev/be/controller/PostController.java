@@ -109,8 +109,7 @@ public class PostController {
     @PutMapping(path = "/{post_id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseObject<?>> updatePost(@PathVariable Integer post_id,
             @RequestPart("post") String postJson,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            @RequestPart(value = "type", required = false) String type) throws Exception {
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) throws Exception {
 
         ObjectMapper objectMapper = new ObjectMapper();
         PostRequestDTO post = null;
@@ -121,7 +120,7 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        postService.updatePost(post_id, post, files, type);
+        postService.updatePost(post_id, post, files);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Update post successfully");
         result.setStatus(true);

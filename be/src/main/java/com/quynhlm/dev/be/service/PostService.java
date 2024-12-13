@@ -2,7 +2,9 @@ package com.quynhlm.dev.be.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.sql.Timestamp;
 
@@ -234,8 +236,8 @@ public class PostService {
             throw new PostNotFoundException("Id " + post_id + " not found. Please try another!");
         }
 
-        Media media = mediaRepository.foundMediaByPostId(post_id);
-        if (media != null) {
+        List<Media> medias = mediaRepository.foundMediaByPostId(post_id);
+        for (Media media : medias) {
             mediaRepository.delete(media);
         }
 
@@ -349,17 +351,16 @@ public class PostService {
 
     // Update post
 
-    public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files, String newType)
+    public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files)
             throws PostNotFoundException, LocationNotFoundException, UnknownException {
         try {
+            // Tìm bài viết
             Post foundPost = postRepository.getAnPost(post_id);
             if (foundPost == null) {
-                throw new PostNotFoundException(
-                        "Id " + post_id + " not found or invalid data. Please try another!");
+                throw new PostNotFoundException("Id " + post_id + " not found or invalid data. Please try another!");
             }
 
             Location location = locationRepository.getAnLocation(foundPost.getLocation_id());
-
             if (postRequestDTO.getLocation() != null) {
                 location.setAddress(postRequestDTO.getLocation());
                 locationRepository.save(location);
@@ -372,37 +373,60 @@ public class PostService {
                 foundPost.setStatus(postRequestDTO.getStatus());
             }
 
-            // Nếu người dùng có tải lên các tệp tin mới
+            // Lấy danh sách media hiện tại
+            List<Media> currentMedias = mediaRepository.foundMediaByPostId(post_id);
+            Set<String> newMediaUrls = new HashSet<>(); // Set để lưu các URL media mới
+
+            // Nếu có tệp tin mới được tải lên
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
                     if (file.isEmpty()) {
-                        continue; // Bỏ qua tệp rỗng
+                        continue;
                     }
 
                     String fileName = file.getOriginalFilename();
                     long fileSize = file.getSize();
                     String contentType = file.getContentType();
 
+                    // Upload file lên S3
                     try (InputStream inputStream = file.getInputStream()) {
                         ObjectMetadata metadata = new ObjectMetadata();
                         metadata.setContentLength(fileSize);
                         metadata.setContentType(contentType);
 
-                        // Tải tệp lên S3
                         amazonS3.putObject(bucketName, fileName, inputStream, metadata);
 
-                        // Cập nhật thông tin media
-                        Media media = mediaRepository.foundMediaByPostId(post_id);
-                        if (media != null) {
-                            String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
-                                    fileName);
-                            media.setMedia_url(mediaUrl);
-                            media.setType(newType);
-                            mediaRepository.save(media);
-                        } else {
-                            // Nếu không tìm thấy media, có thể thêm logic để tạo mới nếu cần
+                        String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                                fileName);
+                        newMediaUrls.add(mediaUrl);
+
+                        // Xác định loại media (IMAGE hoặc VIDEO)
+                        String mediaType = (fileName != null && fileName.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                                ? "IMAGE"
+                                : "VIDEO";
+
+                        // Kiểm tra media đã tồn tại chưa, nếu chưa thì thêm vào
+                        boolean mediaExists = false;
+                        for (Media existingMedia : currentMedias) {
+                            if (existingMedia.getMedia_url().equals(mediaUrl)) {
+                                mediaExists = true;
+                                break;
+                            }
+                        }
+
+                        // Nếu media chưa tồn tại trong database, thêm mới
+                        if (!mediaExists) {
+                            Media newMedia = new Media(null, post_id, mediaUrl, mediaType);
+                            mediaRepository.save(newMedia);
                         }
                     }
+                }
+            }
+
+            // Xóa các media cũ không còn tồn tại trong danh sách mới
+            for (Media media : currentMedias) {
+                if (!newMediaUrls.contains(media.getMedia_url())) {
+                    mediaRepository.delete(media);
                 }
             }
 
