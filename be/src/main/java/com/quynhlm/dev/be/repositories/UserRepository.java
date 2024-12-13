@@ -15,8 +15,8 @@ import com.quynhlm.dev.be.model.entity.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     // Page<User> findAll(Pageable pageable);
-
-    User findOneByEmail(String email);
+    @Query(value = "SELECT * FROM User WHERE email = :email", nativeQuery = true)
+    User getAnUserByEmail(@Param("email") String email);
 
     List<User> findByEmail(String email);
 

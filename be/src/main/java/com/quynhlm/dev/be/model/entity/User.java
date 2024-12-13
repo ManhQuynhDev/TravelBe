@@ -46,5 +46,6 @@ public class User {
     private Timestamp create_at;
     private String isLocked;
     private String deviceToken;
+    private String currentDevice;
     private LocalDateTime lastNameChangeDate;
 }
