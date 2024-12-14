@@ -1,9 +1,7 @@
 package com.quynhlm.dev.be.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,12 +18,19 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MessageDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
 import com.quynhlm.dev.be.model.entity.Message;
 import com.quynhlm.dev.be.service.MessageService;
+import com.quynhlm.dev.be.service.UserService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component
 public class MessageSocketController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private UserService userService;
 
     private SocketIONamespace namespace;
 
@@ -84,7 +89,9 @@ public class MessageSocketController {
 
         String room = generateRoom(senderId, receiverId);
         if (room != null && !room.isEmpty()) {
-            userTypingMap.put(user_id, true);
+            String name =  userService.getUserFullname(Integer.parseInt(user_id));
+            System.out.println("Fullname :" + name);
+            userTypingMap.put(name, true);
             namespace.getRoomOperations(room).sendEvent("typingUsers", userTypingMap);
         }
     };
@@ -96,7 +103,8 @@ public class MessageSocketController {
         String room = generateRoom(senderId, receiverId);
 
         if (room != null && !room.isEmpty()) {
-            userTypingMap.remove(user_id);
+            String name =  userService.getUserFullname(Integer.parseInt(user_id));
+            userTypingMap.remove(name);
             namespace.getRoomOperations(room).sendEvent("typingUsers", userTypingMap);
         }
     };
@@ -160,8 +168,8 @@ public class MessageSocketController {
         }
     };
 
-    public List<String> getUsersInRoom(String roomId, String senderId, String messageId) {
-        List<String> users = new ArrayList<>();
+    public Map<String, String> getUsersInRoom(String roomId, String senderId, String messageId) {
+        Map<String, String> users = new HashMap<>();
 
         if (messageStatus.containsKey(roomId)) {
             Map<String, Boolean> roomMessages = messageStatus.get(roomId);
@@ -169,15 +177,12 @@ public class MessageSocketController {
             // Lọc bỏ người gửi (nếu có trong danh sách)
             for (String userId : roomMessages.keySet()) {
                 if (!userId.equals(senderId)) {
-                    users.add(userId);
+                    String name = userService.getUserFullname(Integer.parseInt(userId));
+                    users.put(userId, name);
                 }
             }
         } else {
             System.out.println("No users have seen messages in room " + roomId);
-        }
-        for (String userId : users) {
-            System.out.println("User seen" + userId);
-            // messageService.changeStatusMessage(Integer.parseInt(messageId), true);
         }
         return users;
     }

@@ -28,4 +28,5 @@ public class Member {
     private String join_time;
     private String role;
     private String status;
+    private boolean enableNotification;
 }

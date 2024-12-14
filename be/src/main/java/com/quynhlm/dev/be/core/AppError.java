@@ -29,7 +29,8 @@ public class AppError {
         METHOD_NOT_ALLOWED,
         USER_ALREADY,
         NOTIFICATION_NOT_FOUND,
-        LOCATION_NOT_FOUND
+        LOCATION_NOT_FOUND,
+        REVIEW_EXIST,
     }
 
     private ErrorCode code;

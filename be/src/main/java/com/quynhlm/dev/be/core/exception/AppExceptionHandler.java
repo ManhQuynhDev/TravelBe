@@ -24,7 +24,8 @@ public class AppExceptionHandler {
             ReViewNotFoundException.class, GroupExistingException.class, GroupNotFoundException.class,
             MemberNotFoundException.class, CommentNotFoundException.class, TravelPlanNotFoundException.class,
             ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
-            ReplyNotFoundException.class, ReportExistingException.class, TagNotFoundException.class })
+            ReplyNotFoundException.class, ReportExistingException.class, TagNotFoundException.class,
+            LocationNotFoundException.class, NotificationNotFoundException.class, ReviewExitstingException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -92,6 +93,9 @@ public class AppExceptionHandler {
                 break;
             case "LocationNotFoundException":
                 errorCode = AppError.ErrorCode.LOCATION_NOT_FOUND;
+                break;
+            case "ReviewExitstingException":
+                errorCode = AppError.ErrorCode.REVIEW_EXIST;
                 break;
             default:
                 errorCode = AppError.ErrorCode.UNKNOWN;

@@ -36,8 +36,6 @@
                                 <div class="text-center">
                                     <div class="mb-5">
                                         <h1 class="display-4">Sign in</h1>
-                                        <p>Don't have an account yet? <a th:href="@{/web-server/register}">Sign up
-                                                here</a></p>
                                     </div>
                                 </div>
 
@@ -109,7 +107,7 @@
         document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById("signinSrEmail");
             const password = document.getElementById("signupSrPassword");
-            const rememberMe = document.getElementById("termsCheckbox"); // Checkbox "Remember me"
+            const rememberMe = document.getElementById("termsCheckbox");
             const submit = document.getElementById("submit");
 
             // Tải thông tin từ Local Storage nếu có
@@ -135,12 +133,18 @@
                         body: JSON.stringify(formData),
                     });
 
+                    const data = await response.json(); // Gọi response.json() một lần duy nhất
+
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error.message || "HTTP error");
+                        // Nếu có lỗi từ server, ném lỗi với thông báo từ API
+                        throw new Error(data.error?.message || "Invalid email or password");
                     }
 
-                    const data = await response.json();
+                    // Kiểm tra xem userInfo và id có tồn tại không
+                    if (!data.userInfo || !data.userInfo.id) {
+                        throw new Error("Invalid email or password");
+                    }
+
                     const token = data.token;
                     const user_id = data.userInfo.id;
 
@@ -158,8 +162,9 @@
                     }
 
                     // Chuyển hướng dựa vào vai trò
-                    const userRole = data.userInfo.roles[0];
+                    const userRole = data.userInfo.roles?.[0]; // Kiểm tra roles tồn tại
                     localStorage.setItem('userRole', userRole);
+
                     if (userRole === "ADMIN" || userRole === "MANAGER") {
                         alert("Login successful!");
                         window.location.href = '/web-server/';
@@ -168,7 +173,8 @@
                     }
 
                 } catch (error) {
-                    alert(error.message);
+                    // Hiển thị thông báo lỗi
+                    alert(error.message || "An unexpected error occurred.");
                 } finally {
                     submit.disabled = false;
                     submit.textContent = 'Log in';
@@ -185,6 +191,7 @@
                 }
             });
         });
+
 
 
 

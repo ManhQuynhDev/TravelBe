@@ -23,4 +23,18 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
             SELECT *
             FROM Location""", nativeQuery = true)
     Page<Location> findAllLocation(Pageable pageable);
+
+    @Query(value = """
+            SELECT
+            l.id AS locationId,
+            l.address AS address,
+            COUNT(*) AS checkinCount
+            FROM post
+            INNER JOIN Location l ON l.id = post.location_id
+            WHERE location_id IS NOT NULL
+            GROUP BY l.id, l.address
+            ORDER BY checkinCount DESC
+            LIMIT 5
+            """, nativeQuery = true)
+    List<Object[]> touristStatistics();
 }

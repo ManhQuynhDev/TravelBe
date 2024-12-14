@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
@@ -46,11 +45,10 @@ public class HomeController {
     @Autowired
     private StoryService storyService;
 
-
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();
-        
+
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();
@@ -116,11 +114,6 @@ public class HomeController {
         return "activity";
     }
 
-    @GetMapping("/account-settings")
-    public String accountSetting(Model model) {
-        return "accountSetting";
-    }
-
     @GetMapping("/stories")
     public String stories(Model model) {
         model.addAttribute("storyList", storyService.getAllStory(0, 1000));
@@ -133,14 +126,24 @@ public class HomeController {
         return "comments";
     }
 
-    @GetMapping("/register")
-    public String regiter(Model model) {
-        return "register";
-    }
-
     @GetMapping("/login")
     public String login(Model model) {
         return "login";
+    }
+
+    @GetMapping("/edit-profile")
+    public String editprofile(Model model) {
+        return "editProfile";
+    }
+
+    @GetMapping("/profile")
+    public String getMethodName(Model model) {
+        return "profile";
+    }
+    
+    @GetMapping("/reports")
+    public String reports(Model model) {
+        return "reports";
     }
 
 }

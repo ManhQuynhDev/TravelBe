@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home</title>
+    <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+
+</head>
+
+<body>
+    <div th:replace="fragments/buildertoggle"></div>
+    <div th:replace="fragments/headerMain"></div>
+    <div id="headerFluid" class="d-none">
+        <header id="header"
+            class="navbar navbar-expand-xl navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered  ">
+            <div class="js-mega-menu navbar-nav-wrap">
+                <div class="navbar-brand-wrapper">
+                    <a class="navbar-brand" th:href="@{/}" aria-label="Front">
+                        <img class="navbar-brand-logo" th:src="@{/assets/svg/logos/logo.svg}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+        </header>
+    </div>
+    <div id="headerDouble" class="d-none">
+        <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
+        </header>
+    </div>
+    <div th:replace="fragments/sidebarMain"></div>
+    <div id="sidebarCompact" class="d-none">
+        <aside
+            class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
+            <div class="navbar-vertical-container">
+                <div class="navbar-vertical-content">
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div th:replace="fragments/searchDropdown"></div>
+    <div id="content" role="main" class="main pointer-event">
+        <div class="content container-fluid">
+            <div class="row justify-content-lg-center">
+                <div class="col-lg-10">
+                    <!-- Profile Cover -->
+                    <div class="profile-cover">
+                        <div class="profile-cover-img-wrapper">
+                            <img id="profileCoverImg" class="profile-cover-img" src="/assets/img/1920x400/img2.jpg"
+                                alt="Image Description">
+
+                            <!-- Custom File Cover -->
+                            <div class="profile-cover-content profile-cover-btn">
+                                <div class="custom-file-btn">
+
+                                </div>
+                            </div>
+                            <!-- End Custom File Cover -->
+                        </div>
+                    </div>
+                    <!-- End Profile Cover -->
+
+                    <!-- Profile Header -->
+                    <div class="text-center mb-5">
+                        <!-- Avatar -->
+                        <label
+                            class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader profile-cover-avatar"
+                            for="avatarUploader" id="avatarLabel">
+                            <img id="avatarImgInput" class="avatar-img" src="assets\img\160x160\img6.jpg"
+                                alt="Image Description">
+
+                            <input type="file" class="js-file-attach avatar-uploader-input" id="avatarUploader"
+                                data-hs-file-attach-options='{
+                                "textTarget": "#avatarImg",
+                                "mode": "image",
+                                "targetAttr": "src",
+                                "allowTypes": [".png", ".jpeg", ".jpg"]
+                            }'>
+
+                            <span class="avatar-uploader-trigger" id="avatarUploaderTrigger">
+                                <i class="tio-edit avatar-uploader-icon shadow-soft"></i>
+                            </span>
+                        </label>
+                        <h1 class="page-header-title" id="userNameInputs">Mark Williams</h1>
+
+                        <ul class="list-inline list-inline-m-1" id="userDetails">
+                            <li class="list-inline-item">
+                                <i class="tio-city mr-1"></i>
+                                <span id="company">Pixeel Ltd.</span>
+                            </li>
+
+                            <li class="list-inline-item">
+                                <i class="tio-poi-outlined mr-1"></i>
+                                <a href="#" id="city">Ha Noi,</a>
+                                <a href="#" id="country">VN</a>
+                            </li>
+
+                            <li class="list-inline-item">
+                                <i class="tio-date-range mr-1"></i>
+                                <span id="joinDateInput">Joined March 2013</span>
+                            </li>
+                        </ul>
+                        <!-- End List -->
+                    </div>
+
+                    <div class="js-nav-scroller hs-nav-scroller-horizontal mb-5" data-hs-nav-scroller-options='{
+                       "type": "horizontal",
+                       "delay": 20
+                     }'>
+
+                        <span class="hs-nav-scroller-arrow-backward" style="display: none;">
+                            <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                                <i class="tio-chevron-left"></i>
+                            </a>
+                        </span>
+
+                        <span class="hs-nav-scroller-arrow-forward" style="display: none;">
+                            <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                                <i class="tio-chevron-right"></i>
+                            </a>
+                        </span>
+
+                        <ul class="nav nav-tabs align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link active disabled" href="#">Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">Teams</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">Projects</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">Connections</a>
+                            </li>
+
+                            <li class="nav-item ml-auto">
+                                <a class="btn btn-sm btn-white mr-2" th:href="@{/web-server/edit-profile}">
+                                    <i class="tio-edit mr-1"></i> Edit profile
+                                </a>
+
+                                <a class="btn btn-icon btn-sm btn-white mr-2" href="#">
+                                    <i class="tio-format-points mr-1"></i>
+                                </a>
+
+                                <!-- Unfold -->
+                                <div class="hs-unfold hs-nav-scroller-unfold">
+                                    <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-white" href="javascript:;"
+                                        data-hs-unfold-options='{
+                             "target": "#profileDropdown",
+                             "type": "css-animation"
+                           }'>
+                                        <i class="tio-more-vertical"></i>
+                                    </a>
+
+                                    <div id="profileDropdown"
+                                        class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
+                                        <span class="dropdown-header">Settings</span>
+
+                                        <a class="dropdown-item" href="#">
+                                            <i class="tio-share dropdown-item-icon"></i> Share profile
+                                        </a>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="tio-blocked dropdown-item-icon"></i> Block page and profile
+                                        </a>
+                                        <a class="dropdown-item" href="#">
+                                            <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
+                                        </a>
+
+                                        <div class="dropdown-divider"></div>
+
+                                        <span class="dropdown-header">Feedback</span>
+
+                                        <a class="dropdown-item" href="#">
+                                            <i class="tio-report-outlined dropdown-item-icon"></i> Report
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- End Unfold -->
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- End Nav -->
+
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <!-- Card -->
+                            <div class="card card-body mb-3 mb-lg-5">
+                                <h5>Complete your profile</h5>
+
+                                <!-- Progress -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="progress flex-grow-1">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 15%"
+                                            aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <span class="ml-4">15%</span>
+                                </div>
+                                <!-- End Progress -->
+                            </div>
+                            <!-- End Card -->
+
+                            <!-- Card -->
+                            <div class="card mb-3 mb-lg-5">
+                                <!-- Header -->
+                                <div class="card-header">
+                                    <h2 class="card-header-title h5">Profile</h2>
+
+                                    <a class="btn btn-sm btn-white" th:href="@{/web-server/edit-profile}">Edit</a>
+                                </div>
+                                <!-- End Header -->
+
+                                <!-- Body -->
+                                <div class="card-body">
+                                    <ul class="list-unstyled list-unstyled-py-3 text-dark mb-3">
+                                        <li class="py-0">
+                                            <small class="card-subtitle">About</small>
+                                        </li>
+
+                                        <li>
+                                            <i class="tio-user-outlined nav-icon"></i>
+                                            Mark Williams
+                                        </li>
+                                        <li>
+                                            <i class="tio-briefcase-outlined nav-icon"></i>
+                                            No department title
+                                        </li>
+                                        <li>
+                                            <i class="tio-city nav-icon"></i>
+                                            Pixeel Ltd.
+                                        </li>
+
+                                        <li class="pt-2 pb-0">
+                                            <small class="card-subtitle">Contacts</small>
+                                        </li>
+
+                                        <li>
+                                            <i class="tio-online nav-icon"></i>
+                                            mark@example.com
+                                        </li>
+                                        <li>
+                                            <i class="tio-android-phone-vs nav-icon"></i>
+                                            +1 (555) 752-01-10
+                                        </li>
+
+                                        <li class="pt-2 pb-0">
+                                            <small class="card-subtitle">Teams</small>
+                                        </li>
+
+                                        <li class="font-size-sm text-body">
+                                            <i class="tio-group-equal nav-icon"></i>
+                                            You are not a member of any teams
+                                        </li>
+                                        <li class="font-size-sm text-body">
+                                            <i class="tio-briefcase-outlined nav-icon"></i>
+                                            You are not working on any projects
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- End Body -->
+                            </div>
+                            <!-- End Card -->
+
+                            <!-- Card -->
+                            <div class="card card-lg mb-3 mb-lg-5">
+                                <!-- Body -->
+                                <div class="card-body text-center">
+                                    <div class="w-50 mx-auto mb-4">
+                                        <img class="img-fluid" src="assets\svg\illustrations\unlock.svg"
+                                            alt="Image Description">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <h3>2-step verification</h3>
+                                        <p>Protect your account now and enable 2-step verification in the settings.</p>
+                                    </div>
+
+                                    <a class="btn btn-primary"
+                                        href="account-settings.html#twoStepVerificationSection">Enable Now</a>
+                                </div>
+                                <!-- End Body -->
+                            </div>
+                            <!-- End Card -->
+                        </div>
+
+                        <div class="col-lg-8">
+                            <!-- Card -->
+                            <div class="card mb-3 mb-lg-5">
+                                <!-- Header -->
+                                <div class="card-header">
+                                    <h2 class="card-header-title h5">Activity stream</h2>
+
+                                    <!-- Unfold -->
+                                    <div class="hs-unfold">
+                                        <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
+                                            href="javascript:;" data-hs-unfold-options='{
+                               "target": "#contentActivityStreamDropdown",
+                               "type": "css-animation"
+                             }'>
+                                            <i class="tio-more-vertical"></i>
+                                        </a>
+
+                                        <div id="contentActivityStreamDropdown"
+                                            class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
+                                            <span class="dropdown-header">Settings</span>
+
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-share dropdown-item-icon"></i> Share connections
+                                            </a>
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
+                                            </a>
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <span class="dropdown-header">Feedback</span>
+
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-chat-outlined dropdown-item-icon"></i> Report
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!-- End Unfold -->
+                                </div>
+                                <!-- End Header -->
+
+                                <!-- Body -->
+                                <div class="card-body card-body-height card-body-centered">
+                                    <img class="avatar avatar-xxl mb-3" src="assets\svg\illustrations\yelling.svg"
+                                        alt="Image Description">
+                                    <p class="card-text">No data to show</p>
+                                    <a class="btn btn-sm btn-white" href="#">Start your Activity</a>
+                                </div>
+                                <!-- End Body -->
+                            </div>
+                            <!-- End Card -->
+
+                            <!-- Card -->
+                            <div class="card mb-3 mb-lg-5">
+                                <!-- Header -->
+                                <div class="card-header">
+                                    <h2 class="card-header-title h5">Projects</h2>
+
+                                    <!-- Unfold -->
+                                    <div class="hs-unfold">
+                                        <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
+                                            href="javascript:;" data-hs-unfold-options='{
+                               "target": "#projectReportDropdown",
+                               "type": "css-animation"
+                             }'>
+                                            <i class="tio-more-vertical"></i>
+                                        </a>
+
+                                        <div id="projectReportDropdown"
+                                            class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
+                                            <span class="dropdown-header">Settings</span>
+
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-share dropdown-item-icon"></i> Share connections
+                                            </a>
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
+                                            </a>
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <span class="dropdown-header">Feedback</span>
+
+                                            <a class="dropdown-item" href="#">
+                                                <i class="tio-chat-outlined dropdown-item-icon"></i> Report
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-body card-body-height card-body-centered">
+                                    <img class="avatar avatar-xxl mb-3" src="assets\svg\illustrations\yelling.svg"
+                                        alt="Image Description">
+                                    <p class="card-text">No data to show</p>
+                                    <a class="btn btn-sm btn-white" href="projects.html">Start your Projects</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+    <script th:src="@{/assets/js/userjs.js}"></script>
+    <script>
+        $(document).on('ready', function () {
+            $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+                $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+            });
+            var megaMenu = new HSMegaMenu($('.js-mega-menu'), {
+                desktop: {
+                    position: 'left'
+                }
+            }).init();
+            var sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+            $('.js-nav-tooltip-link').tooltip({ boundary: 'window' });
+            $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+                if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                    return false;
+                }
+            });
+        });
+        $('.js-hs-unfold-invoker').each(function () {
+            var unfold = new HSUnfold($(this)).init();
+        });
+
+        document.getElementById("logoutLink").addEventListener("click", function () {
+            window.location.replace("/web-server/login");
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hs-sticky-block@1.0.0/dist/hs-sticky-block.min.js"></script>
+    <script>
+        $(document).on('ready', function () {
+            $('.js-sticky-block').each(function () {
+                var stickyBlock = new HSStickyBlock($(this), {
+                    targetSelector: $('#header').hasClass('navbar-fixed') ? '#header' : null
+                }).init();
+            });
+            var scrollspy = new HSScrollspy($('body'), {
+                beforeScroll: function (resolve) {
+                    if (window.innerWidth < 992) {
+                        $('#navbarVerticalNavMenu').collapse('hide').on('hidden.bs.collapse', function () {
+                            return resolve('completed');
+                        });
+                    } else {
+                        return resolve('completed');
+                    }
+                }
+            }).init();
+            $('.js-pwstrength').each(function () {
+                var pwstrength = $.HSCore.components.HSPWStrength.init($(this));
+            });
+            // Hàm lấy dữ liệu người dùng từ API bằng ID
+            function loadUserData(userId) {
+                fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                }) // Thay URL bằng endpoint của bạn
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok " + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Gán dữ liệu vào form
+                        console.log("API Response:", data);
+                        document.getElementById("userNameInputs").innerText = data.data.fullname || "";
+                        document.getElementById("company").innerText = data.data.roles[0] || "";
+                        var createAt = data.data.create_at;
+                        var year = new Date(createAt).getFullYear();
+                        document.getElementById("joinDateInput").innerText = `Joined ${year}` || "";
+                        const profileImg = document.getElementById("avatarImgInput");
+
+                        if (data.data.avatarUrl) {
+                            profileImg.src = data.data.avatarUrl;  // Nếu có ảnh, sử dụng ảnh từ API
+                        } else {
+                            const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : '';
+                            profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`; 
+                        }
+                    })
+                    .catch(error => {
+                        console.error("There was a problem fetching user data:", error);
+                    });
+            }
+
+            // Gọi hàm để load dữ liệu với ID người dùng cụ thể
+            const userId = localStorage.getItem("user_id"); // Ví dụ ID người dùng
+            loadUserData(userId);
+        });
+
+
+    </script>
+    <script th:src="@{/assets/js/userjs.js}"></script>
+    <script>
+        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+    </script>
+
+</body>
+
+</html>
