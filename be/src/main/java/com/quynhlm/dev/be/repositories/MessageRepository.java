@@ -42,6 +42,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                 u.avatar_url,
                 m.media_url,
                 m.status,
+                m.reaction,
                 m.send_time
             FROM
                 message m

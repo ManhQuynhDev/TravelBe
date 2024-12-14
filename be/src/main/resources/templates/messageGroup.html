@@ -510,12 +510,12 @@
             <ul id="typing-status"></ul>
            <div id="emojiPopup" class="emoji-popup">
                 <div class="emoji-container">
-                    <span class="emoji" data-emoji="👍">👍</span>
-                    <span class="emoji" data-emoji="😂">😂</span>
-                    <span class="emoji" data-emoji="😍">😍</span>
-                    <span class="emoji" data-emoji="😎">😎</span>
-                    <span class="emoji" data-emoji="😊">😊</span>
-                    <span class="emoji" data-emoji="🥺">🥺</span>
+                    <span class="emoji" data-emoji="LIKE">👍</span>
+                    <span class="emoji" data-emoji="HAHA">😆</span>
+                    <span class="emoji" data-emoji="LOVE">❤️</span>
+                    <span class="emoji" data-emoji="WOW">😲</span>
+                    <span class="emoji" data-emoji="SAD">😔</span>
+                    <span class="emoji" data-emoji="ANGRY">😡</span>
                 </div>
             </div>
             `;
@@ -724,13 +724,12 @@
 
                 $("#messageArea").append(div);
 
-                // Add an event listener to the message element
                 const incomingMessage = document.querySelector(`#incomingMessage-${message.id}`);
                 incomingMessage.addEventListener('click', function (event) {
-                    openEmojiPopup(event);
+                    openEmojiPopup(event, message.id);
                 });
 
-                function openEmojiPopup(event) {
+                function openEmojiPopup(event, id) {
                     const emojiPopup = document.getElementById('emojiPopup');
                     const rect = event.currentTarget.getBoundingClientRect();
 
@@ -739,32 +738,34 @@
 
                     emojiPopup.style.display = 'block';
 
-                    function selectEmoji(emoji) {
-                        console.log(emoji);
-                        const emojiPopup = document.getElementById('emojiPopup');
-                        emojiPopup.style.display = 'none';
-                    }
+                    document.querySelectorAll('.emoji').forEach(function (emoji) {
+                        emoji.replaceWith(emoji.cloneNode(true));
+                    });
+
+                    document.querySelectorAll('.emoji').forEach(function (emoji) {
+                        emoji.addEventListener('click', function (event) {
+                            selectEmoji(event, id);
+                        });
+                    });
                 }
             }
 
-            function selectEmoji(event) {
+            function selectEmoji(event, id) {
                 const selectedEmoji = event.target.getAttribute('data-emoji');
-                // const messageInput = document.querySelector('#messageInput'); // Assuming there's a message input element
-                // if (messageInput) {
-                //     messageInput.value += selectedEmoji;  // Append the selected emoji to the message input
-                // }
-                console.log(selectedEmoji);
-                
+
+                const data = {
+                    messageId: id,
+                    sender: senderId,
+                    receiver: userId,
+                    icon: selectedEmoji
+                }
+
+                console.log(data);
+
                 // Hide the emoji popup after selection
                 const emojiPopup = document.getElementById('emojiPopup');
                 emojiPopup.style.display = 'none';
             }
-
-            document.querySelectorAll('.emoji').forEach(function (emoji) {
-                emoji.addEventListener('click', function (event) {
-                    selectEmoji(event);  // Trigger emoji selection when clicked
-                });
-            });
 
             document.addEventListener('click', function (event) {
                 const emojiPopup = document.getElementById('emojiPopup');

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.model.dto.requestDTO.IconDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
 import com.quynhlm.dev.be.model.entity.Message;
 import com.quynhlm.dev.be.repositories.MessageRepository;
@@ -76,6 +77,16 @@ public class MessageService {
         return getAnMessage(saveMessage.getId());
     }
 
+    public UserMessageResponseDTO updateMessage(IconDTO iconDTO) {
+        Message foundMessage = messageRepository.findByMessageId(iconDTO.getMessageId());
+
+        foundMessage.setReaction(iconDTO.getIcon());
+
+        messageRepository.save(foundMessage);
+
+        return getAnMessage(foundMessage.getId());
+    }
+
     private String handleFileUpload(String fileBase64) {
         try {
             String[] parts = fileBase64.split(",");
@@ -120,10 +131,12 @@ public class MessageService {
         String avatar = (String) result[5];
         String mediaUrl = (String) result[6];
         Boolean status = (Boolean) result[7];
-        String send_time = (String) result[8];
+        String reaction = (String) result[8];
+        String send_time = (String) result[9];
 
         return new UserMessageResponseDTO(message_id, sender_id, receiver_id, content, fullname, avatar, mediaUrl,
                 status,
+                reaction,
                 send_time);
     }
 
@@ -139,9 +152,11 @@ public class MessageService {
             String avatar = (String) row[5];
             String mediaUrl = (String) row[6];
             Boolean status = (Boolean) row[7];
-            String send_time = (String) row[8];
+            String reaction = (String) row[8];
+            String send_time = (String) row[9];
             return new UserMessageResponseDTO(message_id, sender_id, receiver_id, content, fullname, avatar, mediaUrl,
                     status,
+                    reaction,
                     send_time);
         });
     }

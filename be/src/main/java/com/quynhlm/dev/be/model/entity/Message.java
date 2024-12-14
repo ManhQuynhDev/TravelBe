@@ -23,6 +23,7 @@ public class Message {
     private String content;
     private Integer senderId;
     private Integer receiverId;
+    private String reaction;
     private String sendTime;    
     private boolean status;
     private String mediaUrl;

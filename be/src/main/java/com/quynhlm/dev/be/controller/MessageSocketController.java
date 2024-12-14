@@ -13,6 +13,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
+import com.quynhlm.dev.be.model.dto.requestDTO.IconDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.MessageSeenDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MessageDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
@@ -89,7 +90,7 @@ public class MessageSocketController {
 
         String room = generateRoom(senderId, receiverId);
         if (room != null && !room.isEmpty()) {
-            String name =  userService.getUserFullname(Integer.parseInt(user_id));
+            String name = userService.getUserFullname(Integer.parseInt(user_id));
             System.out.println("Fullname :" + name);
             userTypingMap.put(name, true);
             namespace.getRoomOperations(room).sendEvent("typingUsers", userTypingMap);
@@ -103,7 +104,7 @@ public class MessageSocketController {
         String room = generateRoom(senderId, receiverId);
 
         if (room != null && !room.isEmpty()) {
-            String name =  userService.getUserFullname(Integer.parseInt(user_id));
+            String name = userService.getUserFullname(Integer.parseInt(user_id));
             userTypingMap.remove(name);
             namespace.getRoomOperations(room).sendEvent("typingUsers", userTypingMap);
         }
@@ -129,6 +130,19 @@ public class MessageSocketController {
             this.namespace.getRoomOperations(room).sendEvent("user-chat", result);
         } catch (Exception e) {
             System.err.println("Error in onSendMessage event: " + e.getMessage());
+            e.printStackTrace();
+        }
+    };
+
+    public DataListener<IconDTO> onAddIconToMessage = (client, data, ackRequest) -> {
+        try {
+            String roomId = generateRoom(data.getSender(), data.getReceiver());
+
+            UserMessageResponseDTO messageResponseDTO = messageService.updateMessage(data);
+
+            this.namespace.getRoomOperations(roomId).sendEvent("user-chat-update", messageResponseDTO);
+        } catch (Exception e) {
+            System.err.println("Error in onAddIconToMessage event: " + e.getMessage());
             e.printStackTrace();
         }
     };

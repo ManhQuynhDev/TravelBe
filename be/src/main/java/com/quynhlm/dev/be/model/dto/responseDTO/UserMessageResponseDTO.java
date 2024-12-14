@@ -19,5 +19,6 @@ public class UserMessageResponseDTO {
     private String avatarUrl;
     private String mediaUrl;
     private Boolean status;
+    private String reaction;
     private String send_time;
 }
