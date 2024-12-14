@@ -49,6 +49,7 @@ public class MessageSocketController {
         this.namespace.addDisconnectListener(onDisconnectListener);
         this.namespace.addEventListener("send-message", MessageDTO.class, onSendMessage);
         this.namespace.addEventListener("message-seen", MessageSeenDTO.class, onMessageSeen);
+        this.namespace.addEventListener("insert-icon", IconDTO.class, onAddIconToMessage);
         this.namespace.addEventListener("userTyping", String.class, onUserTyping);
         this.namespace.addEventListener("userStoppedTyping", String.class, onUserStoppedTyping);
     }
@@ -137,6 +138,8 @@ public class MessageSocketController {
     public DataListener<IconDTO> onAddIconToMessage = (client, data, ackRequest) -> {
         try {
             String roomId = generateRoom(data.getSender(), data.getReceiver());
+
+            System.out.println("Room :" + roomId);
 
             UserMessageResponseDTO messageResponseDTO = messageService.updateMessage(data);
 

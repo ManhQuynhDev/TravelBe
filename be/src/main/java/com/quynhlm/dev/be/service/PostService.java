@@ -149,6 +149,7 @@ public class PostService {
             if (savedPost.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");
             }
+
             if (!postRequestDTO.getHashtags().isEmpty()) {
                 for (String hashtag : postRequestDTO.getHashtags()) {
                     HashTag newHashTag = new HashTag();
@@ -157,6 +158,7 @@ public class PostService {
                     hashTagRespository.save(newHashTag);
                 }
             }
+            
             return getAnPostReturnSave(savedPost.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());

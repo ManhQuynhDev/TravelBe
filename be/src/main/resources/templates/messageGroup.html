@@ -395,6 +395,8 @@
         const token = localStorage.getItem('authToken');
         const senderId = localStorage.getItem('user_id');
 
+        let currentManagerId = null;
+
         const handelCallData = () => {
             fetch(`http://localhost:8080/onboarding/users/manager?page=0&size=1000`, {
                 method: 'GET',
@@ -413,8 +415,7 @@
 
                     const managers = data.content.filter(manager => manager.id.toString() !== senderId.toString());
 
-                    console.log(managers);
-
+                    managerList.innerHTML = '';
 
                     managers.forEach(manager => {
                         const li = document.createElement('li');
@@ -434,7 +435,13 @@
                                 <span>I will check it and get back to you soon.</span>
                             </div>
                         `;
-                        li.addEventListener('click', () => showMessage(manager.id));
+
+                        li.addEventListener('click', () => {
+                            if (currentManagerId !== manager.id) {
+                                currentManagerId = manager.id;
+                                showMessage(manager.id);
+                            }
+                        });
                         managerList.appendChild(li);
                     });
                 })
@@ -571,6 +578,14 @@
                 });
             });
 
+            socket.on("user-chat-update", (updatedMessage) => {
+                const messageElement = document.getElementById(`incomingMessage-${updatedMessage.id}`);
+                console.log(messageElement);
+                console.log(updatedMessage);
+                
+                messageElement.innerText = displayMessage(updatedMessage);
+            });
+
             const seenUsers = document.querySelector('#seen-users');
 
             socket.on("user-seen", (data) => {
@@ -640,7 +655,6 @@
                     typingStatus.textContent = '';
                     scrollToBottom();
                 }
-
             });
 
             const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -686,8 +700,24 @@
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
                 }
 
+                // Map các reaction với icon tương ứng
+                const reactionIcons = {
+                    LIKE: '👍',
+                    HAHA: '😂',
+                    LOVE: '😍',
+                    WOW: '😎',
+                    SAD: '😊',
+                    ANGRY: '🥺'
+                };
+
+                // Kiểm tra nếu message.reaction tồn tại và hợp lệ
+                let reactionDisplay = '';
+                if (message.reaction && reactionIcons[message.reaction]) {
+                    reactionDisplay = `<div class="reaction-display">${reactionIcons[message.reaction]}</div>`;
+                }
+
                 var div = `
-                    <div class='me'>
+                    <div class='me' id="myMessage-${message.id}" data-message-id="${message.id}">
                         <div class='avatar tooltipped' data-position='right' data-tooltip='${message.fullname}'>
                             ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
@@ -695,18 +725,32 @@
                             ${imageElement}
                             ${message.content}
                             <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                            ${reactionDisplay} <!-- Hiển thị reaction -->
                         </div>
                     </div>
-                    `;
+                `;
                 $("#messageArea").append(div);
             }
-
-
 
             function displayMessage(message) {
                 let imageElement = '';
                 if (message.mediaUrl) {
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
+                }
+
+                const reactionIcons = {
+                    LIKE: '👍',
+                    HAHA: '😂',
+                    LOVE: '😍',
+                    WOW: '😎',
+                    SAD: '😊',
+                    ANGRY: '🥺'
+                };
+
+
+                let reactionDisplay = '';
+                if (message.reaction && reactionIcons[message.reaction]) {
+                    reactionDisplay = `<div class="reaction-display">${reactionIcons[message.reaction]}</div>`;
                 }
 
                 var div = `
@@ -718,6 +762,7 @@
                             ${imageElement}
                             ${message.content}
                             <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                            ${reactionDisplay} <!-- Hiển thị reaction -->
                         </div>
                     </div>  
                 `;
@@ -753,6 +798,9 @@
             function selectEmoji(event, id) {
                 const selectedEmoji = event.target.getAttribute('data-emoji');
 
+                console.log(selectedEmoji);
+
+
                 const data = {
                     messageId: id,
                     sender: senderId,
@@ -760,9 +808,8 @@
                     icon: selectedEmoji
                 }
 
-                console.log(data);
+                socket.emit("insert-icon", data);
 
-                // Hide the emoji popup after selection
                 const emojiPopup = document.getElementById('emojiPopup');
                 emojiPopup.style.display = 'none';
             }
