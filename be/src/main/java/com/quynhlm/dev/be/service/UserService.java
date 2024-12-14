@@ -103,10 +103,18 @@ public class UserService {
             response.setMessage("Login not successfully");
             return response;
         }
+
+        if (request.getDeviceToken() != null && request.getCurrentDevice() != null) {
+            user.setDeviceToken(request.getDeviceToken());
+            user.setCurrentDevice(request.getCurrentDevice());
+            userRepository.save(user);
+        }
+
         response.setStatus(isAuthenticated);
         response.setMessage("Authentication successful.");
         response.setToken(token);
 
+        // Response
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setId(user.getId());
         userResponseDTO.setFullname(user.getFullname());
@@ -292,8 +300,8 @@ public class UserService {
 
         if (isCheck && expiration_time.after(new Date())) {
             String email = signedJWT.getJWTClaimsSet().getStringClaim("iss");
-        
-            log.info("Email token : " +email);
+
+            log.info("Email token : " + email);
 
             User foundUser = userRepository.getAnUserByEmail(email);
             if (foundUser != null) {
