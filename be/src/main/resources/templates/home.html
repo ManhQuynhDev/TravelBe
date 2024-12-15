@@ -57,10 +57,9 @@
                                     <span class="card-title h2" th:text="${userCount}">72,540</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-success" th:text="${formattedPercentage} + '%'">
-                                <i class="tio-trending-up"></i>%
-                            </span>
-                            <span class="text-body font-size-sm ml-1">from 9</span>
+                            <span class="badge badge-soft-success">
+                                <i class="tio-trending-up"></i>5%</span>
+                            <span class="text-body font-size-sm ml-1">from last month</span>
                         </div>
                     </a>
                 </div>
@@ -69,10 +68,25 @@
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
+                            <h6 class="card-subtitle">Total Managers</h6>
+                            <div class="row align-items-center gx-2 mb-1">
+                                <div class="col-6">
+                                    <span class="card-title h2" th:text="${managerCount}">25</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-soft-info">
+                                <i class="tio-trending-up"></i>13%</span>
+                            <span class="text-body font-size-sm ml-1">from last week</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                    <a class="card card-hover-shadow h-100" href="#">
+                        <div class="card-body">
                             <h6 class="card-subtitle">Total Groups</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
-                                    <span class="card-title h2">10</span>
+                                    <span class="card-title h2" th:text="${groupCount}">10</span>
                                 </div>
                             </div>
                             <span class="badge badge-soft-warning">
@@ -100,21 +114,7 @@
                 </div>
 
                 <!-- Card 4 -->
-                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                    <a class="card card-hover-shadow h-100" href="#">
-                        <div class="card-body">
-                            <h6 class="card-subtitle">Total Comments</h6>
-                            <div class="row align-items-center gx-2 mb-1">
-                                <div class="col-6">
-                                    <span class="card-title h2">25</span>
-                                </div>
-                            </div>
-                            <span class="badge badge-soft-info">
-                                <i class="tio-trending-up"></i>13%</span>
-                            <span class="text-body font-size-sm ml-1">from last week</span>
-                        </div>
-                    </a>
-                </div>
+
             </div>
 
             <div class="row mb-5">
