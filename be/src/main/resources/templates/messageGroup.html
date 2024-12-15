@@ -22,6 +22,7 @@
         .chat-sidebar {
             border-right: 1px solid #e0e0e0;
             background-color: #ffffff;
+            height: 800px;
         }
 
         .chat-sidebar-header {
@@ -46,10 +47,10 @@
         .chat-list {
             overflow-y: auto;
             height: calc(100vh - 140px);
-            /* Adjust height */
         }
 
         .chat-item {
+            width: 100%;
             padding: 15px;
             cursor: pointer;
             transition: background-color 0.2s;
@@ -97,7 +98,7 @@
         }
 
         .chat-body {
-            height: 720px;
+            height: 710px;
             padding: 10px;
         }
 
@@ -142,13 +143,13 @@
         }
 
         #messageArea {
-            height: 685px;
+            height: 675px;
             overflow: auto;
             display: flex;
             flex-direction: column;
         }
 
-        .avatar1 {
+        .avatar_show {
             width: 50px;
             height: 50px;
             border-radius: 25px;
@@ -183,13 +184,13 @@
             text-align: left;
         }
 
-        .incoming .avatar1,
-        .typing .avatar1 {
+        .incoming .avatar_show,
+        .typing .avatar_show {
             background-color: #0f6ab4;
             float: left;
         }
 
-        .me .avatar1 {
+        .me .avatar_show {
             background-color: #10a54a;
             float: right;
         }
@@ -315,6 +316,34 @@
         .emoji:hover {
             transform: scale(1.2);
         }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #2172dd;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+
+        .notification-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #notificationTitle {
+            font-weight: bold;
+        }
+
+        #notificationMessage {
+            margin-top: 5px;
+        }
     </style>
 </head>
 
@@ -332,10 +361,12 @@
             </div>
         </header>
     </div>
+    <!-- Header -->
     <div id="headerDouble" class="d-none">
         <header id="header" class="navbar navbar-expand-lg navbar-bordered flex-lg-column px-0">
         </header>
     </div>
+    <!-- Ene Header -->
     <div th:replace="fragments/sidebarMain"></div>
     <div id="sidebarCompact" class="d-none">
         <aside
@@ -351,6 +382,15 @@
         <div th:include="fragments/messages/messagePage :: content"></div>
     </div>
     </div>
+
+    <div id="notification" class="notification">
+        <div class="notification-content">
+            <span id="notificationTitle">Thông Báo</span>
+            <p id="notificationMessage">Đây là nội dung thông báo.</p>
+        </div>
+    </div>
+
+
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/socket.io.js"></script>
     <script th:src="@{/assets/js/demo.js}"></script>
@@ -395,58 +435,104 @@
         const token = localStorage.getItem('authToken');
         const senderId = localStorage.getItem('user_id');
 
-        const handelCallData = () => {
-            fetch(`http://localhost:8080/onboarding/users/manager?page=0&size=1000`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            })
-                .then(res => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! Status: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
+        let currentManagerId = null;
 
-                    const managers = data.content.filter(manager => manager.id.toString() !== senderId.toString());
+        const handelCallData = async () => {
+            try {
+                const managersResponse = await fetch(`http://localhost:8080/onboarding/users/manager?page=0&size=1000`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
 
-                    console.log(managers);
+                if (!managersResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${managersResponse.status}`);
+                }
 
+                const managersData = await managersResponse.json();
+                const managers = managersData.content.filter(manager => manager.id.toString() !== senderId.toString());
+                console.log(managers);
 
-                    managers.forEach(manager => {
+                managerList.innerHTML = '';
+
+                for (const manager of managers) {
+                    try {
+                        const messageResponse = await fetch(`http://localhost:8080/api/messages/last-message/${manager.id}`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            },
+                        });
+
+                        if (!messageResponse.ok) {
+                            console.warn(`Message API returned status ${messageResponse.status} for manager ${manager.id}`);
+                            continue;
+                        }
+
+                        const messageData = await messageResponse.json();
+
+                        const messageTime = new Date(messageData.sendTime);
+                        const currentTime = new Date();
+
+                        const timeDifference = currentTime - messageTime;
+
+                        const minutesDifference = Math.floor(timeDifference / (1000 * 60));
+
+                        let timeDisplay;
+                        if (minutesDifference < 60) {
+                            timeDisplay = `${minutesDifference} phút`;
+                        } else if (minutesDifference < 1440) {
+                            const hoursDifference = Math.floor(minutesDifference / 60);
+                            timeDisplay = `${hoursDifference} giờ`;
+                        } else {
+                            const daysDifference = Math.floor(minutesDifference / 1440);
+                            timeDisplay = `${daysDifference} ngày`;
+                        }
+
                         const li = document.createElement('li');
                         li.className = 'chat-item d-flex align-items-center managerItem';
                         li.setAttribute('data-parent', manager.id);
 
                         li.innerHTML = `
                             ${manager.avatarUrl ? `
-                                <img src="${manager.avatarUrl}" alt="Avatar1" class="rounded-circle mr-2" style="width: 45px; height: 45px;">
+                                <img src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2" style="width: 50px; height: 50px;">
                             ` : `
-                                <div class="avatar1-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 45px; height: 45px; font-size: 16px; font-weight: bold; border-radius: 50%;">
+                                <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; font-size: 12px; font-weight: bold; border-radius: 50%;">
                                     <span>${manager.fullname ? manager.fullname.charAt(0).toUpperCase() : 'N'}</span>
                                 </div>
                             `}
-                            <div class="chat-info ml-2">
-                                <h6>${manager.fullname}</h6>
-                                <span>I will check it and get back to you soon.</span>
+                            <div class="chat-info ml-2" style = "width: 100%">
+                                <div style="display: flex; justify-content: space-between; width: 100%;">
+                                    <h5 style="margin: 0;">${manager.fullname}</h5>
+                                    <span style="margin: 0;">${timeDisplay}</span>
+                                </div>
+                                <span>${messageData.content ? messageData.content : 'No message available'}</span>
                             </div>
                         `;
-                        li.addEventListener('click', () => showMessage(manager.id));
-                        managerList.appendChild(li);
-                    });
-                })
-                .catch(err => console.error('Error:', err));
-        }
 
+                        li.addEventListener('click', () => {
+                            if (currentManagerId !== manager.id) {
+                                currentManagerId = manager.id;
+                                showMessage(manager.id);
+                            }
+                        });
+
+                        managerList.appendChild(li);
+                    } catch (err) {
+                        console.error(`Error fetching last message for manager ${manager.id}:`, err);
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching manager data:', err);
+            }
+        };
         handelCallData();
 
         const showMessage = (user_id) => {
             const userId = user_id.toString();
-            console.log("hello");
-            console.log(userId);
             fetch(`http://localhost:8080/onboarding/users/fullname/${userId}`, {
                 method: 'GET',
                 headers: {
@@ -508,17 +594,16 @@
 			</div>
             <div id="seen-users"></div>
             <ul id="typing-status"></ul>
-           <div id="emojiPopup" class="emoji-popup">
-                <div class="emoji-container">
-                    <span class="emoji" data-emoji="👍">👍</span>
-                    <span class="emoji" data-emoji="😀">😀</span>
-                    <span class="emoji" data-emoji="😂">😂</span>
-                    <span class="emoji" data-emoji="😍">😍</span>
-                    <span class="emoji" data-emoji="😎">😎</span>
-                    <span class="emoji" data-emoji="😊">😊</span>
-                    <span class="emoji" data-emoji="🥺">🥺</span>
+            <div id="emojiPopup" class="emoji-popup">
+                    <div class="emoji-container">
+                        <span class="emoji" data-emoji="LIKE">👍</span>
+                        <span class="emoji" data-emoji="HAHA">😆</span>
+                        <span class="emoji" data-emoji="LOVE">❤️</span>
+                        <span class="emoji" data-emoji="WOW">😲</span>
+                        <span class="emoji" data-emoji="SAD">😔</span>
+                        <span class="emoji" data-emoji="ANGRY">😡</span>
+                    </div>
                 </div>
-            </div>
             `;
 
             chatbody.innerHTML = content;
@@ -554,9 +639,7 @@
                 .catch(err => console.error('Error:', err));
 
             socket.on('user-chat', (data) => {
-
-                console.log(data);
-
+                loading.innerHTML = "";
                 if (data.sender_id == senderId) {
                     displayMyMessage(data)
                 } else {
@@ -571,6 +654,76 @@
                     status: true
                 });
             });
+
+            socket.on('notification', (data) => {
+                if (data.userSendId != senderId) {
+                    showNotification(data.title, data.message);
+                }
+            });
+            function showNotification(title, message) {
+                document.getElementById('notificationTitle').innerText = title;
+                document.getElementById('notificationMessage').innerText = message;
+
+                // Hiển thị thông báo
+                var notification = document.getElementById('notification');
+                notification.style.display = 'block';
+
+                setTimeout(function () {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+
+            socket.on("user-chat-update", (updatedMessage) => {
+                const reactionIcons = {
+                    LIKE: '👍',
+                    HAHA: '😆',
+                    LOVE: '❤️',
+                    WOW: '😲',
+                    SAD: '😔',
+                    ANGRY: '😡'
+                };
+
+                const createReactionDisplay = (reaction) => {
+                    return reaction && reactionIcons[reaction]
+                        ? `<div class="reaction-display">${reactionIcons[reaction]}</div>`
+                        : '';
+                };
+
+                const createMessageHTML = (message, className, idPrefix) => {
+                    const imageElement = message.mediaUrl
+                        ? `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`
+                        : '';
+                    const reactionDisplay = createReactionDisplay(message.reaction);
+
+                    return `
+                        <div class='${className}' id="${idPrefix}-${message.id}" data-message-id="${message.id}">
+                            <div class='avatar_show tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                                ${message.fullname.charAt(0).toLocaleUpperCase()}
+                            </div>
+                            <div class='message'>
+                                ${imageElement}
+                                ${message.content}
+                                <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                                ${reactionDisplay}  
+                            </div>
+                        </div>
+        `;
+                };
+
+                const isSender = updatedMessage.sender_id == senderId;
+                const idPrefix = isSender ? 'myMessage' : 'incomingMessage';
+                const messageElement = document.getElementById(`${idPrefix}-${updatedMessage.id}`);
+
+                if (messageElement) {
+                    // Cập nhật nội dung message
+                    const className = isSender ? 'me' : 'incoming';
+                    messageElement.innerHTML = createMessageHTML(updatedMessage, className, idPrefix);
+                } else {
+                    console.warn(`Message element with ID ${idPrefix}-${updatedMessage.id} not found.`);
+                }
+            });
+
 
             const seenUsers = document.querySelector('#seen-users');
 
@@ -595,17 +748,6 @@
                         seenUsers.appendChild(userItem);
                     }
                 });
-
-                // data.forEach(user => {
-                //     const userItem = document.createElement('li');
-                //     userItem.style.listStyleType = 'none';
-                //     userItem.innerHTML = `<div class="avatar1-text" 
-                //                 style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; 
-                //                         width: 20px; height: 20px; font-size: 8px; font-weight: bold; border-radius: 50%; margin-right: 10px;">
-                //                 <span>${user.substring(0, 1).toUpperCase()}</span>
-                //             </div>`;
-                //     seenUsers.appendChild(userItem);
-                // });
             });
 
             const typingStatus = document.querySelector('#typing-status');
@@ -641,7 +783,6 @@
                     typingStatus.textContent = '';
                     scrollToBottom();
                 }
-
             });
 
             const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -665,7 +806,7 @@
                     sendMessage(message, fileBase64);
                 }
 
-
+                const loading = document.querySelector('#loading');
                 function sendMessage(message, fileBase64) {
                     const data = {
                         sender: senderId,
@@ -687,22 +828,35 @@
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
                 }
 
+                const reactionIcons = {
+                    LIKE: '👍',
+                    HAHA: '😆',
+                    LOVE: '❤️',
+                    WOW: '😲',
+                    SAD: '😔',
+                    ANGRY: '😡'
+                };
+
+                let reactionDisplay = '';
+                if (message.reaction && reactionIcons[message.reaction]) {
+                    reactionDisplay = `<div class="reaction-display">${reactionIcons[message.reaction]}</div>`;
+                }
+
                 var div = `
-                    <div class='me'>
-                        <div class='avatar1 tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                    <div class='me' id="myMessage-${message.id}" data-message-id="${message.id}">
+                        <div class='avatar_show tooltipped' data-position='right' data-tooltip='${message.fullname}'>
                             ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
                         <div class='message'>
                             ${imageElement}
                             ${message.content}
                             <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                            ${reactionDisplay}
                         </div>
                     </div>
-                    `;
+                `;
                 $("#messageArea").append(div);
             }
-
-
 
             function displayMessage(message) {
                 let imageElement = '';
@@ -710,28 +864,42 @@
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
                 }
 
+                const reactionIcons = {
+                    LIKE: '👍',
+                    HAHA: '😆',
+                    LOVE: '❤️',
+                    WOW: '😲',
+                    SAD: '😔',
+                    ANGRY: '😡'
+                };
+
+                let reactionDisplay = '';
+                if (message.reaction && reactionIcons[message.reaction]) {
+                    reactionDisplay = `<div class="reaction-display">${reactionIcons[message.reaction]}</div>`;
+                }
+
                 var div = `
                     <div class='incoming' id="incomingMessage-${message.id}" data-message-id="${message.id}">
-                        <div class='avatar1 tooltipped' data-position='right' data-tooltip='${message.fullname}'>
+                        <div class='avatar_show tooltipped' data-position='right' data-tooltip='${message.fullname}'>
                             ${message.fullname.charAt(0).toLocaleUpperCase()}
                         </div>
                         <div class='message'>
                             ${imageElement}
                             ${message.content}
                             <div class="message-time">${message.send_time.substring(11, 19)}</div>
+                            ${reactionDisplay} <!-- Hiển thị reaction -->
                         </div>
                     </div>  
                 `;
 
                 $("#messageArea").append(div);
 
-                // Add an event listener to the message element
                 const incomingMessage = document.querySelector(`#incomingMessage-${message.id}`);
                 incomingMessage.addEventListener('click', function (event) {
-                    openEmojiPopup(event);
+                    openEmojiPopup(event, message.id);
                 });
 
-                function openEmojiPopup(event) {
+                function openEmojiPopup(event, id) {
                     const emojiPopup = document.getElementById('emojiPopup');
                     const rect = event.currentTarget.getBoundingClientRect();
 
@@ -740,32 +908,35 @@
 
                     emojiPopup.style.display = 'block';
 
-                    function selectEmoji(emoji) {
-                        console.log(emoji);
-                        const emojiPopup = document.getElementById('emojiPopup');
-                        emojiPopup.style.display = 'none';
-                    }
+                    document.querySelectorAll('.emoji').forEach(function (emoji) {
+                        emoji.replaceWith(emoji.cloneNode(true));
+                    });
+
+                    document.querySelectorAll('.emoji').forEach(function (emoji) {
+                        emoji.addEventListener('click', function (event) {
+                            selectEmoji(event, id);
+                        });
+                    });
                 }
             }
 
-            function selectEmoji(event) {
+            function selectEmoji(event, id) {
                 const selectedEmoji = event.target.getAttribute('data-emoji');
-                // const messageInput = document.querySelector('#messageInput'); // Assuming there's a message input element
-                // if (messageInput) {
-                //     messageInput.value += selectedEmoji;  // Append the selected emoji to the message input
-                // }
+
                 console.log(selectedEmoji);
-                
-                // Hide the emoji popup after selection
+
+                const data = {
+                    messageId: id,
+                    sender: senderId,
+                    receiver: userId,
+                    icon: selectedEmoji
+                }
+
+                socket.emit("insert-icon", data);
+
                 const emojiPopup = document.getElementById('emojiPopup');
                 emojiPopup.style.display = 'none';
             }
-
-            document.querySelectorAll('.emoji').forEach(function (emoji) {
-                emoji.addEventListener('click', function (event) {
-                    selectEmoji(event);  // Trigger emoji selection when clicked
-                });
-            });
 
             document.addEventListener('click', function (event) {
                 const emojiPopup = document.getElementById('emojiPopup');

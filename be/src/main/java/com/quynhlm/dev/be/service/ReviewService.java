@@ -175,10 +175,10 @@ public class ReviewService {
     public Page<ReviewResponseDTO> getAllReviewWithLocation(Integer locationId, Integer page, Integer size)
             throws LocationNotFoundException {
 
-        User foundUser = userRepository.getAnUser(locationId);
-        if (foundUser == null) {
-            throw new UserAccountNotFoundException(
-                    "Found user with id " + locationId + " not found , please try again");
+        Location foundLocation = locationRepository.getAnLocation(locationId);
+        if (foundLocation == null) {
+            throw new LocationNotFoundException(
+                    "Found location with id " + locationId + " not found , please try again");
         }
 
         Pageable pageable = PageRequest.of(page, size);

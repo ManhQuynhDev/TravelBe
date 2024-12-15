@@ -200,4 +200,29 @@ public class ReportService {
             return report;
         });
     }
+
+    public Page<ReportResponseDTO> getAllReport(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Object[]> results = reportRepository.getAllReport(pageable);
+
+        return results.map(row -> {
+            ReportResponseDTO report = new ReportResponseDTO();
+            report.setId(((Number) row[0]).intValue());
+            report.setPostId(((Number) row[1]).intValue());
+            report.setOwnerId(((Number) row[2]).intValue());
+            report.setFullname((String) row[3]);
+            report.setAvatarUrl((String) row[4]);
+            report.setContentPost((String) row[5]);
+            report.setMediaUrl((String) row[6]);
+            report.setMediaType((String) row[7]);
+            report.setReason((String) row[8]);
+            report.setViolationType((String) row[9]);
+            report.setStatus((String) row[10]);
+            report.setCreate_time((String) row[11]);
+            report.setResponseTime((String) row[12]);
+            return report;
+        });
+    }
 }

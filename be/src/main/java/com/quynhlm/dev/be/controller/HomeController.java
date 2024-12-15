@@ -20,6 +20,7 @@ import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
 import com.quynhlm.dev.be.service.GroupService;
 import com.quynhlm.dev.be.service.PostService;
+import com.quynhlm.dev.be.service.ReportService;
 import com.quynhlm.dev.be.service.ReviewService;
 import com.quynhlm.dev.be.service.StoryService;
 import com.quynhlm.dev.be.service.TravelPlanService;
@@ -43,6 +44,9 @@ public class HomeController {
 
     @Autowired
     private ReviewService reviewService;
+    
+    @Autowired
+    private ReportService reportService;
 
     @Autowired
     private TravelPlanService travelPlanService;
@@ -141,10 +145,17 @@ public class HomeController {
         model.addAttribute("listComment", commentService.getListData(0, 1000));
         return "comments";
     }
+
     @GetMapping("/reviews")
     public String reviews(Model model) {
         model.addAttribute("listReview", reviewService.getListData(0, 1000));
         return "reviews";
+    }
+
+    @GetMapping("/reports")
+    public String reports(Model model) {
+        model.addAttribute("listReports", reportService.getAllReport(0, 1000));
+        return "reports";
     }
 
     @GetMapping("/login")
@@ -161,12 +172,5 @@ public class HomeController {
     public String getMethodName(Model model) {
         return "profile";
     }
-
-    @GetMapping("/reports")
-    public String reports(Model model) {
-        return "reports";
-    }
-
-    
 
 }

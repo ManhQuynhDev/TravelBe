@@ -48,7 +48,6 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
-import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
@@ -59,6 +58,9 @@ import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.InvitationRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class UserService {
 
@@ -85,7 +87,7 @@ public class UserService {
 
     // Login Check
     public TokenResponse<UserResponseDTO> login(LoginDTO request) throws UserAccountNotFoundException {
-        User user = userRepository.findOneByEmail(request.getEmail());
+        User user = userRepository.getAnUserByEmail(request.getEmail());
         if (user == null) {
             throw new UserAccountNotFoundException(
                     "Email " + request.getEmail() + " not found. Please try another!");
@@ -101,10 +103,18 @@ public class UserService {
             response.setMessage("Login not successfully");
             return response;
         }
+
+        if (request.getDeviceToken() != null && request.getCurrentDevice() != null) {
+            user.setDeviceToken(request.getDeviceToken());
+            user.setCurrentDevice(request.getCurrentDevice());
+            userRepository.save(user);
+        }
+
         response.setStatus(isAuthenticated);
         response.setMessage("Authentication successful.");
         response.setToken(token);
 
+        // Response
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setId(user.getId());
         userResponseDTO.setFullname(user.getFullname());
@@ -186,9 +196,9 @@ public class UserService {
         // Build JWT claims
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getFullname())
-                .issuer("quynhlm.dev@gmail.com")
+                .issuer(user.getEmail())
                 .issueTime(new Date())
-                .expirationTime(new Date(System.currentTimeMillis() + 86400000)) // 1 day expiration
+                .expirationTime(new Date(System.currentTimeMillis() + 86400000))
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -261,7 +271,7 @@ public class UserService {
     }
 
     public void setNewPassWord(ChangePassDTO changePassDTO) throws UserAccountNotFoundException, UnknownException {
-        User foundUser = userRepository.findOneByEmail(changePassDTO.getEmail());
+        User foundUser = userRepository.getAnUserByEmail(changePassDTO.getEmail());
 
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
@@ -278,9 +288,8 @@ public class UserService {
         }
     }
 
-    public boolean checkUserToken(IntrospectRequest request) throws JOSEException, ParseException {
-        String token = request.getToken();
-
+    public boolean checkUserToken(String token, String deviceToken, String currentDevice)
+            throws UserAccountNotFoundException, JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -288,6 +297,21 @@ public class UserService {
         Date expiration_time = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         boolean isCheck = signedJWT.verify(verifier);
+
+        if (isCheck && expiration_time.after(new Date())) {
+            String email = signedJWT.getJWTClaimsSet().getStringClaim("iss");
+
+            log.info("Email token : " + email);
+
+            User foundUser = userRepository.getAnUserByEmail(email);
+            if (foundUser != null) {
+                updateDeviceInfo(foundUser.getId(), deviceToken, currentDevice);
+            } else {
+                throw new UserAccountNotFoundException(
+                        "Unknown token owner with email :" + email);
+            }
+            return true;
+        }
 
         return isCheck && expiration_time.after(new Date());
     }
@@ -314,6 +338,15 @@ public class UserService {
             if (saveName.getId() == null) {
                 throw new UnknownException("Transaction cannot complete!");
             }
+        }
+    }
+
+    private void updateDeviceInfo(Integer userId, String deviceToken, String currentDevice) {
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser != null) {
+            foundUser.setDeviceToken(deviceToken);
+            foundUser.setCurrentDevice(currentDevice);
+            userRepository.save(foundUser);
         }
     }
 
@@ -456,7 +489,7 @@ public class UserService {
     public Page<User> getAllListManager(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAllManager(pageable);
-    }
+    }   
 
     public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)
             throws UserAccountNotFoundException {

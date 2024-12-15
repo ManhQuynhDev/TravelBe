@@ -22,6 +22,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                         u.avatar_url,
                         m.media_url,
                         m.status,
+                        m.reaction,
                         m.send_time
                     FROM
                         message m
@@ -42,6 +43,7 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
                 u.avatar_url,
                 m.media_url,
                 m.status,
+                m.reaction,
                 m.send_time
             FROM
                 message m
@@ -57,7 +59,17 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             Pageable pageable);
 
     @Query(value = """
-            select m from message m WHERE m.id = :id
+            select * from message WHERE id = :id
                """, nativeQuery = true)
     Message findByMessageId(@Param("id") Integer id);
+
+    @Query(value = """
+             SELECT *
+             FROM message
+             WHERE sender_id = :user_id OR receiver_id = :user_id
+             ORDER BY send_time DESC
+             LIMIT 1
+            """, nativeQuery = true)
+    Message lastMessage(@Param("user_id") Integer user_id);
+
 }

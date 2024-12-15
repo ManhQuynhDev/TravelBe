@@ -114,7 +114,7 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(
                 userSendId, userReceivedId, "APPROVED");
 
         if (foundFriendShip != null) {
@@ -173,7 +173,7 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
                 userReceivedId, "PENDING");
 
         if (foundFriendShip == null) {
@@ -205,7 +205,7 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
                 userReceivedId, "APPROVED");
 
         if (foundFriendShip == null) {
@@ -232,7 +232,7 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserSendIdAndUserReceivedIdAndStatusIn(userSendId,
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
                 userReceivedId, "APPROVED");
 
         if (foundFriendShip == null) {

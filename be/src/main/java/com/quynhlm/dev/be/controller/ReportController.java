@@ -75,6 +75,13 @@ public class ReportController {
         return reportService.getAllReportUserCreate(userId, page, size);
     }
 
+    @GetMapping("")
+    public Page<ReportResponseDTO> getAllReport(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return reportService.getAllReport(page, size);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject<ReportResponseDTO>> getAnReport(@PathVariable Integer id) {
         ResponseObject<ReportResponseDTO> result = new ResponseObject<>();

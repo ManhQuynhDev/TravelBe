@@ -26,6 +26,14 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
 
 
     @Query(value = """
+            select r.id ,u.id as user_id , r.post_id , u.fullname , u.avatar_url , p.content as contentPost , m.media_url , m.type, r.reason , r.violation_type ,r.status, r.create_time , r.response_time  from report r
+            INNER JOIN User u on u.id = r.user_id
+            INNER JOIN Post p on p.id = r.post_id
+            INNER JOIN Media m on m.post_id = p.id""", nativeQuery = true)
+    Page<Object[]> getAllReport(Pageable pageable);
+
+
+    @Query(value = """
             select r.id ,u.id as user_id , r.post_id , u.fullname , u.avatar_url , p.content as contentPost , m.media_url,m.type, r.reason , r.violation_type ,r.status, r.create_time , r.response_time  from report r
             INNER JOIN User u on u.id = r.user_id
             INNER JOIN Post p on p.id = r.post_id

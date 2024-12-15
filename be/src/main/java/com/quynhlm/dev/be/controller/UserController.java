@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -20,7 +21,6 @@ import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
-import com.quynhlm.dev.be.model.dto.requestDTO.IntrospectRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
@@ -120,14 +120,21 @@ public class UserController {
 
     // Token
     @PostMapping("/auth/token")
-    public ResponseEntity<ResponseObject<Boolean>> introspect(@RequestBody IntrospectRequest request) {
+    public ResponseEntity<ResponseObject<Boolean>> introspect(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(required = false) String deviceToken, @RequestParam(required = false) String currentDevice) {
         ResponseObject<Boolean> response = new ResponseObject<>();
         boolean isCheckUserToken = false;
         try {
-            isCheckUserToken = userService.checkUserToken(request);
+            String token = authorizationHeader.startsWith("Bearer ")
+                    ? authorizationHeader.substring(7)
+                    : authorizationHeader;
+            isCheckUserToken = userService.checkUserToken(token, deviceToken, currentDevice);
             response.setData(isCheckUserToken);
+            response.setMessage("Verify token successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (JOSEException | ParseException e) {
+            response.setMessage("Verify not token successfully");
             response.setData(isCheckUserToken);
             e.printStackTrace();
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -200,7 +207,7 @@ public class UserController {
             @RequestParam String deviceToken) {
         userService.registerDevice(userId, deviceToken);
         ResponseObject<Void> response = new ResponseObject<>();
-        response.setStatus(true);   
+        response.setStatus(true);
         response.setMessage("Device token registered successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
