@@ -76,25 +76,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="plan : ${listTravelPlans}">
-                                    <td th:text="${plan.planId}">1</td>
+                                <tr th:each="plan, iterStat : ${listTravelPlans}">
+                                    <td th:text="${iterStat.count}">1</td>
                                     <td th:text="${plan.plan_name}">Go to New York, NY 10024, United States</td>
                                     <td th:text="${plan.start_date}">2024/11/10</td>
                                     <td th:text="${plan.end_date}">2024/11/13</td>
                                     <td th:text="${plan.status}">PRIVATE</td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center align-items-center">
-                                            <!-- Nút Delete -->
                                             <button class="btn btn-sm btn-outline-danger mr-2 deleteTravelPlanButton"
                                                 th:attr="data-id=${plan.planId}">
                                                 <i class="tio-delete-outlined mr-1"></i>Delete
                                             </button>
-                                            <!-- Nút View Members -->
                                             <button class="btn btn-sm btn-outline-secondary mr-2" id="viewMemberss"
                                                 th:attr="data-id=${plan.planId}">
                                                 View Members
                                             </button>
-                                            <!-- Nút View Activity -->
                                             <button class="btn btn-sm btn-outline-primary" id="viewActivity"
                                                 th:attr="data-id=${plan.planId}">
                                                 View Activity
@@ -335,6 +332,7 @@
 
 
     </script>
+    <script th:src="@{/assets/js/userjs.js}"></script>
 
 </body>
 

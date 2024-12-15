@@ -249,18 +249,6 @@ document.getElementById("logoutLink").addEventListener("click", function () {
 });
 
 
-// document.querySelectorAll('.nav-link').forEach(tab => {
-//     tab.addEventListener('click', function () {
-//         // Ẩn phần tử profile khi chuyển sang tab khác
-//         document.querySelector('#profile').style.display = 'none';
-
-//         // Hiển thị lại profile khi tab Profile được chọn
-//         if (this.id === 'profile-tab') {
-//             document.querySelector('#profile').style.display = 'block';
-//         }
-//     });
-// });
-
 // Hàm lấy tên nhóm theo groupId
 function getGroupDetails(groupId) {
     const url = `http://localhost:8080/api/groups/${groupId}`;
@@ -273,21 +261,26 @@ function getGroupDetails(groupId) {
             if (!response.ok) {
                 throw new Error(`Failed to fetch group details for ID ${groupId}, Status: ${response.status}`);
             }
-            return response.json();  // Nếu phản hồi hợp lệ, chuyển đổi thành JSON
+            return response.json(); // Chuyển đổi response thành JSON
         })
         .then(data => {
-            if (data.status) {
-                return data.data.group_name;  // Giả sử dữ liệu trả về có groupName
+            if (data.status && data.data) {
+                return {
+                    group_name: data.data.group_name || 'N/A',      // Tên nhóm
+                    admin_name: data.data.admin_name || 'N/A',      // Tên admin
+                    member_count: data.data.member_count || 0,      // Số lượng thành viên
+                };
             } else {
-                console.error("Failed to fetch group details:", data.message);
+                console.error(`Failed to fetch group details: ${data.message}`);
                 return null;
             }
         })
         .catch(error => {
-            console.error("Error:", error);
+            console.error("Error fetching group details:", error);
             return null;
         });
 }
+
 
 function joinedGroup(userId) {
     const url = `http://localhost:8080/api/member/group-join-id/${userId}`;
@@ -310,39 +303,39 @@ function joinedGroup(userId) {
 
             if (!groupIds || groupIds.length === 0) {
                 const noGroupsRow = document.createElement('tr');
-                noGroupsRow.innerHTML = '<td colspan="3" class="text-center">User has not joined any groups</td>';
+                noGroupsRow.innerHTML = '<td colspan="4" class="text-center">User has not joined any groups</td>';
                 groupTableBody.appendChild(noGroupsRow);
                 return;
             }
 
-            // Lấy tên các nhóm dựa trên groupId
-            const groupNamesPromises = groupIds.map(groupId => getGroupDetails(groupId));
+            // Lấy chi tiết các nhóm dựa trên groupId
+            const groupDetailsPromises = groupIds.map(groupId => getGroupDetails(groupId));
 
-            Promise.all(groupNamesPromises)
-                .then(groupNames => {
-                    groupNames.forEach((groupName, index) => {
-                        if (groupName) {
+            Promise.all(groupDetailsPromises)
+                .then(groupDetails => {
+                    groupDetails.forEach((group, index) => {
+                        if (group) {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <th scope="row">${index + 1}</th>
-                                <td>${groupName}</td>
-                                <td>
-                                    <button class="btn btn-outline-info btn-sm">View</button>
-                                    <button class="btn btn-outline-danger btn-sm">Leave</button>
-                                </td>
+                                <td>${group.group_name}</td> <!-- Tên nhóm -->
+                                <td>${group.admin_name}</td> <!-- Tên admin -->
+                                <td>${group.member_count}</td> <!-- Số lượng thành viên -->
                             `;
                             groupTableBody.appendChild(row);
                         }
                     });
                 })
                 .catch(error => {
-                    console.error('Error fetching group names:', error);
+                    console.error('Error fetching group details:', error);
                 });
         })
         .catch(error => {
             console.error('Error fetching user joined groups:', error);
         });
 }
+
+
 
 
 
@@ -364,31 +357,30 @@ function userCreatedGroups(userId) {
             const groupDetailsPromises = groupIds.map(groupId => getGroupDetails(groupId)); // Gọi API chi tiết group
 
             Promise.all(groupDetailsPromises)
-                .then(groupNames => {
+                .then(groupDetails => {
                     const groupTableBody = document.getElementById('created-groups-table-body');
                     groupTableBody.innerHTML = ''; // Xóa danh sách cũ
 
                     // Nếu không có nhóm
-                    if (groupNames.length === 0) {
+                    if (!groupDetails || groupDetails.length === 0) {
                         const noGroupsRow = document.createElement('tr');
-                        noGroupsRow.innerHTML = '<td colspan="3" class="text-center">The user has not created any groups</td>';
+                        noGroupsRow.innerHTML = '<td colspan="4" class="text-center">The user has not created any groups</td>';
                         groupTableBody.appendChild(noGroupsRow);
-                    } else {
-                        groupNames.forEach((groupName, index) => {
-                            if (groupName) {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <th scope="row">${index + 1}</th>
-                                    <td>${groupName}</td>
-                                    <td>
-                                        <button class="btn btn-outline-info btn-sm">View</button>
-                                        <button class="btn btn-outline-danger btn-sm">Delete</button>
-                                    </td>
-                                `;
-                                groupTableBody.appendChild(row);
-                            }
-                        });
+                        return;
                     }
+
+                    groupDetails.forEach((group, index) => {
+                        if (group) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <th scope="row">${index + 1}</th>
+                                <td>${group.group_name}</td> <!-- Tên nhóm -->
+                                <td>${group.admin_name}</td> <!-- Tên admin -->
+                                <td>${group.member_count}</td> <!-- Số lượng thành viên -->
+                            `;
+                            groupTableBody.appendChild(row);
+                        }
+                    });
                 })
                 .catch(error => {
                     console.error('Error fetching group details:', error);
