@@ -158,7 +158,7 @@ public class PostService {
                     hashTagRespository.save(newHashTag);
                 }
             }
-            
+
             return getAnPostReturnSave(savedPost.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -206,9 +206,10 @@ public class PostService {
             post.setIsTag(((Number) row[15]).intValue());
             post.setUser_reaction_type((String) row[16]);
 
-            post.setAverageRating(reviewRepository.averageStarWithLocation(((Number) row[2]).intValue()));
+            Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
+            post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue()); 
 
             post.setMediaUrls(medias);
 

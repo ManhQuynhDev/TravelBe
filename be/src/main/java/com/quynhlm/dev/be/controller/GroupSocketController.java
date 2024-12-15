@@ -34,6 +34,7 @@ public class GroupSocketController {
 
     @Autowired
     private MessageStatusService messageStatusService;
+    
 
     private SocketIONamespace namespace;
 

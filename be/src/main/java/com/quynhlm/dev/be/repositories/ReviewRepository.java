@@ -44,12 +44,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
         Page<Object[]> getReviewWithLocationId(@Param("location_id") Integer location_id, Pageable pageable);
 
         @Query(value = """
-                        SELECT
-                        ROUND(SUM(r.star) * 1.0 / COUNT(*), 2) AS average_star
-                        FROM review r
-                        INNER JOIN Location l ON l.id = r.location_id
-                        WHERE r.location_id = 1
-                        GROUP BY r.location_id, l.address;
+                        SELECT AVG(star) FROM Review r WHERE r.location_id = :location_id
                                                                 """, nativeQuery = true)
-        double averageStarWithLocation(@Param("location_id") Integer location_id);
+        Double averageStarWithLocation(@Param("location_id") Integer location_id);
 }
