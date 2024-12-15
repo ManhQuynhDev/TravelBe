@@ -639,7 +639,6 @@
                 .catch(err => console.error('Error:', err));
 
             socket.on('user-chat', (data) => {
-                loading.innerHTML = "";
                 if (data.sender_id == senderId) {
                     displayMyMessage(data)
                 } else {
@@ -716,7 +715,6 @@
                 const messageElement = document.getElementById(`${idPrefix}-${updatedMessage.id}`);
 
                 if (messageElement) {
-                    // Cập nhật nội dung message
                     const className = isSender ? 'me' : 'incoming';
                     messageElement.innerHTML = createMessageHTML(updatedMessage, className, idPrefix);
                 } else {
@@ -728,7 +726,6 @@
             const seenUsers = document.querySelector('#seen-users');
 
             socket.on("user-seen", (data) => {
-                console.log("Message seen data:", data);
 
                 seenUsers.innerHTML = '';
                 Object.entries(data).forEach(([key, value]) => {
@@ -806,7 +803,6 @@
                     sendMessage(message, fileBase64);
                 }
 
-                const loading = document.querySelector('#loading');
                 function sendMessage(message, fileBase64) {
                     const data = {
                         sender: senderId,
@@ -859,6 +855,8 @@
             }
 
             function displayMessage(message) {
+                console.log(message);
+                
                 let imageElement = '';
                 if (message.mediaUrl) {
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;
