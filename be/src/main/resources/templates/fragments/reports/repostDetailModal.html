@@ -1,0 +1,79 @@
+<!-- Modal -->
+<div class="modal fade" id="reviewDetailModal" tabindex="-1" aria-labelledby="reviewDetailModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <h4 id="reviewDetailModalTitle" class="modal-title">Report Details</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <!-- Media Section -->
+                <div class="media-container text-center mb-4">
+                    <img id="reviewMediaImg" class="img-fluid rounded" src="assets/img/default-image.jpg"
+                        alt="Report Media" style="width: 200px; height: auto;">
+                </div>
+
+                <!-- User Name -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">User Name</label>
+                    <div class="col-sm-9">
+                        <span id="reviewUserName" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+
+
+                <!-- Reason -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Violation Reason</label>
+                    <div class="col-sm-9">
+                        <span id="reviewReason" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Review Content -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Content</label>
+                    <div class="col-sm-9">
+                        <span id="reviewContent" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Violation Type -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Violation Type</label>
+                    <div class="col-sm-9">
+                        <span id="reviewViolationType" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Status</label>
+                    <div class="col-sm-9">
+                        <span id="reviewStatus" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Created Time -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Created Time</label>
+                    <div class="col-sm-9">
+                        <span id="reviewCreateTime" class="form-control-plaintext">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
