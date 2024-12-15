@@ -247,11 +247,11 @@
                 groupCoverImg.onerror = function () {
                     this.src = '/assets/img/anhload.jpg'; // ảnh thay thế khi có lỗi
                 };
-                document.getElementById('groupNameDetails').value = data.group_name || 'N/A';
-                document.getElementById('groupAdminDetails').value = data.admin_name || 'N/A';
-                document.getElementById('groupMemberCountDetails').value = data.member_count || '0';
-                document.getElementById('groupStatusDetails').value = data.status || 'Unknown';
-                document.getElementById('groupBioDetails').value = data.bio || 'No bio available';
+                document.getElementById('groupNameDetails').innerText = data.group_name || 'N/A';
+                document.getElementById('groupAdminDetails').innerText = data.admin_name || 'N/A';
+                document.getElementById('groupMemberCountDetails').innerText = data.member_count || '0';
+                document.getElementById('groupStatusDetails').innerText = data.status || 'Unknown';
+                document.getElementById('groupBioDetails').innerText = data.bio || 'No bio available';
 
                 const modal = new bootstrap.Modal(document.getElementById('groupDetailModal'));
                 modal.show();

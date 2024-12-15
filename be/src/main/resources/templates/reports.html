@@ -129,6 +129,7 @@
                 </div>
             </div>
 
+            <div th:replace="fragments/reports/repostDetailModal"></div>
 
         </div>
     </div>
@@ -171,6 +172,48 @@
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+
+        const token = localStorage.getItem('authToken'); // Token xác thực
+
+        function loadReportDetails(id) {
+            fetch(`http://localhost:8080/api/report/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(res => res.json()) // Chuyển dữ liệu phản hồi sang JSON
+                .then(data => {
+                    if (data.status) {
+                        const report = data.data; // Lấy thông tin báo cáo từ phản hồi API
+
+                        // Gán dữ liệu báo cáo vào các phần tử trong modal
+                        document.getElementById('reviewUserName').innerText = report.fullname || 'Unknown user';
+                        document.getElementById('reviewReason').innerText = report.reason || 'No reason provided';
+                        document.getElementById('reviewContent').innerText = report.contentPost || 'No content available';
+                        document.getElementById('reviewViolationType').innerText = report.violationType || 'Unknown type';
+                        document.getElementById('reviewStatus').innerText = report.status || 'Pending';
+
+                        const date = new Date(report.create_time);
+                        document.getElementById('reviewCreateTime').innerText = isNaN(date.getTime())
+                            ? 'No time available'
+                            : date.toLocaleString();
+
+                        // Hiển thị ảnh hoặc giữ ảnh mặc định
+                        const mediaImg = document.getElementById('reviewMediaImg');
+                        mediaImg.src = report.mediaUrl || 'assets/img/default-image.jpg';
+
+                        // Hiển thị modal
+                        const modal = new bootstrap.Modal(document.getElementById("reviewDetailModal"));
+                        modal.show();
+                    } else {
+                        console.error("Error: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Failed: ", error);
+                });
+        }
 
 
 
