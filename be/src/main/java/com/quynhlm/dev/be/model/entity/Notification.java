@@ -26,6 +26,7 @@ public class Notification {
     private String title;
     @NotBlank(message = "Please input your content")
     private String message;
+    private String mediaUrl;
     private Boolean status;
     private String notificationTime;
 }

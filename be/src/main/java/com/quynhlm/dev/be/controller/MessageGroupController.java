@@ -46,6 +46,11 @@ public class MessageGroupController {
         return messageService.getAllMessageUser(senderId, receiverId, pageable);
     }
 
+    @GetMapping("/last-message/{user_id}")
+    public Message getLastMessage(@PathVariable Integer user_id) {
+        return messageService.getLastMessage(user_id);
+    }
+
     @PostMapping("")
     public ResponseEntity<ResponseObject<UserMessageResponseDTO>> sendMessage(
             @RequestBody Message message) {

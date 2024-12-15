@@ -62,4 +62,14 @@ public interface MessageRepository extends JpaRepository<Message, Integer> {
             select * from message WHERE id = :id
                """, nativeQuery = true)
     Message findByMessageId(@Param("id") Integer id);
+
+    @Query(value = """
+             SELECT *
+             FROM message
+             WHERE sender_id = :user_id OR receiver_id = :user_id
+             ORDER BY send_time DESC
+             LIMIT 1
+            """, nativeQuery = true)
+    Message lastMessage(@Param("user_id") Integer user_id);
+
 }

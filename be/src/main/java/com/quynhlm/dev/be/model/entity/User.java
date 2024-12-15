@@ -48,4 +48,6 @@ public class User {
     private String deviceToken;
     private String currentDevice;
     private LocalDateTime lastNameChangeDate;
+    private String lastMessage;
+    private String messageTime;
 }

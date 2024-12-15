@@ -18,7 +18,9 @@ import com.quynhlm.dev.be.model.dto.requestDTO.MessageSeenDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MessageDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
 import com.quynhlm.dev.be.model.entity.Message;
+import com.quynhlm.dev.be.model.entity.Notification;
 import com.quynhlm.dev.be.service.MessageService;
+import com.quynhlm.dev.be.service.NotificationService;
 import com.quynhlm.dev.be.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,9 @@ public class MessageSocketController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private UserService userService;
@@ -124,9 +129,23 @@ public class MessageSocketController {
             saveMessage.setReceiverId(data.getReceiver());
             saveMessage.setMediaUrl(data.getFile());
 
-            System.out.println("Tin nhắn :" + data.toString());
+            Notification notification = new Notification();
+            String fullname = userService.getUserFullname(saveMessage.getSenderId());
+            notification.setTitle(fullname);
+
+            if (saveMessage.getMediaUrl() != null) {
+                notification.setMediaUrl(saveMessage.getMediaUrl());
+            }
+            
+            notification.setUserSendId(saveMessage.getSenderId());
+            notification.setMessage(saveMessage.getContent());
+            notification.setUserReceivedId(saveMessage.getReceiverId());
+
+            Notification response = notificationService.saveNotification(notification);
 
             UserMessageResponseDTO result = messageService.sendMessage(saveMessage);
+
+            this.namespace.getRoomOperations(room).sendEvent("notification", response);
 
             this.namespace.getRoomOperations(room).sendEvent("user-chat", result);
         } catch (Exception e) {

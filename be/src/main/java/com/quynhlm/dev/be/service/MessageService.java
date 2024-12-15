@@ -44,6 +44,11 @@ public class MessageService {
         }
     }
 
+    public Message getLastMessage(Integer user_id) {
+        Message getLastMessage = messageRepository.lastMessage(user_id);
+        return getLastMessage;
+    }
+
     public void updateMessage(Integer messageId, String content) {
         Message foundMessage = messageRepository.findByMessageId(messageId);
 

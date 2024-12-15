@@ -489,7 +489,7 @@ public class UserService {
     public Page<User> getAllListManager(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAllManager(pageable);
-    }
+    }   
 
     public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)
             throws UserAccountNotFoundException {
