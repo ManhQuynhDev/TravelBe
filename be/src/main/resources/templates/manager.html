@@ -194,6 +194,7 @@
 </head>
 
 <body>
+    <div th:replace="fragments/buildertoggle"></div>
     <div th:replace="fragments/headerMain"></div>
     <div id="headerFluid" class="d-none">
         <header id="header"
@@ -265,7 +266,7 @@
         });
     </script>
 
-
+    <script th:src="@{/assets/js/userjs.js}"></script>
     <script th:src="@{/assets/js/manager.js}"></script>
     <script>
         $(document).ready(function () {

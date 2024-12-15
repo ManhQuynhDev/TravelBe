@@ -1,6 +1,6 @@
 <div id="sidebarMain" class="d-none" th:fragment="sidebarMain">
     <aside
-        class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-default navbar-vertical-aside-initialized">
+        class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-default navbar-vertical-aside-initialized border-right">
         <div class="navbar-vertical-container">
             <div class="navbar-vertical-footer-offset">
                 <div class="navbar-brand-wrapper justify-content-between" id="navbarBrandWrapper">
@@ -97,11 +97,19 @@
                         </li>
 
                         <li class="nav-item">
-                            <a th:href="@{/web-server/travel-plan}" th
-                                class="js-navbar-vertical-aside-menu-link nav-link" title="Travel Plan">
+                            <a th:href="@{/web-server/travel-plan}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Travel Plan">
                                 <i class="tio-map nav-icon"></i>
                                 <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">Travel
                                     Plan</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a th:href="@{/web-server/reviews}" class="js-navbar-vertical-aside-menu-link nav-link"
+                                title="Travel Plan">
+                                <i class="tio-map nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                    Reviews</span>
                             </a>
                         </li>
 
@@ -252,12 +260,12 @@
         menuItems.forEach(item => {
             const link = item.querySelector('a');
             if (link) {
-                const linkHref = new URL(link.getAttribute('href'), window.location.origin); 
+                const linkHref = new URL(link.getAttribute('href'), window.location.origin);
 
                 if (currentUrl.pathname === linkHref.pathname) {
-                    item.classList.add('active'); 
+                    item.classList.add('active');
                 } else {
-                    item.classList.remove('active'); 
+                    item.classList.remove('active');
                 }
             }
         });

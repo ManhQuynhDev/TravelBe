@@ -11,11 +11,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
+import com.quynhlm.dev.be.model.entity.Comment;
+import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
 import com.quynhlm.dev.be.service.GroupService;
 import com.quynhlm.dev.be.service.PostService;
+import com.quynhlm.dev.be.service.ReportService;
+import com.quynhlm.dev.be.service.ReviewService;
 import com.quynhlm.dev.be.service.StoryService;
 import com.quynhlm.dev.be.service.TravelPlanService;
 import com.quynhlm.dev.be.service.UserService;
@@ -37,6 +43,12 @@ public class HomeController {
     private CommentService commentService;
 
     @Autowired
+    private ReviewService reviewService;
+    
+    @Autowired
+    private ReportService reportService;
+
+    @Autowired
     private TravelPlanService travelPlanService;
 
     @Autowired
@@ -45,18 +57,25 @@ public class HomeController {
     @Autowired
     private StoryService storyService;
 
-
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();
-        
+        Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
+        long groupCount = groupResponseDTOPage.getTotalElements();
+        Pageable pageable = PageRequest.of(0, 1000);
+        Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(pageable);
+        long postCount = postMediaDTOPage.getTotalElements();
+
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();
-        double percentageChange = ((double) (userCount - 9) / 9) * 100;
-        String formattedPercentage = String.format("%.1f", percentageChange);
+        long managerCount = userList.stream()
+                .filter(user -> user.getRoles().contains("MANAGER"))
+                .count();
         model.addAttribute("userCount", userCount);
-        model.addAttribute("formattedPercentage", formattedPercentage);
+        model.addAttribute("groupCount", groupCount);
+        model.addAttribute("postCount", postCount);
+        model.addAttribute("managerCount", managerCount);
         return "home";
     }
 
@@ -115,11 +134,6 @@ public class HomeController {
         return "activity";
     }
 
-    @GetMapping("/account-settings")
-    public String accountSetting(Model model) {
-        return "accountSetting";
-    }
-
     @GetMapping("/stories")
     public String stories(Model model) {
         model.addAttribute("storyList", storyService.getAllStory(0, 1000));
@@ -132,13 +146,31 @@ public class HomeController {
         return "comments";
     }
 
-    @GetMapping("/register")
-    public String regiter(Model model) {
-        return "register";
+    @GetMapping("/reviews")
+    public String reviews(Model model) {
+        model.addAttribute("listReview", reviewService.getListData(0, 1000));
+        return "reviews";
+    }
+
+    @GetMapping("/reports")
+    public String reports(Model model) {
+        model.addAttribute("listReports", reportService.getAllReport(0, 1000));
+        return "reports";
     }
 
     @GetMapping("/login")
     public String login(Model model) {
         return "login";
     }
+
+    @GetMapping("/edit-profile")
+    public String editprofile(Model model) {
+        return "editProfile";
+    }
+
+    @GetMapping("/profile")
+    public String getMethodName(Model model) {
+        return "profile";
+    }
+
 }

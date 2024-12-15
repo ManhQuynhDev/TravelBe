@@ -1,18 +1,24 @@
-<div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalTitle" style="display: none;" aria-hidden="true">
+<div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalTitle" style="display: none;"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 id="addPostModalTitle" class="modal-title">Add New Post</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Close">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="tab-content" id="addPostModalTabContent">
                     <div class="tab-pane fade active show" id="addPost" role="tabpanel" aria-labelledby="addPost-tab">
+
                         <!-- Media Section -->
                         <div class="media-container text-center mb-5">
-                            <input type="file" id="postMediaInput" class="form-control" accept="image/*,video/*">
+                            <label for="postMediaInput" class="form-label">Choose Media</label>
+                            <input type="file" id="postMediaInput" class="form-control" accept="image/*,video/*"
+                                multiple>
+                            <div id="mediaPreview" class="mt-3"></div> <!-- Hiển thị file đã chọn -->
                         </div>
 
                         <!-- Content -->
@@ -20,7 +26,8 @@
                             <label for="postContent" class="col-sm-3 col-form-label input-label">Content</label>
                             <div class="col-sm-9">
                                 <div class="js-form-message">
-                                    <textarea class="form-control" id="postContent" rows="3" placeholder="Enter post content"></textarea>
+                                    <textarea class="form-control" id="postContent" rows="3"
+                                        placeholder="Enter post content"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -31,8 +38,8 @@
                             <div class="col-sm-9">
                                 <div class="js-form-message">
                                     <select class="form-control" id="postStatus">
-                                        <option value="public">Public</option>
-                                        <option value="private">Private</option>
+                                        <option value="PUBLIC">Public</option>
+                                        <option value="PRIVATE">Private</option>
                                     </select>
                                 </div>
                             </div>
@@ -43,14 +50,29 @@
                             <label for="postLocation" class="col-sm-3 col-form-label input-label">Location</label>
                             <div class="col-sm-9">
                                 <div class="js-form-message">
-                                    <input type="text" class="form-control" id="postLocation" placeholder="Enter location">
+                                    <input type="text" class="form-control" id="postLocation"
+                                        placeholder="Enter location">
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Hashtags -->
+                        <div class="row form-group">
+                            <label for="postHashtags" class="col-sm-3 col-form-label input-label">Hashtags</label>
+                            <div class="col-sm-9">
+                                <div class="js-form-message">
+                                    <input type="text" class="form-control" id="postHashtags"
+                                        placeholder="Enter hashtags (comma separated)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary mr-2" id="savePostButton">Save Post</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal"
+                                aria-label="Close">Close</button>
+                            <button type="button" class="btn btn-primary " id="savePostButton">Save Post</button>
+
                         </div>
                     </div>
                 </div>
