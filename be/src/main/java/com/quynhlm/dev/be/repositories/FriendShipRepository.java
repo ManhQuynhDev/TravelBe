@@ -46,8 +46,8 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
     @Query(value = """
         SELECT u.id, u.fullname, u.avatar_url, f.status, MIN(f.create_time) AS create_time
         FROM friend_ship f
-        JOIN user u ON u.id = f.user_received_id
-        WHERE f.user_send_id = :user_id
+        JOIN user u ON u.id = f.user_send_id
+        WHERE f.user_received_id = :user_id
           AND f.status = :status
         GROUP BY u.id, u.fullname, u.avatar_url, f.status
         """, nativeQuery = true)
