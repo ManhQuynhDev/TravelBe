@@ -137,7 +137,6 @@ public class FriendShipService {
     }
 
     public Page<UserFriendResponse> findByGetListFriends(Integer userId, String status, int page, int size) {
-
         User foundUser = userRepository.getAnUser(userId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(

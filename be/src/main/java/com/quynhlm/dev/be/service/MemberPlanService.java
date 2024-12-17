@@ -37,7 +37,7 @@ public class MemberPlanService {
     private UserRepository userRepository;
 
     public MemberPlan requestToJoinPlan(MemberPlan member)
-            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException, UserWasAlreadyRequest,
+            throws GroupNotFoundException, MemberNotFoundException, UserAccountNotFoundException,
             UnknownException {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());

@@ -87,7 +87,6 @@ public class TravelPlanService {
         for (MemberPlan memberPlan : members) {
             memberPlanService.deleteMemberPlan(memberPlan.getId(), memberPlan.getPlanId());
         }
-        
         travelPlanRepository.delete(foundPlan);
     }
 

@@ -75,7 +75,6 @@ public class FriendShipController {
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")
     public ResponseEntity<ResponseObject<Void>> sendRequestAddFriend(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId) {
-
         ResponseObject<Void> result = new ResponseObject<>();
         friendShipService.sendingRequestFriend(userSendId, userReceivedId);
         result.setMessage("Send request add friend successfully");
