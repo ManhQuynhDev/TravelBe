@@ -19,7 +19,6 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.FriendStoryResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
-import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.service.StoryService;
 
 @RestController
@@ -53,16 +52,16 @@ public class StoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<Story>> getAnStory(@PathVariable int id) {
-        ResponseObject<Story> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<StoryResponseDTO>> getAnStory(@PathVariable int id) {
+        ResponseObject<StoryResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an story successfully");
         result.setData(storyService.getAnStory(id));
         result.setStatus(true);
-        return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<StoryResponseDTO>>(result, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseObject<Story>> insertStory(
+    public ResponseEntity<ResponseObject<StoryResponseDTO>> insertStory(
             @RequestPart("story") String storyJson,
             @RequestPart(value = "mediaUrl", required = true) MultipartFile mediaUrl,
             @RequestPart(value = "musicFile", required = true) MultipartFile musicFile) throws Exception {
@@ -76,12 +75,12 @@ public class StoryController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        Story storyResponse = storyService.insertStory(story, mediaUrl, musicFile);
-        ResponseObject<Story> result = new ResponseObject<>();
+        StoryResponseDTO storyResponse = storyService.insertStory(story, mediaUrl, musicFile);
+        ResponseObject<StoryResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new story successfully");
         result.setStatus(true);
         result.setData(storyResponse);
-        return new ResponseEntity<ResponseObject<Story>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<StoryResponseDTO>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -89,6 +88,7 @@ public class StoryController {
         storyService.deleteStory(id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete story successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 }

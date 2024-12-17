@@ -18,6 +18,8 @@ public class UserResponseDTO {
     private String email;
     private Set<String> roles;
     private String phoneNumber;
+    private String dob;
+    private String bio;
     private String isLocked;
     private String avatarUrl;
     private Timestamp create_at;

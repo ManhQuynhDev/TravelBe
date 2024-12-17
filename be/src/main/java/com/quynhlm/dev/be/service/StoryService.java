@@ -27,9 +27,11 @@ import com.quynhlm.dev.be.model.dto.requestDTO.StoryRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.FriendStoryResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StoryResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
+import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Story;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.FriendShipRepository;
+import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.StoryRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
@@ -45,6 +47,9 @@ public class StoryService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private LocationRepository locationRepository;
+
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
@@ -59,12 +64,40 @@ public class StoryService {
         storyRepository.delete(foundStory);
     }
 
-    public Story getAnStory(int id) throws StoryNotFoundException {
+    public StoryResponseDTO getAnStory(int id) throws StoryNotFoundException {
+
         Story foundStory = storyRepository.getAnStory(id);
         if (foundStory == null) {
             throw new StoryNotFoundException("Story find by " + id + " not found. Please try another!");
         }
-        return foundStory;
+
+        List<Object[]> results = storyRepository.getAnStoryWithId(id);
+
+        Object[] result = results.get(0);
+
+        StoryResponseDTO storyResponseDTO = new StoryResponseDTO();
+        storyResponseDTO.setStoryId(((Number) result[0]).intValue());
+        storyResponseDTO.setOwnerId(((Number) result[1]).intValue());
+        storyResponseDTO.setLocationId(((Number) result[2]).intValue());
+        storyResponseDTO.setLocation((String) result[3]);
+        storyResponseDTO.setContent((String) result[4]);
+        storyResponseDTO.setStatus((String) result[5]);
+        storyResponseDTO.setFullname((String) result[6]);
+        storyResponseDTO.setAvatar((String) result[7]);
+        storyResponseDTO.setMusicUrl((String) result[8]);
+        storyResponseDTO.setMediaUrl((String) result[9]);
+        storyResponseDTO.setCreate_time((String) result[10]);
+        storyResponseDTO.setReaction_count(((Number) result[11]).intValue());
+
+        String mediaUrl = (String) result[9];
+
+        String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                ? "IMAGE"
+                : "VIDEO";
+
+        storyResponseDTO.setMediaType(mediaType);
+
+        return storyResponseDTO;
     }
 
     @Scheduled(fixedRate = 86400000)
@@ -74,7 +107,8 @@ public class StoryService {
         storyRepository.updateDelFlag(cutoffTime.toString());
     }
 
-    public Story insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile, MultipartFile musicFile)
+    public StoryResponseDTO insertStory(StoryRequestDTO storyRequestDTO, MultipartFile mediaFile,
+            MultipartFile musicFile)
             throws UnknownException, UserAccountNotFoundException {
         try {
 
@@ -85,17 +119,26 @@ public class StoryService {
             }
 
             Story story = new Story();
+
+            Location foundLocation = locationRepository.getLocationWithLocation(storyRequestDTO.getLocation());
+            if (foundLocation == null) {
+                Location location = new Location();
+                location.setAddress(storyRequestDTO.getLocation());
+                Location saveLocation = locationRepository.save(location);
+
+                story.setLocation_id(saveLocation.getId());
+            } else {
+                story.setLocation_id(foundLocation.getId());
+            }
+
             story.setUser_id(storyRequestDTO.getUser_id());
             story.setContent(storyRequestDTO.getContent());
-            story.setHastag(storyRequestDTO.getHastag());
-            story.setLocation_id(storyRequestDTO.getLocation_id());
             story.setStatus(storyRequestDTO.getStatus());
 
             if (mediaFile == null || mediaFile.isEmpty()) {
                 throw new UnknownException("No image or video file provided for the story.");
             }
 
-            // Nếu có file nhạc, kiểm tra file nhạc
             if (musicFile != null && !musicFile.isEmpty()) {
                 String musicFileName = musicFile.getOriginalFilename();
                 long musicFileSize = musicFile.getSize();
@@ -105,7 +148,6 @@ public class StoryService {
                     throw new UnknownException("Invalid music file type. Only audio files are allowed.");
                 }
 
-                // Upload nhạc lên S3
                 try (InputStream musicInputStream = musicFile.getInputStream()) {
                     ObjectMetadata musicMetadata = new ObjectMetadata();
                     musicMetadata.setContentLength(musicFileSize);
@@ -113,24 +155,20 @@ public class StoryService {
 
                     amazonS3.putObject(bucketName, musicFileName, musicInputStream, musicMetadata);
 
-                    // Lưu đường dẫn file nhạc vào Story (musicId)
                     String musicUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
                             musicFileName);
                     story.setMusic_url(musicUrl);
                 }
             }
 
-            // Lấy thông tin file hình ảnh hoặc video
             String imageOrVideoFileName = mediaFile.getOriginalFilename();
             long imageOrVideoFileSize = mediaFile.getSize();
             String imageOrVideoContentType = mediaFile.getContentType();
 
-            // Kiểm tra loại file (chỉ chấp nhận ảnh, video)
             if (!isValidFileType(imageOrVideoContentType)) {
                 throw new UnknownException("Invalid file type. Only image or video files are allowed.");
             }
 
-            // Upload file hình ảnh hoặc video lên S3
             try (InputStream imageOrVideoInputStream = mediaFile.getInputStream()) {
                 ObjectMetadata imageOrVideoMetadata = new ObjectMetadata();
                 imageOrVideoMetadata.setContentLength(imageOrVideoFileSize);
@@ -138,7 +176,6 @@ public class StoryService {
 
                 amazonS3.putObject(bucketName, imageOrVideoFileName, imageOrVideoInputStream, imageOrVideoMetadata);
 
-                // Lưu đường dẫn file hình ảnh hoặc video vào Story (url)
                 String imageOrVideoUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
                         imageOrVideoFileName);
                 story.setDelFlag(0);
@@ -149,7 +186,7 @@ public class StoryService {
                 if (savedStory.getId() == null) {
                     throw new UnknownException("Transaction cannot complete!");
                 }
-                return savedStory;
+                return getAnStory(savedStory.getId());
             }
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
@@ -158,7 +195,6 @@ public class StoryService {
         }
     }
 
-    // Hàm kiểm tra định dạng file (chỉ chấp nhận ảnh và video)
     private boolean isValidFileType(String contentType) {
         return contentType.startsWith("image/") || contentType.startsWith("video/");
     }
@@ -177,20 +213,21 @@ public class StoryService {
             story.setStoryId(((Number) row[0]).intValue());
             story.setOwnerId(((Number) row[1]).intValue());
             story.setLocationId(((Number) row[2]).intValue());
-            story.setContent((String) row[3]);
-            story.setStatus((String) row[4]);
-            story.setFullname((String) row[5]);
-            story.setAvatar((String) row[6]);
-            story.setMusicUrl((String) row[7]);
-            story.setMediaUrl((String) row[8]);
-            story.setCreate_time((String) row[9]);
-            story.setReaction_count(((Number) row[10]).intValue());
+            story.setLocation((String) row[3]);
+            story.setContent((String) row[4]);
+            story.setStatus((String) row[5]);
+            story.setFullname((String) row[6]);
+            story.setAvatar((String) row[7]);
+            story.setMusicUrl((String) row[8]);
+            story.setMediaUrl((String) row[9]);
+            story.setCreate_time((String) row[10]);
+            story.setReaction_count(((Number) row[11]).intValue());
 
-            String mediaUrl = (String) row[8];
+            String mediaUrl = (String) row[9];
 
             String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
-            ? "IMAGE"
-            : "VIDEO";
+                    ? "IMAGE"
+                    : "VIDEO";
 
             story.setMediaType(mediaType);
 
@@ -207,20 +244,21 @@ public class StoryService {
             story.setOwnerId(((Number) row[0]).intValue());
             story.setStoryId(((Number) row[1]).intValue());
             story.setLocationId(((Number) row[2]).intValue());
-            story.setContent((String) row[3]);
-            story.setStatus((String) row[4]);
-            story.setFullname((String) row[5]);
-            story.setAvatar((String) row[6]);
-            story.setMusicUrl((String) row[7]);
-            story.setMediaUrl((String) row[8]);
-            story.setCreate_time((String) row[9]);
-            story.setReaction_count(((Number) row[10]).intValue());
+            story.setLocation((String) row[3]);
+            story.setContent((String) row[4]);
+            story.setStatus((String) row[5]);
+            story.setFullname((String) row[6]);
+            story.setAvatar((String) row[7]);
+            story.setMusicUrl((String) row[8]);
+            story.setMediaUrl((String) row[9]);
+            story.setCreate_time((String) row[10]);
+            story.setReaction_count(((Number) row[11]).intValue());
 
-            String mediaUrl = (String) row[8];
+            String mediaUrl = (String) row[9];
 
             String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
-            ? "IMAGE"
-            : "VIDEO";
+                    ? "IMAGE"
+                    : "VIDEO";
 
             story.setMediaType(mediaType);
 
@@ -251,14 +289,15 @@ public class StoryService {
                         Integer storyId = ((Number) u[0]).intValue();
                         Integer ownerId = ((Number) u[1]).intValue();
                         Integer locationId = ((Number) u[2]).intValue();
-                        String content = (String) u[3];
-                        String status = (String) u[4];
-                        String fullname = (String) u[5];
-                        String avatar = (String) u[6];
-                        String musicUrl = (String) u[7];
-                        String mediaUrl = (String) u[8];
-                        String createTime = (String) u[9];
-                        Integer reactionCount = ((Number) u[10]).intValue();
+                        String location = (String) u[3];
+                        String content = (String) u[4];
+                        String status = (String) u[5];
+                        String fullname = (String) u[6];
+                        String avatar = (String) u[7];
+                        String musicUrl = (String) u[8];
+                        String mediaUrl = (String) u[9];
+                        String createTime = (String) u[10];
+                        Integer reactionCount = ((Number) u[11]).intValue();
 
                         String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
                                 ? "IMAGE"
@@ -268,6 +307,7 @@ public class StoryService {
                                 storyId,
                                 ownerId,
                                 locationId,
+                                location,
                                 content,
                                 status,
                                 fullname,

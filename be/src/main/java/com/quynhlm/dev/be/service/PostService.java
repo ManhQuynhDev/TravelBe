@@ -209,7 +209,7 @@ public class PostService {
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue()); 
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
 
             post.setMediaUrls(medias);
 
@@ -285,6 +285,41 @@ public class PostService {
         return postMediaDTO;
     }
 
+    public Page<PostMediaDTO> searchPostWithHashtag(String keyword, Integer user_id, int page, int size)
+            throws PostNotFoundException {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = postRepository.searchByHashTag(keyword, user_id, pageable);
+
+        return results.map(result -> {
+            PostMediaDTO postMediaDTO = new PostMediaDTO();
+
+            postMediaDTO.setOwnerId(((Number) result[0]).intValue());
+            postMediaDTO.setPostId(((Number) result[1]).intValue());
+            postMediaDTO.setLocationId(((Number) result[2]).intValue());
+            postMediaDTO.setLocation((String) result[3]);
+            postMediaDTO.setContent((String) result[4]);
+            postMediaDTO.setStatus((String) result[5]);
+            postMediaDTO.setFullname((String) result[6]);
+            postMediaDTO.setAvatar((String) result[7]);
+            postMediaDTO.setCreate_time((String) result[8]);
+            postMediaDTO.setReaction_count(((Number) result[9]).intValue());
+            postMediaDTO.setComment_count(((Number) result[10]).intValue());
+            postMediaDTO.setShare_count(((Number) result[11]).intValue());
+            postMediaDTO.setUser_reaction_type((String) result[12]);
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) result[1]).intValue());
+
+            postMediaDTO.setHashtags(hashtags);
+
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) result[1]).intValue());
+
+            postMediaDTO.setMediaUrls(medias);
+
+            return postMediaDTO;
+        });
+    }
+
     public Page<PostMediaDTO> searchPostWithContent(Integer user_id, String keyword, int page, int size)
             throws PostNotFoundException {
         Pageable pageable = PageRequest.of(page, size);
@@ -352,8 +387,6 @@ public class PostService {
         return postSaveResponseDTO;
     }
 
-    // Update post
-
     public void updatePost(Integer post_id, PostRequestDTO postRequestDTO, List<MultipartFile> files)
             throws PostNotFoundException, LocationNotFoundException, UnknownException {
         try {
@@ -403,12 +436,10 @@ public class PostService {
                                 fileName);
                         newMediaUrls.add(mediaUrl);
 
-                        // Xác định loại media (IMAGE hoặc VIDEO)
                         String mediaType = (fileName != null && fileName.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
                                 ? "IMAGE"
                                 : "VIDEO";
 
-                        // Kiểm tra media đã tồn tại chưa, nếu chưa thì thêm vào
                         boolean mediaExists = false;
                         for (Media existingMedia : currentMedias) {
                             if (existingMedia.getMedia_url().equals(mediaUrl)) {
@@ -417,7 +448,6 @@ public class PostService {
                             }
                         }
 
-                        // Nếu media chưa tồn tại trong database, thêm mới
                         if (!mediaExists) {
                             Media newMedia = new Media(null, post_id, mediaUrl, mediaType);
                             mediaRepository.save(newMedia);
@@ -535,5 +565,6 @@ public class PostService {
             return post;
         });
     }
-    // Feature Search
+    // Feature search with hashtag
+
 }

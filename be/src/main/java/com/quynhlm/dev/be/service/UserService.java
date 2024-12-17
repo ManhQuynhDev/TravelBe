@@ -114,18 +114,24 @@ public class UserService {
         response.setMessage("Authentication successful.");
         response.setToken(token);
 
-        // Response
+        UserResponseDTO userResponseDTO = responseUser(user);
+        response.setUserInfo(userResponseDTO);
+        return response;
+    }
+
+    public UserResponseDTO responseUser(User user) {
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setId(user.getId());
         userResponseDTO.setFullname(user.getFullname());
         userResponseDTO.setEmail(user.getEmail());
         userResponseDTO.setPhoneNumber(user.getPhoneNumber());
         userResponseDTO.setRoles(user.getRoles());
+        userResponseDTO.setDob(user.getDob());
+        userResponseDTO.setBio(user.getBio());
         userResponseDTO.setIsLocked(user.getIsLocked());
         userResponseDTO.setCreate_at(user.getCreate_at());
         userResponseDTO.setAvatarUrl(user.getAvatarUrl());
-        response.setUserInfo(userResponseDTO);
-        return response;
+        return userResponseDTO;
     }
 
     @PostAuthorize("hasRole('ADMIN') or returnObject.fullname == authentication.name")
@@ -134,17 +140,7 @@ public class UserService {
         if (user == null) {
             throw new UserAccountExistingException("Id " + id + " not found . Please try another!");
         }
-
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setId(user.getId());
-        userResponseDTO.setFullname(user.getFullname());
-        userResponseDTO.setEmail(user.getEmail());
-        userResponseDTO.setPhoneNumber(user.getPhoneNumber());
-        userResponseDTO.setRoles(user.getRoles());
-        userResponseDTO.setIsLocked(user.getIsLocked());
-        userResponseDTO.setCreate_at(user.getCreate_at());
-        userResponseDTO.setAvatarUrl(user.getAvatarUrl());
-
+        UserResponseDTO userResponseDTO = responseUser(user);
         return userResponseDTO;
     }
 
@@ -190,10 +186,8 @@ public class UserService {
 
     // Create token
     public String generateToken(User user) {
-        // Create JWT header with the HS512 algorithm
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
-        // Build JWT claims
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getFullname())
                 .issuer(user.getEmail())
@@ -202,7 +196,6 @@ public class UserService {
                 .claim("scope", buildScope(user))
                 .build();
 
-        // Prepare payload and JWS object
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
 
@@ -350,7 +343,6 @@ public class UserService {
         }
     }
 
-    // ChangeProfile
     public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
 
@@ -458,7 +450,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // Create Manager
     public void createManager(User user) throws UserAccountExistingException, UnknownException {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
@@ -489,7 +480,7 @@ public class UserService {
     public Page<User> getAllListManager(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAllManager(pageable);
-    }   
+    }
 
     public Page<UserInvitationResponseDTO> getAllInvitation(int user_id, int page, int size)
             throws UserAccountNotFoundException {

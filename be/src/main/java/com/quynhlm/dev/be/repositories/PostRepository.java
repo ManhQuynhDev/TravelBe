@@ -727,6 +727,48 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Object[]> fetchPostWithMediaTypeVideo(Pageable pageable);
 
     @Query(value = """
+                        SELECT
+                u.id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                l.address,
+                p.content,
+                p.status,
+                u.fullname AS fullname,
+                u.avatar_url AS avatar,
+                p.create_time,
+                COALESCE(reaction_count.reaction_count, 0) AS reaction_count,
+                COALESCE(comment_count.comment_count, 0) AS comment_count,
+                COALESCE(share_count.share_count, 0) AS share_count,
+                MAX(CASE WHEN r.user_id = :user_id THEN r.type ELSE NULL END) AS user_reaction_type
+            FROM hash_tag h
+            INNER JOIN Post p ON p.id = h.post_id
+            INNER JOIN User u ON u.id = p.user_id
+            INNER JOIN Location l ON l.id = p.location_id
+            LEFT JOIN (
+                SELECT post_id, COUNT(*) AS reaction_count
+                FROM post_reaction
+                GROUP BY post_id
+            ) reaction_count ON reaction_count.post_id = p.id
+            LEFT JOIN (
+                SELECT post_id, COUNT(*) AS comment_count
+                FROM comment
+                WHERE type = 'POST'
+                GROUP BY post_id
+            ) comment_count ON comment_count.post_id = p.id
+            LEFT JOIN (
+                SELECT post_id, COUNT(*) AS share_count
+                FROM share
+                GROUP BY post_id
+            ) share_count ON share_count.post_id = p.id
+            LEFT JOIN post_reaction r ON r.post_id = p.id
+            WHERE h.hashtag = :q
+            GROUP BY
+                p.id, u.id, l.address, p.content, p.status, u.fullname, u.avatar_url, p.create_time;
+                        """, nativeQuery = true)
+    Page<Object[]> searchByHashTag(@Param("q") String keyword , @Param("user_id") Integer user_id , Pageable pageable);
+
+    @Query(value = """
             SELECT
                 DISTINCT
                 p.id AS post_id,
@@ -840,5 +882,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     GROUP BY
                         p.id , u.id , m.type
                     """, nativeQuery = true)
-    Page<Object[]> searchPostWithContent(@Param("q") String keyword, @Param("userId") Integer userId, Pageable pageable);
+    Page<Object[]> searchPostWithContent(@Param("q") String keyword, @Param("userId") Integer userId,
+            Pageable pageable);
 }

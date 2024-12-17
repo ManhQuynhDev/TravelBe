@@ -81,6 +81,15 @@ public class PostController {
         return ResponseEntity.ok(posts);
     }
 
+    @GetMapping("/hashtag/{userId}")
+    public ResponseEntity<Page<PostMediaDTO>> searchPostWithHashtag(@PathVariable Integer userId,
+            @RequestParam("q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        Page<PostMediaDTO> posts = postService.searchPostWithHashtag(keyword, userId, page, size);
+        return ResponseEntity.ok(posts);
+    }
+
     @GetMapping("/friend_posts/{userId}")
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(@PathVariable Integer userId,
             Pageable pageable) {

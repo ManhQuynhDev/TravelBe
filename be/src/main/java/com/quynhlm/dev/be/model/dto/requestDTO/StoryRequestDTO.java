@@ -12,7 +12,6 @@ import lombok.Setter;
 public class StoryRequestDTO {
     private String content;
     private int user_id;
-    private int location_id;
-    private String hastag;
+    private String location;
     private String status;
 }

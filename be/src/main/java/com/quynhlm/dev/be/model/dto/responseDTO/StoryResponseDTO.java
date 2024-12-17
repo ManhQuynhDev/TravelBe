@@ -12,7 +12,8 @@ import lombok.Setter;
 public class StoryResponseDTO {
     private Integer storyId;
     private Integer ownerId;
-    private Integer locationId;               
+    private Integer locationId;
+    private String location;               
     private String content;
     private String status;
     private String fullname;

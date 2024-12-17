@@ -18,10 +18,38 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
    Story getAnStory(@Param("id") int id);
 
    @Query(value = """
+         SELECT
+                  s.id AS story_id,
+                  u.id AS owner_id,
+                  s.location_id,
+                  l.address,
+                  s.content,
+                  s.status,
+                  u.fullname AS fullname,
+                  u.avatar_url as avatar,
+                  s.music_url,
+                  s.url AS media_url,
+                  s.create_time,
+                  COUNT(DISTINCT r.id) AS reaction_count
+               from stories s
+
+               INNER JOIN user u on u.id = s.user_id
+
+               INNER JOIN Location l on l.id = s.location_id
+
+               LEFT JOIN
+                  story_reaction r ON s.id = r.story_id
+
+               GROUP BY
+                  s.id , u.id , s.location_id;""", nativeQuery = true)
+   List<Object[]> getAnStoryWithId(@Param("id") int id);
+
+   @Query(value = """
             SELECT
             s.id AS story_id,
             u.id AS owner_id,
             s.location_id,
+            l.address,
             s.content,
             s.status,
             u.fullname AS fullname,
@@ -33,6 +61,8 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
          from stories s
 
          INNER JOIN user u on u.id = s.user_id
+
+         INNER JOIN Location l on l.id = s.location_id
 
          LEFT JOIN
             story_reaction r ON s.id = r.story_id
@@ -51,6 +81,7 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
             s.id AS story_id,
             u.id AS owner_id,
             s.location_id,
+            l.address,
             s.content,
             s.status,
             u.fullname AS fullname,
@@ -61,6 +92,7 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
             COUNT(DISTINCT r.id) AS reaction_count
          FROM stories s
          INNER JOIN user u ON u.id = s.user_id
+         INNER JOIN Location l on l.id = s.location_id
          LEFT JOIN story_reaction r ON s.id = r.story_id
          WHERE u.id = :userId
          GROUP BY s.id, u.id, s.location_id
@@ -72,6 +104,7 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
             s.id AS story_id,
             u.id AS owner_id,
             s.location_id,
+            l.address,
             s.content,
             s.status,
             u.fullname AS fullname,
@@ -81,6 +114,7 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
             s.create_time
          FROM stories s
          INNER JOIN user u ON u.id = s.user_id
+         INNER JOIN Location l on l.id = s.location_id
          LEFT JOIN story_reaction r ON s.id = r.story_id
          WHERE u.id = :userId and del_flag = 1
          GROUP BY s.id, u.id, s.location_id
@@ -92,6 +126,7 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
              s.id AS story_id,
              u.id AS owner_id,
              s.location_id,
+             l.address,
              s.content,
              s.status,
              u.fullname AS fullname,
@@ -102,10 +137,10 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
              COUNT(DISTINCT r.id) AS reaction_count
           FROM stories s
           INNER JOIN user u ON u.id = s.user_id
+          INNER JOIN Location l on l.id = s.location_id
           LEFT JOIN story_reaction r ON s.id = r.story_id
           WHERE u.id IN (:userIds)
           GROUP BY s.id, u.id, s.location_id
          """, nativeQuery = true)
    Page<Object[]> fetchStoriesByUserIds(@Param("userIds") List<Integer> userIds, Pageable pageable);
-
 }
