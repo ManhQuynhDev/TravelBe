@@ -67,7 +67,6 @@ public class GroupController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    // Post group
     @PostMapping("")
     public ResponseEntity<ResponseObject<Group>> insertGroup(@RequestPart("group") String groupJson,
             @RequestPart(value = "file", required = false) MultipartFile file) throws Exception {
@@ -89,7 +88,6 @@ public class GroupController {
         return new ResponseEntity<ResponseObject<Group>>(result, HttpStatus.OK);
     }
 
-    // Update
     @PutMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> updateGroup(
             @PathVariable Integer id,

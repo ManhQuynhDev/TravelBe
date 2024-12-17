@@ -15,11 +15,10 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
     @Query(value = "SELECT DISTINCT f FROM FriendShip f WHERE " +
             "(f.userSendId = :userSendId AND f.userReceivedId = :userReceivedId OR " +
             "f.userSendId = :userReceivedId AND f.userReceivedId = :userSendId) " +
-            "AND f.status = :status")
-    FriendShip findByUserIdsAndStatus(
+            "AND (f.status = 'PENDING' OR f.status = 'APPROVED')")
+    FriendShip findByUserIdsWithFixedStatuses(
             @Param("userSendId") Integer userSendId,
-            @Param("userReceivedId") Integer userReceivedId,
-            @Param("status") String status);
+            @Param("userReceivedId") Integer userReceivedId);
 
     @Query(value = "SELECT DISTINCT * FROM friend_ship f WHERE f.user_received_id = :userReceivedId AND f.status = :status", nativeQuery = true)
     List<FriendShip> fetchByUserReceivedIdAndStatus(
@@ -45,18 +44,14 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
     Page<Object[]> getAllListUserFriends(@Param("user_id") Integer user_id, Pageable pageable);
 
     @Query(value = """
-            SELECT u.id, u.fullname, u.avatar_url, f.status, MIN(f.create_time) AS create_time
-            FROM friend_ship f
-            JOIN user u ON u.id = CASE
-                WHEN f.user_send_id = :user_id THEN f.user_received_id
-                ELSE f.user_send_id
-            END
-            WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
-              AND f.status = :status
-            GROUP BY u.id, u.fullname, u.avatar_url, f.status
-            """, nativeQuery = true)
-    Page<Object[]> findByUserFriends(@Param("user_id") Integer user_id,
+        SELECT u.id, u.fullname, u.avatar_url, f.status, MIN(f.create_time) AS create_time
+        FROM friend_ship f
+        JOIN user u ON u.id = f.user_received_id
+        WHERE f.user_send_id = :user_id
+          AND f.status = :status
+        GROUP BY u.id, u.fullname, u.avatar_url, f.status
+        """, nativeQuery = true)
+    Page<Object[]> findByUserFriendsWithStatus(@Param("user_id") Integer user_id,
             @Param("status") String status,
             Pageable pageable);
-
 }

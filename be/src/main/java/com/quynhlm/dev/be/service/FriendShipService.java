@@ -13,6 +13,7 @@ import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.FriendRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
@@ -29,7 +30,8 @@ import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FriendShipService {
@@ -114,11 +116,11 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(
-                userSendId, userReceivedId, "APPROVED");
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsWithFixedStatuses(
+                userSendId, userReceivedId);
 
         if (foundFriendShip != null) {
-            throw new UnknownException("Cannot send friend request because you are already friends.");
+            throw new UserWasAlreadyRequest("Cannot send friend request because you are already friends.");
         }
 
         FriendShip friendShip = new FriendShip();
@@ -144,7 +146,7 @@ public class FriendShipService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = friendShipRepository.findByUserFriends(userId,status, pageable);
+        Page<Object[]> results = friendShipRepository.findByUserFriendsWithStatus(userId , status, pageable);
 
         return results.map(row -> {
             UserFriendResponse object = new UserFriendResponse();
@@ -158,7 +160,7 @@ public class FriendShipService {
     }
 
     public void acceptFriend(int userSendId, int userReceivedId, String action)
-            throws UserAccountNotFoundException, UnknownException {
+            throws UserAccountNotFoundException, UnknownException , UserWasAlreadyRequest {
 
         User userSending = userRepository.getAnUser(userSendId);
         if (userSending == null) {
@@ -172,22 +174,22 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
-                userReceivedId, "PENDING");
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsWithFixedStatuses(userSendId,
+                userReceivedId);
 
         if (foundFriendShip == null) {
-            throw new UnknownException(
+            throw new UserWasAlreadyRequest(
                     "Transaction cannot be completed because userSendId and userReceivedId not status PENDING");
         }
 
         if ("approved".equalsIgnoreCase(action)) {
             foundFriendShip.setStatus("APPROVED");
+            isSuccess(foundFriendShip);
         } else if ("reject".equalsIgnoreCase(action)) {
             friendShipRepository.delete(foundFriendShip);
         } else {
             throw new IllegalArgumentException("Invalid action");
         }
-        isSuccess(foundFriendShip);
     }
 
     public void cancelFriends(int userSendId, int userReceivedId) throws UserAccountNotFoundException {
@@ -204,11 +206,11 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
-                userReceivedId, "APPROVED");
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsWithFixedStatuses(userSendId,
+                userReceivedId);
 
         if (foundFriendShip == null) {
-            throw new UnknownException(
+            throw new UserWasAlreadyRequest(
                     "Cannot complete transaction because there is no friendship between userSendId " + userSendId +
                             " and userReceivedId " + userReceivedId);
         }
@@ -231,11 +233,11 @@ public class FriendShipService {
                     "Find user received with " + userReceivedId + " not found , please try again !");
         }
 
-        FriendShip foundFriendShip = friendShipRepository.findByUserIdsAndStatus(userSendId,
-                userReceivedId, "APPROVED");
+        FriendShip foundFriendShip = friendShipRepository.findByUserIdsWithFixedStatuses(userSendId,
+                userReceivedId);
 
         if (foundFriendShip == null) {
-            throw new UnknownException(
+            throw new UserWasAlreadyRequest(
                     "Cannot complete transaction because there is no friendship between userSendId " + userSendId +
                             " and userReceivedId " + userReceivedId);
         }

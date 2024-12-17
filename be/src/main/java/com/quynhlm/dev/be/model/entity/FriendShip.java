@@ -24,4 +24,15 @@ public class FriendShip {
     private Integer userReceivedId;
     private String status;
     private String create_time;
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "id=" + id +
+                ", userSendId=" + userSendId +
+                ", userReceivedId=" + userReceivedId +
+                ", status='" + status + '\'' +
+                ", create_time='" + create_time + '\'' +
+                '}';
+    }
 }
