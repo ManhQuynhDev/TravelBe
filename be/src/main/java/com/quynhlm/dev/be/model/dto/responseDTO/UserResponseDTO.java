@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +23,6 @@ public class UserResponseDTO {
     private String bio;
     private String isLocked;
     private String avatarUrl;
+    private LocalDateTime lastNameChangeDate;
     private Timestamp create_at;
 }

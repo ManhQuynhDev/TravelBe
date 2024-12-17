@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,12 +35,21 @@ public class GroupController {
     @Autowired
     private final GroupService groupService;
 
-    // Get all list group
     @GetMapping("")
     public Page<GroupResponseDTO> getAllListGroups(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return groupService.getAllGroup(page, size);
+    }
+
+    @GetMapping("/top_member")
+    public List<GroupResponseDTO> Top10GroupByMembers() {
+        return groupService.Top10GroupByMembers();
+    }
+
+    @GetMapping("/top_travel_plan")
+    public List<GroupResponseDTO> Top10GroupTravel() {
+        return groupService.Top10GroupTravel();
     }
 
     @GetMapping("/{id}")

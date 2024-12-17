@@ -87,4 +87,61 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
             """, nativeQuery = true)
     Page<Object[]> fetchGroup(Pageable pageable);
+
+    @Query(value = """
+                     SELECT
+                        g.id AS groupId,
+                        u.id AS adminId,
+                        g.name AS group_name,
+                        u.fullname AS admin_name,
+                        g.cover_photo,
+                        g.bio,
+                        g.status,
+                        g.create_time,
+                        SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count,
+                        COUNT(t.id) AS travel_plan_count
+                    FROM
+                        m_group g
+                    LEFT JOIN
+                        travel_plan t ON g.id = t.group_id
+                    INNER JOIN
+                        member m ON m.group_id = g.id
+                    INNER JOIN
+                        user u ON g.user_id = u.id
+                    GROUP BY
+                        g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
+                    ORDER BY
+                travel_plan_count DESC
+            LIMIT 10;
+                    """, nativeQuery = true)
+    List<Object[]> Top10GroupTravel();
+
+    @Query(value = """
+                SELECT
+                    g.id AS groupId,
+                    u.id AS adminId,
+                    g.name AS group_name,
+                    u.fullname AS admin_name,
+                    g.cover_photo,
+                    g.bio,
+                    g.status,
+                    g.create_time,
+                    SUM(CASE WHEN m.status = 'APPROVED' THEN 1 ELSE 0 END) AS member_count,
+                    COUNT(t.id) AS travel_plan_count
+                FROM
+                    m_group g
+                LEFT JOIN
+                    travel_plan t ON g.id = t.group_id
+                INNER JOIN
+                    member m ON m.group_id = g.id
+                INNER JOIN
+                    user u ON g.user_id = u.id
+                GROUP BY
+                    g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
+                ORDER BY
+                    member_count DESC
+                LIMIT 10
+            """, nativeQuery = true)
+    List<Object[]> Top10GroupByMembers();
+
 }

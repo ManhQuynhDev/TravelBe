@@ -12,6 +12,7 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.service.FriendShipService;
 import com.quynhlm.dev.be.service.InvitationService;
 
@@ -69,7 +70,14 @@ public class FriendShipController {
             @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return friendShipService.findByGetListFriends(userId,status, page, size);
+        return friendShipService.findByGetListFriends(userId, status, page, size);
+    }
+
+    @GetMapping("/suggestion/{userId}")
+    public Page<UserTagPostResponse> suggestionFriends(@PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return friendShipService.suggestionFriends(userId, page, size);
     }
 
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")

@@ -45,13 +45,35 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                             """, nativeQuery = true)
     Page<Object[]> findAllUser(Pageable pageable);
 
-    // @Query(value = """
-    // SELECT *
-    // FROM User
-    // WHERE HEX(roles) =
-    // 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400074D414E4147455278';""",
-    // nativeQuery = true)
-    // Page<User> findAllManager(Pageable pageable);
+
+
+    @Query(value = """
+                     SELECT 
+                        months.month AS month,
+                        COUNT(u.id) AS user_count
+                    FROM 
+                        (
+                            SELECT '2024-01' AS month UNION ALL
+                            SELECT '2024-02' UNION ALL
+                            SELECT '2024-03' UNION ALL
+                            SELECT '2024-04' UNION ALL
+                            SELECT '2024-05' UNION ALL
+                            SELECT '2024-06' UNION ALL
+                            SELECT '2024-07' UNION ALL
+                            SELECT '2024-08' UNION ALL
+                            SELECT '2024-09' UNION ALL
+                            SELECT '2024-10' UNION ALL
+                            SELECT '2024-11' UNION ALL
+                            SELECT '2024-12'
+                        ) months
+                    LEFT JOIN 
+                        User u ON DATE_FORMAT(u.create_at, '%Y-%m') = months.month
+                    GROUP BY 
+                        months.month
+                    ORDER BY 
+                        months.month;
+                    """, nativeQuery = true)
+    List<Object[]> registerInMonth();
 
     @Query(value = """
             SELECT *

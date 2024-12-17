@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,6 +55,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserInvitationResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserStatisticalRegister;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.InvitationRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
@@ -131,6 +133,7 @@ public class UserService {
         userResponseDTO.setIsLocked(user.getIsLocked());
         userResponseDTO.setCreate_at(user.getCreate_at());
         userResponseDTO.setAvatarUrl(user.getAvatarUrl());
+        userResponseDTO.setLastNameChangeDate(user.getLastNameChangeDate());
         return userResponseDTO;
     }
 
@@ -517,5 +520,19 @@ public class UserService {
         if (saveUser.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
         }
+    }
+
+    public List<UserStatisticalRegister> getUserRegistrationCountByMonth() {
+        List<Object[]> results = userRepository.registerInMonth();
+
+        List<UserStatisticalRegister> userRegisterDTOList = new ArrayList<>();
+
+        for (Object[] row : results) {
+            UserStatisticalRegister dto = new UserStatisticalRegister();
+            dto.setDate((String) row[0]);
+            dto.setRegister_count(((Number) row[1]).intValue());
+            userRegisterDTOList.add(dto);
+        }
+        return userRegisterDTOList;
     }
 }

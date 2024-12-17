@@ -20,6 +20,7 @@ import com.quynhlm.dev.be.core.exception.ReViewNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReviewExitstingException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReViewRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReviewUpdateDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReviewResponseDTO;
@@ -54,7 +55,7 @@ public class ReviewService {
     }
 
     public ReviewResponseDTO insertReview(ReViewRequestDTO reViewRequestDTO, MultipartFile file)
-            throws UserAccountNotFoundException, LocationNotFoundException, ReviewExitstingException, UnknownException {
+            throws UserAccountNotFoundException, LocationNotFoundException, ReviewExitstingException, UserWasAlreadyRequest{
         try {
 
             User foundUser = userRepository.getAnUser(reViewRequestDTO.getUser_id());
@@ -72,7 +73,7 @@ public class ReviewService {
             Review exitsReview = repository.foundExitsReview(reViewRequestDTO.getUser_id(),
                     reViewRequestDTO.getLocation_id());
             if (exitsReview != null) {
-                throw new ReviewExitstingException("Review was from user " + reViewRequestDTO.getUser_id()
+                throw new UserWasAlreadyRequest("Review was from user " + reViewRequestDTO.getUser_id()
                         + " already exits , please try again");
             }
 
@@ -111,8 +112,6 @@ public class ReviewService {
 
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
-        } catch (Exception e) {
-            throw new UnknownException(e.getMessage());
         }
     }
 

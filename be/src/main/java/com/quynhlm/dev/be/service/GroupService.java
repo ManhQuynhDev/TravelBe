@@ -3,6 +3,7 @@ package com.quynhlm.dev.be.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,14 +103,14 @@ public class GroupService {
 
     public GroupResponseDTO getAnGroupWithId(Integer id) throws GroupNotFoundException {
         List<Object[]> results = groupRepository.findAnGroupById(id);
-        
+
         if (results.isEmpty()) {
             throw new GroupNotFoundException(
                     "Id " + id + " not found or invalid data. Please try another!");
         }
 
         Object[] result = results.get(0);
-        
+
         GroupResponseDTO group = new GroupResponseDTO();
         group.setGroupId(((Number) result[0]).intValue());
         group.setAdminId(((Number) result[1]).intValue());
@@ -134,13 +135,13 @@ public class GroupService {
                 .collect(Collectors.toList());
 
         group.setUserJoined(responses);
-    
+
         return group;
     }
 
-    public Page<GroupResponseDTO> searchGroupsByName(String keyword,int page, int size) {
+    public Page<GroupResponseDTO> searchGroupsByName(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = groupRepository.searchGroupsByName(keyword , pageable);
+        Page<Object[]> results = groupRepository.searchGroupsByName(keyword, pageable);
 
         return results.map(row -> {
             GroupResponseDTO group = new GroupResponseDTO();
@@ -173,7 +174,7 @@ public class GroupService {
 
     public void deleteGroup(Integer id) throws GroupNotFoundException {
         Group foundGroup = groupRepository.findGroupById(id);
-        
+
         if (foundGroup == null) {
             throw new GroupNotFoundException("Group find with " + id + " not found , please try other id");
         }
@@ -181,7 +182,7 @@ public class GroupService {
         List<Member> foundMemberGroup = memberRepository.findByGroupId(foundGroup.getId());
 
         for (Member member : foundMemberGroup) {
-               memberService.deleleMember(member.getId());
+            memberService.deleleMember(member.getId());
         }
 
         groupRepository.delete(foundGroup);
@@ -224,7 +225,7 @@ public class GroupService {
                 foundGroup.setBio(settingsGroupDTO.getBio());
             }
 
-            if(settingsGroupDTO.getStatus() != null && !settingsGroupDTO.getStatus().isEmpty()) {
+            if (settingsGroupDTO.getStatus() != null && !settingsGroupDTO.getStatus().isEmpty()) {
                 foundGroup.setStatus(settingsGroupDTO.getStatus());
             }
 
@@ -239,6 +240,7 @@ public class GroupService {
             throw new UnknownException(e.getMessage());
         }
     }
+
     // Get list group
     public Page<GroupResponseDTO> getAllGroup(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -271,5 +273,87 @@ public class GroupService {
             group.setUserJoined(responses);
             return group;
         });
+    }
+
+    public List<GroupResponseDTO> Top10GroupTravel() {
+        List<Object[]> results = groupRepository.Top10GroupTravel();
+
+        List<GroupResponseDTO> groupResponseList = new ArrayList<>();
+
+        results.forEach(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
+            group.setTravel_plan_count(((Number) row[9]).intValue());
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+
+            List<MemberResponseDTO> memberResponses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6] 
+            ))
+                    .collect(Collectors.toList());
+
+            group.setUserJoined(memberResponses);
+
+            groupResponseList.add(group);
+        });
+
+        return groupResponseList;
+    }
+
+    public List<GroupResponseDTO> Top10GroupByMembers() {
+        List<Object[]> results = groupRepository.Top10GroupByMembers();
+
+        List<GroupResponseDTO> groupResponseList = new ArrayList<>();
+
+        results.forEach(row -> {
+            GroupResponseDTO group = new GroupResponseDTO();
+
+            group.setGroupId(((Number) row[0]).intValue());
+            group.setAdminId(((Number) row[1]).intValue());
+            group.setGroup_name((String) row[2]);
+            group.setAdmin_name((String) row[3]);
+            group.setCover_photo((String) row[4]);
+            group.setBio((String) row[5]);
+            group.setStatus((String) row[6]);
+            group.setCreate_time((String) row[7]);
+            group.setMember_count(((Number) row[8]).intValue());
+            group.setTravel_plan_count(((Number) row[9]).intValue());
+
+            List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
+
+            List<MemberResponseDTO> memberResponses = rawResults.stream()
+                    .map(r -> new MemberResponseDTO(
+                            ((Number) r[0]).intValue(),
+                            ((Number) r[1]).intValue(),
+                            ((Number) r[2]).intValue(),
+                            (String) r[3],
+                            (String) r[4],
+                            (String) r[5],
+                            (String) r[6] 
+            ))
+                    .collect(Collectors.toList());
+
+            group.setUserJoined(memberResponses);
+
+            groupResponseList.add(group);
+        });
+
+        return groupResponseList;
     }
 }

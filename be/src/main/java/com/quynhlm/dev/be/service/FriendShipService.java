@@ -18,6 +18,7 @@ import com.quynhlm.dev.be.enums.FriendRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Invitation;
@@ -158,6 +159,27 @@ public class FriendShipService {
             return object;
         });
     }
+
+
+    public Page<UserTagPostResponse> suggestionFriends(Integer userId, int page, int size) {
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user send request with " + userId + " not found , please try again !");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = friendShipRepository.suggestionFriends(userId , pageable);
+
+        return results.map(row -> {
+            UserTagPostResponse object = new UserTagPostResponse();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setFullname(((String) row[1]));
+            object.setAvatarUrl((String) row[2]);
+            return object;
+        });
+    }
+
 
     public void acceptFriend(int userSendId, int userReceivedId, String action)
             throws UserAccountNotFoundException, UnknownException , UserWasAlreadyRequest {

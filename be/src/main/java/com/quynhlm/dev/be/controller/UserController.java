@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
@@ -27,6 +28,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserInvitationResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserStatisticalRegister;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.UserService;
 
@@ -153,9 +155,20 @@ public class UserController {
 
     @PostMapping("/change-profile/{id}")
     public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable int id,
-            @RequestPart("updateDTO") UpdateProfileDTO updateDTO,
+            @RequestPart("updateDTO") String updateDTOJson,
+
             @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
-        userService.changeProfile(id, updateDTO, imageFile);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        UpdateProfileDTO updateProfileDTO = null;
+        try {
+            updateProfileDTO = objectMapper.readValue(updateDTOJson, UpdateProfileDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        userService.changeProfile(id, updateProfileDTO, imageFile);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
         response.setStatus(true);
@@ -195,6 +208,11 @@ public class UserController {
     public Page<User> getAllManager(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return userService.getAllListManager(page, size);
+    }
+
+    @GetMapping("/statistical_register")
+    public List<UserStatisticalRegister > getUserRegistrationCountByMonth() {
+        return userService.getUserRegistrationCountByMonth();
     }
 
     @GetMapping("/users/fullname/{userId}")

@@ -21,5 +21,6 @@ public class GroupResponseDTO {
     private String bio;
     private String create_time;
     private Integer member_count;
+    private Integer travel_plan_count;
     private List<MemberResponseDTO> userJoined;
 }
