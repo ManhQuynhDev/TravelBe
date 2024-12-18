@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,9 +43,9 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
+import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
@@ -312,13 +313,13 @@ public class UserService {
 
         return isCheck && expiration_time.after(new Date());
     }
-
     // ChangeFullname
     public void changeFullname(Integer id, String changeName)
-            throws UnknownException, UserAccountNotFoundException {
+            throws UnknownException, UserAccountNotFoundException , MethodNotValidException {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         } else {
+
             User user = userRepository.findOneById(id);
             if (user.getLastNameChangeDate() != null) {
                 long daysSinceLastChange = ChronoUnit.DAYS.between(user.getLastNameChangeDate(), LocalDateTime.now());
@@ -327,6 +328,11 @@ public class UserService {
                             "You can only change your name once every 30 days. Please try again after "
                                     + (30 - daysSinceLastChange) + " days.");
                 }
+            }
+
+            String nameRegex = "^[A-Za-z][A-Za-z ]*$";
+            if (!Pattern.matches(nameRegex, changeName)) {
+                throw new MethodNotValidException("Full name must start with a letter and not contain special characters.");
             }
 
             user.setFullname(changeName);
