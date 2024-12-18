@@ -48,11 +48,12 @@
         <div class="container mt-5">
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Story Management</h5>
+                    <h5 class="card-title">Quản lý Story</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addStoryModal"
                         id="addStory">
-                        <i class="tio-user-add mr-1"></i>Add Story
+                        <i class="tio-user-add mr-1"></i>Thêm Story
                     </button>
+
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -61,17 +62,18 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 200px;">Content</th>
+                                    <th>Nội dung</th>
                                     <th>Media</th>
-                                    <th>Created Time</th>
-                                    <th>Status</th>
-                                    <th>User</th>
-                                    <th>Actions</th>
+                                    <th>Thời gian tạo</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người dùng</th>
+                                    <th>Hành động</th>
                                 </tr>
+
                             </thead>
                             <tbody>
-                                <tr th:each="story : ${storyList}">
-                                    <td class="text-start" th:text="${story.storyId}">ID</td>
+                                <tr th:each="story, iterStat : ${storyList}">
+                                    <td th:text="${iterStat.index + 1}">1</td>
                                     <td class="text-start">
                                         <a href="#" data-toggle="modal"
                                             th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'"
@@ -89,11 +91,11 @@
                                     <td class="text-start" th:text="${story.status}">Status</td>
                                     <td class="text-start">
                                         <div class="avatar-wrapper" style="display: flex; align-items: center;">
-                                            <!-- Hiển thị ảnh đại diện nếu có -->
+
                                             <img th:if="${story.avatar != null}" th:src="${story.avatar}" alt="Avatar"
                                                 class="rounded-circle mr-2" style="width: 40px; height: 40px;">
 
-                                            <!-- Hiển thị avatar text nếu không có ảnh -->
+
                                             <div th:if="${story.avatar == null}" class="avatar-text rounded-circle mr-2"
                                                 style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
                                                        width: 40px; height: 40px; font-size: 16px; font-weight: bold;">
@@ -101,7 +103,7 @@
                                                     th:text="${story.fullname != null && !story.fullname.isEmpty() ? story.fullname.substring(0,1).toUpperCase() : 'A'}"></span>
                                             </div>
 
-                                            <!-- Tên người dùng -->
+
                                             <span th:text="${story.fullname != null ? story.fullname : 'User'}"
                                                 style="margin-left: 10px;"></span>
                                         </div>
@@ -110,7 +112,7 @@
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-outline-danger" id="deleteStory"
                                             th:attr="data-id=${story.storyId}">
-                                            <i class="tio-delete-outlined mr-1"></i>Delete
+                                            <i class="tio-delete-outlined mr-1"></i>Xóa
                                         </button>
                                     </td>
                                 </tr>
@@ -173,11 +175,16 @@
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search stories",
+                    searchPlaceholder: "Tìm kiếm story",
                     paginate: {
-                        previous: "Prev",
+                        previous: "Trước",
+                        next: "Tiếp theo",
                     },
-
+                    emptyTable: "Không có dữ liệu trong bảng",
+                    info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
 
@@ -217,10 +224,10 @@
                         storyMediaImg.src = '/assets/img/anhload.jpg'; // Ảnh mặc định khi có lỗi
                     };
 
-                    document.getElementById('storyContentDetails').value = story.content || '';
-                    document.getElementById('storyCreatedTimeDetails').value = story.create_time || '';
-                    document.getElementById('storyHashtagDetails').value = story.hastag || '';
-                    document.getElementById('storyStatusDetails').value = story.status || '';
+                    document.getElementById('storyContentDetails').innerText = story.content || '';
+                    document.getElementById('storyCreatedTimeDetails').innerText = story.create_time || '';
+                    document.getElementById('storyHashtagDetails').innerText = story.hastag || '';
+                    document.getElementById('storyStatusDetails').innerText = story.status || '';
 
                     const music = document.getElementById("musicDetail");
                     const audioElement = document.getElementById("storyMusicDetails");
@@ -266,6 +273,7 @@
                                 const storyRow = button.closest('tr');
                                 if (storyRow) {
                                     storyRow.remove();
+                                    window.location.reload()
                                 }
                             } else {
                                 alert("Failed to delete story");
@@ -277,7 +285,54 @@
                 })
             })
         })
+        document.getElementById("addStory").addEventListener("click", function () {
+            $('#addStoryModal').modal('show');
+            const apiURL = 'http://localhost:8080/locations';
+            const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
+            const token = localStorage.getItem("authToken");
 
+            const storyLocation = document.getElementById('storyLocation');
+            // const groupSelect = document.getElementById('groupId');
+
+            if (!token) {
+                console.error("No token found in localStorage");
+            } else {
+                async function fetchLocations() {
+                    try {
+                        const response = await fetch(apiURL, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        console.log("Fetched Locations:", data);
+
+                        storyLocation.innerHTML = '<option value="">Select Location</option>';
+
+                        if (data.content && Array.isArray(data.content)) {
+                            data.content.forEach(location => {
+                                const option = document.createElement('option');
+                                option.value = location.id;
+                                option.textContent = location.address;
+                                storyLocation.appendChild(option);
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error fetching locations:', error);
+                    }
+                }
+
+
+                fetchLocations();
+            }
+        });
         document.getElementById('saveStoryButton').addEventListener('click', function () {
             const content = document.getElementById('storyContent').value;
             const status = document.getElementById('storyStatus').value;

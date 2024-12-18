@@ -1,84 +1,69 @@
 <div class="modal fade" id="postDetailModal" tabindex="-1" aria-labelledby="postDetailModalTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <!-- Header -->
             <div class="modal-header">
-                <h4 id="postDetailModalTitle" class="modal-title">Post Details</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
-                    aria-label="Close">
+                <h4 id="postDetailModalTitle" class="modal-title">Chi tiết bài viết</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
 
-            <!-- Body -->
             <div class="modal-body">
                 <div class="tab-content" id="postDetailModalTabContent">
                     <div class="tab-pane fade active show" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <!-- Media Section -->
                         <div class="text-center mb-5" id="mediaContainer">
-                            <img src="https://travle-be.s3.ap-southeast-2.amazonaws.com/star.png"
-                                class="img-fluid rounded" alt="Post Media" style="max-width: 200px; height: auto;">
+                            <img src="https://travle-be.s3.ap-southeast-2.amazonaws.com/star.png" class="img-fluid rounded" alt="Post Media" style="max-width: 200px; height: auto;">
                         </div>
 
-                        <!-- Fullname -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Fullname</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Họ tên</label>
                             <div class="col-sm-9">
                                 <span id="postFullnameDetails" class="form-control-plaintext">ADMIN</span>
                             </div>
                         </div>
 
-                        <!-- Content -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Content</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Nội dung</label>
                             <div class="col-sm-9">
                                 <span id="postContentDetails" class="form-control-plaintext">Paris đẹp quá mn</span>
                             </div>
                         </div>
 
-                        <!-- Created Time -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Created Time</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Thời gian tạo</label>
                             <div class="col-sm-9">
-                                <span id="postCreatedTimeDetails" class="form-control-plaintext">2024-12-12
-                                    16:33:21</span>
+                                <span id="postCreatedTimeDetails" class="form-control-plaintext">2024-12-12 16:33:21</span>
                             </div>
                         </div>
 
-                        <!-- Location -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Location</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Vị trí</label>
                             <div class="col-sm-9">
-                                <span id="postLocationDetails" class="form-control-plaintext">Tân tiến, Vĩnh Tường, Vĩnh
-                                    Phúc</span>
+                                <span id="postLocationDetails" class="form-control-plaintext">Tân tiến, Vĩnh Tường, Vĩnh Phúc</span>
                             </div>
                         </div>
 
-                        <!-- Status -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Status</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Trạng thái</label>
                             <div class="col-sm-9">
-                                <span id="postStatusDetails" class="form-control-plaintext">PUBLIC</span>
+                                <span id="postStatusDetails" class="form-control-plaintext">Công khai</span>
                             </div>
                         </div>
 
-                        <!-- Reaction Count -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Reactions</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Phản hồi</label>
                             <div class="col-sm-9">
                                 <span id="postReactionCountDetails" class="form-control-plaintext">0</span>
                             </div>
                         </div>
 
-                        <!-- Comment Count -->
                         <div class="row mb-3">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Comments</label>
+                            <label class="col-sm-3 col-form-label font-weight-bold">Bình luận</label>
                             <div class="col-sm-9">
                                 <span id="postCommentCountDetails" class="form-control-plaintext">0</span>
                             </div>
                         </div>
 
-                        <!-- Hashtags -->
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label font-weight-bold">Hashtags</label>
                             <div class="col-sm-9">
@@ -86,10 +71,8 @@
                             </div>
                         </div>
 
-                        <!-- Close Button -->
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal"
-                                aria-label="Close">Close</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Đóng">Đóng</button>
                         </div>
                     </div>
                 </div>

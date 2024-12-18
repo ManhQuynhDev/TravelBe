@@ -3,69 +3,159 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 id="addTravelPlanModalTitle" class="modal-title">Add New Travel Plan</h4>
+                <h4 id="addTravelPlanModalTitle" class="modal-title">Thêm Kế Hoạch Du Lịch Mới</h4>
                 <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
-                    aria-label="Close">
+                    aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="row form-group">
-                    <label for="groupId" class="col-sm-3 col-form-label input-label">Group</label>
+                    <label for="groupId" class="col-sm-3 col-form-label input-label">Nhóm</label>
                     <div class="col-sm-9">
                         <select class="form-control" id="groupId">
-                            <!-- Các nhóm sẽ được load từ API -->
+                            <option value="">Chọn Nhóm</option>
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="row form-group">
-                    <label for="planName" class="col-sm-3 col-form-label input-label">Plan Name</label>
+                    <label for="planName" class="col-sm-3 col-form-label input-label">Tên Kế Hoạch</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="planName" placeholder="Enter travel plan name">
+                        <input type="text" class="form-control" id="planName" placeholder="Nhập tên kế hoạch du lịch">
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label for="startDate" class="col-sm-3 col-form-label input-label">Start Date</label>
+                    <label for="startDate" class="col-sm-3 col-form-label input-label">Ngày Bắt Đầu</label>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="startDate">
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label for="endDate" class="col-sm-3 col-form-label input-label">End Date</label>
+                    <label for="endDate" class="col-sm-3 col-form-label input-label">Ngày Kết Thúc</label>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="endDate">
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label for="description" class="col-sm-3 col-form-label input-label">Description</label>
+                    <label for="description" class="col-sm-3 col-form-label input-label">Mô Tả</label>
                     <div class="col-sm-9">
                         <textarea class="form-control" id="description" rows="3"
-                            placeholder="Enter plan description"></textarea>
+                            placeholder="Nhập mô tả kế hoạch"></textarea>
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label for="status" class="col-sm-3 col-form-label input-label">Status</label>
+                    <label for="status" class="col-sm-3 col-form-label input-label">Trạng Thái</label>
                     <div class="col-sm-9">
                         <select class="form-control" id="status">
-                            <option value="public">Public</option>
-                            <option value="private">Private</option>
+                            <option value="PUBLIC">Công Khai</option>
+                            <option value="PRIVATE">Riêng Tư</option>
                         </select>
                     </div>
                 </div>
                 <div class="row form-group">
-                    <label for="totalBudget" class="col-sm-3 col-form-label input-label">Total Budget</label>
+                    <label for="" class="col-sm-3 col-form-label input-label">Vị Trí</label>
                     <div class="col-sm-9">
-                        <input type="number" class="form-control" id="totalBudget" placeholder="Enter total budget">
+                        <div class="js-form-message">
+                            <select class="form-control" id="locationSelect">
+                                <option value="">Chọn Vị Trí</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label for="totalBudget" class="col-sm-3 col-form-label input-label">Tổng Ngân Sách</label>
+                    <div class="col-sm-9">
+                        <input type="number" class="form-control" id="totalBudget" placeholder="Nhập tổng ngân sách">
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary mr-2" id="saveTravelPlanButton">Save Plan</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                        aria-label="Close">Close</button>
+                    <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal"
+                        aria-label="Đóng">Đóng</button>
+                    <button type="button" class="btn btn-primary " id="saveTravelPlanButton">Lưu Kế Hoạch</button>
+                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    const apiURL = 'http://localhost:8080/locations'; 
+    const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
+    const token = localStorage.getItem("authToken");
+
+    const locationSelect = document.getElementById('locationSelect');
+    const groupSelect = document.getElementById('groupId'); 
+
+    if (!token) {
+        console.error("Không tìm thấy token trong localStorage");
+    } else {
+        async function fetchLocations() {
+            try {
+                const response = await fetch(apiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Danh sách Vị Trí:", data);
+
+                locationSelect.innerHTML = '<option value="">Chọn Vị Trí</option>';
+
+                if (data.content && Array.isArray(data.content)) {
+                    data.content.forEach(location => {
+                        const option = document.createElement('option');
+                        option.value = location.id; 
+                        option.textContent = location.address; 
+                        locationSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu vị trí:', error);
+            }
+        }
+
+        async function fetchGroups() {
+            try {
+                const response = await fetch(groupApiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Danh sách Nhóm:", data); 
+
+                groupSelect.innerHTML = '<option value="">Chọn Nhóm</option>';
+
+                if (data.content && Array.isArray(data.content)) {
+                    data.content.forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.groupId;
+                        option.textContent = group.group_name; 
+                        groupSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu nhóm:', error);
+            }
+        }
+
+        fetchLocations();
+        fetchGroups();
+    }
+</script>

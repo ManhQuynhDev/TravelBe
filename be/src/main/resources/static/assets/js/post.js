@@ -17,11 +17,16 @@ $(document).ready(function () {
         ],
         language: {
             search: "",
-            searchPlaceholder: "Search posts",
+            searchPlaceholder: "Tìm kiếm bài viết",
             paginate: {
-                previous: "Prev",
+                previous: "Trước",
+                next: "Tiếp theo",
             },
-
+            emptyTable: "Không có dữ liệu trong bảng",
+            info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+            infoEmpty: "Không có dữ liệu",
+            infoFiltered: "(lọc từ _MAX_ mục)",
+            lengthMenu: "Hiển thị _MENU_ mục",
         }
     });
 
@@ -57,19 +62,15 @@ function loadPostDetails(id) {
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
                     post.mediaUrls.forEach(url => {
                         const img = document.createElement('img');
-                        img.src = url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+                        img.src = url;
+                        img.onerror = function () {
+                            this.src = '/assets/img/anhload.jpg';
+                        }
                         img.className = 'img-fluid rounded mb-2';
                         img.style.width = '200px';
                         img.style.height = 'auto';
                         mediaContainer.appendChild(img);
                     });
-                } else {
-                    const defaultImg = document.createElement('img');
-                    defaultImg.src = '/assets/img/anhload.jpg';
-                    defaultImg.className = 'img-fluid rounded mb-2';
-                    defaultImg.style.width = '200px';
-                    defaultImg.style.height = 'auto';
-                    mediaContainer.appendChild(defaultImg);
                 }
 
                 document.getElementById('postContentDetails').innerText = post.content || 'No content available';
@@ -183,7 +184,7 @@ document.getElementById('savePostButton').addEventListener('click', function () 
         .then(response => response.json())
         .then(data => {
             if (data.status) {
-                alert('Post created successfully');
+                alert('Thêm bài viết thành công');
                 $('#addPostModal').modal('hide');
                 window.location.reload();
             } else {
@@ -224,7 +225,7 @@ document.querySelectorAll('#deletePost').forEach(button => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.message === "Delete post successfully") {
-                        alert("Delete Successfully");
+                        alert("Xóa bài viết thành công");
                         modal.hide();
 
                         const storyRow = button.closest('tr');
@@ -267,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     commentsListTable.innerHTML = '';
 
                     if (data.content.length === 0) {
-                        commentsListTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">No comments found</td></tr>';
+                        commentsListTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">Không có dữ liệu</td></tr>';
                     } else {
                         data.content.forEach((comment, index) => {
                             const row = document.createElement("tr");

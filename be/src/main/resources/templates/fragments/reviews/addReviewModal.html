@@ -13,7 +13,6 @@
                 <div class="tab-content" id="addReviewModalTabContent">
                     <div class="tab-pane fade active show" id="addReview" role="tabpanel"
                         aria-labelledby="addReview-tab">
-                        <!-- Content -->
                         <div class="row form-group">
                             <label for="reviewContent" class="col-sm-3 col-form-label input-label">Content</label>
                             <div class="col-sm-9">
@@ -24,36 +23,31 @@
                             </div>
                         </div>
 
-                        <!-- Rating -->
                         <div class="row form-group">
                             <label for="reviewRating" class="col-sm-3 col-form-label input-label">Rating</label>
                             <div class="col-sm-9">
                                 <div class="js-form-message">
                                     <select class="form-control" id="reviewRating">
-                                        <option value="1">1 Star</option>
-                                        <option value="2">2 Stars</option>
-                                        <option value="3">3 Stars</option>
-                                        <option value="4">4 Stars</option>
-                                        <option value="5">5 Stars</option>
+                                        <option value="1">⭐☆☆☆☆</option>
+                                        <option value="2">⭐⭐☆☆☆</option>
+                                        <option value="3">⭐⭐⭐☆☆</option>
+                                        <option value="4">⭐⭐⭐⭐☆</option>
+                                        <option value="5">⭐⭐⭐⭐⭐</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Location (Dropdown) -->
                         <div class="row form-group">
                             <label for="reviewLocation" class="col-sm-3 col-form-label input-label">Location</label>
                             <div class="col-sm-9">
                                 <div class="js-form-message">
-                                    <select class="form-control" id="reviewLocation">
+                                    <select class="form-control" id="locationSelect">
                                         <option value="">Select Location</option>
-                                        <option value="1">Tân tiến , vĩnh tường , vĩnh phúc</option>
-                                        <option value="2">ádas</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
-
 
                         <div class="d-flex justify-content-end">
                             <button type="button" class="btn btn-primary mr-2" id="saveReviewButton">Save
@@ -67,3 +61,51 @@
         </div>
     </div>
 </div>
+<script>
+    const apiURL = 'http://localhost:8080/locations'; // API link
+    const token = localStorage.getItem("authToken");
+    const locationSelect = document.getElementById('locationSelect');
+
+    // Kiểm tra token trước khi gọi API
+    if (!token) {
+        console.error("No token found in localStorage");
+    } else {
+        async function fetchLocations() {
+            try {
+                const response = await fetch(apiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Token xác thực
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Fetched Locations:", data); // Debug dữ liệu trả về
+
+                // Xóa các option cũ (nếu có) trước khi thêm dữ liệu mới
+                locationSelect.innerHTML = '<option value="">Select Location</option>';
+
+                // Duyệt qua mảng content và thêm option
+                if (data.content && Array.isArray(data.content)) {
+                    data.content.forEach(location => {
+                        const option = document.createElement('option');
+                        option.value = location.id; // Set value là id
+                        option.textContent = location.address; // Hiển thị address
+                        locationSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching locations:', error);
+            }
+        }
+
+        // Gọi hàm fetch khi tải trang
+        fetchLocations();
+    }
+
+</script>

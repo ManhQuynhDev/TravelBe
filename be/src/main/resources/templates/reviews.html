@@ -50,11 +50,7 @@
         <div class="container-fluid">
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Reviews List</h5>
-                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addReviewModal"
-                        id="addReview">
-                        <i class="tio-user-add mr-1"></i>Add Review
-                    </button>
+                    <h5 class="card-title">Danh sách Review</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -62,11 +58,11 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th>Content</th>
-                                    <th>Star Rating</th>
-                                    <th>Location</th>
-                                    <th>Created Time</th>
-                                    <th>Actions</th>
+                                    <th>Nội Dung</th>
+                                    <th>Đánh Giá Sao</th>
+                                    <th>Địa Điểm</th>
+                                    <th>Thời Gian Tạo</th>
+                                    <th>Hành Động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,7 +84,8 @@
                                             </div>
                                         </a>
                                     </td>
-                                    <td class="text-start" th:text="${review.star}">Star Rating</td>
+                                    <td class="text-start" th:text="${'⭐'.repeat(review.star)}">Star Rating</td>
+
                                     <td class="text-start" th:text="${review.location_id}">Location ID</td>
                                     <td class="text-start"
                                         th:text="${#strings.substring(review.create_time, 0, review.create_time.indexOf('.'))}">
@@ -97,11 +94,11 @@
                                         <div class="d-flex justify-content-start">
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deleteReview"
                                                 th:attr="data-id=${review.id}">
-                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                                <i class="tio-delete-outlined mr-1"></i>Xóa
                                             </button>
                                             <button class="btn btn-sm btn-outline-secondary mr-2" id="viewReviewDetails"
                                                 th:attr="data-id=${review.id}">
-                                                View Details
+                                                Xem Chi Tiết
                                             </button>
                                         </div>
                                     </td>
@@ -143,11 +140,16 @@
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search reviews",
+                    searchPlaceholder: "Tìm kiếm reviews",
                     paginate: {
-                        previous: "Prev",
+                        previous: "Trước",
+                        next: "Tiếp theo",
                     },
-
+                    emptyTable: "Không có dữ liệu trong bảng",
+                    info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
 
@@ -185,18 +187,28 @@
                 const reviewData = await response.json();
                 const data = reviewData.data;
 
-                // Cập nhật ảnh media của review
                 const reviewMediaImg = document.getElementById('reviewMediaImg');
                 reviewMediaImg.src = data.mediaUrl || 'assets/img/default-image.jpg';
                 reviewMediaImg.onerror = function () {
                     this.src = '/assets/img/anhload.jpg'; // ảnh thay thế khi có lỗi
                 };
 
-                // Cập nhật các thông tin chi tiết của review
                 document.getElementById('reviewUserName').textContent = data.fullname || 'N/A';
                 document.getElementById('reviewLocation').textContent = data.location || 'N/A';
                 document.getElementById('reviewContent').textContent = data.content || 'No content available';
-                document.getElementById('reviewRating').textContent = data.start || 'N/A';
+                const reviewRating = document.getElementById('reviewRating');
+                const rating = data.start || 0; // Nếu không có giá trị, mặc định là 0
+
+                reviewRating.innerHTML = '';
+
+                for (let i = 0; i < 5; i++) {
+                    if (i < rating) {
+                        reviewRating.innerHTML += '⭐'; // Sao đã được đánh giá
+                    } else {
+                        reviewRating.innerHTML += '☆'; // Sao chưa được đánh giá
+                    }
+                }
+
                 document.getElementById('reviewCreateTime').textContent = data.create_time.split(' ')[0] || 'N/A'; // Chỉ lấy ngày
 
                 // Hiển thị modal
@@ -210,47 +222,42 @@
 
 
 
-        document.getElementById('addReview').addEventListener('click', function () {
-            $('#addReviewModal').modal('show');
-            // Mở modal
-        });
-        document.getElementById('saveReviewButton').addEventListener('click', function () {
-            const content = document.getElementById('reviewContent').value; // Nội dung đánh giá
-            const star = document.getElementById('reviewRating').value; // Số sao
-            const locationId = document.getElementById('reviewLocation').value; // ID địa điểm
+        // document.getElementById('addReview').addEventListener('click', function () {
+        //     $('#addReviewModal').modal('show');
+        //     // Mở modal
+        // });
+        // document.getElementById('saveReviewButton').addEventListener('click', function () {
+        //     const content = document.getElementById('reviewContent').value; // Nội dung đánh giá
+        //     const star = document.getElementById('reviewRating').value; // Số sao
+        //     const locationId = document.getElementById('reviewLocation').value; // ID địa điểm
 
 
-            const formData = new FormData();
-            formData.append("review", JSON.stringify({
-                content: content,  // Nội dung đánh giá
-                star: star,        // Số sao
-                locationId: locationId,  // ID địa điểm
-                user_id: localStorage.getItem("user_id")  // ID người dùng
-            }));
+        //     const formData = new FormData();
+        //     formData.append("review", JSON.stringify({
+        //         content: content,  // Nội dung đánh giá
+        //         star: star,        // Số sao
+        //         locationId: locationId,  // ID địa điểm
+        //         user_id: localStorage.getItem("user_id")  // ID người dùng
+        //     }));
 
-            // Gửi yêu cầu POST để thêm đánh giá
-            fetch('http://localhost:8080/reviews', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                },
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.success) {
-                        alert('Review added successfully!');
-                        // Làm gì đó sau khi thêm đánh giá thành công, ví dụ đóng modal
-                        $('#addReviewModal').modal('hide');
-                    } else {
-                        alert('Failed to add review.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error adding review:', error);
-                    alert('An error occurred. Please try again later.');
-                });
-        });
+        //     // Gửi yêu cầu POST để thêm đánh giá
+        //     fetch('http://localhost:8080/reviews', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        //         },
+        //         body: formData
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             alert('Review added successfully!');
+        //             $('#addReviewModal').modal('hide');
+        //         })
+        //         .catch(error => {
+        //             console.error('Error adding review:', error);
+        //             alert('An error occurred. Please try again later.');
+        //         });
+        // });
         document.querySelectorAll('#deleteReview').forEach(button => {
             button.addEventListener("click", function () {
                 const review_id = this.getAttribute("data-id");

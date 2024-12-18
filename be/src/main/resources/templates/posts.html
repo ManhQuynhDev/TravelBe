@@ -51,10 +51,10 @@
 
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Post</h5>
+                    <h5 class="card-title">Bài viết</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
                         id="addPost">
-                        <i class="tio-user-add mr-1"></i>Add Post
+                        <i class="tio-user-add mr-1"></i>Thêm bài viết
                     </button>
                 </div>
                 <div class="card-body">
@@ -63,12 +63,12 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 200px;">Content</th>
-                                    <th>Hashtags</th>
-                                    <th>Location</th>
-                                    <th>Status</th>
-                                    <th>User</th>
-                                    <th>Actions</th>
+                                    <th style="min-width: 200px;">Nội dung</th>
+                                    <th>Hashtag</th>
+                                    <th>Vị trí</th>
+                                    <th>Trạng thái</th>
+                                    <th>Người dùng</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,11 +107,11 @@
                                             style="gap: 5px; flex-wrap: nowrap;">
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deletePost"
                                                 th:attr="data-id=${post.postId}">
-                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                                <i class="tio-delete-outlined mr-1"></i>Xóa
                                             </button>
                                             <button class="btn btn-sm btn-outline-secondary mr-2 viewComments"
                                                 th:attr="data-id=${post.postId}">
-                                                View Comments
+                                                Xem Bình Luận
                                             </button>
                                         </div>
                                     </td>
@@ -166,7 +166,7 @@
     <script th:src="@{/assets/js/userjs.js}"></script>
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
-        
+
     </script>
 </body>
 

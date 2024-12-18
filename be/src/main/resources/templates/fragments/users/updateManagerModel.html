@@ -2,8 +2,8 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content rounded-lg shadow-lg">
             <div class="modal-header border-bottom-0">
-                <h4 id="editUserModalTitle" class="modal-title text-primary font-weight-bold">Edit Manager</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                <h4 id="editUserModalTitle" class="modal-title text-primary font-weight-bold">Chỉnh sửa Quản lý</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
@@ -11,16 +11,16 @@
                 <form id="profileForm">
                     <div class="text-center mb-4">
                         <div class="profile-cover-img-wrapper position-relative">
-                            <img id="editProfileCoverImgModal" class="profile-cover-img rounded" src="" alt="Image Description">
+                            <img id="editProfileCoverImgModal" class="profile-cover-img rounded" src="" alt="Mô tả Hình ảnh">
                             <div class="profile-cover-content profile-cover-btn p-3 position-absolute bottom-0 left-0 w-100 text-center">
-                                <label for="editProfileCoverUploaderModal" class="btn btn-sm btn-outline-light">Change Cover</label>
+                                <label for="editProfileCoverUploaderModal" class="btn btn-sm btn-outline-light">Thay đổi ảnh bìa</label>
                                 <input type="file" class="d-none" id="editProfileCoverUploaderModal" accept="image/*">
                             </div>
                         </div>
                     </div>
 
                     <label class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader mb-5" for="editAvatarUploaderModal">
-                        <img id="editAvatarImgModal" class="avatar-img" src="assets/img/160x160/img9.jpg" alt="Image Description">
+                        <img id="editAvatarImgModal" class="avatar-img" src="assets/img/160x160/img9.jpg" alt="Mô tả Hình ảnh">
                         <input type="file" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" data-hs-file-attach-options="{
                             &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
                             &quot;mode&quot;: &quot;image&quot;,
@@ -34,23 +34,23 @@
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="editPhoneModalLabel" class="input-label">Phone Number</label>
-                            <input type="tel" class="form-control" name="editPhoneModal" id="editPhoneModal" placeholder="Enter Phone Number" required pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Phone Number">
+                            <label for="editPhoneModalLabel" class="input-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" name="editPhoneModal" id="editPhoneModal" placeholder="Nhập số điện thoại" required pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Số điện thoại">
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="editBioModalLabel" class="input-label">Bio</label>
-                            <input class="form-control" name="editBioModal" id="editBioModalLabel" placeholder="Enter Bio" aria-label="Bio" rows="3">
+                            <label for="editBioModalLabel" class="input-label">Tiểu sử</label>
+                            <input class="form-control" name="editBioModal" id="editBioModalLabel" placeholder="Nhập tiểu sử" aria-label="Tiểu sử" rows="3">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="editBirthDayModalLabel" class="input-label">Birthday</label>
-                        <input type="date" class="form-control" name="editBirthDayModal" id="editBirthDayModalLabel" placeholder="Enter BirthDay" aria-label="BirthDay">
+                        <label for="editBirthDayModalLabel" class="input-label">Ngày sinh</label>
+                        <input type="date" class="form-control" name="editBirthDayModal" id="editBirthDayModalLabel" placeholder="Nhập ngày sinh" aria-label="Ngày sinh">
                     </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" aria-label="Đóng">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
                     </div>
                 </form>
             </div>

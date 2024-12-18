@@ -35,16 +35,16 @@
                             <form class="js-validate">
                                 <div class="text-center">
                                     <div class="mb-5">
-                                        <h1 class="display-4">Sign in</h1>
+                                        <h1 class="display-4">Đăng nhập</h1>
                                     </div>
                                 </div>
 
                                 <div class="js-form-message form-group">
-                                    <label class="input-label" for="signinSrEmail">Your email</label>
+                                    <label class="input-label" for="signinSrEmail">Email</label>
                                     <input type="email" class="form-control form-control-lg" name="email"
                                         id="signinSrEmail" tabindex="1" placeholder="email@address.com"
                                         aria-label="email@address.com" required=""
-                                        data-msg="Please enter a valid email address.">
+                                        data-msg="Vui lòng nhập địa chỉ email hợp lệ.">
                                 </div>
 
                                 <div class="js-form-message form-group">
@@ -57,7 +57,7 @@
                                         <input type="password" class="js-toggle-password form-control form-control-lg"
                                             name="password" id="signupSrPassword" placeholder="8+ characters required"
                                             aria-label="8+ characters required" required=""
-                                            data-msg="Your password is invalid. Please try again."
+                                            data-msg="Mật khẩu của bạn không hợp lệ. Vui lòng thử lại."
                                             data-hs-toggle-password-options='{
                                  "target": "#changePassTarget",
                                  "defaultClass": "tio-hidden-outlined",
@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
 
-                                <button id="submit" class="btn btn-lg btn-block btn-primary">Sign in</button>
+                                <button id="submit" class="btn btn-lg btn-block btn-primary">Đăng nhập</button>
                             </form>
                         </div>
                     </div>
@@ -110,7 +110,6 @@
             const rememberMe = document.getElementById("termsCheckbox");
             const submit = document.getElementById("submit");
 
-            // Tải thông tin từ Local Storage nếu có
             if (localStorage.getItem("rememberMe") === "true") {
                 email.value = localStorage.getItem("savedEmail") || "";
                 password.value = localStorage.getItem("savedPassword") || "";
@@ -133,17 +132,19 @@
                         body: JSON.stringify(formData),
                     });
 
-                    const data = await response.json(); // Gọi response.json() một lần duy nhất
+                    const data = await response.json();
 
                     if (!response.ok) {
-                        // Nếu có lỗi từ server, ném lỗi với thông báo từ API
-                        throw new Error(data.error?.message || "Invalid email or password");
+                        if (data.error?.message?.includes("not found")) {
+                            throw new Error("Tài khoản không tồn tại. Vui lòng thử lại.");
+                        }
+                        throw new Error(data.error?.message || "Email hoặc mật khẩu không hợp lệ.");
                     }
 
-                    // Kiểm tra xem userInfo và id có tồn tại không
                     if (!data.userInfo || !data.userInfo.id) {
-                        throw new Error("Invalid email or password");
+                        throw new Error("Email hoặc mật khẩu không hợp lệ.");
                     }
+
 
                     const token = data.token;
                     const user_id = data.userInfo.id;
@@ -161,19 +162,17 @@
                         localStorage.removeItem("savedPassword");
                     }
 
-                    // Chuyển hướng dựa vào vai trò
-                    const userRole = data.userInfo.roles?.[0]; // Kiểm tra roles tồn tại
+                    const userRole = data.userInfo.roles?.[0];
                     localStorage.setItem('userRole', userRole);
 
                     if (userRole === "ADMIN" || userRole === "MANAGER") {
-                        alert("Login successful!");
+                        alert("Đăng nhập thành công!");
                         window.location.href = '/web-server/';
                     } else {
-                        throw new Error("You do not have the required permissions.");
+                        throw new Error("Bạn không có quyền truy cập.");
                     }
 
                 } catch (error) {
-                    // Hiển thị thông báo lỗi
                     alert(error.message || "An unexpected error occurred.");
                 } finally {
                     submit.disabled = false;
@@ -187,7 +186,7 @@
                 if (isValid) {
                     login();
                 } else {
-                    alert('Please check your input and try again.');
+                    alert('Vui lòng kiểm tra dữ liệu đầu vào và thử lại.');
                 }
             });
         });

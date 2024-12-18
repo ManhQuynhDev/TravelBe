@@ -49,10 +49,10 @@
 
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Activity</h5>
+                    <h5 class="card-title">Danh sách Activity</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addActivityModal"
                         id="addActivity">
-                        <i class="tio-add mr-1"></i>Add Activity
+                        <i class="tio-add mr-1"></i>Thêm Activity
                     </button>
                 </div>
                 <div class="card-body">
@@ -62,21 +62,22 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 100px;">Name</th>
-                                    <th style="min-width: 170px;">Time</th>
-                                    <th>Cost</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th style="min-width: 100px;">Tên</th>
+                                    <th style="min-width: 170px;">Thời gian</th>
+                                    <th>Chi phí</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
                                 </tr>
+                                
                             </thead>
                             <tbody>
-                                <tr th:each="activity : ${activityList}">
-                                    <td class="text-start" th:text="${activity.id}">ID</td>
+                                <tr th:each="activity , iterStat : ${activityList}">
+                                    <td class="text-start" th:text="${iterStat.index + 1}">ID</td>
                                     <td class="text-start" th:text="${activity.name}">Activity Name</td>
                                     <td class="text-start" th:text="${activity.time}">Scheduled Time</td>
                                     <td class="text-start" th:text="${activity.cost}">$ Cost</td>
                                     <td class="text-start" th:text="${activity.status}">Status</td>
-                                    <td class="text-center">
+                                    <td class="text-start">
                                         <div class="d-flex">
                                             <button class="btn btn-sm btn-outline-primary mr-2" id="edit"
                                                 th:attr="data-id=${activity.id}">
@@ -144,11 +145,16 @@
                     ],
                     language: {
                         search: "",
-                        searchPlaceholder: "Search Activities",
+                        searchPlaceholder: "Tìm kiếm activity",
                         paginate: {
-                            previous: "Prev",
+                            previous: "Trước",
+                            next: "Tiếp theo",
                         },
-
+                        emptyTable: "Không có dữ liệu trong bảng",
+                        info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                        infoEmpty: "Không có dữ liệu",
+                        infoFiltered: "(lọc từ _MAX_ mục)",
+                        lengthMenu: "Hiển thị _MENU_ mục",
                     }
                 });
 
