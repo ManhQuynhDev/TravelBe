@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.PostReaction;
 import com.quynhlm.dev.be.service.PostReactionService;
@@ -32,12 +33,18 @@ public class PostReactionController {
         result.setMessage("Update reaction successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
-    }                                                                                                                           
+    }
 
     @GetMapping("")
     public Page<UserReactionDTO> getAllUserReactionWithType(
             @RequestParam Integer postId,
             @RequestParam String type, Pageable pageable) {
         return postReactionService.getAllUserReactionWithType(postId, type, pageable);
+    }
+
+    @GetMapping("/reaction_count")
+    public ReactionStatisticsDTO getReactionTypeCount(
+            @RequestParam Integer postId) {
+        return postReactionService.getReactionTypeCount(postId);
     }
 }

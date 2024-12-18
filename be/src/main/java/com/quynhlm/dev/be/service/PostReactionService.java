@@ -1,6 +1,7 @@
 package com.quynhlm.dev.be.service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.PostReaction;
@@ -110,5 +112,26 @@ public class PostReactionService {
             userReactionDTO.setCreate_time((String) row[4]);
             return userReactionDTO;
         });
+    }
+
+     public ReactionStatisticsDTO getReactionTypeCount(Integer post_id) throws PostNotFoundException {
+        List<Object[]> results = postReactionRepository.reactionTypeCount(post_id);
+
+        if (results.isEmpty()) {
+            throw new PostNotFoundException(
+                    "Id " + post_id + " not found or invalid data. Please try another!");
+        }
+
+        Object[] result = results.get(0);
+        ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
+        reactionStatisticsDTO.setId(((Number) result[0]).intValue());
+        reactionStatisticsDTO.setLikeCount(((Number) result[1]).intValue());
+        reactionStatisticsDTO.setLoveCount(((Number) result[2]).intValue());
+        reactionStatisticsDTO.setHahaCount(((Number) result[3]).intValue());
+        reactionStatisticsDTO.setWowCount(((Number) result[4]).intValue());
+        reactionStatisticsDTO.setSadCount(((Number) result[5]).intValue());
+        reactionStatisticsDTO.setAngryCount(((Number) result[6]).intValue());
+
+        return reactionStatisticsDTO;
     }
 }

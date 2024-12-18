@@ -344,13 +344,21 @@ public class UserService {
         }
     }
 
-    private void updateDeviceInfo(Integer userId, String deviceToken, String currentDevice) {
+    public void updateDeviceInfo(Integer userId, String deviceToken, String currentDevice) {
         User foundUser = userRepository.getAnUser(userId);
         if (foundUser != null) {
             foundUser.setDeviceToken(deviceToken);
             foundUser.setCurrentDevice(currentDevice);
             userRepository.save(foundUser);
         }
+    }
+
+    public void deleteUser(Integer userId) throws UserAccountNotFoundException {
+        User foundUser = userRepository.getAnUser(userId);
+        if(foundUser == null){
+            throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again !");
+        }
+        userRepository.delete(foundUser);
     }
 
     public void changeProfile(Integer id, @Valid UpdateProfileDTO updateUser, MultipartFile imageFile)
