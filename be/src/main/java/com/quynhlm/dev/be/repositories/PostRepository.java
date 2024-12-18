@@ -700,7 +700,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 p.create_time,
                 COUNT(DISTINCT r.id) AS reaction_count,
                 COUNT(DISTINCT c.id) AS comment_count,
-                COUNT(DISTINCT s.id) AS share_count
+                COUNT(DISTINCT s.id) AS share_count,
+                MAX(CASE WHEN r.user_id = :user_id THEN r.type ELSE NULL END) AS user_reaction_type
             FROM
                 post p
             INNER JOIN
@@ -718,10 +719,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             GROUP BY
                 p.id , m.media_url , u.id
             """, nativeQuery = true)
-    Page<Object[]> fetchPostWithMediaTypeVideo(Pageable pageable);
+    Page<Object[]> fetchPostWithMediaTypeVideo(@Param("user_id") Integer user_id, Pageable pageable);
 
     @Query(value = """
-                        SELECT
+            SELECT
                     DISTINCT
                 u.id AS owner_id,
                 p.id AS post_id,
@@ -778,7 +779,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 p.create_time,
                 COUNT(DISTINCT r.id) AS reaction_count,
                 COUNT(DISTINCT c.id) AS comment_count,
-                COUNT(DISTINCT s.id) AS share_count
+                COUNT(DISTINCT s.id) AS share_count,
+                MAX(CASE WHEN r.user_id = :user_id THEN r.type ELSE NULL END) AS user_reaction_type
             FROM
                 post p
             INNER JOIN
@@ -796,7 +798,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             GROUP BY
                 p.id, u.id, p.location_id, p.content, p.status, u.fullname, u.avatar_url, m.type, p.create_time
             """, nativeQuery = true)
-    Page<Object[]> fetchAllPost(Pageable pageable);
+    Page<Object[]> fetchAllPost(@Param("user_id") Integer user_id, Pageable pageable);
 
     @Query(value = """
             SELECT

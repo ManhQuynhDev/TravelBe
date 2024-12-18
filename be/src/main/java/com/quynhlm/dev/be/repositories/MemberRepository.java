@@ -42,7 +42,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
 
     @Query(value = "SELECT * FROM Member m WHERE m.group_id = :groupId", nativeQuery = true)
     List<Member> findByGroupId(@Param("groupId") Integer groupId);
-
     @Query(value = """
                 select
             	u.id as user_id,
@@ -51,6 +50,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             	u.fullname,
                 u.avatar_url,
                 m.role,
+                m.request_time,
                 m.join_time
                 FROM member m
                 INNER JOIN user u ON u.id = m.user_id
@@ -63,7 +63,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             @Param("groupId") Integer groupId,
             @Param("status") String status,
             Pageable pageable);
-
     @Query(value = """
                 SELECT
                 m.user_id,

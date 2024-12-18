@@ -476,8 +476,8 @@ public class PostService {
     }
 
     // Get All Video
-    public Page<VideoPostDTO> getAllPostTypeVideo(Pageable pageable) {
-        Page<Object[]> results = postRepository.fetchPostWithMediaTypeVideo(pageable);
+    public Page<VideoPostDTO> getAllPostTypeVideo(Integer user_id,Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchPostWithMediaTypeVideo(user_id , pageable);
 
         return results.map(row -> {
             VideoPostDTO post = new VideoPostDTO();
@@ -495,6 +495,7 @@ public class PostService {
             post.setReaction_count(((Number) row[10]).intValue());
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
+            post.setUser_reaction_type((String) row[13]);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
@@ -504,8 +505,8 @@ public class PostService {
     }
 
     // Get All Post
-    public Page<PostMediaDTO> getAllPost(Pageable pageable) {
-        Page<Object[]> results = postRepository.fetchAllPost(pageable);
+    public Page<PostMediaDTO> getAllPost(Integer user_id , Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchAllPost(user_id,pageable);
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
@@ -522,6 +523,7 @@ public class PostService {
             post.setReaction_count(((Number) row[10]).intValue());
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
+            post.setUser_reaction_type((String) row[13]);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
@@ -566,5 +568,7 @@ public class PostService {
         });
     }
     // Feature search with hashtag
-
+    public List<String> getAllHashTag () {
+        return hashTagRespository.findHashtag();
+    }
 }

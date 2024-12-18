@@ -29,7 +29,6 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @UserAccountElement.List({
         @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "Email is not in correct format"),
-        @UserAccountElement(field = "phoneNumber", regex = UserAccountRegex.PHONE_NUMBER, message = "Phone number is not in correct format")
 })
 public class User {
     @Id
@@ -37,8 +36,6 @@ public class User {
     private Integer id;
     @StrongPassword(message = "Incorrect password format . Please try other password")
     private String password;
-    @Pattern(regexp = "^[a-zA-Z][a-zA-Z\\s]*$", message = "Full name must start with a letter and not contain special characters")
-    @Length(min = 8, message = "The full name must be at least 8 characters long")
     private String fullname;
     private String email;
     private Set<String> roles;
