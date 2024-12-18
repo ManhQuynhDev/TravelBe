@@ -88,7 +88,7 @@ public class MemberController {
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getGroupMemberJoin(userId, page, size);
     }
-
+    
     // Search group user join
     @GetMapping("/group-join/search")
     public ResponseEntity<Page<MemberJoinGroupResponseDTO>> searchGroups(@RequestParam Integer user_id,

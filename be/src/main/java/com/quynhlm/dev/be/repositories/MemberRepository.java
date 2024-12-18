@@ -205,7 +205,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
              from member m
             inner join m_group g on g.id = m.group_id
             inner join user u on u.id = m.user_id
-            where m.group_id  = :groupId AND m.role <> 'ADMIN';
+            where m.group_id = :groupId AND m.status = 'APPROVED' AND m.role <> 'ADMIN';
                                     """, nativeQuery = true)
     Page<Object[]> foundMemberJoinGroup(@Param("groupId") Integer groupId, Pageable pageable);
 
@@ -222,7 +222,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
              from member m
             inner join m_group g on g.id = m.group_id
             inner join user u on u.id = m.user_id
-            where m.group_id  = :groupId and m.role <> 'ADMIN';
+            where m.group_id  = :groupId AND m.status = 'APPROVED' AND m.role <> 'ADMIN';
                                     """, nativeQuery = true)
     List<Object[]> getMemberJoinGroup(@Param("groupId") Integer groupId);
 

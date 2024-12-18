@@ -282,7 +282,7 @@ public class CommentService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId, userId);
+        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, postId, userId);
 
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
