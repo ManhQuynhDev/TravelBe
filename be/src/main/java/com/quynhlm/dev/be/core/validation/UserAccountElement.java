@@ -10,7 +10,7 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Constraint(validatedBy = UserAccountValidator.class)
-@Target({ ElementType.TYPE })
+@Target({ ElementType.TYPE , ElementType.FIELD , ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface UserAccountElement {

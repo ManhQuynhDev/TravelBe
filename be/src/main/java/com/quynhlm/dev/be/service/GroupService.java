@@ -131,7 +131,8 @@ public class GroupService {
                         (String) r[3],
                         (String) r[4],
                         (String) r[5],
-                        (String) r[6]))
+                        (String) r[6],
+                        (String) r[7]))
                 .collect(Collectors.toList());
 
         group.setUserJoined(responses);
@@ -164,7 +165,8 @@ public class GroupService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(responses);
@@ -267,7 +269,8 @@ public class GroupService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(responses);
@@ -304,7 +307,8 @@ public class GroupService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6] 
+                            (String) r[6],
+                            (String) r[7] 
             ))
                     .collect(Collectors.toList());
 
@@ -345,7 +349,8 @@ public class GroupService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6] 
+                            (String) r[6],
+                            (String) r[7] 
             ))
                     .collect(Collectors.toList());
 

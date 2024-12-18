@@ -75,6 +75,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 g.bio,
                 m.status,
                 m.role,
+                m.request_time,
                 m.join_time
                 FROM member m
                 INNER JOIN user u ON u.id = m.user_id
@@ -97,6 +98,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 g.bio,
                 m.status,
                 m.role,
+                m.request_time,
                 m.join_time
                 FROM member m
                 INNER JOIN user u ON u.id = m.user_id
@@ -198,6 +200,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
             	u.fullname,
                 u.avatar_url,
                 m.role,
+                m.request_time,
                 m.join_time
              from member m
             inner join m_group g on g.id = m.group_id
@@ -214,6 +217,7 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
                 u.fullname,
                 u.avatar_url,
                 m.role,
+                m.request_time,
                 m.join_time
              from member m
             inner join m_group g on g.id = m.group_id

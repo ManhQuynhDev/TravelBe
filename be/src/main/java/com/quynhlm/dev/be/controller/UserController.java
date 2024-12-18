@@ -37,7 +37,9 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -155,8 +157,7 @@ public class UserController {
 
     @PostMapping("/change-profile/{id}")
     public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable int id,
-            @RequestPart("updateDTO") String updateDTOJson,
-
+            @RequestPart("updateDTO") @Valid String updateDTOJson,
             @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -167,7 +168,6 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         userService.changeProfile(id, updateProfileDTO, imageFile);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
@@ -211,7 +211,7 @@ public class UserController {
     }
 
     @GetMapping("/statistical_register")
-    public List<UserStatisticalRegister > getUserRegistrationCountByMonth() {
+    public List<UserStatisticalRegister> getUserRegistrationCountByMonth() {
         return userService.getUserRegistrationCountByMonth();
     }
 

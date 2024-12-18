@@ -21,6 +21,7 @@ public class MemberJoinGroupResponseDTO {
     private String bio;
     private String status;
     private String role;
+    private String request_time;
     private String join_time;
     
     private List<MemberResponseDTO> userJoined;

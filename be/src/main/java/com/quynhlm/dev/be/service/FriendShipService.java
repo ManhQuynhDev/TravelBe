@@ -32,6 +32,7 @@ import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -139,7 +140,7 @@ public class FriendShipService {
         }
     }
 
-    public Page<UserFriendResponse> findByGetListFriends(Integer userId, String status, int page, int size) {
+    public Page<UserFriendResponse> findAllResquestFriends(Integer userId, int page, int size) {
         User foundUser = userRepository.getAnUser(userId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
@@ -147,7 +148,7 @@ public class FriendShipService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = friendShipRepository.findByUserFriendsWithStatus(userId , status, pageable);
+        Page<Object[]> results = friendShipRepository.findAllRequestFriends(userId, pageable);
 
         return results.map(row -> {
             UserFriendResponse object = new UserFriendResponse();
@@ -160,6 +161,26 @@ public class FriendShipService {
         });
     }
 
+    public Page<UserFriendResponse> findByGetListFriends(Integer userId, int page, int size) {
+        User foundUser = userRepository.getAnUser(userId);
+        if (foundUser == null) {
+            throw new UserAccountNotFoundException(
+                    "Find user send request with " + userId + " not found , please try again !");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> results = friendShipRepository.getAllFriends(userId, pageable);
+
+        return results.map(row -> {
+            UserFriendResponse object = new UserFriendResponse();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setFullname(((String) row[1]));
+            object.setAvatarUrl((String) row[2]);
+            object.setStatus(((String) row[3]));
+            object.setSend_time((String) row[4]);
+            return object;
+        });
+    }
 
     public Page<UserTagPostResponse> suggestionFriends(Integer userId, int page, int size) {
         User foundUser = userRepository.getAnUser(userId);
@@ -169,7 +190,7 @@ public class FriendShipService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = friendShipRepository.suggestionFriends(userId , pageable);
+        Page<Object[]> results = friendShipRepository.suggestionFriends(userId, pageable);
 
         return results.map(row -> {
             UserTagPostResponse object = new UserTagPostResponse();
@@ -180,9 +201,8 @@ public class FriendShipService {
         });
     }
 
-
     public void acceptFriend(int userSendId, int userReceivedId, String action)
-            throws UserAccountNotFoundException, UnknownException , UserWasAlreadyRequest {
+            throws UserAccountNotFoundException, UnknownException, UserWasAlreadyRequest {
 
         User userSending = userRepository.getAnUser(userSendId);
         if (userSending == null) {

@@ -25,6 +25,7 @@ public class Member {
     private Integer groupId;
     @Column(name = "userId")
     private Integer userId;
+    private String request_time;
     private String join_time;
     private String role;
     private String status;

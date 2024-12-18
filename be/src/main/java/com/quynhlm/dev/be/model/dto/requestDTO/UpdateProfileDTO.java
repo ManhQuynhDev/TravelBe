@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @UserAccountElement.List({
-        @UserAccountElement(field = "phoneNumber", regex = UserAccountRegex.EMAIL, message = "phoneNumber"),
+        @UserAccountElement(field = "phoneNumber", regex = UserAccountRegex.EMAIL, message = "PhoneNumber is not in correct format"),
 })
 public class UpdateProfileDTO {
     private String phoneNumber;

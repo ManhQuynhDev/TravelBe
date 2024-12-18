@@ -60,6 +60,7 @@ import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.InvitationRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -346,7 +347,7 @@ public class UserService {
         }
     }
 
-    public void changeProfile(Integer id, UpdateProfileDTO updateUser, MultipartFile imageFile)
+    public void changeProfile(Integer id, @Valid UpdateProfileDTO updateUser, MultipartFile imageFile)
             throws UserAccountNotFoundException, UserAccountExistingException, UnknownException {
 
         try {
