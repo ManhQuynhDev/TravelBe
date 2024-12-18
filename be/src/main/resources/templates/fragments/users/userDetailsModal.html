@@ -1,12 +1,10 @@
-<div class="modal fade" id="userDetailModal" tabindex="-1" aria-labelledby="userDetailModalTitle" style="display: none;"
-    aria-hidden="true">
+<div class="modal fade" id="userDetailModal" tabindex="-1" aria-labelledby="userDetailModalTitle" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
-            <!-- Header -->
+            <!-- Tiêu đề -->
             <div class="modal-header">
-                <h4 id="userDetailModalTitle" class="modal-title">User Details</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal"
-                    aria-label="Close">
+                <h4 id="userDetailModalTitle" class="modal-title">Chi Tiết Người Dùng</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal" aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
@@ -14,17 +12,12 @@
                 <div class="row justify-content-lg-center">
                     <div class="col-lg-10">
                         <div class="d-flex flex-column align-items-center text-center mb-5">
-                            <img id="userAvatarImgModal"
-                                class="avatar-img avatar-xxl avatar-circle avatar-border-lg mb-5"
-                                src="/assets/img/avatar.jpg" alt="Image Description" style="display: none;">
-                            <div id="userAvatarTextModal"
-                                class="d-flex justify-content-center align-items-center text-dark rounded-circle mb-5"
-                                style="background-color: #f0f0f0; color: #555; display: none; justify-content: center; align-items: center;
-                                        width: 120px; height: 120px; font-size: 16px; font-weight: bold; border-radius: 50%;">
+                            <img id="userAvatarImgModal" class="avatar-img avatar-xxl avatar-circle avatar-border-lg mb-5" src="/assets/img/avatar.jpg" alt="Hình Mô Tả" style="display: none;">
+                            <div id="userAvatarTextModal" class="d-flex justify-content-center align-items-center text-dark rounded-circle mb-5" style="background-color: #f0f0f0; color: #555; display: none; justify-content: center; align-items: center; width: 120px; height: 120px; font-size: 16px; font-weight: bold; border-radius: 50%;">
                                 <span id="avatarInitial" style="font-size: 32px; font-weight: bold;"></span>
                             </div>
-                            <h1 class="page-header-title" id="managerFullNameDetails"> </h1>
-                            <!-- List -->
+                            <h1 class="page-header-title" id="managerFullNameDetails"></h1>
+                            <!-- Danh sách -->
                             <ul class="list-inline list-inline-m-1">
                                 <li class="list-inline-item">
                                     <i class="tio-city mr-1"></i>
@@ -37,91 +30,85 @@
                                 </li>
                                 <li class="list-inline-item">
                                     <i class="tio-date-range mr-1"></i>
-                                    <span id="managerCreateTimeDetails">Joined March 2017</span>
+                                    <span id="managerCreateTimeDetails">Tham gia tháng 3 năm 2017</span>
                                 </li>
                             </ul>
                         </div>
-                        <!-- Tab links -->
+                        <!-- Liên kết Tab -->
                         <ul class="nav nav-tabs justify-content-center" id="profileTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile1"
-                                    role="tab" aria-controls="profile" aria-selected="true">Profile</a>
+                                <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile1" role="tab" aria-controls="profile" aria-selected="true">Hồ Sơ</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="joined-groups-tab" data-bs-toggle="tab" href="#joined-groups"
-                                    role="tab" aria-controls="joined-groups" aria-selected="false">Joined Groups</a>
+                                <a class="nav-link" id="joined-groups-tab" data-bs-toggle="tab" href="#joined-groups" role="tab" aria-controls="joined-groups" aria-selected="false">Nhóm Tham Gia</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="created-groups-tab" data-bs-toggle="tab" href="#created-groups"
-                                    role="tab" aria-controls="created-groups" aria-selected="false">Created Groups</a>
+                                <a class="nav-link" id="created-groups-tab" data-bs-toggle="tab" href="#created-groups" role="tab" aria-controls="created-groups" aria-selected="false">Nhóm Đã Tạo</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab"
-                                    aria-controls="friends" aria-selected="false">Friends</a>
+                                <a class="nav-link" id="friends-tab" data-bs-toggle="tab" href="#friends" role="tab" aria-controls="friends" aria-selected="false">Bạn Bè</a>
                             </li>
                         </ul>
-                        <!-- Tab content -->
-                        <div class="tab-content" id="profileTabContent" style="margin-top: 10px; min-height: 133px;  ">
-                            <!-- Tab Profile -->
-                            <div class="tab-pane fade show active" id="profile1" role="tabpanel"
-                                aria-labelledby="profile-tab">
+                        <!-- Nội dung Tab -->
+                        <div class="tab-content" id="profileTabContent" style="margin-top: 10px; min-height: 133px;">
+                            <!-- Hồ Sơ -->
+                            <div class="tab-pane fade show active" id="profile1" role="tabpanel" aria-labelledby="profile-tab">
                                 <div class="container profile">
-                                    <h3 id="userFullNamePro">Full Name: Not Available</h3>
-                                    <p id="userPosition">Role: Not Available</p>
-                                    <p id="userBio">Bio: Not Available</p>
-                                    <p id="userDOB">Date of Birth: Not Available</p>
+                                    <h3 id="userFullNamePro">Họ và Tên: Không Có Sẵn</h3>
+                                    <p id="userPosition">Vị Trí: Không Có Sẵn</p>
+                                    <p id="userBio">Giới Thiệu: Không Có Sẵn</p>
+                                    <p id="userDOB">Ngày Sinh: Không Có Sẵn</p>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="joined-groups" role="tabpanel"
-                                aria-labelledby="joined-groups-tab">
+                            <!-- Nhóm Tham Gia -->
+                            <div class="tab-pane fade" id="joined-groups" role="tabpanel" aria-labelledby="joined-groups-tab">
                                 <div class="container">
-                                    <h3>Joined Groups</h3>
+                                    <h3>Nhóm Tham Gia</h3>
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Group Name</th>
-                                                <th>Admin</th>
-                                                <th>Member Count</th>
+                                                <th>Tên Nhóm</th>
+                                                <th>Quản Trị Viên</th>
+                                                <th>Số Thành Viên</th>
                                             </tr>
                                         </thead>
                                         <tbody id="joined-groups-table-body">
-                                            <!-- Nội dung danh sách nhóm sẽ được thêm vào đây thông qua JS -->
+                                            <!-- Nội dung nhóm tham gia sẽ được thêm vào đây qua JS -->
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-
-                            <div class="tab-pane fade" id="created-groups" role="tabpanel"
-                                aria-labelledby="created-groups-tab">
+                            <!-- Nhóm Đã Tạo -->
+                            <div class="tab-pane fade" id="created-groups" role="tabpanel" aria-labelledby="created-groups-tab">
                                 <div class="container">
-                                    <h3>Created Groups</h3>
+                                    <h3>Nhóm Đã Tạo</h3>
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>Group Name</th>
-                                                <th>Admin Name</th>
-                                                <th>Member Count</th>
+                                                <th>Tên Nhóm</th>
+                                                <th>Tên Quản Trị Viên</th>
+                                                <th>Số Thành Viên</th>
                                             </tr>
                                         </thead>
                                         <tbody id="created-groups-table-body">
-                                            <!-- Nội dung danh sách nhóm sẽ được thêm vào đây thông qua JS -->
+                                            <!-- Nội dung nhóm đã tạo sẽ được thêm vào đây qua JS -->
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-
+                            <!-- Bạn Bè -->
                             <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
                                 <div class="container mt-4">
-                                    <h3 class="text mb-4">Friends List</h3>
+                                    <h3 class="text mb-4">Danh Sách Bạn Bè</h3>
                                     <table class="table align-middle mb-0 bg-white">
                                         <thead class="thead-light">
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Avatar</th>
-                                                <th scope="col">Full Name</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col">Họ và Tên</th>
+                                                <th scope="col">Trạng Thái</th>
                                             </tr>
                                         </thead>
                                         <tbody id="friendsList">
@@ -130,8 +117,6 @@
                                     </table>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>

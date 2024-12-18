@@ -2,18 +2,18 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 id="addManagerModalTitle" class="modal-title">Add New Manager</h4>
+                <h4 id="addManagerModalTitle" class="modal-title">Thêm Quản Lý Mới</h4>
                 <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal" aria-label="Close">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <!-- Full Name -->
+                <!-- Họ và tên -->
                 <div class="row form-group">
-                    <label for="managerFullName" class="col-sm-3 col-form-label input-label">Full Name</label>
+                    <label for="managerFullName" class="col-sm-3 col-form-label input-label">Họ và tên</label>
                     <div class="col-sm-9">
                         <div class="js-form-message">
-                            <input type="text" class="form-control" name="managerFullName" id="managerFullName" placeholder="Enter Full Name" required>
+                            <input type="text" class="form-control" name="managerFullName" id="managerFullName" placeholder="Nhập họ và tên" required>
                         </div>
                     </div>
                 </div>
@@ -23,36 +23,36 @@
                     <label for="managerEmail" class="col-sm-3 col-form-label input-label">Email</label>
                     <div class="col-sm-9">
                         <div class="js-form-message">
-                            <input type="email" class="form-control" name="managerEmail" id="managerEmail" placeholder="Enter Email" required>
+                            <input type="email" class="form-control" name="managerEmail" id="managerEmail" placeholder="Nhập Email" required>
                         </div>
                     </div>
                 </div>
 
-                <!-- Phone Number -->
+                <!-- Số điện thoại -->
                 <div class="row form-group">
-                    <label for="managerPhone" class="col-sm-3 col-form-label input-label">Phone Number</label>
+                    <label for="managerPhone" class="col-sm-3 col-form-label input-label">Số điện thoại</label>
                     <div class="col-sm-9">
                         <div class="js-form-message">
-                            <input type="tel" class="form-control" name="managerPhone" id="managerPhone" placeholder="Enter Phone Number" required
-                                pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Phone Number">
+                            <input type="tel" class="form-control" name="managerPhone" id="managerPhone" placeholder="Nhập số điện thoại" required
+                                pattern="^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$" aria-label="Số điện thoại">
                         </div>
                     </div>
                 </div>
 
-                <!-- Password -->
+                <!-- Mật khẩu -->
                 <div class="row form-group">
-                    <label for="managerPassword" class="col-sm-3 col-form-label input-label">Password</label>
+                    <label for="managerPassword" class="col-sm-3 col-form-label input-label">Mật khẩu</label>
                     <div class="col-sm-9">
                         <div class="js-form-message">
-                            <input type="password" class="form-control" name="managerPassword" id="managerPassword" placeholder="Enter Password" required>
+                            <input type="password" class="form-control" name="managerPassword" id="managerPassword" placeholder="Nhập mật khẩu" required>
                         </div>
                     </div>
                 </div>
 
-                <!-- Buttons -->
+                <!-- Nút bấm -->
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-white mr-2" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitAddManagerButton">Add Manager</button>
+                    <button type="button" class="btn btn-white mr-2" data-bs-dismiss="modal" aria-label="Close">Hủy</button>
+                    <button type="button" class="btn btn-primary" id="submitAddManagerButton">Thêm Quản Lý</button>
                 </div>
             </div>
         </div>

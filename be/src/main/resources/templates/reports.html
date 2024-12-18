@@ -50,11 +50,7 @@
         <div class="container-fluid">
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Reports</h5>
-                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addReportModal"
-                        id="addReport">
-                        <i class="tio-user-add mr-1"></i>Add Report
-                    </button>
+                    <h5 class="card-title">Báo Cáo</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -62,39 +58,29 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 200px;">Reported Content</th>
-                                    <th>Violation Type</th>
-                                    <th>Status</th>
-                                    <th>Reason</th>
-                                    <th>Reported By</th>
-                                    <th>Actions</th>
+                                    <th style="min-width: 200px;">Nội dung báo cáo</th>
+                                    <th>Loại vi phạm</th>
+                                    <th>Trạng thái</th>
+                                    <th>Lý do</th>
+                                    <th>Người báo cáo</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Duyệt qua danh sách báo cáo -->
                                 <tr th:each="report, iterStat : ${listReports}">
                                     <td class="text-start" th:text="${iterStat.index + 1}">ID</td>
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-                                                <!-- Kiểm tra xem có mediaUrl không, nếu có thì hiển thị ảnh -->
                                                 <img th:if="${report.mediaUrl != null}" th:src="${report.mediaUrl}"
                                                     alt="Content Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
-                                                <!-- Nếu không có ảnh, thay thế bằng thông báo hoặc giá trị mặc định -->
                                                 <img th:if="${report.mediaUrl == null}" src="/assets/img/anhload.jpg"
                                                     alt="No Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;">
-
-                                                <a href="#" data-toggle="modal"
-                                                    th:onclick="'loadReportDetails(' + ${report.id} + ')'"
-                                                    data-target="#reportDetailModal"
-                                                    class="text-body text-decoration-none">
-                                                    <!-- Hiển thị contentPost nếu có, nếu không hiển thị thông báo mặc định -->
-                                                    <span
-                                                        th:text="${report.contentPost != null ? report.contentPost : 'No content available'}"></span>
-                                                </a>
+                                                <span
+                                                    th:text="${report.contentPost != null ? report.contentPost : 'No content available'}"></span>
                                             </div>
                                         </div>
                                     </td>
@@ -107,18 +93,21 @@
                                         th:text="${report.reason != null ? report.reason : 'No reason specified'}">
                                         Reason</td>
                                     <td class="text-start"
-                                        th:text="${report.fullname != null ? report.fullname : 'Anonymous'}">Reported By
+                                        th:text="${report.fullname != null ? report.fullname : 'Anonymous'}"> By
                                     </td>
                                     <td class="text-center">
-                                        <div class="d-flex justify-content-center align-items-center"
-                                            style="gap: 5px; flex-wrap: nowrap;">
+                                        <div class="d-flex justify-content-center align-items-center">
+                                            <button class="btn btn-sm btn-outline-secondary mr-2" id="reviewReport"
+                                                th:attr="data-id=${report.id}">
+                                                Chi tiết
+                                            </button>
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deleteReport"
                                                 th:attr="data-id=${report.id}">
-                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                                Từ chối
                                             </button>
-                                            <button class="btn btn-sm btn-outline-secondary mr-2 viewDetails"
+                                            <button class="btn btn-sm btn-outline-success mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}">
-                                                View Details
+                                                Phê duyệt
                                             </button>
                                         </div>
                                     </td>
@@ -130,6 +119,7 @@
             </div>
 
             <div th:replace="fragments/reports/repostDetailModal"></div>
+            <div th:replace="fragments/reports/deleteReportModal"></div>
 
         </div>
     </div>
@@ -153,17 +143,22 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [5],
+                        targets: [6],
                         orderable: false
                     }
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search reports",
+                    searchPlaceholder: "Tìm kiếm báo cáo",
                     paginate: {
-                        previous: "Prev",
+                        previous: "Trước",
+                        next: "Tiếp theo",
                     },
-
+                    emptyTable: "Không có dữ liệu trong bảng",
+                    info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
 
@@ -175,6 +170,17 @@
 
         const token = localStorage.getItem('authToken'); // Token xác thực
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewReviewButtons = document.querySelectorAll('#reviewReport');
+
+            viewReviewButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const reviewId = this.getAttribute('data-id');
+
+                    loadReportDetails(reviewId);
+                });
+            });
+        });
         function loadReportDetails(id) {
             fetch(`http://localhost:8080/api/report/${id}`, {
                 method: 'GET',
@@ -185,9 +191,8 @@
                 .then(res => res.json()) // Chuyển dữ liệu phản hồi sang JSON
                 .then(data => {
                     if (data.status) {
-                        const report = data.data; // Lấy thông tin báo cáo từ phản hồi API
+                        const report = data.data;
 
-                        // Gán dữ liệu báo cáo vào các phần tử trong modal
                         document.getElementById('reviewUserName').innerText = report.fullname || 'Unknown user';
                         document.getElementById('reviewReason').innerText = report.reason || 'No reason provided';
                         document.getElementById('reviewContent').innerText = report.contentPost || 'No content available';
@@ -199,11 +204,12 @@
                             ? 'No time available'
                             : date.toLocaleString();
 
-                        // Hiển thị ảnh hoặc giữ ảnh mặc định
                         const mediaImg = document.getElementById('reviewMediaImg');
-                        mediaImg.src = report.mediaUrl || 'assets/img/default-image.jpg';
+                        mediaImg.src = report.mediaUrl;
+                        mediaImg.onerror = function () {
+                            this.src = '/assets/img/anhload.jpg';
+                        }
 
-                        // Hiển thị modal
                         const modal = new bootstrap.Modal(document.getElementById("reviewDetailModal"));
                         modal.show();
                     } else {
@@ -214,6 +220,50 @@
                     console.error("Failed: ", error);
                 });
         }
+        document.querySelectorAll('#deleteReport').forEach(button => {
+            button.addEventListener("click", function () {
+                const report_id = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("denyReportModal"));
+                console.log(report_id);
+                modal.show();
+
+                const confirmButton = document.getElementById("confirmDeny");
+
+                const newConfirmButton = confirmButton.cloneNode(true);
+                confirmButton.replaceWith(newConfirmButton);
+
+                document.getElementById("confirmDeny").addEventListener("click", () => {
+                    fetch(`http://localhost:8080/api/report/${report_id}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log(data);
+
+                            if (data.status) {
+                                alert("Từ chối thành công!");
+                                modal.hide();
+
+                                // Xóa dòng báo cáo từ bảng
+                                const reportRow = button.closest('tr');
+                                if (reportRow) {
+                                    reportRow.remove();
+                                }
+                            } else {
+                                alert("Không thể xóa báo cáo. Vui lòng thử lại.");
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                            alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                        });
+                });
+            });
+        });
+
 
 
 

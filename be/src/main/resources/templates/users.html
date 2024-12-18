@@ -142,9 +142,9 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Users</h5>
+                    <h5 class="card-title">Người dùng</h5>
                     <button class="btn btn-primary float-right" id="addUser">
-                        <i class="tio-user-add mr-1"></i>Add User
+                        <i class="tio-user-add mr-1"></i>Thêm người dùng
                     </button>
 
                 </div>
@@ -156,14 +156,13 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Full Name</th>
+                                    <th>Họ và Tên</th>
                                     <th>Email</th>
-                                    <th>Phone Number</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Creation Date</th>
-                                    <th>Actions</th>
-
+                                    <th>Số điện thoại</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -213,9 +212,10 @@
 
                                     <td>
                                         <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
-                                            <i class="tio-users-switch mr-1"></i>Switch
+                                            <i class="tio-users-switch mr-1"></i>Đổi trạng thái
                                         </button>
                                     </td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -282,17 +282,22 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [6],
+                        targets: [7],
                         orderable: false
                     }
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search users",
+                    searchPlaceholder: "Tìm kiếm người dùng",
                     paginate: {
-                        previous: "Prev",
+                        previous: "Trước",
+                        next: "Tiếp theo",
                     },
-
+                    emptyTable: "Không có dữ liệu trong bảng",
+                    info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
 

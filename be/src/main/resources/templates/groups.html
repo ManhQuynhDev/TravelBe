@@ -48,13 +48,12 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
-
             <div class="card mt-2">
                 <div class="card-header">
-                    <h5 class="card-title">Groups List</h5>
+                    <h5 class="card-title">Danh sách nhóm</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
                         id="addGroup">
-                        <i class="tio-user-add mr-1"></i>Add Group
+                        <i class="tio-user-add mr-1"></i>Thêm nhóm mới
                     </button>
                 </div>
                 <div class="card-body">
@@ -64,16 +63,16 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th>Group Name</th>
-                                    <th>Status</th>
-                                    <th>Admin</th>
-                                    <th>Created Time</th>
-                                    <th>Actions</th> <!-- Thêm cột hành động -->
+                                    <th>Tên nhóm</th>
+                                    <th>Trạng thái</th>
+                                    <th>Quản trị viên</th>
+                                    <th>Thời gian tạo</th>
+                                    <th>Hành động</th> <!-- Thêm cột hành động -->
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="group : ${groupList}">
-                                    <td class="text-start" th:text="${group.groupId}">ID</td>
+                                <tr th:each="group, stat : ${groupList}">
+                                    <td class="text-start" th:text="${stat.index + 1}">Index</td>
                                     <td class="table-column-pl-0">
                                         <a class="d-flex align-items-center"
                                             th:onclick="'loadGroupDetails(' + ${group.groupId} + ')'">
@@ -81,10 +80,8 @@
                                                 <img class="avatar-img" th:src="${group.cover_photo}"
                                                     alt="Image Description"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
+
                                             </div>
-
-
-
                                             <div class="ml-3">
                                                 <span class="d-block h5 text-hover-primary mb-0"
                                                     th:text="${group.group_name}">Amanda Harvey</span>
@@ -93,23 +90,24 @@
                                     </td>
                                     <td class="text-start" th:text="${group.status}">Status</td>
                                     <td class="text-start" th:text="${group.admin_name}">User ID</td>
-                                    <td class="text-start" th:text="${group.create_time}">Created Time</td>
+                                    <td class="text-start" th:text="${#strings.substring(group.create_time, 0, 10)}">
+                                        Created Time</td>
+
                                     <td>
                                         <div class="d-flex justify-content-start">
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deleteGroup"
                                                 th:attr="data-id=${group.groupId}">
-                                                <i class="tio-delete-outlined mr-1"></i>Delete
+                                                <i class="tio-delete-outlined mr-1"></i>Xóa
                                             </button>
                                             <button class="btn btn-sm btn-outline-secondary mr-2" id="viewMembers"
                                                 th:attr="data-id=${group.groupId}">
-                                                View Members
+                                                Xem Thành Viên
                                             </button>
                                             <button class="btn btn-sm btn-outline-info" id="viewPlans"
                                                 th:attr="data-id=${group.groupId}">
-                                                View Plans
+                                                Xem Kế Hoạch
                                             </button>
                                         </div>
-
                                     </td>
 
                                 </tr>
@@ -122,6 +120,7 @@
 
             <div th:replace="fragments/groups/groupDetailModal"></div>
             <div th:replace="fragments/groups/viewMemberModal"></div>
+            <div th:replace="fragments/groups/viewPlanModal"></div>
             <div th:replace="fragments/groups/addGroupModal"></div>
             <div th:replace="fragments/groups/deleteGroupModal"></div>
         </div>
@@ -154,11 +153,16 @@
                 ],
                 language: {
                     search: "",
-                    searchPlaceholder: "Search groups",
+                    searchPlaceholder: "Tìm kiếm nhóm",
                     paginate: {
-                        previous: "Prev",
+                        previous: "Trước",
+                        next: "Tiếp theo",
                     },
-
+                    emptyTable: "Không có dữ liệu trong bảng",
+                    info: "Hiển thị từ _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
 
@@ -197,7 +201,7 @@
 
                     if (!data.data || !Array.isArray(data.data.userJoined) || data.data.userJoined.length === 0) {
                         const noDataRow = document.createElement('tr');
-                        noDataRow.innerHTML = `<td colspan="7" class="text-center">No members found</td>`;
+                        noDataRow.innerHTML = `<td colspan="7" class="text-center">Không có thành viên nào.</td>`;
                         tableBody.appendChild(noDataRow);
                     } else {
                         data.data.userJoined.forEach(member => {
@@ -243,9 +247,9 @@
                 const data = groupData.data;
 
                 const groupCoverImg = document.getElementById('groupCoverImgModal');
-                groupCoverImg.src = data.cover_photo || 'assets/img/default-image.jpg';
+                groupCoverImg.src = data.cover_photo;
                 groupCoverImg.onerror = function () {
-                    this.src = '/assets/img/anhload.jpg'; // ảnh thay thế khi có lỗi
+                    this.src = '/assets/img/anhload.jpg';
                 };
                 document.getElementById('groupNameDetails').innerText = data.group_name || 'N/A';
                 document.getElementById('groupAdminDetails').innerText = data.admin_name || 'N/A';
@@ -276,7 +280,7 @@
 
             // Kiểm tra xem các trường bắt buộc có bị bỏ trống không
             if (!groupData.name || !groupData.status || !groupData.bio) {
-                alert("Please fill in all required fields!");
+                alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
                 return;  // Dừng nếu có trường bị bỏ trống
             }
 
@@ -303,24 +307,29 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    alert("Group created successfully!");
+                    alert("Nhóm đã được tạo thành công!");
                     $('#addGroupModal').modal('hide');
                     window.location.reload();
                 })
                 .catch(error => {
-                    console.log("Error with fetch:", error);
-                    alert("An error occurred while creating the group.");
+                    console.log("Lỗi khi gọi fetch:", error);
+                    alert("Đã xảy ra lỗi trong quá trình tạo nhóm.");
                 });
         });
 
 
-        //delete Group
+
+        // Xóa Nhóm
         document.querySelectorAll('#deleteGroup').forEach(button => {
             button.addEventListener("click", function () {
                 const group_id = this.getAttribute("data-id");
                 const modal = new bootstrap.Modal(document.getElementById("deleteGroupModal"));
                 console.log(group_id);
                 modal.show();
+                const confirmButton = document.getElementById("confirmDeleteGroup");
+
+                const newConfirmButton = confirmButton.cloneNode(true);
+                confirmButton.replaceWith(newConfirmButton);
                 document.getElementById("confirmDeleteGroup").addEventListener("click", () => {
                     fetch(`http://localhost:8080/api/groups/${group_id}`, {
                         method: "DELETE",
@@ -330,17 +339,16 @@
                     })
                         .then(res => res.json())
                         .then(data => {
-                            if (data.message === "Delete group successfully") {
-                                alert("Delete Successfully");
-                                modal.hide();
+                            console.log(data);
 
-                                const groupRow = button.closest('tr');
-                                if (groupRow) {
-                                    groupRow.remove();
-                                }
-                            } else {
-                                alert("Failed to delete post");
+                            alert("Xóa nhóm thành công");
+                            modal.hide();
+
+                            const groupRow = button.closest('tr');
+                            if (groupRow) {
+                                groupRow.remove();
                             }
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.log(error);
@@ -348,6 +356,68 @@
                 })
             })
         })
+
+        document.querySelectorAll('#viewPlans').forEach(button => {
+            button.addEventListener("click", async function () {
+                const groupId = this.getAttribute("data-id");
+                console.log("Group ID:", groupId);
+
+                // Lấy token từ localStorage
+                const token = localStorage.getItem("authToken");
+                const apiURL = `http://localhost:8080/api/travel-plan/by-group-id/${groupId}`;
+
+                try {
+                    const response = await fetch(apiURL, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log("Fetched Travel Plans:", data); // Debug dữ liệu trả về
+
+                    if (data.content && Array.isArray(data.content)) {
+                        displayTravelPlans(data.content);
+                        $('#viewTravelPlansModal').modal('show');  // Mở modal
+                    } else {
+                        alert("No travel plans found for this group.");
+                    }
+                } catch (error) {
+                    console.error('Error fetching travel plans:', error);
+                    alert('An error occurred while fetching travel plans.');
+                }
+            });
+        });
+
+        function displayTravelPlans(plans) {
+            const plansContainer = document.getElementById('plansList');
+            plansContainer.innerHTML = '';  // Xóa các kế hoạch cũ nếu có
+
+            if (plans.length === 0) {
+                plansContainer.innerHTML = '<tr><td colspan="5" class="text-center">Không có kế hoạch du lịch nào cho nhóm này.</td></tr>';
+            } else {
+                plans.forEach(plan => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                <td>${plan.plan_name}</td>
+                <td>${new Date(plan.start_date).toLocaleDateString()}</td>
+                <td>${new Date(plan.end_date).toLocaleDateString()}</td>
+                <td>${plan.description}</td>
+                <td>${plan.status}</td>
+            `;
+                    plansContainer.appendChild(row);
+                });
+            }
+        }
+
+
+
 
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
