@@ -1,0 +1,70 @@
+<div class="modal fade" id="updatePlanModal" tabindex="-1" aria-labelledby="updatePlanModalTitle" style="display: none;"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="updatePlanModalTitle" class="modal-title">Sửa Hoạt Động</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Đóng">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="updatePlanModalTabContent">
+                    <div class="tab-pane fade active show" id="updateActivity" role="tabpanel">
+                        <div class="row form-group">
+                            <label for="updateActivityName" class="col-sm-3 col-form-label input-label">Tên Hoạt
+                                Động</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="updateActivityName"
+                                    placeholder="Nhập tên hoạt động">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label for="updateActivityTime" class="col-sm-3 col-form-label input-label">Thời
+                                Gian</label>
+                            <div class="col-sm-9">
+                                <input type="datetime-local" class="form-control" id="updateActivityTime">
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="updateActivityStatus" class="col-sm-3 col-form-label input-label">Trạng
+                                Thái</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="updateActivityStatus">
+                                    <option value="PENDING">Chưa bắt đầu</option>
+                                    <option value="ONGOING">Đang diễn ra</option>
+                                    <option value="COMPLETED">Đã hoàn thành</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label for="updateActivityDescription" class="col-sm-3 col-form-label input-label">Mô
+                                Tả</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="updateActivityDescription" rows="3"
+                                    placeholder="Nhập mô tả hoạt động"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="updateActivityCost" class="col-sm-3 col-form-label input-label">Chi Phí</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="updateActivityCost"
+                                    placeholder="Nhập chi phí" min="0" step="0.01">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal"
+                                aria-label="Đóng">Đóng</button>
+                            <button type="button" class="btn btn-primary" id="saveUpdatedActivityButton">Lưu Hoạt
+                                Động</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

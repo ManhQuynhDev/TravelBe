@@ -12,7 +12,34 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <style>
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            /* Cho phép cuộn ngang khi cần thiết */
+            -webkit-overflow-scrolling: touch;
+            /* Tạo hiệu ứng cuộn mượt trên thiết bị di động */
+            margin-bottom: 15px;
+            /* Thêm khoảng cách dưới để tránh bị dính vào phần tử dưới */
+        }
 
+        #modernTable2 {
+            width: 100%;
+            /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+
+        }
+
+        #modernTable2 th,
+        #modernTable2 td {
+            white-space: nowrap;
+            /* Ngăn các ô trong bảng xuống hàng */
+            overflow: hidden;
+            /* Ẩn nội dung thừa nếu có */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm nếu nội dung bị cắt */
+        }
+    </style>
 
 </head>
 

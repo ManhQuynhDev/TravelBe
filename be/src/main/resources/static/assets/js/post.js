@@ -68,7 +68,8 @@ function loadPostDetails(id) {
                         }
                         img.className = 'img-fluid rounded mb-2';
                         img.style.width = '200px';
-                        img.style.height = 'auto';
+                        img.style.height = '112px';
+                        img.style.objectFit = 'cover';
                         mediaContainer.appendChild(img);
                     });
                 }
@@ -132,32 +133,109 @@ document.getElementById('postMediaInput').addEventListener('change', function (e
             if (fileType.startsWith('image/')) {
                 previewElement = document.createElement('img');
                 previewElement.src = e.target.result;
-                previewElement.style.width = '100%';
+                previewElement.style.width = '300px'; // Chiều rộng cố định
+                previewElement.style.height = '200px'; // Chiều cao cố định
+                previewElement.style.objectFit = 'cover'; // Đảm bảo hình ảnh vừa với khung nhưng không bị méo
             } else if (fileType.startsWith('video/')) {
                 previewElement = document.createElement('video');
                 previewElement.src = e.target.result;
                 previewElement.controls = true;
-                previewElement.style.width = '100%';
+                previewElement.style.width = '300px'; // Chiều rộng cố định
+                previewElement.style.height = '200px'; // Chiều cao cố định
+                previewElement.style.objectFit = 'cover'; // Đảm bảo video vừa với khung mà không bị méo
             }
+
             previewContainer.appendChild(previewElement);
         };
         reader.readAsDataURL(file);
     });
 });
+const apiURL = 'http://localhost:8080/locations?page=0&size=100';
+const locationSelect = document.getElementById('postLocation');
+
+if (!token) {
+    console.error("Không tìm thấy token trong localStorage");
+} else {
+    async function fetchLocations() {
+        try {
+            const response = await fetch(apiURL, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Danh sách Vị Trí:", data);
+
+            locationSelect.innerHTML = '<option value="">Chọn Vị Trí</option>';
+
+            if (data.content && Array.isArray(data.content)) {
+                data.content.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location.address;
+                    option.textContent = location.address;
+                    locationSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Lỗi khi lấy dữ liệu vị trí:', error);
+        }
+    }
+
+    fetchLocations();
+}
 
 document.getElementById('savePostButton').addEventListener('click', function () {
     var content = document.getElementById('postContent').value;
     var status = document.getElementById('postStatus').value;
     var location = document.getElementById('postLocation').value;
     var hashtags = document.getElementById("postHashtags").value.split(',').map(tag => tag.trim());
-    var media = document.getElementById('postMediaInput').files[0];
+    var media = document.getElementById('postMediaInput').files;
 
     var user_id = localStorage.getItem('user_id');
     var token = localStorage.getItem('authToken');
 
-    if (!content || !status || !location) {
-        alert('Please fill in all required fields!');
+    if (!content) {
+        alert('Vui lòng điền nội dung bài viết!');
         return;
+    }
+
+    if (!status) {
+        alert('Vui lòng chọn trạng thái bài viết!');
+        return;
+    }
+
+    if (!location) {
+        alert('Vui lòng nhập địa điểm!');
+        return;
+    }
+
+    if (hashtags.length === 0 || hashtags[0] === "") {
+        alert('Vui lòng nhập ít nhất một hashtag!');
+        return;
+    }
+
+    if (media.length > 0) {
+        for (let i = 0; i < media.length; i++) {
+            const file = media[i];
+            const fileType = file.type;
+            if (!fileType.startsWith('image/') && !fileType.startsWith('video/')) {
+                alert('Chỉ cho phép tệp hình ảnh và video!');
+                return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                alert('Kích thước tệp vượt quá giới hạn tối đa 5MB!');
+                return;
+            }
+        }
     }
 
     var postData = {
@@ -170,8 +248,11 @@ document.getElementById('savePostButton').addEventListener('click', function () 
 
     var formData = new FormData();
     formData.append('post', JSON.stringify(postData));
-    if (media) {
-        formData.append('files', media);
+
+    if (media && media.length > 0) {
+        for (let i = 0; i < media.length; i++) {
+            formData.append('files', media[i]);
+        }
     }
 
     fetch('http://localhost:8080/api/posts', {
@@ -183,19 +264,22 @@ document.getElementById('savePostButton').addEventListener('click', function () 
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             if (data.status) {
                 alert('Thêm bài viết thành công');
                 $('#addPostModal').modal('hide');
-                window.location.reload();
+                window.location.reload(); // Uncomment để tải lại trang
             } else {
-                alert('Failed to create post: ' + data.message);
+                alert('Không thể tạo bài viết: ' + data.message);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while creating the post.');
+            console.error('Lỗi:', error);
+            alert('Đã xảy ra lỗi trong quá trình tạo bài viết.');
         });
 });
+
+
 
 
 
@@ -274,7 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             const row = document.createElement("tr");
                             const avatarUrl = comment.avatar;
                             const avatar = comment.avatar ?
-                                `<img src="${avatarUrl}" alt="${comment.fullname}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">` :
+                                `<img src="${avatarUrl}" alt="${comment.fullname}" style="width: 40px; height: 40px; border-radius: 50%;object-fit: cover; margin-right: 10px;">` :
                                 `<div style="width: 40px; height: 40px; border-radius: 50%; background-color: #ddd; display: flex; justify-content: center; align-items: center; margin-right: 10px;">
                         ${comment.fullname.charAt(0).toUpperCase()}
                     </div>`;

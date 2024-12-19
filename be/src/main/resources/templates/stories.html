@@ -12,6 +12,34 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <style>
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            /* Cho phép cuộn ngang khi cần thiết */
+            -webkit-overflow-scrolling: touch;
+            /* Tạo hiệu ứng cuộn mượt trên thiết bị di động */
+            margin-bottom: 15px;
+            /* Thêm khoảng cách dưới để tránh bị dính vào phần tử dưới */
+        }
+
+        #storyTable {
+            width: 100%;
+            /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+
+        }
+
+        #storyTable th,
+        #storyTable td {
+            white-space: nowrap;
+            /* Ngăn các ô trong bảng xuống hàng */
+            overflow: hidden;
+            /* Ẩn nội dung thừa nếu có */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm nếu nội dung bị cắt */
+        }
+    </style>
 </head>
 
 <body>
@@ -57,12 +85,11 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-
-                        <table id="modernTable2" class="table-striped table-hover">
+                        <table id="storyTable" class="table table-striped table-hover" style="width:100%">
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 150px;">Nội dung</th>
+                                    <th style="max-width: 200px;">Nội dung</th>
                                     <th>Media</th>
                                     <th>Thời gian tạo</th>
                                     <th>Trạng thái</th>
@@ -75,11 +102,12 @@
                                 <tr th:each="story, iterStat : ${storyList}">
                                     <td th:text="${iterStat.index + 1}">1</td>
                                     <td class="text-start">
-                                        <a href="#" data-toggle="modal"
-                                            th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'"
-                                            data-target="#storyDetailModal" class="text-body text-decoration-none">
-                                            <span th:text="${story.content}"></span>
-                                        </a>
+                                        <div>
+                                            <a href="#" data-toggle="modal"
+                                                th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'">
+                                                <span th:text="${story.content}"></span>
+                                            </a>
+                                        </div>
                                     </td>
                                     <td class="text-start">
                                         <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}"
@@ -159,7 +187,7 @@
             var unfold = new HSUnfold($(this)).init();
         });
         $(document).ready(function () {
-            var table = $('#modernTable2').DataTable({
+            var table = $('#storyTable').DataTable({
                 dom: '<"row d-flex justify-content-between align-items-center"<"col-sm-6 d-flex align-items-center"f><"col-sm-6 d-flex justify-content-end"B>>' +
                     '<"row"<"col-sm-12"tr>>' +
                     '<"row d-flex justify-content-between align-items-center"<"col-sm-6"i><"col-sm-6 d-flex justify-content-end"p>>',
@@ -190,19 +218,6 @@
                 }
             });
 
-            $('#selectAll').on('click', function () {
-                var rows = table.rows({ 'search': 'applied' }).nodes();
-                $('input[type="checkbox"]', rows).prop('checked', this.checked);
-            });
-
-            $('#modernTable2 tbody').on('change', 'input[type="checkbox"]', function () {
-                if (!this.checked) {
-                    var el = $('#selectAll').get(0);
-                    if (el && el.checked) {
-                        el.indeterminate = true;
-                    }
-                }
-            });
         });
         const token = localStorage.getItem("authToken");
         const user_id = localStorage.getItem("user_id")
@@ -284,8 +299,8 @@
                 modal.show();
 
                 const confirmButton = document.getElementById("confirmDeleteBtn");
-                const newConfirmButton = confirmButton.cloneNode(true); 
-                confirmButton.replaceWith(newConfirmButton); 
+                const newConfirmButton = confirmButton.cloneNode(true);
+                confirmButton.replaceWith(newConfirmButton);
 
                 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
                 confirmDeleteBtn.removeEventListener("click", deleteStory);
