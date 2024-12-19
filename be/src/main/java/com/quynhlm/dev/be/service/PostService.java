@@ -183,7 +183,7 @@ public class PostService {
                 .map(FriendShip::getUserSendId)
                 .collect(Collectors.toList());
 
-        Page<Object[]> results = postRepository.getAllPostsExceptFriends(friendUserIds, userId, pageable);
+        Page<Object[]> results = postRepository.getAllPostsExceptFriends(userId, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
