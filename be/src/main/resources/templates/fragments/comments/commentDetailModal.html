@@ -1,0 +1,58 @@
+<div class="modal fade" id="commentDetailModal" tabindex="-1" aria-labelledby="commentDetailModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="commentDetailModalTitle" class="modal-title">Chi Tiết Bình Luận</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="commentDetailModalTabContent">
+                    <div class="tab-pane fade active show" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <div class="row form-group">
+                            <label for="commentFullnameDetails" class="col-sm-3 col-form-label input-label">Người Bình Luận</label>
+                            <div class="col-sm-9">
+                                <div class="media">
+                                    <img id="commentAvatar" class="mr-3 rounded-circle" src="" alt="Ảnh Đại Diện" style="width: 40px; height: 40px;border-radius: 50%;object-fit: cover">
+                                    <div class="media-body">
+                                        <span id="commentFullnameDetails" class="form-control-plaintext">ADMIN</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Thời Gian Bình Luận -->
+                        <div class="row form-group">
+                            <label for="commentCreateTimeDetails" class="col-sm-3 col-form-label input-label">Thời Gian</label>
+                            <div class="col-sm-9">
+                                <span id="commentCreateTimeDetails" class="form-control-plaintext">2024-12-02 22:28:40</span>
+                            </div>
+                        </div>
+
+                        <!-- Nội Dung Bình Luận -->
+                        <div class="row form-group">
+                            <label for="commentContentDetails" class="col-sm-3 col-form-label input-label">Nội Dung</label>
+                            <div class="col-sm-9">
+                                <p id="commentContentDetails" class="form-control-plaintext">This is a test comment.</p>
+                            </div>
+                        </div>
+
+                        <!-- Lượt Thích -->
+                        <div class="row form-group">
+                            <label for="reactionCountDetails" class="col-sm-3 col-form-label input-label">Lượt Thích</label>
+                            <div class="col-sm-9">
+                                <span id="reactionCountDetails" class="form-control-plaintext">0</span>
+                            </div>
+                        </div>
+
+
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Close">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

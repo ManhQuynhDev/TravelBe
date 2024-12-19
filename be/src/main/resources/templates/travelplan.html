@@ -337,7 +337,7 @@
 
         document.getElementById("saveTravelPlanButton").addEventListener("click", function () {
             const groupId = document.getElementById('groupId').value;
-            const planName = document.getElementById('planName').value;
+            const planName = document.getElementById('planName').value.trim();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             const description = document.getElementById('description').value;
@@ -345,11 +345,24 @@
             const locationId = document.getElementById('locationSelect').value;
             const totalBudget = document.getElementById('totalBudget').value;
 
+            // Kiểm tra các trường bắt buộc
             if (!groupId || !planName || !startDate || !endDate || !locationId || !totalBudget) {
                 alert('Vui lòng điền đầy đủ các trường bắt buộc.');
                 return;
             }
 
+            // Validate tên kế hoạch: không chứa ký tự đặc biệt và có độ dài tối thiểu 3 ký tự
+            const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
+            if (!nameRegex.test(planName)) {
+                alert("Tên kế hoạch không được chứa ký tự đặc biệt.");
+                return;
+            }
+            if (planName.length < 3) {
+                alert("Tên kế hoạch phải có ít nhất 3 ký tự.");
+                return;
+            }
+
+            // Kiểm tra ngày bắt đầu và ngày kết thúc
             const startDateObj = new Date(startDate);
             const endDateObj = new Date(endDate);
 
@@ -361,11 +374,13 @@
                 return;
             }
 
+            // Kiểm tra ngân sách
             if (isNaN(totalBudget) || totalBudget <= 0) {
                 alert('Vui lòng nhập ngân sách hợp lệ.');
                 return;
             }
 
+            // Dữ liệu kế hoạch du lịch
             const travelPlan = {
                 group_id: groupId,
                 plan_name: planName,
@@ -379,7 +394,6 @@
             };
 
             console.log(travelPlan);
-            console.log(groupId);
             const apiURL = 'http://localhost:8080/api/travel-plan';
             const token = localStorage.getItem("authToken");
 
@@ -404,6 +418,7 @@
                     alert('Đã xảy ra lỗi khi thêm kế hoạch du lịch.');
                 });
         });
+
 
 
 

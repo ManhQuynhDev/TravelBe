@@ -47,26 +47,20 @@
         <div class="content container-fluid">
             <div class="row justify-content-lg-center">
                 <div class="col-lg-10">
-                    <!-- Profile Cover -->
                     <div class="profile-cover">
                         <div class="profile-cover-img-wrapper">
                             <img id="profileCoverImg" class="profile-cover-img" src="/assets/img/1920x400/img2.jpg"
                                 alt="Image Description">
 
-                            <!-- Custom File Cover -->
                             <div class="profile-cover-content profile-cover-btn">
                                 <div class="custom-file-btn">
 
                                 </div>
                             </div>
-                            <!-- End Custom File Cover -->
                         </div>
                     </div>
-                    <!-- End Profile Cover -->
 
-                    <!-- Profile Header -->
                     <div class="text-center mb-5">
-                        <!-- Avatar -->
                         <label
                             class="avatar avatar-xxl avatar-circle avatar-border-lg avatar-uploader profile-cover-avatar"
                             for="avatarUploader" id="avatarLabel">
@@ -85,12 +79,17 @@
                                 <i class="tio-edit avatar-uploader-icon shadow-soft"></i>
                             </span>
                         </label>
-                        <h1 class="page-header-title" id="userNameInputs">Mark Williams</h1>
+                        <h1 class="page-header-title ">
+                            <span class="userNameInputs">Mark Williams</span>
+                            <i class="tio-edit" style="font-size: 20px;"></i>
+                        </h1>
+
+
 
                         <ul class="list-inline list-inline-m-1" id="userDetails">
                             <li class="list-inline-item">
                                 <i class="tio-city mr-1"></i>
-                                <span id="company">Pixeel Ltd.</span>
+                                <span class="company">Pixeel Ltd.</span>
                             </li>
 
                             <li class="list-inline-item">
@@ -101,7 +100,7 @@
 
                             <li class="list-inline-item">
                                 <i class="tio-date-range mr-1"></i>
-                                <span id="joinDateInput">Joined March 2013</span>
+                                <span class="joinDateClass">Joined March 2013</span>
                             </li>
                         </ul>
                         <!-- End List -->
@@ -124,75 +123,14 @@
                             </a>
                         </span>
 
-                        <ul class="nav nav-tabs align-items-center">
-                            <li class="nav-item">
-                                <a class="nav-link active disabled" href="#">Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#">Teams</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#">Projects</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link disabled" href="#">Connections</a>
-                            </li>
 
-                            <li class="nav-item ml-auto">
-                                <a class="btn btn-sm btn-white mr-2" th:href="@{/web-server/edit-profile}">
-                                    <i class="tio-edit mr-1"></i> Edit profile
-                                </a>
-
-                                <a class="btn btn-icon btn-sm btn-white mr-2" href="#">
-                                    <i class="tio-format-points mr-1"></i>
-                                </a>
-
-                                <!-- Unfold -->
-                                <div class="hs-unfold hs-nav-scroller-unfold">
-                                    <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-white" href="javascript:;"
-                                        data-hs-unfold-options='{
-                             "target": "#profileDropdown",
-                             "type": "css-animation"
-                           }'>
-                                        <i class="tio-more-vertical"></i>
-                                    </a>
-
-                                    <div id="profileDropdown"
-                                        class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
-                                        <span class="dropdown-header">Settings</span>
-
-                                        <a class="dropdown-item" href="#">
-                                            <i class="tio-share dropdown-item-icon"></i> Share profile
-                                        </a>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="tio-blocked dropdown-item-icon"></i> Block page and profile
-                                        </a>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
-                                        </a>
-
-                                        <div class="dropdown-divider"></div>
-
-                                        <span class="dropdown-header">Feedback</span>
-
-                                        <a class="dropdown-item" href="#">
-                                            <i class="tio-report-outlined dropdown-item-icon"></i> Report
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- End Unfold -->
-                            </li>
-                        </ul>
                     </div>
-                    <!-- End Nav -->
 
                     <div class="row">
                         <div class="col-lg-4">
-                            <!-- Card -->
                             <div class="card card-body mb-3 mb-lg-5">
-                                <h5>Complete your profile</h5>
+                                <h5>Hoàn thành hồ sơ của bạn</h5>
 
-                                <!-- Progress -->
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="progress flex-grow-1">
                                         <div class="progress-bar bg-primary" role="progressbar" style="width: 15%"
@@ -200,171 +138,90 @@
                                     </div>
                                     <span class="ml-4">15%</span>
                                 </div>
-                                <!-- End Progress -->
                             </div>
-                            <!-- End Card -->
-
-                            <!-- Card -->
                             <div class="card mb-3 mb-lg-5">
-                                <!-- Header -->
                                 <div class="card-header">
-                                    <h2 class="card-header-title h5">Profile</h2>
+                                    <h2 class="card-header-title h5">Hồ sơ</h2>
 
-                                    <a class="btn btn-sm btn-white" th:href="@{/web-server/edit-profile}">Edit</a>
+                                    <a class="btn btn-sm btn-white" th:href="@{/web-server/edit-profile}">Chỉnh sửa</a>
                                 </div>
-                                <!-- End Header -->
-
-                                <!-- Body -->
                                 <div class="card-body">
                                     <ul class="list-unstyled list-unstyled-py-3 text-dark mb-3">
                                         <li class="py-0">
-                                            <small class="card-subtitle">About</small>
+                                            <small class="card-subtitle">Giới thiệu</small>
                                         </li>
 
                                         <li>
                                             <i class="tio-user-outlined nav-icon"></i>
-                                            Mark Williams
-                                        </li>
-                                        <li>
-                                            <i class="tio-briefcase-outlined nav-icon"></i>
-                                            No department title
+                                            <span class="userNameInputs">Mark Williams</span>
                                         </li>
                                         <li>
                                             <i class="tio-city nav-icon"></i>
-                                            Pixeel Ltd.
+                                            <span class="company">Pixeel Ltd.</span>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <i class="tio-date-range mr-1"></i>
+                                            <span class="joinDateClass">Tham gia vào tháng 3, 2013</span>
                                         </li>
 
                                         <li class="pt-2 pb-0">
-                                            <small class="card-subtitle">Contacts</small>
+                                            <small class="card-subtitle">Liên lạc</small>
                                         </li>
 
                                         <li>
                                             <i class="tio-online nav-icon"></i>
-                                            mark@example.com
+                                            <span id="emailInput">mark@example.com</span>
                                         </li>
                                         <li>
                                             <i class="tio-android-phone-vs nav-icon"></i>
-                                            +1 (555) 752-01-10
+                                            <span id="phoneInput">+1 (555) 752-01-10</span>
                                         </li>
 
                                         <li class="pt-2 pb-0">
-                                            <small class="card-subtitle">Teams</small>
+                                            <small class="card-subtitle">Nhóm</small>
                                         </li>
 
                                         <li class="font-size-sm text-body">
                                             <i class="tio-group-equal nav-icon"></i>
-                                            You are not a member of any teams
+                                            <span id="joinedGroupCount">0</span>
                                         </li>
                                         <li class="font-size-sm text-body">
                                             <i class="tio-briefcase-outlined nav-icon"></i>
-                                            You are not working on any projects
+                                            <span id="createdGroupCount">0</span>
                                         </li>
                                     </ul>
+
                                 </div>
-                                <!-- End Body -->
                             </div>
-                            
+
                         </div>
 
                         <div class="col-lg-8">
-                            <!-- Card -->
                             <div class="card mb-3 mb-lg-5">
-                                <!-- Header -->
                                 <div class="card-header">
-                                    <h2 class="card-header-title h5">Activity stream</h2>
-
-                                    <!-- Unfold -->
-                                    <div class="hs-unfold">
-                                        <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
-                                            href="javascript:;" data-hs-unfold-options='{
-                               "target": "#contentActivityStreamDropdown",
-                               "type": "css-animation"
-                             }'>
-                                            <i class="tio-more-vertical"></i>
-                                        </a>
-
-                                        <div id="contentActivityStreamDropdown"
-                                            class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
-                                            <span class="dropdown-header">Settings</span>
-
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-share dropdown-item-icon"></i> Share connections
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
-                                            </a>
-
-                                            <div class="dropdown-divider"></div>
-
-                                            <span class="dropdown-header">Feedback</span>
-
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-chat-outlined dropdown-item-icon"></i> Report
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <!-- End Unfold -->
+                                    <h2 class="card-header-title h5">Dòng hoạt động</h2>
                                 </div>
-                                <!-- End Header -->
-
-                                <!-- Body -->
                                 <div class="card-body card-body-height card-body-centered">
                                     <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
-                                        alt="Image Description">
-                                    <p class="card-text">No data to show</p>
-                                    <a class="btn btn-sm btn-white" href="#">Start your Activity</a>
+                                        alt="Hình mô tả">
+                                    <p class="card-text">Không có dữ liệu để hiển thị</p>
                                 </div>
-                                <!-- End Body -->
                             </div>
-                            <!-- End Card -->
-
-                            <!-- Card -->
                             <div class="card mb-3 mb-lg-5">
-                                <!-- Header -->
                                 <div class="card-header">
-                                    <h2 class="card-header-title h5">Projects</h2>
+                                    <h2 class="card-header-title h5">Dự án</h2>
 
-                                    <!-- Unfold -->
-                                    <div class="hs-unfold">
-                                        <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
-                                            href="javascript:;" data-hs-unfold-options='{
-                               "target": "#projectReportDropdown",
-                               "type": "css-animation"
-                             }'>
-                                            <i class="tio-more-vertical"></i>
-                                        </a>
-
-                                        <div id="projectReportDropdown"
-                                            class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right mt-1">
-                                            <span class="dropdown-header">Settings</span>
-
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-share dropdown-item-icon"></i> Share connections
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-info-outined dropdown-item-icon"></i> Suggest edits
-                                            </a>
-
-                                            <div class="dropdown-divider"></div>
-
-                                            <span class="dropdown-header">Feedback</span>
-
-                                            <a class="dropdown-item" href="#">
-                                                <i class="tio-chat-outlined dropdown-item-icon"></i> Report
-                                            </a>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="card-body card-body-height card-body-centered">
                                     <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
-                                        alt="Image Description">
-                                    <p class="card-text">No data to show</p>
-                                    <a class="btn btn-sm btn-white" href="projects.html">Start your Projects</a>
+                                        alt="Hình mô tả">
+                                    <p class="card-text">Không có dữ liệu để hiển thị</p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -424,12 +281,11 @@
             $('.js-pwstrength').each(function () {
                 var pwstrength = $.HSCore.components.HSPWStrength.init($(this));
             });
-            // Hàm lấy dữ liệu người dùng từ API bằng ID
             function loadUserData(userId) {
                 fetch(`http://localhost:8080/onboarding/users/${userId}`, {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                }) // Thay URL bằng endpoint của bạn
+                })
                     .then(response => {
                         if (!response.ok) {
                             throw new Error("Network response was not ok " + response.statusText);
@@ -437,30 +293,125 @@
                         return response.json();
                     })
                     .then(data => {
-                        // Gán dữ liệu vào form
-                        console.log("API Response:", data);
-                        document.getElementById("userNameInputs").innerText = data.data.fullname || "";
-                        document.getElementById("company").innerText = data.data.roles[0] || "";
-                        var createAt = data.data.create_at;
-                        var year = new Date(createAt).getFullYear();
-                        document.getElementById("joinDateInput").innerText = `Joined ${year}` || "";
-                        const profileImg = document.getElementById("avatarImgInput");
+                        // Cập nhật thông tin tên người dùng
+                        const userNameElements = document.querySelectorAll('.userNameInputs');
+                        userNameElements.forEach(element => {
+                            element.innerText = data.data.fullname || "Tên chưa cập nhật";
+                        });
 
+                        // Cập nhật thông tin vai trò người dùng
+                        const companyElements = document.querySelectorAll('.company');
+                        companyElements.forEach(element => {
+                            element.innerText = data.data.roles[0] || "Chưa có vai trò";
+                        });
+
+                        // Cập nhật thông tin ngày tham gia
+                        var createAt = data.data.create_at;
+                        var year = createAt ? new Date(createAt).getFullYear() : "N/A";  // Nếu không có create_at, hiển thị "N/A"
+
+                        var joinDateElements = document.querySelectorAll(".joinDateClass");
+                        joinDateElements.forEach(element => {
+                            element.innerText = `Joined ${year}` || "Chưa có thông tin tham gia";
+                        });
+
+                        // Cập nhật thông tin email
+                        document.getElementById("emailInput").innerText = data.data.email || "Chưa có email";  // Nếu không có email, hiển thị "Chưa có email"
+
+                        // Cập nhật thông tin số điện thoại
+                        document.getElementById('phoneInput').innerText = data.data.phoneNumber || "Chưa có số điện thoại";  // Nếu không có phoneNumber, hiển thị "Chưa có số điện thoại"
+
+                        // Cập nhật ảnh đại diện
+                        const profileImg = document.getElementById("avatarImgInput");
                         if (data.data.avatarUrl) {
-                            profileImg.src = data.data.avatarUrl;  // Nếu có ảnh, sử dụng ảnh từ API
+                            profileImg.src = data.data.avatarUrl;
                         } else {
-                            const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : '';
-                            profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`; 
+                            const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : 'N'; // Nếu không có fullname, dùng 'N'
+                            profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`;
                         }
+
+                        // Tính phần trăm hoàn thiện hồ sơ
+                        function calculateProfileCompletion(data) {
+                            let completedFields = 0;
+                            const totalFields = 5; // Số trường cần hoàn thành (fullname, email, phoneNumber, dob, bio)
+
+                            if (data.fullname) completedFields++;
+                            if (data.email) completedFields++;
+                            if (data.phoneNumber) completedFields++;
+                            if (data.dob) completedFields++;
+                            if (data.bio) completedFields++;
+
+                            return (completedFields / totalFields) * 100;
+                        }
+
+                        // Cập nhật thanh tiến độ
+                        function updateProgressBar(percentage) {
+                            const progressBar = document.querySelector(".progress-bar");
+                            progressBar.style.width = percentage + "%";
+                            progressBar.setAttribute('aria-valuenow', percentage);
+                            document.querySelector(".ml-4").innerText = Math.round(percentage) + "%";
+                        }
+
+                        const completionPercentage = calculateProfileCompletion(data.data);
+                        updateProgressBar(completionPercentage);
                     })
                     .catch(error => {
                         console.error("There was a problem fetching user data:", error);
                     });
             }
 
-            // Gọi hàm để load dữ liệu với ID người dùng cụ thể
-            const userId = localStorage.getItem("user_id"); // Ví dụ ID người dùng
+            const userId = localStorage.getItem("user_id");
             loadUserData(userId);
+            function joinedGroup(userId) {
+                const url = `http://localhost:8080/api/member/group-join-id/${userId}`;
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: AUTH_HEADER,
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Không thể lấy danh sách nhóm người dùng, Mã trạng thái: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const groupIds = data.data;
+                        const groupCount = groupIds ? groupIds.length : 0;
+                        console.log(`Người dùng đã tham gia ${groupCount} nhóm`);
+
+                        document.getElementById("joinedGroupCount").innerText = `Bạn đã tham gia: ` + groupCount + ` nhóm`;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy danh sách nhóm người dùng:', error);
+                    });
+            }
+
+            function userCreatedGroups(userId) {
+                const url = `http://localhost:8080/api/member/user-create-id/${userId}`;
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: AUTH_HEADER,
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Không thể lấy danh sách nhóm đã tạo, Mã trạng thái: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const groupIds = data.data;
+                        const groupCount = groupIds ? groupIds.length : 0;
+
+                        document.getElementById("createdGroupCount").innerText = `Bạn đã tạo: ` + groupCount + ` nhóm`;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy nhóm đã tạo của người dùng:', error);
+                    });
+            }
+
+            joinedGroup(userId);
+            userCreatedGroups(userId);
         });
 
 

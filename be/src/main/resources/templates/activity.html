@@ -68,7 +68,7 @@
                                     <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
-                                
+
                             </thead>
                             <tbody>
                                 <tr th:each="activity , iterStat : ${activityList}">
@@ -83,7 +83,7 @@
                                                 th:attr="data-id=${activity.id}">
                                                 <i class="tio-edit mr-1"></i>Edit
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger" id="delete"
+                                            <button class="btn btn-sm btn-outline-danger" id="deleteActivity"
                                                 th:attr="data-id=${activity.id}">
                                                 <i class="tio-delete-outlined mr-1"></i>Delete
                                             </button>
@@ -97,6 +97,8 @@
                 </div>
             </div>
         </div>
+        <div th:replace="fragments/activities/addActivityModal"></div>
+        <div th:replace="fragments/activities/deleteActivityModal"></div>
 
 
     </div>
@@ -178,6 +180,52 @@
         });
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
+        });
+
+        // add activity
+        document.getElementById("addActivity").addEventListener("click", function () {
+            $('#addActivityModal').modal('show');
+        });
+
+
+
+        //delete ativity
+        document.querySelectorAll('#deleteActivity').forEach(button => {
+            button.addEventListener("click", function () {
+                const activity_id = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("deleteActivityModal"));
+                console.log(activity_id);
+                modal.show();
+                const confirmButton = document.getElementById("confirmDeleteActivity");
+
+                const newConfirmButton = confirmButton.cloneNode(true);
+                confirmButton.replaceWith(newConfirmButton);
+
+                document.getElementById("confirmDeleteActivity").addEventListener("click", () => {
+                    fetch(`http://localhost:8080/activities/${activity_id}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log(data);
+
+                            alert("Xóa hoạt động thành công");
+                            modal.hide();
+
+                            // const activityRow = button.closest('tr');
+                            // if (activityRow) {
+                            //     activityRow.remove();
+                            // }
+                            // window.location.reload();
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        })
+                })
+            })
         });
 
     </script>

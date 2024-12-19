@@ -273,10 +273,23 @@
             // Lấy dữ liệu từ form
             const groupData = {
                 coverPhoto: document.getElementById("groupCoverPhoto").files[0],
-                name: document.getElementById("groupName").value,
-                bio: document.getElementById("groupBio").value,
-                status: document.getElementById("groupStatus").value
+                name: document.getElementById("groupName").value.trim(),  // Loại bỏ khoảng trắng thừa
+                bio: document.getElementById("groupBio").value.trim(),
+                status: document.getElementById("groupStatus").value.trim()
             };
+
+            // Kiểm tra tên nhóm không chứa ký tự đặc biệt
+            const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
+            if (!nameRegex.test(groupData.name)) {
+                alert("Tên nhóm không được chứa ký tự đặc biệt. Vui lòng nhập lại!");
+                return;
+            }
+
+            // Kiểm tra độ dài tối thiểu
+            if (groupData.name.length < 3) {
+                alert("Tên nhóm phải có ít nhất 3 ký tự!");
+                return;
+            }
 
             // Kiểm tra xem các trường bắt buộc có bị bỏ trống không
             if (!groupData.name || !groupData.status || !groupData.bio) {

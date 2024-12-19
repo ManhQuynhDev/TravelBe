@@ -62,7 +62,7 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th>Nội dung</th>
+                                    <th style="min-width: 150px;">Nội dung</th>
                                     <th>Media</th>
                                     <th>Thời gian tạo</th>
                                     <th>Trạng thái</th>
@@ -87,13 +87,15 @@
                                             style="max-width: 70px; height: auto; margin-right: 10px;"
                                             onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                     </td>
-                                    <td class="text-start" th:text="${story.create_time}">Created Time</td>
+                                    <td class="text-start" th:text="${story.create_time.substring(0, 19)}">Created Time
+                                    </td>
                                     <td class="text-start" th:text="${story.status}">Status</td>
                                     <td class="text-start">
                                         <div class="avatar-wrapper" style="display: flex; align-items: center;">
 
                                             <img th:if="${story.avatar != null}" th:src="${story.avatar}" alt="Avatar"
-                                                class="rounded-circle mr-2" style="width: 40px; height: 40px;">
+                                                class="rounded-circle mr-2"
+                                                style="width: 40px; height: 40px;border-radius: 50%;object-fit: cover">
 
 
                                             <div th:if="${story.avatar == null}" class="avatar-text rounded-circle mr-2"
@@ -218,22 +220,24 @@
                     const story = data.data;
 
                     const storyMediaImg = document.getElementById('storyMediaImgModal');
-                    storyMediaImg.src = story.url || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
+                    storyMediaImg.src = story.mediaUrl || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
 
                     storyMediaImg.onerror = function () {
-                        storyMediaImg.src = '/assets/img/anhload.jpg'; // Ảnh mặc định khi có lỗi
+                        storyMediaImg.src = '/assets/img/anhload.jpg';
                     };
 
                     document.getElementById('storyContentDetails').innerText = story.content || '';
-                    document.getElementById('storyCreatedTimeDetails').innerText = story.create_time || '';
-                    document.getElementById('storyHashtagDetails').innerText = story.hastag || '';
+                    const createdTime = story.create_time || '';
+                    const formattedTime = createdTime.split('.')[0];
+                    document.getElementById('storyCreatedTimeDetails').innerText = formattedTime;
+
                     document.getElementById('storyStatusDetails').innerText = story.status || '';
 
                     const music = document.getElementById("musicDetail");
                     const audioElement = document.getElementById("storyMusicDetails");
                     const noMusicMessage = document.getElementById('noMusicMessage');
-                    if (story.music_url) {
-                        audioElement.src = story.music_url;
+                    if (story.musicUrl) {
+                        audioElement.src = story.musicUrl;
                         audioElement.style.display = 'block';
                         noMusicMessage.style.display = 'none';
                         audioElement.load();
@@ -242,14 +246,36 @@
                         noMusicMessage.style.display = 'block';
                     }
 
+                    const authorName = story.fullname || 'Không xác định';
+                    document.getElementById('storyAuthorName').innerText = authorName;
+
+                    const authorAvatar = document.getElementById('storyAuthorAvatar');
+                    if (story.avatar) {
+                        authorAvatar.src = story.avatar;
+                        authorAvatar.style.display = 'block';
+                        document.getElementById('authorInitial').style.display = 'none';
+                    } else {
+                        const initial = authorName.charAt(0).toUpperCase();
+                        document.getElementById('authorInitial').innerText = initial;
+                        authorAvatar.style.display = 'none';
+                        document.getElementById('authorInitial').style.display = 'block';
+                    }
+
+                    document.getElementById('reactionCountDetails').innerText = story.reaction_count || 0;
+
+                    document.getElementById('storyLocationDetails').innerText = story.location || 'Chưa có địa chỉ';
+
                     const modal = new bootstrap.Modal(document.getElementById("storyDetailModal"));
                     modal.show();
+                    $('#storyDetailModal').on('hidden.bs.modal', function () {
+                        audioElement.pause();
+                        audioElement.currentTime = 0;
+                    });
                 })
                 .catch(error => {
                     console.error("Failed: ", error);
                 });
         }
-
         // delete story
         document.querySelectorAll('#deleteStory').forEach(button => {
             button.addEventListener("click", function () {
@@ -257,7 +283,14 @@
                 const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
                 modal.show();
 
-                document.getElementById("confirmDeleteBtn").addEventListener("click", () => {
+                const confirmButton = document.getElementById("confirmDeleteBtn");
+                const newConfirmButton = confirmButton.cloneNode(true); 
+                confirmButton.replaceWith(newConfirmButton); 
+
+                const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+                confirmDeleteBtn.removeEventListener("click", deleteStory);
+
+                confirmDeleteBtn.addEventListener("click", function deleteStory() {
                     fetch(`http://localhost:8080/api/stories/${storyId}`, {
                         method: "DELETE",
                         headers: {
@@ -267,32 +300,33 @@
                         .then(res => res.json())
                         .then(data => {
                             if (data.message === "Delete story successfully") {
-                                alert("Delete Successfully");
+                                alert("Xóa story thành công");
                                 modal.hide();
 
                                 const storyRow = button.closest('tr');
                                 if (storyRow) {
                                     storyRow.remove();
-                                    window.location.reload()
+                                    window.location.reload();
                                 }
                             } else {
-                                alert("Failed to delete story");
+                                alert("Xóa story thất bại");
                             }
                         })
                         .catch(error => {
                             console.log(error);
-                        })
-                })
-            })
-        })
+                        });
+                });
+            });
+        });
+
+
         document.getElementById("addStory").addEventListener("click", function () {
             $('#addStoryModal').modal('show');
-            const apiURL = 'http://localhost:8080/locations';
-            const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
+            const apiURL = 'http://localhost:8080/locations?page=0&size=100';
+            // const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
             const token = localStorage.getItem("authToken");
 
             const storyLocation = document.getElementById('storyLocation');
-            // const groupSelect = document.getElementById('groupId');
 
             if (!token) {
                 console.error("No token found in localStorage");
@@ -314,7 +348,7 @@
                         const data = await response.json();
                         console.log("Fetched Locations:", data);
 
-                        storyLocation.innerHTML = '<option value="">Select Location</option>';
+                        storyLocation.innerHTML = '<option value="">Chọn địa điểm</option>';
 
                         if (data.content && Array.isArray(data.content)) {
                             data.content.forEach(location => {
@@ -334,19 +368,40 @@
             }
         });
         document.getElementById('saveStoryButton').addEventListener('click', function () {
-            const content = document.getElementById('storyContent').value;
-            const status = document.getElementById('storyStatus').value;
-            const location = document.getElementById('storyLocation').value;
+            const content = document.getElementById('storyContent').value.trim();
+            const status = document.getElementById('storyStatus').value.trim();
+            const location = document.getElementById('storyLocation').value.trim();
             const mediaFile = document.getElementById('storyMediaInput').files[0];
             const musicFile = document.getElementById('storyMusicFile').files[0];
-            const hastag = document.getElementById('storyHashtag').value;
 
-            if (!mediaFile) {
-                alert('Please select at least one image or video.');
+            // Kiểm tra nội dung
+            if (!content) {
+                alert('Nội dung không được để trống.');
                 return;
             }
+            if (!location) {
+                alert('Location không được để trống.');
+                return;
+            }
+            if (!mediaFile) {
+                alert('Vui lòng chọn ít nhất một hình ảnh hoặc video.');
+                return;
+            }
+
+            const validMediaTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
+            if (!validMediaTypes.includes(mediaFile.type)) {
+                alert('File media không hợp lệ. Chỉ chấp nhận hình ảnh (jpeg, png, gif) hoặc video (mp4, webm).');
+                return;
+            }
+
             if (!musicFile) {
-                alert('Please select a music file.');
+                alert('Vui lòng chọn một file nhạc.');
+                return;
+            }
+
+            const validMusicTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
+            if (!validMusicTypes.includes(musicFile.type)) {
+                alert('File nhạc không hợp lệ. Chỉ chấp nhận các định dạng mp3, wav, và mpeg.');
                 return;
             }
 
@@ -354,13 +409,11 @@
             formData.append('story', JSON.stringify({
                 content: content,
                 status: status,
-                location_id: location,
-                hastag: hastag,
+                location: location,
                 user_id: user_id
             }));
 
             formData.append('mediaUrl', mediaFile);
-
             formData.append('musicFile', musicFile);
 
             fetch('http://localhost:8080/api/stories', {
@@ -372,18 +425,20 @@
             })
                 .then(response => response.json())
                 .then(data => {
-                    alert('Story added successfully!');
-                    $('#addStoryModal').modal('hide'); // Đóng modal sau khi thành công
+                    alert('Thêm Story thành công!');
+                    $('#addStoryModal').modal('hide');
                     window.location.reload();
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Failed to add story.');
+                    console.error('Lỗi:', error);
+                    alert('Thêm Story thất bại.');
                 });
         });
+
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+
 
 
     </script>

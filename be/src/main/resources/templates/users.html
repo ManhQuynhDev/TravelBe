@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Home</title>
+    <title>Quản lý người dùng</title>
     <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
@@ -176,7 +176,7 @@
                                                 style="width: 40px; height: 40px;">
                                                 <img th:if="${user.avatarUrl != null && !user.avatarUrl.isEmpty()}"
                                                     th:src="${user.avatarUrl}" alt="Avatar" class="rounded-circle mr-2"
-                                                    style="width: 40px; height: 40px;">
+                                                    style="width: 40px; height: 40px;border-radius: 50%;object-fit: cover">
                                                 <div th:if="${user.avatarUrl == null || user.avatarUrl.isEmpty()}"
                                                     class="avatar-text"
                                                     style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
