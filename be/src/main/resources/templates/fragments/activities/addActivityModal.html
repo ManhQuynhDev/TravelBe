@@ -1,0 +1,182 @@
+<div class="modal fade" id="addActivityModal" tabindex="-1" aria-labelledby="addActivityModalTitle"
+    style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="addActivityModalTitle" class="modal-title">Thêm Hoạt Động</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Đóng">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-content" id="addActivityModalTabContent">
+                    <div class="tab-pane fade active show" id="addActivity" role="tabpanel">
+                        <!-- user_id -->
+                        <div class="row form-group">
+                            <label for="userId" class="col-sm-3 col-form-label input-label">User ID</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="userId" placeholder="Nhập User ID">
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="planId" class="col-sm-3 col-form-label input-label">Plan ID</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="planId">
+                                    <option value="" disabled selected>Chọn Plan</option>
+                                    <!-- Options sẽ được thêm động bằng JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- name -->
+                        <div class="row form-group">
+                            <label for="activityName" class="col-sm-3 col-form-label input-label">Tên Hoạt Động</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="activityName"
+                                    placeholder="Nhập tên hoạt động">
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label for="locationId" class="col-sm-3 col-form-label input-label">Location ID</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="locationSelect">
+                                    <option value="" disabled selected>Chọn Location</option>
+                                    <!-- Options sẽ được thêm động bằng JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- time -->
+                        <div class="row form-group">
+                            <label for="activityTime" class="col-sm-3 col-form-label input-label">Thời Gian</label>
+                            <div class="col-sm-9">
+                                <input type="datetime-local" class="form-control" id="activityTime">
+                            </div>
+                        </div>
+
+                        <!-- status -->
+                        <div class="row form-group">
+                            <label for="activityStatus" class="col-sm-3 col-form-label input-label">Trạng Thái</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="activityStatus">
+                                    <option value="PENDING">Chưa bắt đầu</option>
+                                    <option value="ONGOING">Đang diễn ra</option>
+                                    <option value="COMPLETED">Đã hoàn thành</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- description -->
+                        <div class="row form-group">
+                            <label for="activityDescription" class="col-sm-3 col-form-label input-label">Mô Tả</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control" id="activityDescription" rows="3"
+                                    placeholder="Nhập mô tả hoạt động"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- cost -->
+                        <div class="row form-group">
+                            <label for="activityCost" class="col-sm-3 col-form-label input-label">Chi Phí</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" id="activityCost" placeholder="Nhập chi phí"
+                                    min="0" step="0.01">
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal"
+                                aria-label="Đóng">Đóng</button>
+                            <button type="button" class="btn btn-primary" id="saveActivityButton">Lưu Hoạt Động</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const apiURL = 'http://localhost:8080/locations?page=0&size=100';
+    const planApiURL = 'http://localhost:8080/api/travel-plan?page=0&size=100';
+    const token = localStorage.getItem("authToken");
+
+    const locationSelect = document.getElementById('locationSelect');
+    const planSelect = document.getElementById('planId');
+
+    if (!token) {
+        console.error("Không tìm thấy token trong localStorage");
+    } else {
+        // Fetch Locations
+        async function fetchLocations() {
+            try {
+                const response = await fetch(apiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Danh sách Vị Trí:", data);
+
+                locationSelect.innerHTML = '<option value="">Chọn Vị Trí</option>';
+
+                if (data.content && Array.isArray(data.content)) {
+                    data.content.forEach(location => {
+                        const option = document.createElement('option');
+                        option.value = location.id;
+                        option.textContent = location.address;
+                        locationSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu vị trí:', error);
+            }
+        }
+
+        // Fetch Plans
+        async function fetchPlans() {
+            try {
+                const response = await fetch(planApiURL, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Danh sách Kế Hoạch:", data);
+
+                planSelect.innerHTML = '<option value="">Chọn Kế Hoạch</option>';
+
+                if (data.content && Array.isArray(data.content)) {
+                    data.content.forEach(plan => {
+                        const option = document.createElement('option');
+                        option.value = plan.planId; // Giả sử key cho ID là 'planId'
+                        option.textContent = plan.plan_name; // Giả sử key cho tên là 'plan_name'
+                        planSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu kế hoạch:', error);
+            }
+        }
+
+        fetchLocations();
+        fetchPlans();
+    }
+</script>

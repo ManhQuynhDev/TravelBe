@@ -45,24 +45,21 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div class="content container-fluid">
-            <!-- Page Header -->
             <div class="page-header">
                 <div class="row align-items-end">
                     <div class="col-sm mb-2 mb-sm-0">
 
-                        <h1 class="page-header-title">Settings</h1>
+                        <h1 class="page-header-title">Cài đặt</h1>
                     </div>
 
                     <div class="col-sm-auto">
                         <a class="btn btn-primary" th:href="@{/web-server/profile}">
-                            <i class="tio-user mr-1"></i> My profile
+                            <i class="tio-user mr-1"></i>Hồ sơ của tôi
                         </a>
                     </div>
 
                 </div>
-                <!-- End Row -->
             </div>
-            <!-- End Page Header -->
 
             <div class="row">
                 <div class="col-lg-3">
@@ -99,12 +96,12 @@
                          }'>
                                 <li class="nav-item">
                                     <a class="nav-link active" href="#contents">
-                                        <i class="tio-user-outlined nav-icon"></i> Basic information
+                                        <i class="tio-user-outlined nav-icon"></i> Thông tin cơ bản
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="#passwordSection">
-                                        <i class="tio-lock-outlined nav-icon"></i> Password
+                                        <i class="tio-lock-outlined nav-icon"></i> Mật khẩu
                                     </a>
                                 </li>
                             </ul>
@@ -148,152 +145,126 @@
                             </label>
 
                             <div class="card-header">
-                                <h2 class="card-title h4">Basic information</h2>
+                                <h2 class="card-title h4">Thông tin cơ bản</h2>
                             </div>
 
                             <div class="card-body">
-                                <form id="userForm">
-                                    <div class="row form-group">
-                                        <label for="fullNameInput" class="col-sm-3 col-form-label input-label">Full
-                                            Name</label>
-                                        <div class="col-sm-9">
-                                            <div class="input-group input-group-sm-down-break">
-                                                <input type="text" class="form-control" id="fullNameInput"
-                                                    placeholder="Your Full Name">
-                                            </div>
+                                <div class="row form-group">
+                                    <label for="fullNameInput" class="col-sm-3 col-form-label input-label">Họ và
+                                        Tên</label>
+                                    <div class="col-sm-9">
+                                        <div class="input-group input-group-sm-down-break">
+                                            <input type="text" class="form-control" id="fullNameInput"
+                                                placeholder="Họ và Tên của bạn">
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div class="row form-group">
-                                        <label for="emailInput"
-                                            class="col-sm-3 col-form-label input-label">Email</label>
-                                        <div class="col-sm-9">
-                                            <input type="email" class="form-control" id="emailInput" placeholder="Email"
-                                                readonly>
-                                        </div>
+                                <div class="row form-group">
+                                    <label for="emailInput" class="col-sm-3 col-form-label input-label">Email</label>
+                                    <div class="col-sm-9">
+                                        <input type="email" class="form-control" id="emailInput" placeholder="Email"
+                                            readonly>
                                     </div>
+                                </div>
 
-                                    <div class="row form-group">
-                                        <label for="phoneInput"
-                                            class="col-sm-3 col-form-label input-label">Phone</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="phoneInput"
-                                                placeholder="+x(xxx)xxx-xx-xx">
-                                        </div>
+                                <div class="row form-group">
+                                    <label for="phoneInput" class="col-sm-3 col-form-label input-label">Số điện
+                                        thoại</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="phoneInput"
+                                            placeholder="+x(xxx)xxx-xx-xx">
                                     </div>
+                                </div>
 
-                                    <div class="row form-group">
-                                        <label for="dobInput" class="col-sm-3 col-form-label input-label">Date of
-                                            Birth</label>
-                                        <div class="col-sm-9">
-                                            <input type="date" class="form-control" id="dobInput">
-                                        </div>
+                                <div class="row form-group">
+                                    <label for="dobInput" class="col-sm-3 col-form-label input-label">Ngày sinh</label>
+                                    <div class="col-sm-9">
+                                        <input type="date" class="form-control" id="dobInput">
                                     </div>
+                                </div>
 
-                                    <div class="row form-group">
-                                        <label for="bioInput" class="col-sm-3 col-form-label input-label">Bio</label>
-                                        <div class="col-sm-9">
-                                            <textarea class="form-control" id="bioInput" rows="3"></textarea>
-                                        </div>
+                                <div class="row form-group">
+                                    <label for="bioInput" class="col-sm-3 col-form-label input-label">Tiểu sử</label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" id="bioInput" rows="3"></textarea>
                                     </div>
-                                    <div class="d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary">Save changes</button>
-                                    </div>
-                                </form>
-
-
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary" id="saveChangeProfile">Lưu</button>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                     <div id="passwordSection" class="card mb-3 mb-lg-5">
                         <div class="card-header">
-                            <h4 class="card-title">Change your password</h4>
+                            <h4 class="card-title">Thay đổi mật khẩu</h4>
                         </div>
 
-                        <!-- Body -->
                         <div class="card-body">
-                            <!-- Form -->
-                            <form id="changePasswordForm">
-                                <!-- Form Group -->
-                                <div class="row form-group">
-                                    <label for="currentPasswordLabel"
-                                        class="col-sm-3 col-form-label input-label">Current password</label>
+                            <div class="row form-group">
+                                <label for="currentPasswordLabel" class="col-sm-3 col-form-label input-label">Mật
+                                    khẩu hiện tại</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="form-control" name="currentPassword"
+                                        id="currentPasswordLabel" placeholder="Nhập mật khẩu hiện tại"
+                                        aria-label="Nhập mật khẩu hiện tại">
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label for="newPassword" class="col-sm-3 col-form-label input-label">Mật khẩu
+                                    mới</label>
+                                <div class="col-sm-9">
+                                    <input type="password" class="js-pwstrength form-control" name="newPassword"
+                                        id="newPassword" placeholder="Nhập mật khẩu mới" aria-label="Nhập mật khẩu mới"
+                                        data-hs-pwstrength-options='{
+                                           "ui": {
+                                             "container": "#changePasswordForm",
+                                             "viewports": {
+                                               "progress": "#passwordStrengthProgress",
+                                               "verdict": "#passwordStrengthVerdict"
+                                             }
+                                           }
+                                         }'>
 
-                                    <div class="col-sm-9">
-                                        <input type="password" class="form-control" name="currentPassword"
-                                            id="currentPasswordLabel" placeholder="Enter current password"
-                                            aria-label="Enter current password">
+                                    <p id="passwordStrengthVerdict" class="form-text mb-2"></p>
+                                    <div id="passwordStrengthProgress"></div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <label for="confirmNewPasswordLabel" class="col-sm-3 col-form-label input-label">Xác
+                                    nhận mật khẩu mới</label>
+                                <div class="col-sm-9">
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" name="confirmNewPassword"
+                                            id="confirmNewPasswordLabel" placeholder="Xác nhận mật khẩu mới"
+                                            aria-label="Xác nhận mật khẩu mới">
                                     </div>
+
+                                    <h5>Yêu cầu mật khẩu:</h5>
+
+                                    <p class="font-size-sm mb-2">Đảm bảo rằng các yêu cầu sau được đáp ứng:</p>
+
+                                    <ul class="font-size-sm">
+                                        <li>Ít nhất 8 ký tự - càng dài càng tốt</li>
+                                        <li>Ít nhất một ký tự viết thường</li>
+                                        <li>Ít nhất một ký tự viết hoa</li>
+                                        <li>Ít nhất một ký tự số, ký hiệu hoặc ký tự trắng</li>
+                                    </ul>
                                 </div>
-                                <!-- End Form Group -->
-
-                                <!-- Form Group -->
-                                <div class="row form-group">
-                                    <label for="newPassword" class="col-sm-3 col-form-label input-label">New
-                                        password</label>
-
-                                    <div class="col-sm-9">
-                                        <input type="password" class="js-pwstrength form-control" name="newPassword"
-                                            id="newPassword" placeholder="Enter new password"
-                                            aria-label="Enter new password" data-hs-pwstrength-options='{
-                                   "ui": {
-                                     "container": "#changePasswordForm",
-                                     "viewports": {
-                                       "progress": "#passwordStrengthProgress",
-                                       "verdict": "#passwordStrengthVerdict"
-                                     }
-                                   }
-                                 }'>
-
-                                        <p id="passwordStrengthVerdict" class="form-text mb-2">
-
-                                        <div id="passwordStrengthProgress"></div>
-                                    </div>
-                                </div>
-                                <!-- End Form Group -->
-
-                                <!-- Form Group -->
-                                <div class="row form-group">
-                                    <label for="confirmNewPasswordLabel"
-                                        class="col-sm-3 col-form-label input-label">Confirm new password</label>
-
-                                    <div class="col-sm-9">
-                                        <div class="mb-3">
-                                            <input type="password" class="form-control" name="confirmNewPassword"
-                                                id="confirmNewPasswordLabel" placeholder="Confirm your new password"
-                                                aria-label="Confirm your new password">
-                                        </div>
-
-                                        <h5>Password requirements:</h5>
-
-                                        <p class="font-size-sm mb-2">Ensure that these requirements are met:</p>
-
-                                        <ul class="font-size-sm">
-                                            <li>Minimum 8 characters long - the more, the better</li>
-                                            <li>At least one lowercase character</li>
-                                            <li>At least one uppercase character</li>
-                                            <li>At least one number, symbol, or whitespace character</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- End Form Group -->
-
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                                </div>
-                            </form>
-                            <!-- End Form -->
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary" id="savePass">Lưu</button>
+                            </div>
                         </div>
-                        <!-- End Body -->
                     </div>
+
                     <div id="stickyBlockEndPoint"></div>
                 </div>
             </div>
-            <!-- End Row -->
         </div>
-        <!-- End Content -->
 
-        <!-- Footer -->
 
 
     </div>
@@ -351,45 +322,217 @@
             $('.js-pwstrength').each(function () {
                 var pwstrength = $.HSCore.components.HSPWStrength.init($(this));
             });
-            // Hàm lấy dữ liệu người dùng từ API bằng ID
-            function loadUserData(userId) {
-                fetch(`http://localhost:8080/onboarding/users/${userId}`, {
-                    method: 'GET',
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-                }) // Thay URL bằng endpoint của bạn
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Network response was not ok " + response.statusText);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Gán dữ liệu vào form
-                        console.log("API Response:", data);
-                        document.getElementById("fullNameInput").value = data.data.fullname || "";
-                        document.getElementById("emailInput").value = data.data.email || "";
-                        document.getElementById("phoneInput").value = data.data.phoneNumber || "";
-                        document.getElementById("dobInput").value = data.data.dob ? data.data.dob.split('T')[0] : "";
-                        document.getElementById("bioInput").value = data.data.bio || "";
-                        const profileImg = document.getElementById("profileImg");
 
-                        if (data.data.avatarUrl) {
-                            profileImg.src = data.data.avatarUrl;  // Nếu có ảnh, sử dụng ảnh từ API
-                        } else {
-                            // Nếu không có ảnh, lấy chữ cái đầu tiên của tên
-                            const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : '';
-                            profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`; // Ảnh mặc định với chữ cái đầu tiên
-                        }
-                    })
-                    .catch(error => {
-                        console.error("There was a problem fetching user data:", error);
-                    });
+        });
+        let initialData = {};
+
+        function loadUserData(userId) {
+            fetch(`http://localhost:8080/onboarding/users/${userId}`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const formattedDob = data.data.dob;
+                    initialData = {
+                        fullname: data.data.fullname || "",
+                        email: data.data.email || "",
+                        phoneNumber: data.data.phoneNumber || "",
+                        dob: formattedDob,
+                        bio: data.data.bio || "",
+                        avatarUrl: data.data.avatarUrl || ""
+                    };
+                    document.getElementById("fullNameInput").value = data.data.fullname || "";
+                    document.getElementById("emailInput").value = data.data.email || "";
+                    document.getElementById("phoneInput").value = data.data.phoneNumber || "";
+                    document.getElementById("dobInput").value = formattedDob;
+                    document.getElementById("bioInput").value = data.data.bio || "";
+
+                    const profileImg = document.getElementById("profileImg");
+
+                    if (initialData.avatarUrl) {
+                        profileImg.src = initialData.avatarUrl;
+                    } else {
+                        const firstLetter = initialData.fullname.charAt(0).toUpperCase();
+                        profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`;
+                    }
+
+                    toggleSaveButton();
+                })
+                .catch(error => {
+                    console.error("There was a problem fetching user data:", error);
+                });
+        }
+
+        function checkForChanges() {
+            const phoneNumber = document.getElementById('phoneInput').value;
+            const dob = document.getElementById('dobInput').value;
+            const bio = document.getElementById('bioInput').value;
+            const avatarFile = document.getElementById('avatarUploader').files[0];
+
+            const isChanged = phoneNumber !== initialData.phoneNumber ||
+                dob !== initialData.dob ||
+                bio !== initialData.bio ||
+                (avatarFile ? avatarFile.name !== initialData.avatarUrl : false);
+
+            toggleSaveButton(isChanged);
+        }
+
+        function toggleSaveButton(isChanged = false) {
+            const saveButton = document.getElementById("saveChangeProfile");
+            saveButton.disabled = !isChanged;
+        }
+
+        document.getElementById('phoneInput').addEventListener('input', checkForChanges);
+        document.getElementById('dobInput').addEventListener('input', checkForChanges);
+        document.getElementById('bioInput').addEventListener('input', checkForChanges);
+        document.getElementById('avatarUploader').addEventListener('change', checkForChanges);
+
+        const userId = localStorage.getItem("user_id");
+        loadUserData(userId);
+
+        document.getElementById('avatarUploader').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+            if (file && validImageTypes.includes(file.type)) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById('profileImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Vui lòng chọn ảnh có định dạng .jpg, .jpeg hoặc .png');
+            }
+        });
+
+        document.getElementById("saveChangeProfile").addEventListener('click', function () {
+            const phoneNumber = document.getElementById('phoneInput').value;
+            const dob = document.getElementById('dobInput').value;
+            const bio = document.getElementById('bioInput').value;
+            const avatarFile = document.getElementById('avatarUploader').files[0];
+
+            const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
+            if (!phoneRegex.test(phoneNumber)) {
+                alert("Vui lòng nhập số điện thoại hợp lệ.");
+                return;
+            }
+            const updateDTO = {
+                phoneNumber: phoneNumber,
+                dob: dob,
+                bio: bio,
+            };
+
+            const formData = new FormData();
+            formData.append("updateDTO", JSON.stringify(updateDTO));
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+            fetch(`http://localhost:8080/onboarding/change-profile/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: formData,
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) {
+                        alert("Cập nhật profile thành công!");
+                        location.reload();
+                    }
+                })
+                .catch(err => {
+                    console.log("Loi" + err);
+                });
+        });
+
+        //change password
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPasswordLabel').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPasswordLabel').value;
+            const savedPassword = localStorage.getItem("savedPassword");
+
+            console.log(savedPassword); // In ra mật khẩu đã lưu để kiểm tra
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                alert('Vui lòng nhập đầy đủ tất cả các trường mật khẩu.');
+                return;
             }
 
-            // Gọi hàm để load dữ liệu với ID người dùng cụ thể
-            const userId = localStorage.getItem("user_id"); // Ví dụ ID người dùng
-            loadUserData(userId);
+            // Kiểm tra xem mật khẩu hiện tại có đúng với mật khẩu đã lưu không
+            if (currentPassword !== savedPassword) {
+                alert('Mật khẩu hiện tại không chính xác.');
+                return;
+            }
+
+            // Kiểm tra xem mật khẩu mới và xác nhận mật khẩu có khớp không
+            if (newPassword !== confirmNewPassword) {
+                alert('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+                return;
+            }
+
+            // Kiểm tra mật khẩu mới có ít nhất 8 ký tự
+            if (newPassword.length < 8) {
+                alert('Mật khẩu mới phải có ít nhất 8 ký tự.');
+                return;
+            }
+
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordPattern.test(newPassword)) {
+                alert('Mật khẩu mới phải chứa ít nhất một ký tự viết hoa, một ký tự viết thường, một số và một ký tự đặc biệt.');
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                alert('Mật khẩu mới không được giống mật khẩu cũ.');
+                return;
+            }
+
+            const data = {
+                email: localStorage.getItem("savedEmail"),
+                password: newPassword
+            };
+            fetch("http://localhost:8080/onboarding/set-password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Mật khẩu đã được thay đổi thành công!');
+
+                    setTimeout(() => {
+                        alert('Vui lòng đăng nhập lại để tiếp tục sử dụng!');
+                        window.location.href = "/web-server/login";
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    alert('Đã xảy ra lỗi khi gửi yêu cầu.');
+                });
+
+
+
+        }
+
+
+        document.getElementById("savePass").addEventListener('click', (e) => {
+            e.preventDefault();
+            changePassword();
         });
+
+
+
+
 
 
     </script>
