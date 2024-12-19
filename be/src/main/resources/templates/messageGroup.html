@@ -22,7 +22,7 @@
         .chat-sidebar {
             border-right: 1px solid #e0e0e0;
             background-color: #ffffff;
-            height: 800px;
+            height: calc(100vh - 65px);
         }
 
         .chat-sidebar-header {
@@ -79,12 +79,14 @@
         .chat-main {
             display: flex;
             flex-direction: column;
-            height: 80vh;
+            height: calc(100vh - 65px);
             background-color: #f9fafe;
         }
 
         .chat-header {
-            padding: 20px;
+            height: 60.32px;
+            padding-left: 20px;
+            padding-right: 20px;
             background-color: #ffffff;
             border-bottom: 1px solid #e0e0e0;
             display: flex;
@@ -98,7 +100,7 @@
         }
 
         .chat-body {
-            height: 710px;
+            min-height: calc(100vh - 215px);
             padding: 10px;
         }
 
@@ -143,7 +145,7 @@
         }
 
         #messageArea {
-            height: 675px;
+            height: calc(100vh - 260px);
             overflow: auto;
             display: flex;
             flex-direction: column;
@@ -379,7 +381,44 @@
     </div>
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
-        <div th:include="fragments/messages/messagePage :: content"></div>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-4 chat-sidebar">
+                    <div class="chat-sidebar-header">
+                        <h5>All Messages</h5>
+                    </div>
+                    <div class="chat-search">
+                        <input type="text" class="form-control" placeholder="Search or start a new chat">
+                    </div>
+
+                    <ul id="managerList" style="padding-inline-start: 0px;"></ul>
+                </div>
+
+                <!-- Chat -->
+                <div class="col-8 chat-main">
+                    <div class="chat-header d-flex justify-content-between align-items-center userInfo">
+                        <h5>Select a chat to start messaging</h5>
+                    </div>
+                    <div class="chat-body">
+                        <p class="text-muted">No chat selected</p>
+                    </div>
+                    <div class="chat-footer">
+                        <input type="text" id="chat-mes" class="form-control" placeholder="Type your message here...">
+
+                        <div class="file-upload-icon-container mr-2">
+                            <label for="fileInput" class="file-icon">
+                                <i class="fas fa-image upload-icon"></i>
+                            </label>
+                            <input type="file" id="fileInput" accept="image/*" />
+                        </div>
+
+
+                        <button class="btn btn-primary" id="btnSubmit">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="notification" class="notification">
@@ -389,6 +428,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="/assets/js/jquery.min.js"></script>
     <script src="/assets/js/socket.io.js"></script>
@@ -497,13 +537,14 @@
 
                         li.innerHTML = `
                             ${manager.avatarUrl ? `
-                                <img src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2" style="width: 50px; height: 50px;">
+                                <img src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle mr-2" style="width: 50px; height: 50px;object-fit: cover">
                             ` : `
-                                <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 40px; height: 40px; font-size: 12px; font-weight: bold; border-radius: 50%;">
-                                    <span>${manager.fullname ? manager.fullname.charAt(0).toUpperCase() : 'N'}</span>
-                                </div>
+                               <div class="avatar-text" style="background-color: #2172dd; color: #fafafa; display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; font-size: 12px; font-weight: bold; border-radius: 50%; text-align: center;">
+    <span>${manager.fullname ? manager.fullname.charAt(0).toUpperCase() : 'N'}</span>
+</div>
+    
                             `}
-                            <div class="chat-info ml-2" style = "width: 100%">
+                            <div class="chat-info ml-2" style = "width: 80%">
                                 <div style="display: flex; justify-content: space-between; width: 100%;">
                                     <h5 style="margin: 0;">${manager.fullname}</h5>
                                     <span style="margin: 0;">${timeDisplay}</span>
@@ -855,7 +896,7 @@
 
             function displayMessage(message) {
                 console.log(message);
-                
+
                 let imageElement = '';
                 if (message.mediaUrl) {
                     imageElement = `<img src="${message.mediaUrl}" alt="User Image" class="message-image mt-3" />`;

@@ -166,7 +166,7 @@
                     localStorage.setItem('userRole', userRole);
 
                     if (userRole === "ADMIN" || userRole === "MANAGER") {
-                        alert("Đăng nhập thành công!");
+                        // alert("Đăng nhập thành công!");
                         window.location.href = '/web-server/';
                     } else {
                         throw new Error("Bạn không có quyền truy cập.");
