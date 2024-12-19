@@ -185,10 +185,11 @@ public class CommentService {
         comment.setFullname((String) result[2]);
         comment.setAvatar((String) result[3]);
         comment.setContent((String) result[4]);
-        comment.setPostId(result[5] != null ? ((Number) result[5]).intValue() : null);
-        comment.setShareId(result[6] != null ? ((Number) result[6]).intValue() : null);
-        comment.setCreate_time((String) result[7]);
-        comment.setReaction_count(((Number) result[8]).intValue());
+        comment.setUrl((String) result[5]);
+        comment.setPostId(result[6] != null ? ((Number) result[6]).intValue() : null);
+        comment.setShareId(result[7] != null ? ((Number) result[7]).intValue() : null);
+        comment.setCreate_time((String) result[8]);
+        comment.setReaction_count(((Number) result[9]).intValue());
         return comment;
     }
 
@@ -213,11 +214,12 @@ public class CommentService {
             comment.setFullname((String) row[2]);
             comment.setAvatar((String) row[3]);
             comment.setContent((String) row[4]);
-            comment.setPostId(row[5] != null ? ((Number) row[5]).intValue() : null);
-            comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
-            comment.setCreate_time((String) row[7]);    
-            comment.setReaction_count(((Number) row[8]).intValue());
-            comment.setUser_reaction_type((String) row[9]);
+            comment.setUrl((String) row[5]);
+            comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
+            comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
+            comment.setCreate_time((String) row[8]);    
+            comment.setReaction_count(((Number) row[9]).intValue());
+            comment.setUser_reaction_type((String) row[10]);
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
@@ -229,9 +231,10 @@ public class CommentService {
                         reply.setFullname((String) r[3]);
                         reply.setAvatar((String) r[4]);
                         reply.setContent((String) r[5]);
-                        reply.setCreate_time((String) r[6]);
-                        reply.setReaction_count(((Number) r[7]).intValue());
-                        reply.setUser_reaction_type((String) r[8]);
+                        reply.setUrl((String) r[6]);
+                        reply.setCreate_time((String) r[7]);
+                        reply.setReaction_count(((Number) r[8]).intValue());
+                        reply.setUser_reaction_type((String) r[9]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
 
                         List<Object[]> rawReplys = replyToReplyRepositoty
@@ -290,11 +293,12 @@ public class CommentService {
             comment.setFullname((String) row[2]);
             comment.setAvatar((String) row[3]);
             comment.setContent((String) row[4]);
-            comment.setPostId(row[5] != null ? ((Number) row[5]).intValue() : null);
-            comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
-            comment.setCreate_time((String) row[7]);
-            comment.setReaction_count(((Number) row[8]).intValue());
-            comment.setUser_reaction_type((String) row[9]);
+            comment.setUrl((String) row[5]);
+            comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
+            comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
+            comment.setCreate_time((String) row[8]);    
+            comment.setReaction_count(((Number) row[9]).intValue());
+            comment.setUser_reaction_type((String) row[10]);
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
@@ -306,8 +310,9 @@ public class CommentService {
                         reply.setFullname((String) r[3]);
                         reply.setAvatar((String) r[4]);
                         reply.setContent((String) r[5]);
-                        reply.setCreate_time((String) r[6]);
-                        reply.setReaction_count(((Number) r[7]).intValue());
+                        reply.setUrl((String) r[6]);
+                        reply.setCreate_time((String) r[8]);
+                        reply.setReaction_count(((Number) r[8]).intValue());
 
                         // Fetch reply-to-reply data
                         List<Object[]> rawReplys = replyToReplyRepositoty

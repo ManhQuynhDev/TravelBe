@@ -18,6 +18,7 @@ public class CommentResponseDTO {
     private String fullname;
     private String avatar;
     private String content;
+    private String url;
     private Integer postId;
     private Integer shareId; 
     private String create_time;

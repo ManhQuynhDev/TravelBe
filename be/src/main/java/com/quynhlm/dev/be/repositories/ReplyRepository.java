@@ -41,6 +41,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
                 u.fullname,
                 u.avatar_url as avatar,
                 r.content,
+                r.url,
                 r.create_time,
                 COUNT(DISTINCT reaction.id) AS reaction_count,
                 MAX(CASE WHEN reaction.user_id = :userId THEN reaction.type ELSE NULL END) AS user_reaction_type
