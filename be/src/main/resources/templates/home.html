@@ -9,6 +9,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+    <style>
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            /* Cho phép cuộn ngang khi cần thiết */
+            -webkit-overflow-scrolling: touch;
+            /* Tạo hiệu ứng cuộn mượt trên thiết bị di động */
+            margin-bottom: 15px;
+            /* Thêm khoảng cách dưới để tránh bị dính vào phần tử dưới */
+        }
+
+        #modernTable {
+            width: 100%;
+            /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+
+        }
+
+        #modernTable th,
+        #modernTable td {
+            white-space: nowrap;
+            /* Ngăn các ô trong bảng xuống hàng */
+            overflow: hidden;
+            /* Ẩn nội dung thừa nếu có */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm nếu nội dung bị cắt */
+        }
+    </style>
 </head>
 
 <body>
@@ -51,15 +79,14 @@
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
-                            <h6 class="card-subtitle">Total Users</h6>
+                            <h6 class="card-subtitle">Tổng Số Người Dùng</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
                                     <span class="card-title h2" th:text="${userCount}">72,540</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-success">
-                                <i class="tio-trending-up"></i>5%</span>
-                            <span class="text-body font-size-sm ml-1">from last month</span>
+                            <div id="growthInfo">
+                            </div>
                         </div>
                     </a>
                 </div>
@@ -68,7 +95,7 @@
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
-                            <h6 class="card-subtitle">Total Managers</h6>
+                            <h6 class="card-subtitle">Tổng Số Quản Trị Viên</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
                                     <span class="card-title h2" th:text="${managerCount}">25</span>
@@ -76,14 +103,14 @@
                             </div>
                             <span class="badge badge-soft-info">
                                 <i class="tio-trending-up"></i>13%</span>
-                            <span class="text-body font-size-sm ml-1">from last week</span>
+                            <span class="text-body font-size-sm ml-1">so với tuần trước</span>
                         </div>
                     </a>
                 </div>
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
-                            <h6 class="card-subtitle">Total Groups</h6>
+                            <h6 class="card-subtitle">Tổng Số Nhóm</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
                                     <span class="card-title h2" th:text="${groupCount}">10</span>
@@ -91,7 +118,7 @@
                             </div>
                             <span class="badge badge-soft-warning">
                                 <i class="tio-trending-up"></i>5%</span>
-                            <span class="text-body font-size-sm ml-1">from last month</span>
+                            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
                         </div>
                     </a>
                 </div>
@@ -100,15 +127,15 @@
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
-                            <h6 class="card-subtitle">Total Posts</h6>
+                            <h6 class="card-subtitle">Tổng Số Bài Viết</h6>
                             <div class="row align-items-center gx-2 mb-1">
                                 <div class="col-6">
-                                    <span class="card-title h2">14</span>
+                                    <span class="card-title h2" th:text="${postCount}">14</span>
                                 </div>
                             </div>
                             <span class="badge badge-soft-danger">
                                 <i class="tio-trending-down"></i>5%</span>
-                            <span class="text-body font-size-sm ml-1">from last month</span>
+                            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
                         </div>
                     </a>
                 </div>
@@ -121,7 +148,7 @@
                 <div class="col-md-12 col-lg-8">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <h4 class="text-center">Growth Over Time</h4>
+                            <h4 class="text-center">Tăng Trưởng Theo Thời Gian</h4>
                             <canvas id="growthChart"></canvas>
                         </div>
                     </div>
@@ -129,15 +156,15 @@
                 <div class="col-lg-4 mb-4">
                     <div class="card shadow-sm">
                         <div class="card-header bg-primary text-white text-center">
-                            <h5 class="card-title mb-0">Top 5 Check-in Locations in Vietnam</h5>
+                            <h5 class="card-title mb-0">Top 5 Địa Điểm Check-in Tại Việt Nam</h5>
                         </div>
                         <div class="card-body p-0">
                             <table class="table table-striped mb-0">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">Rank</th>
-                                        <th scope="col">Location</th>
-                                        <th scope="col">Check-ins</th>
+                                        <th scope="col">Hạng</th>
+                                        <th scope="col">Địa điểm</th>
+                                        <th scope="col">Số Lượng Check-in</th>
                                     </tr>
                                 </thead>
                                 <tbody id="top5CheckinList">
@@ -154,81 +181,21 @@
                 <div class="col-lg-8 mb-4">
                     <div class="card shadow-sm">
                         <div class="card-body">
-                            <div class="col-12">
-                                <h4>Top Active Groups</h4>
-                                <table class="table table-hover">
+                            <div class="col-12 table-responsive">
+                                <h4>Nhóm Hoạt Động Nhiều Nhất</h4>
+                                <table id="modernTable" class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Image</th>
-                                            <th>Group Name</th>
-                                            <th>Status</th>
-                                            <th>Admin</th>
-                                            <th>Created At</th>
-                                            <th>Actions</th>
+                                            <th>Ảnh</th>
+                                            <th>Tên Nhóm</th>
+                                            <th>Quản Trị Viên</th>
+                                            <th>Thành Viên</th>
+                                            <th>Hành Động</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
-                                                    class="img-fluid rounded-circle">
-                                            </td>
-                                            <td>Nature Lovers</td>
-                                            <td>Active</td>
-                                            <td>Tống Doanh Chính</td>
-                                            <td>2024-11-29 14:08:22.943</td>
-                                            <td>
-                                                <a href="#" class="btn btn-info btn-sm">View</a>
-                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
-                                                    class="img-fluid rounded-circle">
-                                            </td>
-                                            <td>Foodies United</td>
-                                            <td>Active</td>
-                                            <td>112</td>
-                                            <td>2024-11-29 14:07:47.674</td>
-                                            <td>
-                                                <a href="#" class="btn btn-info btn-sm">View</a>
-                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
-                                                    class="img-fluid rounded-circle">
-                                            </td>
-                                            <td>Foodies United</td>
-                                            <td>Active</td>
-                                            <td>Tống Doanh Chính</td>
-                                            <td>2024-11-29 14:07:47.674</td>
-                                            <td>
-                                                <a href="#" class="btn btn-info btn-sm">View</a>
-                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>4</td>
-                                            <td>
-                                                <img src="https://via.placeholder.com/50" alt="Nature Lovers"
-                                                    class="img-fluid rounded-circle">
-                                            </td>
-                                            <td>Tech Innovators</td>
-                                            <td>Active</td>
-                                            <td>Lê Mạnh Quỳnh</td>
-                                            <td>2024-11-29 14:07:47.674</td>
-                                            <td>
-                                                <a href="#" class="btn btn-info btn-sm">View</a>
-                                                <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                            </td>
-                                        </tr>
+                                    <tbody id="group-list">
+                                        <!-- Dữ liệu sẽ được thêm vào đây qua JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
@@ -236,75 +203,194 @@
                     </div>
                 </div>
 
+
                 <!-- Cột trái: Bảng Top 5 -->
 
             </div>
 
         </div>
     </div>
+
     <script th:src="@{/assets/js/demo.js}"></script>
     <script th:src="@{/assets/js/vendor.min.js}"></script>
     <script th:src="@{/assets/js/theme.min.js}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('growthChart').getContext('2d');
-        const growthChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], // Tháng
-                datasets: [
-                    {
-                        label: 'Users',
-                        data: [10, 15, 30, 45, 70, 100], // Số lượng người dùng
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        fill: true
-                    },
-                    {
-                        label: 'Posts',
-                        data: [5, 10, 20, 35, 50, 75], // Số lượng bài viết
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        fill: true
-                    },
-                    {
-                        label: 'Groups',
-                        data: [2, 5, 8, 12, 20, 30], // Số lượng nhóm
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Months'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Count'
-                        },
-                        suggestedMax: 120, // Giới hạn trục y cho phù hợp với số lượng thấp
-                    }
-                }
+        const token = localStorage.getItem("authToken")
+        // Fetch dữ liệu từ API
+        fetch('http://localhost:8080/onboarding/statistical_register', {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        })
+            .then(response => response.json()) // Chuyển dữ liệu trả về thành JSON
+            .then(data => {
+                // Lấy danh sách các tháng từ dữ liệu
+                const labels = data.map(item => {
+                    const dateParts = item.date.split("-");
+                    return dateParts[1]; // Lấy phần tháng từ "2024-01", "2024-02", ...
+                });
+
+                // Lấy danh sách số lượng người dùng đăng ký
+                const registerCounts = data.map(item => item.register_count);
+                const month11 = data.find(item => item.date === "2024-11");
+                const month12 = data.find(item => item.date === "2024-12");
+
+                if (month11 && month12) {
+                    const difference = month12.register_count - month11.register_count;
+                    const percentageChange = ((difference / month11.register_count) * 100).toFixed(2);
+
+                    // Cập nhật badge hiển thị tăng/giảm
+                    const growthInfoElement = document.getElementById("growthInfo");
+                    let htmlContent = "";
+
+                    if (difference > 0) {
+                        htmlContent = `
+            <span class="badge badge-soft-success">
+                <i class="tio-trending-up"></i> ${percentageChange}%
+            </span>
+            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+        `;
+                    } else if (difference < 0) {
+                        htmlContent = `
+            <span class="badge badge-soft-danger">
+                <i class="tio-trending-down"></i> ${Math.abs(percentageChange)}%
+            </span>
+            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+        `;
+                    }
+
+                    growthInfoElement.innerHTML = htmlContent;
+                }
+
+                // Tạo cấu trúc dữ liệu cho biểu đồ
+                const chartData = {
+                    labels: labels, // Các tháng
+                    datasets: [
+                        {
+                            label: 'Users',
+                            data: registerCounts, // Số lượng người dùng
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: true
+                        },
+                        {
+                            label: 'Posts',
+                            data: [5, 10, 20, 35, 50, 75], // Số lượng bài viết - bạn cần lấy dữ liệu thực tế từ API
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: true
+                        },
+                        {
+                            label: 'Groups',
+                            data: [2, 5, 8, 12, 20, 30], // Số lượng nhóm - bạn cần lấy dữ liệu thực tế từ API
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true
+                        }
+                    ]
+                };
+
+                // Lấy context của canvas và vẽ biểu đồ
+                const ctx = document.getElementById('growthChart').getContext('2d');
+                const growthChart = new Chart(ctx, {
+                    type: 'line',
+                    data: chartData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Months'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Count'
+                                },
+                                suggestedMax: 120, // Giới hạn trục y cho phù hợp với số lượng thấp
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const token = localStorage.getItem("authToken");
+
+            function logGroupId(event) {
+                const groupId = event.target.getAttribute("data-id");
+
+                // Lưu ID vào localStorage
+                localStorage.setItem('selectedGroupId', groupId);
+
+                // Chuyển hướng đến trang chi tiết nhóm
+                window.location.href = '/web-server/groups';
+            }
+
+            fetch("http://localhost:8080/api/groups/top_member", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+                .then(response => response.json()) // Chuyển dữ liệu thành JSON
+                .then(data => {
+                    const groupList = document.getElementById("group-list"); // Lấy tbody
+
+                    // Lặp qua dữ liệu nhóm và hiển thị trong bảng
+                    data.forEach((group, index) => {
+                        const row = `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <img src="${group.cover_photo || 'https://via.placeholder.com/50'}" alt="${group.group_name}" 
+                                class="img-fluid rounded-3" style="width: 100px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>${group.group_name}</td>
+                        <td>${group.admin_name}</td>
+                        <td>${group.member_count}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm" data-id="${group.groupId}">Chi Tiết</button>
+                        </td>
+                    </tr>
+                `;
+                        groupList.innerHTML += row; // Thêm dòng vào tbody
+                    });
+
+                    // Thêm sự kiện click cho các nút "Chi Tiết"
+                    const buttons = document.querySelectorAll('.btn-info');
+                    buttons.forEach(button => {
+                        button.addEventListener('click', logGroupId);
+                    });
+
+                })
+                .catch(error => {
+                    console.error("Error fetching groups:", error);
+                });
         });
+
+
+
+
+
     </script>
     <script th:src="@{/assets/js/userjs.js}"></script>
 
@@ -348,8 +434,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log(data);
-                    
                     if (data.status && data.data.length > 0) {
                         // Render dữ liệu nếu API trả về thành công
                         const rows = data.data.map((location, index) => `

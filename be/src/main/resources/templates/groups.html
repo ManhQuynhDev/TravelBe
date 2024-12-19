@@ -75,7 +75,7 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
-            <div class="card mt-2">
+            <div class="card mt-3">
                 <div class="card-header">
                     <h5 class="card-title">Danh sách nhóm</h5>
                     <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addUserModal"
@@ -257,6 +257,17 @@
                 });
         }
 
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectedGroupId = localStorage.getItem('selectedGroupId');
+
+            if (selectedGroupId) {
+                // Gọi hàm loadGroupDetails với ID nhóm đã lưu trong localStorage
+                loadGroupDetails(selectedGroupId);
+
+                // Sau khi mở modal, xóa ID khỏi localStorage
+                localStorage.removeItem('selectedGroupId');
+            }
+        });
         async function loadGroupDetails(groupId) {
             try {
                 const response = await fetch(`http://localhost:8080/api/groups/${groupId}`, {
