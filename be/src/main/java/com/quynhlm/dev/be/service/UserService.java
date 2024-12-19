@@ -330,7 +330,7 @@ public class UserService {
                 }
             }
 
-            String nameRegex = "^[A-Za-z][A-Za-z ]*$";
+            String nameRegex = "^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]*$";
             if (!Pattern.matches(nameRegex, changeName)) {
                 throw new MethodNotValidException("Full name must start with a letter and not contain special characters.");
             }

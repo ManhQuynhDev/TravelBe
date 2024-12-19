@@ -65,6 +65,14 @@ public class ActivitiesService {
         activitiesRepository.delete(foundActivity);
     }
 
+    public Activities getAnActivity(int id) throws ActivitiesNotFoundException {
+        Activities foundActivity = activitiesRepository.findActivities(id);
+        if (foundActivity == null) {
+            throw new ActivitiesNotFoundException("Activity with id " + id + " not found. Please try another!");
+        }
+        return foundActivity;
+    }
+
     public void updateActivities(int id, Activities activities)
             throws ActivitiesNotFoundException, ActivitiesExistingException, UnknownException {
 
@@ -95,9 +103,9 @@ public class ActivitiesService {
         }
     }
 
-    public Page<Activities> searchActivitiesByName(String keyword,int page, int size) {
+    public Page<Activities> searchActivitiesByName(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return activitiesRepository.searchActivitiesByName(keyword , pageable);
+        return activitiesRepository.searchActivitiesByName(keyword, pageable);
     }
 
     // Get all data

@@ -49,6 +49,15 @@ public class ActivitiesController {
         return activitiesService.searchActivitiesByName(keyword, page, size);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject<Activities>> getAnActivity(@PathVariable Integer id) {
+        ResponseObject<Activities> result = new ResponseObject<>();
+        result.setStatus(true);
+        result.setData(activitiesService.getAnActivity(id));
+        result.setMessage("Get an activity successfully");
+        return new ResponseEntity<ResponseObject<Activities>>(result, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> deleteActivities(@PathVariable Integer id) {
         activitiesService.deleteActivities(id);

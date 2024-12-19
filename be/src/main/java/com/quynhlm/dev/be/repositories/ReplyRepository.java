@@ -15,6 +15,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     @Query(value = """
             select
+                DISTINCT
                 r.id as reply_id,
                 m.id as comment_id,
                 u.id as owner_id,
@@ -33,6 +34,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     @Query(value = """
             select
+                DISTINCT
                 r.id as reply_id,
                 m.id as comment_id,
                 u.id as owner_id,

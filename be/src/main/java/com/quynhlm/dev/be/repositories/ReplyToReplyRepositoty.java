@@ -11,9 +11,9 @@ import com.quynhlm.dev.be.model.entity.ReplyToReply;
 public interface ReplyToReplyRepositoty extends JpaRepository<ReplyToReply, Integer> {
     @Query(value = "SELECT * FROM reply_to_reply WHERE id = :id", nativeQuery = true)
     ReplyToReply findReplyResult(@Param("id") Integer id);
-
-     @Query(value = """
+    @Query(value = """
             select
+            DISTINCT
                 r.id as id,
                 m.id as reply_id,
                 u.id as owner_id,

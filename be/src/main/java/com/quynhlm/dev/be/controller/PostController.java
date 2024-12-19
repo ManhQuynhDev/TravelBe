@@ -38,7 +38,7 @@ public class PostController {
     private PostService postService;
 
     // Find all
-    @GetMapping("/{userId}")
+    @GetMapping("/{user_id}")
     public Page<PostMediaDTO> getAllPost(@PathVariable Integer user_id, Pageable pageable) {
         return postService.getAllPost(user_id, pageable);
     }
