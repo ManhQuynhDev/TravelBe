@@ -281,10 +281,6 @@ document.getElementById('savePostButton').addEventListener('click', function () 
 
 
 
-
-
-
-
 //delete posst
 document.querySelectorAll('#deletePost').forEach(button => {
     button.addEventListener("click", function () {
