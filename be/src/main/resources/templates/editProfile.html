@@ -155,7 +155,7 @@
                                     <div class="col-sm-9">
                                         <div class="input-group input-group-sm-down-break">
                                             <input type="text" class="form-control" id="fullNameInput"
-                                                placeholder="Họ và Tên của bạn">
+                                                placeholder="Họ và Tên của bạn" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -190,7 +190,9 @@
                                         <textarea class="form-control" id="bioInput" rows="3"></textarea>
                                     </div>
                                 </div>
-                                <div class="d-flex justify-content-end">
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-secondary" id="changeFullname">Thay đổi
+                                        tên</button>
                                     <button type="submit" class="btn btn-primary" id="saveChangeProfile">Lưu</button>
                                 </div>
                             </div>
@@ -264,7 +266,7 @@
                 </div>
             </div>
         </div>
-
+        <div th:replace="fragments/profile/changeFullnameModal"></div>
 
 
     </div>
@@ -466,19 +468,16 @@
                 return;
             }
 
-            // Kiểm tra xem mật khẩu hiện tại có đúng với mật khẩu đã lưu không
             if (currentPassword !== savedPassword) {
                 alert('Mật khẩu hiện tại không chính xác.');
                 return;
             }
 
-            // Kiểm tra xem mật khẩu mới và xác nhận mật khẩu có khớp không
             if (newPassword !== confirmNewPassword) {
                 alert('Mật khẩu mới và xác nhận mật khẩu không khớp.');
                 return;
             }
 
-            // Kiểm tra mật khẩu mới có ít nhất 8 ký tự
             if (newPassword.length < 8) {
                 alert('Mật khẩu mới phải có ít nhất 8 ký tự.');
                 return;
@@ -530,8 +529,72 @@
             changePassword();
         });
 
+        document.getElementById("changeFullname").addEventListener("click", (e) => {
+            e.preventDefault();
+            const modal = new bootstrap.Modal(document.getElementById('changeFullNameProfileModal'));
+            modal.show();
+        })
+
+        document.getElementById("saveName").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const userId = localStorage.getItem("user_id");
+            const newFullname = document.getElementById("newFullName").value;
 
 
+            function validateFullname(name) {
+                // Kiểm tra tên có trống không
+                if (!name || name.trim() === "") {
+                    return "Tên không được để trống!";
+                }
+
+                const firstChar = name.charAt(0);
+                if (!/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(firstChar)) {
+                    return "Tên phải bắt đầu bằng chữ cái!";
+                }
+
+                if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(name)) {
+                    return "Tên không được chứa ký tự đặc biệt ngoài dấu cách!";
+                }
+
+                // Kiểm tra độ dài của tên
+                if (name.length < 3 || name.length > 100) {
+                    return "Tên phải có độ dài từ 3 đến 100 ký tự!";
+                }
+
+                return null; // Trả về null nếu tên hợp lệ
+            }
+
+            console.log(newFullname);
+
+            const validationError = validateFullname(newFullname);
+            if (validationError) {
+                alert(validationError);
+                return;
+            }
+
+            const encodedFullname = encodeURIComponent(newFullname);
+
+            fetch(`http://localhost:8080/onboarding/change-full-name/${userId}?newName=${encodedFullname}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        alert('Cập nhật tên thành công!');
+                        location.reload();  // Cập nhật lại trang nếu cần
+                    } else {
+                        alert('Cập nhật tên thất bại: ' + (data.error?.message || 'Lỗi không xác định.'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Có lỗi xảy ra:', error);
+                    alert('Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
+                });
+        });
 
 
 

@@ -427,7 +427,8 @@ avatarUploader.addEventListener('click', function () {
     avatarUploader.value = '';
 });
 
-// Lắng nghe sự kiện click vào các button có class 'btn-outline-primary'
+
+
 document.querySelectorAll('.btn-outline-primary').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
@@ -464,20 +465,27 @@ document.querySelectorAll('.btn-outline-primary').forEach(button => {
                 document.getElementById("editFullName").value = data.data.fullname;
                 document.getElementById("editBioModalLabel").value = data.data.bio;
 
-                document.getElementById('submit').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    saveChanges(userId);
-                });
+                document.getElementById('submit').setAttribute('data-user-id', userId);
+                document.getElementById("changeFullnameButton").setAttribute('data-user-id', userId);
             });
     });
+});
+
+// Xử lý khi click nút "Lưu"
+document.getElementById('submit').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const userId = e.target.getAttribute('data-user-id');
+    saveChanges(userId);
 });
 
 function saveChanges(userId) {
     const phoneNumber = document.getElementById('editPhoneModal').value;
     const dob = document.getElementById('editBirthDayModalLabel').value;
     const bio = document.getElementById('editBioModalLabel').value;
+    const avatarFile = document.getElementById('editAvatarUploaderModal').files[0];
+
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
-    const avatarFile = document.getElementById('editAvatarUploaderModal').files[0]; 
 
     if (!phoneRegex.test(phoneNumber)) {
         alert("Vui lòng nhập số điện thoại hợp lệ.");
@@ -485,11 +493,11 @@ function saveChanges(userId) {
     }
 
     const formData = new FormData();
-    formData.append("updateDTO", JSON.stringify({
+    formData.append("updateDTO", new Blob([JSON.stringify({
         phoneNumber: phoneNumber,
         dob: dob,
         bio: bio
-    }));
+    })], { type: "application/json" }));
 
     if (avatarFile) {
         formData.append('avatar', avatarFile);
@@ -500,13 +508,15 @@ function saveChanges(userId) {
         headers: {
             'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
-        body: formData 
+        body: formData
     })
         .then(response => response.json())
         .then(data => {
             if (data.status) {
                 alert('Cập nhật thông tin thành công!');
                 location.reload();
+            } else {
+                alert('Cập nhật thất bại: ' + data.message);
             }
         })
         .catch(error => {
@@ -514,3 +524,78 @@ function saveChanges(userId) {
             alert('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
         });
 }
+
+//change fullname
+document.getElementById("changeFullnameButton").addEventListener("click", function () {
+    const userId = this.getAttribute('data-user-id');
+
+    const currentModal = document.getElementById("editManagerModal");
+    const modalInstance = bootstrap.Modal.getInstance(currentModal);
+    modalInstance.hide();
+
+    const changeNameModal = new bootstrap.Modal(document.getElementById("changeFullnameModal"));
+    changeNameModal.show();
+
+});
+
+// Xử lý form đổi tên khi submit
+document.getElementById("saveName").addEventListener("click", function (event) {
+    event.preventDefault();
+
+    const userId = document.getElementById("changeFullnameButton").getAttribute('data-user-id');
+    const newFullname = document.getElementById("newFullName").value;
+
+
+    function validateFullname(name) {
+        // Kiểm tra tên có trống không
+        if (!name || name.trim() === "") {
+            return "Tên không được để trống!";
+        }
+
+        const firstChar = name.charAt(0);
+        if (!/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(firstChar)) {
+            return "Tên phải bắt đầu bằng chữ cái!";
+        }
+
+        if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(name)) {
+            return "Tên không được chứa ký tự đặc biệt ngoài dấu cách!";
+        }
+
+        // Kiểm tra độ dài của tên
+        if (name.length < 3 || name.length > 100) {
+            return "Tên phải có độ dài từ 3 đến 100 ký tự!";
+        }
+
+        return null; // Trả về null nếu tên hợp lệ
+    }
+
+    console.log(newFullname);
+
+    const validationError = validateFullname(newFullname);
+    if (validationError) {
+        alert(validationError);
+        return;
+    }
+
+    const encodedFullname = encodeURIComponent(newFullname);
+
+    fetch(`http://localhost:8080/onboarding/change-full-name/${userId}?newName=${encodedFullname}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                alert('Cập nhật tên thành công!');
+                location.reload();  // Cập nhật lại trang nếu cần
+            } else {
+                alert('Cập nhật tên thất bại: ' + (data.error?.message || 'Lỗi không xác định.'));
+            }
+        })
+        .catch(error => {
+            console.error('Có lỗi xảy ra:', error);
+            alert('Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
+        });
+});
