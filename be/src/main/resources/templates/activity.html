@@ -12,6 +12,34 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js/dist/Chart.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+    <style>
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            /* Cho phép cuộn ngang khi cần thiết */
+            -webkit-overflow-scrolling: touch;
+            /* Tạo hiệu ứng cuộn mượt trên thiết bị di động */
+            margin-bottom: 15px;
+            /* Thêm khoảng cách dưới để tránh bị dính vào phần tử dưới */
+        }
+
+        #activityTable {
+            width: 100%;
+            /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
+
+        }
+
+        #activityTable th,
+        #activityTable td {
+            white-space: nowrap;
+            /* Ngăn các ô trong bảng xuống hàng */
+            overflow: hidden;
+            /* Ẩn nội dung thừa nếu có */
+            text-overflow: ellipsis;
+            /* Thêm dấu ba chấm nếu nội dung bị cắt */
+        }
+    </style>
 </head>
 
 <body>
@@ -99,6 +127,7 @@
         </div>
         <div th:replace="fragments/activities/addActivityModal"></div>
         <div th:replace="fragments/activities/deleteActivityModal"></div>
+        <div th:replace="fragments/activities/editActivityModal"></div>
 
 
     </div>
@@ -200,10 +229,7 @@
                 alert('Vui lòng chọn kế hoạch.');
                 return;
             }
-            if (!locationId) {
-                alert('Vui lòng chọn vị trí.');
-                return;
-            }
+
             if (!activityName) {
                 alert('Vui lòng nhập tên hoạt động.');
                 return;
@@ -212,8 +238,12 @@
                 alert('Tên hoạt động phải có độ dài từ 3 đến 50 ký tự.');
                 return;
             }
-            if (/[^a-zA-Z0-9\s]/.test(activityName)) {  
+            if (/[^a-zA-Z0-9\s]/.test(activityName)) {
                 alert('Tên hoạt động không được chứa ký tự đặc biệt.');
+                return;
+            }
+            if (!locationId) {
+                alert('Vui lòng chọn vị trí.');
                 return;
             }
             if (!activityTime) {
@@ -297,11 +327,11 @@
                             alert("Xóa hoạt động thành công");
                             modal.hide();
 
-                            // const activityRow = button.closest('tr');
-                            // if (activityRow) {
-                            //     activityRow.remove();
-                            // }
-                            // window.location.reload();
+                            const activityRow = button.closest('tr');
+                            if (activityRow) {
+                                activityRow.remove();
+                            }
+                            window.location.reload();
                         })
                         .catch(error => {
                             console.log(error);
@@ -309,6 +339,27 @@
                 })
             })
         });
+        document.querySelectorAll("#edit").forEach(button => {
+            button.addEventListener("click", function () {
+                const activity_id = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("updatePlanModal"));
+                modal.show();
+                fetch(`http://localhost:8080/api/activities/${activity_id}`, {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+                    }
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById("updateActivityName").value = data.data.name;
+                        document.getElementById("updateActivityTime").value = data.data.time;
+                        document.getElementById("updateActivityStatus").value = data.data.status;
+                        document.getElementById("updateActivityDescription").value = data.data.description;
+                        document.getElementById("updateActivityCost").value = data.data.cost;
+                    })
+            })
+        })
 
     </script>
     <script th:src="@{/assets/js/userjs.js}"></script>
