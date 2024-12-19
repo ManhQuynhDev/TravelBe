@@ -57,27 +57,27 @@ public class HomeController {
     @Autowired
     private StoryService storyService;
 
-    @GetMapping("/")
-    public String home(Model model) {
-        List<User> userList = userService.getAllListUser();
-        Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
-        long groupCount = groupResponseDTOPage.getTotalElements();
-        Pageable pageable = PageRequest.of(0, 1000);
-        Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(pageable);
-        long postCount = postMediaDTOPage.getTotalElements();
+    // @GetMapping("/")
+    // public String home(Model model) {
+    //     List<User> userList = userService.getAllListUser();
+    //     Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
+    //     long groupCount = groupResponseDTOPage.getTotalElements();
+    //     Pageable pageable = PageRequest.of(0, 1000);
+    //     Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(pageable);
+    //     long postCount = postMediaDTOPage.getTotalElements();
 
-        long userCount = userList.stream()
-                .filter(user -> user.getRoles().contains("USER"))
-                .count();
-        long managerCount = userList.stream()
-                .filter(user -> user.getRoles().contains("MANAGER"))
-                .count();
-        model.addAttribute("userCount", userCount);
-        model.addAttribute("groupCount", groupCount);
-        model.addAttribute("postCount", postCount);
-        model.addAttribute("managerCount", managerCount);
-        return "home";
-    }
+    //     long userCount = userList.stream()
+    //             .filter(user -> user.getRoles().contains("USER"))
+    //             .count();
+    //     long managerCount = userList.stream()
+    //             .filter(user -> user.getRoles().contains("MANAGER"))
+    //             .count();
+    //     model.addAttribute("userCount", userCount);
+    //     model.addAttribute("groupCount", groupCount);
+    //     model.addAttribute("postCount", postCount);
+    //     model.addAttribute("managerCount", managerCount);
+    //     return "home";
+    // }
 
     @GetMapping("/manager")
     public String getContentPage(Model model) {
@@ -108,13 +108,13 @@ public class HomeController {
         return "users";
     }
 
-    @GetMapping("/posts")
-    public String post(Model model) {
-        // model.addAttribute("body", "posts");
-        Pageable pageable = PageRequest.of(0, 1000);
-        model.addAttribute("postList", postService.getAllPost(pageable));
-        return "posts";
-    }
+    // @GetMapping("/posts")
+    // public String post(Model model) {
+    //     // model.addAttribute("body", "posts");
+    //     Pageable pageable = PageRequest.of(0, 1000);
+    //     model.addAttribute("postList", postService.getAllPost(pageable));
+    //     return "posts";
+    // }
 
     @GetMapping("/groups")
     public String group(Model model) {

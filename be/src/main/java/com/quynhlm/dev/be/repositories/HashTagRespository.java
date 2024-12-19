@@ -11,4 +11,7 @@ import com.quynhlm.dev.be.model.entity.HashTag;
 public interface HashTagRespository extends JpaRepository<HashTag, Integer> {
     @Query(value = "SELECT hashtag FROM hash_tag WHERE post_id= :post_id", nativeQuery = true)
     List<String> findHashtagByPostId(@Param("post_id") int post_id);
+
+    @Query(value = "SELECT DISTINCT hashtag FROM hash_tag", nativeQuery = true)
+    List<String> findHashtag();
 }

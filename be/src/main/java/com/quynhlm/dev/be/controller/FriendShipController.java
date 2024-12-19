@@ -44,7 +44,6 @@ public class FriendShipController {
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.getAllListUserFriend(userId, groupId, page, size);
     }
-
     @PostMapping("/send_invite")
     public ResponseEntity<ResponseObject<Void>> inviteFriends(@RequestBody InviteRequestDTO inviteRequestDTO) {
         ResponseObject<Void> result = new ResponseObject<>();
@@ -67,10 +66,16 @@ public class FriendShipController {
 
     @GetMapping("/get-all-friends/{userId}")
     public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userId,
-            @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return friendShipService.findByGetListFriends(userId, status, page, size);
+        return friendShipService.findByGetListFriends(userId, page, size);
+    }
+
+    @GetMapping("/get-all-request/{userId}")
+    public Page<UserFriendResponse> getAllRequestFriends(@PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        return friendShipService.findAllResquestFriends(userId, page, size);
     }
 
     @GetMapping("/suggestion/{userId}")
@@ -79,7 +84,6 @@ public class FriendShipController {
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.suggestionFriends(userId, page, size);
     }
-
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")
     public ResponseEntity<ResponseObject<Void>> sendRequestAddFriend(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId) {

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
+
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
 import com.quynhlm.dev.be.core.validation.UserAccountElement;
@@ -15,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -25,7 +28,7 @@ import lombok.Setter;
 @Setter
 @RequiredArgsConstructor
 @UserAccountElement.List({
-        @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "email"),
+        @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "Email is not in correct format"),
 })
 public class User {
     @Id

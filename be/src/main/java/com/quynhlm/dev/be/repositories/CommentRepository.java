@@ -17,6 +17,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
   @Query(value = "SELECT * FROM Comment WHERE post_id = : post_id", nativeQuery = true)
   List<Comment> findCommentWithPostId(@Param("post_id") Integer post_id);
+
   @Query(value = """
        select
                  DISTINCT
@@ -26,7 +27,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
                  u.avatar_url as avatar,
                  c.content,
                  c.post_id,
-                 c.share_id,  
+                 c.share_id,
                  c.create_time,
                  COUNT(DISTINCT cr.id) AS reaction_count
               from comment c
@@ -61,7 +62,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
         having c.post_id = :postId
         ORDER BY c.create_time DESC;
                                 """, nativeQuery = true)
-  Page<Object[]> fetchCommentWithPostId(Pageable pageable, @Param("postId") Integer postId , @Param("userId") Integer userId);
+  Page<Object[]> fetchCommentWithPostId(Pageable pageable, @Param("postId") Integer postId,
+      @Param("userId") Integer userId);
 
   @Query(value = """
          select
@@ -74,7 +76,8 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
          c.post_id,
          c.share_id,
          c.create_time,
-         COUNT(DISTINCT cr.id) AS reaction_count
+         COUNT(DISTINCT cr.id) AS reaction_count,
+         MAX(CASE WHEN cr.user_id = :userId THEN cr.type ELSE NULL END) AS user_reaction_type
       from comment c
         inner join user u on u.id = c.user_id
         left join comment_reaction cr on cr.comment_id = c.id
@@ -82,5 +85,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
         group by c.id , u.id , r.id , cr.id
         having c.post_id = :shareId;
                                 """, nativeQuery = true)
-  Page<Object[]> fetchCommentWithShareId(Pageable pageable, @Param("shareId") Integer shareId);
+  Page<Object[]> fetchCommentWithShareId(Pageable pageable, @Param("shareId") Integer shareId,
+      @Param("userId") Integer userId);
 }

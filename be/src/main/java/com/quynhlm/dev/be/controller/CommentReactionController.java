@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.CommentReaction;
 import com.quynhlm.dev.be.service.CommentReactionService;
@@ -42,5 +43,10 @@ public class CommentReactionController {
             @RequestParam Integer commentId,
             @RequestParam String type, Pageable pageable) {
         return commentReactionService.getAllUserReactionWithType(commentId, type, pageable);
+    }
+    @GetMapping("/reaction_count")
+    public ReactionStatisticsDTO getReactionTypeCount(
+            @RequestParam Integer commentId) {
+        return commentReactionService.getReactionTypeCount(commentId);
     }
 }

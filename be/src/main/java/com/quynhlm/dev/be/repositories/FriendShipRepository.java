@@ -48,12 +48,24 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
                         FROM friend_ship f
                         JOIN user u ON u.id = f.user_send_id
                         WHERE f.user_received_id = :user_id
-                          AND f.status = :status
+                          AND f.status = 'PENDING'
                         GROUP BY u.id, u.fullname, u.avatar_url, f.status
                         """, nativeQuery = true)
-        Page<Object[]> findByUserFriendsWithStatus(@Param("user_id") Integer user_id,
-                        @Param("status") String status,
+        Page<Object[]> findAllRequestFriends(@Param("user_id") Integer user_id,
                         Pageable pageable);
+
+        @Query(value = """
+                        SELECT u.id, u.fullname, u.avatar_url, f.status, MIN(f.create_time) AS create_time
+                          FROM friend_ship f
+                          JOIN user u ON u.id = CASE
+                            WHEN f.user_send_id = :user_id THEN f.user_received_id
+                            ELSE f.user_send_id
+                          END
+                          WHERE (f.user_send_id = :user_id OR f.user_received_id = :user_id)
+                            AND f.status = 'APPROVED'
+                          GROUP BY u.id, u.fullname, u.avatar_url, f.status
+                          """, nativeQuery = true)
+        Page<Object[]> getAllFriends(@Param("user_id") Integer user_id, Pageable pageable);
 
         @Query(value = """
                         SELECT u.id, u.fullname, u.avatar_url

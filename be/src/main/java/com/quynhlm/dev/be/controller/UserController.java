@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +38,9 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin
@@ -100,7 +103,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
     }
-
     // Email
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
@@ -118,6 +120,15 @@ public class UserController {
         result.setData(true);
         result.setMessage("Change password successfully");
         return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-user/{userId}")
+    public ResponseEntity<ResponseObject<Void>> deleteUser(@PathVariable Integer userId) {
+        ResponseObject<Void> result = new ResponseObject<>();
+        userService.deleteUser(userId);
+        result.setMessage("Delete user successfully");
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
     // Token
@@ -155,8 +166,7 @@ public class UserController {
 
     @PostMapping("/change-profile/{id}")
     public ResponseEntity<ResponseObject<Void>> changeProfile(@PathVariable int id,
-            @RequestPart("updateDTO") String updateDTOJson,
-
+            @RequestPart("updateDTO") @Valid String updateDTOJson,
             @RequestPart(value = "avatar", required = false) MultipartFile imageFile) {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -167,7 +177,6 @@ public class UserController {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         userService.changeProfile(id, updateProfileDTO, imageFile);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setMessage("User profile updated successfully.");
@@ -211,7 +220,7 @@ public class UserController {
     }
 
     @GetMapping("/statistical_register")
-    public List<UserStatisticalRegister > getUserRegistrationCountByMonth() {
+    public List<UserStatisticalRegister> getUserRegistrationCountByMonth() {
         return userService.getUserRegistrationCountByMonth();
     }
 

@@ -88,7 +88,7 @@ public class MemberController {
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getGroupMemberJoin(userId, page, size);
     }
-
+    
     // Search group user join
     @GetMapping("/group-join/search")
     public ResponseEntity<Page<MemberJoinGroupResponseDTO>> searchGroups(@RequestParam Integer user_id,
@@ -98,7 +98,6 @@ public class MemberController {
         Page<MemberJoinGroupResponseDTO> groups = memberService.searchGroupMemberJoin(user_id, keyword, page, size);
         return ResponseEntity.ok(groups);
     }
-
     // Get
     @GetMapping("/{groupId}/status")
     public Page<MemberResponseDTO> getListUserByStatus(@PathVariable Integer groupId,
@@ -107,7 +106,6 @@ public class MemberController {
             @RequestParam(defaultValue = "2") int size) {
         return memberService.getRequestToJoinGroup(groupId, status, page, size);
     }
-
     // request - join - group
     @PostMapping("/request-join-group")
     public ResponseEntity<ResponseObject<Void>> requestToJoinGroup(@RequestBody Member member) {

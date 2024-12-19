@@ -38,9 +38,9 @@ public class PostController {
     private PostService postService;
 
     // Find all
-    @GetMapping("")
-    public Page<PostMediaDTO> getAllPost(Pageable pageable) {
-        return postService.getAllPost(pageable);
+    @GetMapping("/{userId}")
+    public Page<PostMediaDTO> getAllPost(@PathVariable Integer user_id, Pageable pageable) {
+        return postService.getAllPost(user_id, pageable);
     }
 
     @GetMapping("/user-create/{user_id}")
@@ -136,8 +136,13 @@ public class PostController {
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/videos")
-    public Page<VideoPostDTO> getAllPostTypeVideo(Pageable pageable) {
-        return postService.getAllPostTypeVideo(pageable);
+    @GetMapping("/videos/{user_id}")
+    public Page<VideoPostDTO> getAllPostTypeVideo(@PathVariable Integer user_id, Pageable pageable) {
+        return postService.getAllPostTypeVideo(user_id, pageable);
+    }
+
+    @GetMapping("/hash_tag")
+    public List<String> getHashTag() {
+        return postService.getAllHashTag();
     }
 }

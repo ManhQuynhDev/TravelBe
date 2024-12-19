@@ -98,8 +98,6 @@ public class ReplyService {
             return reply;
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
-        } catch (Exception e) {
-            throw new UnknownException(e.getMessage());
         }
     }
 

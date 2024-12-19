@@ -16,5 +16,6 @@ public class MemberResponseDTO {
     private String fullname;
     private String avatar_url;
     private String role;
+    private String request_time;
     private String join_time;
 }

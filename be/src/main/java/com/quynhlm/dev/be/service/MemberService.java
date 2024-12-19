@@ -72,6 +72,7 @@ public class MemberService {
             throw new UserWasAlreadyRequest("User has already requested to join or is already a member.");
         }
 
+        member.setRequest_time(new Timestamp(System.currentTimeMillis()).toString());
         member.setRole(Role.USER.name());
         member.setStatus("PENDING");
         Member saveMember = memberRepository.save(member);
@@ -123,7 +124,8 @@ public class MemberService {
             object.setFullname(((String) row[3]));
             object.setAvatar_url((String) row[4]);
             object.setRole((String) row[5]);
-            object.setJoin_time((String) row[6]);
+            object.setRequest_time((String) row[6]);
+            object.setJoin_time((String) row[7]);
             return object;
         });
     }
@@ -273,7 +275,8 @@ public class MemberService {
             object.setBio((String) row[6]);
             object.setStatus((String) row[7]);
             object.setRole((String) row[8]);
-            object.setJoin_time((String) row[9]);
+            object.setRequest_time((String) row[9]);
+            object.setJoin_time((String) row[10]);
 
             List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
             List<MemberResponseDTO> responses = rawResults.stream()
@@ -284,7 +287,8 @@ public class MemberService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             object.setUserJoined(responses);
@@ -307,7 +311,8 @@ public class MemberService {
             object.setBio((String) row[6]);
             object.setStatus((String) row[7]);
             object.setRole((String) row[8]);
-            object.setJoin_time((String) row[9]);
+            object.setRequest_time((String) row[9]);
+            object.setJoin_time((String) row[10]);
 
             List<Object[]> rawResults = memberRepository.getMemberJoinGroup(((Number) row[0]).intValue());
             List<MemberResponseDTO> responses = rawResults.stream()
@@ -318,7 +323,8 @@ public class MemberService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             object.setUserJoined(responses);
@@ -338,7 +344,8 @@ public class MemberService {
             object.setFullname(((String) row[3]));
             object.setAvatar_url((String) row[4]);
             object.setRole((String) row[5]);
-            object.setJoin_time((String) row[6]);
+            object.setRequest_time((String) row[6]);
+            object.setJoin_time((String) row[7]);
             return object;
         });
     }
@@ -375,7 +382,8 @@ public class MemberService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(responses);
@@ -433,7 +441,8 @@ public class MemberService {
                             (String) r[3],
                             (String) r[4],
                             (String) r[5],
-                            (String) r[6]))
+                            (String) r[6],
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(responses);
