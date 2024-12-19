@@ -23,15 +23,17 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MemberJoinGroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
-import com.quynhlm.dev.be.model.entity.MemberPlan;
+import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
-import com.quynhlm.dev.be.repositories.MemberPlanRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
+import com.quynhlm.dev.be.repositories.TravelPlanRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -45,10 +47,7 @@ public class MemberService {
     private UserRepository userRepository;
 
     @Autowired
-    private MemberPlanRepository memberPlanRepository;
-
-    @Autowired
-    private MemberPlanService memberPlanService;
+    private TravelPlanRepository travelPlanRepository;
 
     @Autowired
     private TravelPlanService travelPlanService;
@@ -151,21 +150,20 @@ public class MemberService {
         }
     }
 
-    public void deleleMember(Integer memberId) throws MemberNotFoundException {
+    public void deleteMember(Integer memberId) throws MemberNotFoundException {
+        // Find the member by ID
         Member foundMember = memberRepository.findMemberById(memberId);
         if (foundMember == null) {
-            throw new GroupNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
+            throw new MemberNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
         }
 
-        List<MemberPlan> members = memberPlanRepository.findMemberByUserId(foundMember.getUserId());
+        List<Travel_Plan> travelPlans = travelPlanRepository.findByGroupId(foundMember.getGroupId());
 
-        for (MemberPlan member : members) {
-            if (member.getRole() == Role.ADMIN.name()) {
-                travelPlanService.deleteTravelPlan(member.getPlanId());
+        if (!travelPlans.isEmpty()) {
+            for (Travel_Plan travel_Plan : travelPlans) {
+                travelPlanService.deleteTravelPlan(travel_Plan.getId());
             }
-            memberPlanService.deleteMemberPlan(member.getId(), member.getPlanId());
         }
-
         memberRepository.delete(foundMember);
     }
 

@@ -24,6 +24,9 @@ import com.quynhlm.dev.be.repositories.MemberPlanRepository;
 import com.quynhlm.dev.be.repositories.TravelPlanRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class MemberPlanService {
 
@@ -61,6 +64,7 @@ public class MemberPlanService {
     }
 
     public void deleteMemberPlan(Integer memberId, Integer planId) throws MemberNotFoundException {
+        log.info("Member Id " + memberId + " " + "Plan id " + planId);
         MemberPlan foundMember = memberPlanRepository.findMemberById(memberId, planId);
         if (foundMember == null) {
             throw new MemberNotFoundException("Found user not found please try again");

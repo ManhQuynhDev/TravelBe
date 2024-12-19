@@ -27,5 +27,10 @@ public class MemberPlan {
     private Integer userId;
     private String join_time;
     private String role;
-    private String status;  
+    private String status;
+    @Override
+    public String toString() {
+        return "MemberPlan [id=" + id + ", planId=" + planId + ", userId=" + userId + ", join_time=" + join_time
+                + ", role=" + role + ", status=" + status + "]";
+    }  
 }

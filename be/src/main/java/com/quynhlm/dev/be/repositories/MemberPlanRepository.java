@@ -13,6 +13,10 @@ import com.quynhlm.dev.be.model.entity.MemberPlan;
 
 public interface MemberPlanRepository extends JpaRepository<MemberPlan, Integer> {
 
+    @Query("SELECT CASE WHEN COUNT(m) > 0 THEN TRUE ELSE FALSE END FROM MemberPlan m WHERE m.userId = :userId AND m.planId = :planId")
+    boolean existsByUserIdAndPlanId(@Param("userId") Integer userId, @Param("planId") Integer planId);
+
+
   @Query("SELECT m FROM MemberPlan m WHERE m.userId = :userId and m.planId = :planId")
   MemberPlan findMemberById(
       @Param("userId") Integer userId, @Param("planId") Integer planId);

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
+import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
 import com.quynhlm.dev.be.core.exception.TravelPlanNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
@@ -17,16 +18,20 @@ import com.quynhlm.dev.be.enums.GroupRole;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberPlanResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.PlanResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
+import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 import com.quynhlm.dev.be.repositories.MemberPlanRepository;
+import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.TravelPlanRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TravelPlanService {
@@ -45,8 +50,11 @@ public class TravelPlanService {
     @Autowired
     private GroupRepository groupRepository;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     public Travel_Plan addTravelPlan(Travel_Plan travelPlan)
-            throws UserAccountNotFoundException, UnknownException, GroupNotFoundException {
+            throws UserAccountNotFoundException,MemberNotFoundException, UnknownException, GroupNotFoundException {
 
         User foundUser = userRepository.getAnUser(travelPlan.getUser_id());
         if (foundUser == null) {
@@ -58,6 +66,11 @@ public class TravelPlanService {
         if (foundGroup == null) {
             throw new GroupNotFoundException(
                     "Found group with " + travelPlan.getGroup_id() + " not found . Please try again !");
+        }
+
+        Member foundUserJoin = memberRepository.findMemberByUserId(foundUser.getId(), foundGroup.getId());
+        if(foundUserJoin == null){
+            throw new MemberNotFoundException("User with id " +foundUser.getId() + " not found in group , please try again");
         }
 
         travelPlan.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
@@ -84,8 +97,11 @@ public class TravelPlanService {
         }
 
         List<MemberPlan> members = memberPlanRepository.findMemberByPlanId(id);
-        for (MemberPlan memberPlan : members) {
-            memberPlanService.deleteMemberPlan(memberPlan.getId(), memberPlan.getPlanId());
+        log.info("Length member plan : " + members.size());
+        if (!members.isEmpty()) {
+            for (MemberPlan memberPlan : members) {
+                memberPlanService.deleteMemberPlan(memberPlan.getUserId(), memberPlan.getPlanId());
+            }
         }
         travelPlanRepository.delete(foundPlan);
     }

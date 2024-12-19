@@ -73,7 +73,7 @@ public class GroupController {
     public ResponseEntity<ResponseObject<Void>> deleteGroup(@PathVariable Integer id) {
         ResponseObject<Void> result = new ResponseObject<>();
         groupService.deleteGroup(id);
-        result.setMessage("Delete group with " + id + "successfully");
+        result.setMessage("Delete group with " + id + " successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }

@@ -24,9 +24,9 @@ public class UserSwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Example API")
+                        .title("Travel With Me API")
                         .version("1.0")
-                        .description("API documentation with JWT Authentication"))
+                        .description("API documentation for travel be with JWT Authentication"))
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
                 .components(new io.swagger.v3.oas.models.Components()
                         .addSecuritySchemes("BearerAuth", new SecurityScheme()

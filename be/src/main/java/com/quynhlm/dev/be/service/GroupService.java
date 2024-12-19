@@ -30,6 +30,9 @@ import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class GroupService {
 
@@ -183,10 +186,11 @@ public class GroupService {
 
         List<Member> foundMemberGroup = memberRepository.findByGroupId(foundGroup.getId());
 
-        for (Member member : foundMemberGroup) {
-            memberService.deleleMember(member.getId());
+        if (!foundMemberGroup.isEmpty()) {
+            for (Member member : foundMemberGroup) {
+                memberService.deleteMember(member.getId());
+            }
         }
-
         groupRepository.delete(foundGroup);
     }
 
@@ -308,8 +312,7 @@ public class GroupService {
                             (String) r[4],
                             (String) r[5],
                             (String) r[6],
-                            (String) r[7] 
-            ))
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(memberResponses);
@@ -350,8 +353,7 @@ public class GroupService {
                             (String) r[4],
                             (String) r[5],
                             (String) r[6],
-                            (String) r[7] 
-            ))
+                            (String) r[7]))
                     .collect(Collectors.toList());
 
             group.setUserJoined(memberResponses);

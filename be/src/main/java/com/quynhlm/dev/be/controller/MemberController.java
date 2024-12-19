@@ -120,7 +120,7 @@ public class MemberController {
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ResponseObject<Void>> deleteMember(@PathVariable Integer memberId) {
         ResponseObject<Void> result = new ResponseObject<>();
-        memberService.deleleMember(memberId);
+        memberService.deleteMember(memberId);
         result.setStatus(true);
         result.setMessage("Delete member successfully");
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
