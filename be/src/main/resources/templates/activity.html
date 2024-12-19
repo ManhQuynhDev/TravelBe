@@ -186,6 +186,88 @@
         document.getElementById("addActivity").addEventListener("click", function () {
             $('#addActivityModal').modal('show');
         });
+        document.getElementById('saveActivityButton').addEventListener('click', async function () {
+            const activityName = document.getElementById('activityName').value;
+            const planId = document.getElementById('planId').value;
+            const locationId = document.getElementById('locationSelect').value;
+            const activityTime = document.getElementById('activityTime').value;
+            const activityStatus = document.getElementById('activityStatus').value;
+            const activityDescription = document.getElementById('activityDescription').value;
+            const activityCost = document.getElementById('activityCost').value;
+
+            // Validate input fields
+            if (!planId) {
+                alert('Vui lòng chọn kế hoạch.');
+                return;
+            }
+            if (!locationId) {
+                alert('Vui lòng chọn vị trí.');
+                return;
+            }
+            if (!activityName) {
+                alert('Vui lòng nhập tên hoạt động.');
+                return;
+            }
+            if (activityName.length < 3 || activityName.length > 50) {
+                alert('Tên hoạt động phải có độ dài từ 3 đến 50 ký tự.');
+                return;
+            }
+            if (/[^a-zA-Z0-9\s]/.test(activityName)) {  
+                alert('Tên hoạt động không được chứa ký tự đặc biệt.');
+                return;
+            }
+            if (!activityTime) {
+                alert('Vui lòng chọn thời gian.');
+                return;
+            }
+            if (!activityStatus) {
+                alert('Vui lòng chọn trạng thái.');
+                return;
+            }
+            if (!activityDescription) {
+                alert('Vui lòng nhập mô tả.');
+                return;
+            }
+            if (!activityCost || activityCost < 0) {
+                alert('Vui lòng nhập chi phí hợp lệ.');
+                return;
+            }
+
+
+            const activityData = {
+                planId: planId,
+                location_id: locationId,
+                name: activityName,
+                time: activityTime,
+                status: activityStatus,
+                description: activityDescription,
+                cost: activityCost,
+                user_id: localStorage.getItem("user_id")
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/activities', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(activityData),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+                }
+
+                const result = await response.json();
+                alert('Thêm hoạt động thành công!');
+                $('#addActivityModal').modal('hide'); // Close modal
+                window.location.reload();
+            } catch (error) {
+                console.error('Lỗi khi lưu hoạt động:', error);
+                alert('Có lỗi xảy ra khi thêm hoạt động.');
+            }
+        });
 
 
 
@@ -202,7 +284,7 @@
                 confirmButton.replaceWith(newConfirmButton);
 
                 document.getElementById("confirmDeleteActivity").addEventListener("click", () => {
-                    fetch(`http://localhost:8080/activities/${activity_id}`, {
+                    fetch(`http://localhost:8080/api/activities/${activity_id}`, {
                         method: "DELETE",
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem("authToken")}`
