@@ -19,7 +19,6 @@
                                 style="width: 200px; height: auto;">
                         </div>
 
-                        <!-- Content -->
                         <div class="row form-group">
                             <label for="storyContentDetails" class="col-sm-3 col-form-label input-label">Nội
                                 dung</label>
@@ -40,17 +39,27 @@
                         </div>
 
                         <div class="row form-group">
+                            <label for="storyAuthorDetails" class="col-sm-3 col-form-label input-label">Người
+                                tạo</label>
+                            <!-- Avatar section -->
+                            <div class="d-flex align-items-center">
+                                <img id="storyAuthorAvatar"
+                                    src="https://travle-be.s3.ap-southeast-2.amazonaws.com/facebook.jpg" alt="Avatar"
+                                    class="rounded-circle"
+                                    style="width: 40px; height: 40px; margin-right: 10px; display: none; border-radius: 50%;object-fit: cover">
+                                <div id="authorInitial" class="rounded-circle" style="width: 40px; height: 40px; background-color: #ccc; 
+         color: white; display: none; text-align: center; line-height: 40px;">
+                                </div>
+                                <p id="storyAuthorName" style="margin: 0;">ADMIN</p>
+                            </div>
+
+                        </div>
+
+                        <div class="row form-group">
                             <label for="storyCreatedTimeDetails" class="col-sm-3 col-form-label input-label">Thời gian
                                 tạo</label>
                             <div class="col-sm-9 d-flex align-items-center">
                                 <p id="storyCreatedTimeDetails" style="margin: 0;" readonly>2024-12-03 21:26:40.955</p>
-                            </div>
-                        </div>
-
-                        <div class="row form-group">
-                            <label for="storyHashtagDetails" class="col-sm-3 col-form-label input-label">Hashtag</label>
-                            <div class="col-sm-9 d-flex align-items-center">
-                                <p id="storyHashtagDetails" style="margin: 0;" readonly>#123</p>
                             </div>
                         </div>
 
@@ -60,6 +69,28 @@
                                 thái</label>
                             <div class="col-sm-9 d-flex align-items-center">
                                 <p id="storyStatusDetails" style="margin: 0;" readonly>CÔNG KHAI</p>
+                            </div>
+                        </div>
+
+                        <!-- Author Information -->
+
+
+                        <!-- Reaction Count -->
+                        <div class="row form-group">
+                            <label for="reactionCountDetails" class="col-sm-3 col-form-label input-label">Số lượt cảm
+                                xúc</label>
+                            <div class="col-sm-9 d-flex align-items-center">
+                                <p id="reactionCountDetails" style="margin: 0;" readonly>0</p>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="row form-group">
+                            <label for="storyLocationDetails" class="col-sm-3 col-form-label input-label">Địa
+                                chỉ</label>
+                            <div class="col-sm-9 d-flex align-items-center">
+                                <p id="storyLocationDetails" style="margin: 0;" readonly>Tân tiến, Vĩnh Tường, Vĩnh Phúc
+                                </p>
                             </div>
                         </div>
 

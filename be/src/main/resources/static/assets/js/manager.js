@@ -1,28 +1,31 @@
-const API_BASE_URL_Mana = 'http://localhost:8080/onboarding';
-const AUTH_HEADER_Mana = { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` };
+const API_BASE_URL = 'http://localhost:8080/onboarding';
+const AUTH_HEADER = { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` };
 function loadUserDetails(userId) {
     fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
-        headers: AUTH_HEADER_Mana
+        headers: AUTH_HEADER
     })
         .then(response => response.json())
         .then(data => {
             if (data.status) {
                 const user = data.data;
-                console.log(user);
-                console.log(user.fullname);
-
                 const avatarUrl = user.avatarUrl || '';
-                if (avatarUrl) {
-                    document.getElementById('userAvatarImgModal').src = avatarUrl;
-                    document.getElementById('userAvatarImgModal').style.display = 'block';
-                    document.getElementById('userAvatarTextModal').style.display = 'none';
+
+                if (avatarUrl && avatarUrl !== "") {
+                    // Nếu avatarUrl hợp lệ, hiển thị ảnh và ẩn phần chữ
+                    document.getElementById('userAvatarImgModals').src = avatarUrl;
+                    document.getElementById('userAvatarImgModals').style.display = 'block';
+                    document.getElementById('userAvatarTextModals').style.display = 'none'; // Ẩn chữ
                 } else {
+                    // Nếu avatarUrl không có giá trị, hiển thị chữ cái đầu tiên của tên người dùng và ẩn ảnh
                     const firstLetter = user.fullname ? user.fullname.charAt(0).toUpperCase() : 'N';
-                    document.getElementById('avatarInitial').innerText = firstLetter;
-                    document.getElementById('userAvatarTextModal').style.display = 'flex';
-                    document.getElementById('userAvatarImgModal').style.display = 'none';
+                    document.getElementById('avatarInitials').innerText = firstLetter;
+                    document.getElementById('userAvatarTextModals').style.display = 'flex'; // Hiển thị chữ
+                    document.getElementById('userAvatarImgModals').style.display = 'none'; // Ẩn ảnh
                 }
+
+
+
                 document.getElementById('managerFullNameDetails').innerText = user.fullname;
                 document.getElementById('managerRolesDetails').innerText = user.roles[0];
                 const date = new Date(user.create_at);
@@ -36,7 +39,7 @@ function loadUserDetails(userId) {
                 document.getElementById('userDOB').innerText = 'Ngày sinh: ' + (user.dob || 'Không có thông tin');
 
                 // Hiển thị modal
-                const modal = new bootstrap.Modal(document.getElementById('userDetailModal'));
+                const modal = new bootstrap.Modal(document.getElementById('userDetailModals'));
                 modal.show();
 
                 joinedGroup(userId);
@@ -50,12 +53,13 @@ function loadUserDetails(userId) {
         .catch(error => {
             console.error('Lỗi mạng:', error);
         });
-} function getGroupDetails(groupId) {
+}
+function getGroupDetails(groupId) {
     const url = `http://localhost:8080/api/groups/${groupId}`;
 
     return fetch(url, {
         method: 'GET',
-        headers: AUTH_HEADER_Mana,
+        headers: AUTH_HEADER,
     })
         .then(response => {
             if (!response.ok) {
@@ -87,7 +91,7 @@ function joinedGroup(userId) {
 
     fetch(url, {
         method: 'GET',
-        headers: AUTH_HEADER_Mana, // Thêm header xác thực nếu cần
+        headers: AUTH_HEADER, // Thêm header xác thực nếu cần
     })
         .then(response => {
             if (!response.ok) {
@@ -142,7 +146,7 @@ function userCreatedGroups(userId) {
 
     fetch(url, {
         method: 'GET',
-        headers: AUTH_HEADER_Mana, // Thêm header xác thực nếu cần
+        headers: AUTH_HEADER, // Thêm header xác thực nếu cần
     })
         .then(response => {
             if (!response.ok) {
@@ -307,9 +311,9 @@ function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
     const lockButton = document.getElementById('confirmLock');
 
-    return fetch(`${API_BASE_URL_Mana}/users/${userId}`, {
+    return fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
-        headers: AUTH_HEADER_Mana
+        headers: AUTH_HEADER
     })
         .then(res => res.json())
         .then(data => {
@@ -333,7 +337,7 @@ function checkStatus(userId) {
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
-        const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
+        const modal = new bootstrap.Modal(document.getElementById('lockManaModal'));
         modal.show();
 
         const openButton = document.getElementById('openAccount');
@@ -348,9 +352,9 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
             .then(userAccount => {
                 if (userAccount === "LOOK") {
                     newOpenButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL_Mana}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
+                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
                             method: "PUT",
-                            headers: AUTH_HEADER_Mana
+                            headers: AUTH_HEADER
                         })
                             .then(response => response.json())
                             .then(data => {
@@ -366,9 +370,9 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                     });
                 } else {
                     newLockButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL_Mana}/locked-account/${userId}/isLocked?isLocked=LOOK`, {
+                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOOK`, {
                             method: "PUT",
-                            headers: AUTH_HEADER_Mana
+                            headers: AUTH_HEADER
                         })
                             .then(response => response.json())
                             .then(data => {
@@ -397,23 +401,41 @@ function replaceButtonWithClone(button) {
 }
 
 //edit manager
-document.getElementById('editAvatarUploaderModal').addEventListener('change', function (event) {
+const avatarUploader = document.getElementById('editAvatarUploaderModal');
+const avatarImage = document.getElementById('editAvatarImgModal');
+const avatarTextElement = document.getElementById('editAvatarTextModal');
+
+// Lắng nghe sự kiện thay đổi file ảnh
+avatarUploader.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            const avatarImage = document.getElementById('editAvatarImgModal');
-            avatarImage.src = e.target.result;  // Thay đổi src của hình ảnh
+            avatarImage.src = e.target.result;
+            avatarImage.style.display = 'block';
+            avatarTextElement.style.display = 'none';
         };
         reader.readAsDataURL(file);
+    } else {
+        avatarImage.style.display = 'none';
+        avatarTextElement.style.display = 'flex';
     }
 });
+
+// Xóa file ảnh khi người dùng click vào input file
+avatarUploader.addEventListener('click', function () {
+    avatarUploader.value = '';
+});
+
+// Lắng nghe sự kiện click vào các button có class 'btn-outline-primary'
 document.querySelectorAll('.btn-outline-primary').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
 
         const modal = new bootstrap.Modal(document.getElementById('editManagerModal'));
         modal.show();
+
+        // Lấy thông tin người dùng và hiển thị lên modal
         fetch(`http://localhost:8080/onboarding/users/${userId}`, {
             method: 'GET',
             headers: {
@@ -423,12 +445,72 @@ document.querySelectorAll('.btn-outline-primary').forEach(button => {
             .then(res => res.json())
             .then(data => {
                 const avatarUrl = data.data.avatarUrl;
-                const defaultAvatar = '/assets/img/avatar.jpg'; // Đường dẫn ảnh mặc định
-                document.getElementById("editAvatarImgModal").src = avatarUrl ? avatarUrl : defaultAvatar;
+                const avatarElement = document.getElementById("editAvatarImgModal");
+                const avatarTextElement = document.getElementById("editAvatarTextModal");
+
+                if (avatarUrl) {
+                    avatarElement.src = avatarUrl;
+                    avatarElement.style.display = 'block';
+                    avatarTextElement.style.display = 'none';
+                } else {
+                    const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : 'N';
+                    avatarTextElement.innerText = firstLetter;
+                    avatarTextElement.style.display = 'flex';
+                    avatarElement.style.display = 'none';
+                }
+
                 document.getElementById("editPhoneModal").value = data.data.phoneNumber;
-                document.getElementById("editBirthDayModalLabel")
+                document.getElementById("editBirthDayModalLabel").value = data.data.dob;
+                document.getElementById("editFullName").value = data.data.fullname;
+                document.getElementById("editBioModalLabel").value = data.data.bio;
 
-            })
+                document.getElementById('submit').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    saveChanges(userId);
+                });
+            });
+    });
+});
+
+function saveChanges(userId) {
+    const phoneNumber = document.getElementById('editPhoneModal').value;
+    const dob = document.getElementById('editBirthDayModalLabel').value;
+    const bio = document.getElementById('editBioModalLabel').value;
+    const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
+    const avatarFile = document.getElementById('editAvatarUploaderModal').files[0]; 
+
+    if (!phoneRegex.test(phoneNumber)) {
+        alert("Vui lòng nhập số điện thoại hợp lệ.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("updateDTO", JSON.stringify({
+        phoneNumber: phoneNumber,
+        dob: dob,
+        bio: bio
+    }));
+
+    if (avatarFile) {
+        formData.append('avatar', avatarFile);
+    }
+
+    fetch(`http://localhost:8080/onboarding/change-profile/${userId}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: formData 
     })
-
-})
+        .then(response => response.json())
+        .then(data => {
+            if (data.status) {
+                alert('Cập nhật thông tin thành công!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Có lỗi xảy ra:', error);
+            alert('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
+        });
+}

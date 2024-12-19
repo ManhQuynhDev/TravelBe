@@ -42,11 +42,9 @@
                                     th:onclick="'loadUserDetails(' + ${manager.id} + ')'">
                                     <div id="avatar-container" class="avatar avatar-circle"
                                         style="width: 40px; height: 40px;">
-                                        <!-- Avatar -->
                                         <img th:if="${manager.avatarUrl != null && !manager.avatarUrl.isEmpty()}"
                                             th:src="${manager.avatarUrl}" alt="Avatar" class="rounded-circle"
-                                            style="width: 40px; height: 40px;">
-                                        <!-- Avatar text nếu không có ảnh -->
+                                            style="width: 40px; height: 40px; object-fit: cover;border-radius: 50%;">
                                         <div th:if="${manager.avatarUrl == null || manager.avatarUrl.isEmpty()}"
                                             class="avatar-text"
                                             style="background-color: #f0f0f0; color: #555; display: flex; justify-content: center; align-items: center;
@@ -85,9 +83,14 @@
                             <td>
                                 <button class="btn btn-sm btn-outline-primary" th:attr="data-id=${manager.id}"
                                     id="editManager">
-                                    <i class="tio-edit"></i>Edit</button>
+                                    <i class="tio-edit"></i> Chỉnh sửa
+                                </button>
                                 <button class="btn btn-sm btn-outline-success" th:attr="data-id=${manager.id}">
-                                    <i class="tio-users-switch mr-1"></i>Switch
+                                    <i class="tio-users-switch mr-1"></i> Đổi trạng thái
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" th:attr="data-id=${manager.id}"
+                                    id="deleteManager">
+                                    <i class="tio-delete"></i> Xóa
                                 </button>
                             </td>
                         </tr>
