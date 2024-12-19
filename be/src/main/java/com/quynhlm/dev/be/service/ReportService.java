@@ -118,7 +118,7 @@ public class ReportService {
         reportRepository.delete(report);
     }
 
-    public void handleReport(Integer userId, Integer report_id, String action)
+    public void handleReport(Integer userId, Integer report_id, String action , String status)
             throws UnknownException, UserAccountNotFoundException, ReportNotFoundException {
         Report report = reportRepository.findReportById(report_id);
         if (report == null) {
@@ -132,7 +132,8 @@ public class ReportService {
                     "Found user with " + report.getUserId() + " not found , please try with other id");
         }
 
-        report.setStatus(action);
+        report.setViolationType(action);
+        report.setStatus(status);
         report.setResponse_time(new Timestamp(System.currentTimeMillis()).toString());
         Report saveReport = reportRepository.save(report);
         if (saveReport.getId() == null) {

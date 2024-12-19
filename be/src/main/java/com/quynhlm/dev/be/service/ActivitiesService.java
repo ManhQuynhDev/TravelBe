@@ -6,12 +6,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
+import java.util.List;
 
 import com.quynhlm.dev.be.core.exception.ActivitiesExistingException;
 import com.quynhlm.dev.be.core.exception.ActivitiesNotFoundException;
 import com.quynhlm.dev.be.core.exception.TravelPlanNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
+import com.quynhlm.dev.be.model.dto.responseDTO.ActivityResponseDTO;
 import com.quynhlm.dev.be.model.entity.Activities;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.model.entity.User;
@@ -65,12 +67,30 @@ public class ActivitiesService {
         activitiesRepository.delete(foundActivity);
     }
 
-    public Activities getAnActivity(int id) throws ActivitiesNotFoundException {
+    public ActivityResponseDTO getAnActivity(int id) throws ActivitiesNotFoundException {
         Activities foundActivity = activitiesRepository.findActivities(id);
         if (foundActivity == null) {
             throw new ActivitiesNotFoundException("Activity with id " + id + " not found. Please try another!");
         }
-        return foundActivity;
+
+        List<Object[]> results = activitiesRepository.findActivitiesWithId(id);
+
+        Object[] result = results.get(0);
+        ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO();
+        activityResponseDTO.setId(((Number) result[0]).intValue());
+        activityResponseDTO.setUserId(((Number) result[1]).intValue());
+        activityResponseDTO.setPlanId(((Number) result[2]).intValue());
+        activityResponseDTO.setLocationId(((Number) result[3]).intValue());
+        activityResponseDTO.setActivity_name((String) result[4]);
+        activityResponseDTO.setFullname((String) result[5]);
+        activityResponseDTO.setAvatarUrl((String) result[6]);
+        activityResponseDTO.setPlanName((String) result[7]);
+        activityResponseDTO.setDescription((String) result[8]);
+        activityResponseDTO.setTime((String) result[9]);
+        activityResponseDTO.setCost((Double) result[10]);
+        activityResponseDTO.setStatus((String) result[11]);
+        activityResponseDTO.setCreate_time((String) result[12]);
+        return activityResponseDTO;
     }
 
     public void updateActivities(int id, Activities activities)

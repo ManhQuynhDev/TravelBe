@@ -103,6 +103,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
     }
+
     // Email
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
@@ -236,6 +237,16 @@ public class UserController {
         ResponseObject<Void> response = new ResponseObject<>();
         response.setStatus(true);
         response.setMessage("Device token registered successfully.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/lock-status")
+    public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer id,
+            @RequestParam String isLock) {
+        userService.switchIsLockedUser(id, isLock);
+        ResponseObject<Void> response = new ResponseObject<>();
+        response.setStatus(true);
+        response.setMessage("Transaction successfully.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

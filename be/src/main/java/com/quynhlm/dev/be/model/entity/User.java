@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.Length;
 
 import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
 import com.quynhlm.dev.be.core.validation.StrongPassword;
@@ -17,7 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -50,5 +48,6 @@ public class User {
     private String isLocked;
     private String deviceToken;
     private String currentDevice;
+    private LocalDateTime lockDate;
     private LocalDateTime lastNameChangeDate;
 }

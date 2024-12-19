@@ -313,9 +313,10 @@ public class UserService {
 
         return isCheck && expiration_time.after(new Date());
     }
+
     // ChangeFullname
     public void changeFullname(Integer id, String changeName)
-            throws UnknownException, UserAccountNotFoundException , MethodNotValidException {
+            throws UnknownException, UserAccountNotFoundException, MethodNotValidException {
         if (userRepository.findById(id).isEmpty()) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         } else {
@@ -332,7 +333,8 @@ public class UserService {
 
             String nameRegex = "^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ]*$";
             if (!Pattern.matches(nameRegex, changeName)) {
-                throw new MethodNotValidException("Full name must start with a letter and not contain special characters.");
+                throw new MethodNotValidException(
+                        "Full name must start with a letter and not contain special characters.");
             }
 
             user.setFullname(changeName);
@@ -355,7 +357,7 @@ public class UserService {
 
     public void deleteUser(Integer userId) throws UserAccountNotFoundException {
         User foundUser = userRepository.getAnUser(userId);
-        if(foundUser == null){
+        if (foundUser == null) {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again !");
         }
         userRepository.delete(foundUser);
@@ -397,6 +399,7 @@ public class UserService {
                     foundUser.setAvatarUrl(mediaUrl);
                 }
             }
+
             if (updateUser.getBio() != null) {
                 foundUser.setBio(updateUser.getBio());
             }
@@ -441,6 +444,34 @@ public class UserService {
         }
 
         user.setIsLocked(isLock);
+
+        userRepository.save(user);
+    }
+
+    public void lockAccountUser(Integer id, String isLock)
+            throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
+        User user = userRepository.findOneById(id);
+        if (user == null) {
+            throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
+        }
+
+        String[] statusUser = { "OPEN", "LOCK" };
+
+        if (isLock == null || !Arrays.asList(statusUser).contains(isLock)) {
+            throw new MethodNotValidException("Invalid status user type. Please try again!");
+        }
+
+        if ("LOCK".equals(isLock) && "LOCK".equals(user.getIsLocked())) {
+            throw new UnknownException("User is already locked!");
+        }
+
+        if ("LOCK".equals(isLock)) {
+            user.setIsLocked("LOCK");
+            user.setLockDate(LocalDateTime.now());
+        } else {
+            user.setIsLocked("OPEN");
+            user.setLockDate(null);
+        }
 
         userRepository.save(user);
     }

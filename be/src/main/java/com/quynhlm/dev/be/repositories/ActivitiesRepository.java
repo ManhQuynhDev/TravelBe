@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +19,15 @@ public interface ActivitiesRepository extends JpaRepository<Activities, Integer>
 
     @Query(value = "SELECT * FROM Activities WHERE id = :id", nativeQuery = true)
     Activities findActivities(@Param("id") Integer id);
+
+    @Query(value = """
+                select a.id , u.id as user_id ,t.id as plan_id,a.location_id, a.name , u.fullname , u.avatar_url, t.plan_name , a.description , a.time  , a.cost , a.status , a.create_time
+                from activities a
+                INNER JOIN User u ON u.id = a.user_id
+                INNER JOIN Travel_plan t ON t.id = a.plan_id
+                WHERE a.id = :id;
+                    """, nativeQuery = true)
+    List<Object[]> findActivitiesWithId(@Param("id") Integer id);
 
     @Query(value = "SELECT * FROM activities WHERE plan_id = :planId", nativeQuery = true)
     Page<Activities> findAllActivitiesWithPlanId(@Param("planId") Integer planId, Pageable pageable);

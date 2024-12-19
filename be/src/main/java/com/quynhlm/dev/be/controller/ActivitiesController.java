@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
+import com.quynhlm.dev.be.model.dto.responseDTO.ActivityResponseDTO;
 import com.quynhlm.dev.be.model.entity.Activities;
 import com.quynhlm.dev.be.service.ActivitiesService;
 
@@ -50,12 +51,12 @@ public class ActivitiesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<Activities>> getAnActivity(@PathVariable Integer id) {
-        ResponseObject<Activities> result = new ResponseObject<>();
+    public ResponseEntity<ResponseObject<ActivityResponseDTO>> getAnActivity(@PathVariable Integer id) {
+        ResponseObject<ActivityResponseDTO> result = new ResponseObject<>();
         result.setStatus(true);
         result.setData(activitiesService.getAnActivity(id));
         result.setMessage("Get an activity successfully");
-        return new ResponseEntity<ResponseObject<Activities>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<ActivityResponseDTO>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

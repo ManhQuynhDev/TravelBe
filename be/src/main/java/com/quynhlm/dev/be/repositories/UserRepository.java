@@ -1,5 +1,6 @@
 package com.quynhlm.dev.be.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -82,4 +83,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
              """, nativeQuery = true)
     Page<User> findAllManager(Pageable pageable);
 
+    List<User> findAllByIsLockedAndLockDateBefore(String isLocked, LocalDateTime lockDate);
 }
