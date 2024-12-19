@@ -206,7 +206,6 @@ public class CommentService {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Object[]> results = commentRepository.fetchCommentWithPostId(pageable, postId, userId);
-
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
             comment.setCommentId(((Number) row[0]).intValue());
@@ -216,11 +215,11 @@ public class CommentService {
             comment.setContent((String) row[4]);
             comment.setPostId(row[5] != null ? ((Number) row[5]).intValue() : null);
             comment.setShareId(row[6] != null ? ((Number) row[6]).intValue() : null);
-            comment.setCreate_time((String) row[7]);
+            comment.setCreate_time((String) row[7]);    
             comment.setReaction_count(((Number) row[8]).intValue());
             comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
@@ -228,7 +227,7 @@ public class CommentService {
                         reply.setCommentId(((Number) r[1]).intValue());
                         reply.setOwnerId(((Number) r[2]).intValue());
                         reply.setFullname((String) r[3]);
-                        reply.setAvatar((String) r[4]); 
+                        reply.setAvatar((String) r[4]);
                         reply.setContent((String) r[5]);
                         reply.setCreate_time((String) r[6]);
                         reply.setReaction_count(((Number) r[7]).intValue());
@@ -297,7 +296,7 @@ public class CommentService {
             comment.setReaction_count(((Number) row[8]).intValue());
             comment.setUser_reaction_type((String) row[9]);
 
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue() , userId);
+            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
                     .map(r -> {
                         ReplyResponseDTO reply = new ReplyResponseDTO();
