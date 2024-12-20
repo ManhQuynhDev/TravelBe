@@ -46,8 +46,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                                             """, nativeQuery = true)
     Page<Object[]> findAllUser(Pageable pageable);
 
-
-
     @Query(value = """
                      SELECT 
                         months.month AS month,

@@ -144,4 +144,35 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
             """, nativeQuery = true)
     List<Object[]> Top10GroupByMembers();
 
+    @Query(value = """
+                WITH months AS (
+                SELECT 1 AS month UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9 UNION ALL
+                SELECT 10 UNION ALL
+                SELECT 11 UNION ALL
+                SELECT 12
+            )
+            SELECT
+                m.month AS month_number,
+                COALESCE(COUNT(p.id), 0) AS post_count
+            FROM months m
+            LEFT JOIN (
+                SELECT
+                    MONTH(create_time) AS month,
+                    YEAR(create_time) AS year,
+                    id
+                FROM m_group
+                WHERE YEAR(create_time) = :year
+            ) p ON m.month = p.month
+            GROUP BY m.month
+            ORDER BY m.month;
+                        """, nativeQuery = true)
+    List<Object[]> groupCreateInMonth(@Param("year") Integer year);
 }

@@ -25,6 +25,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.GroupRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.repositories.GroupRepository;
@@ -362,5 +363,19 @@ public class GroupService {
         });
 
         return groupResponseList;
+    }
+
+    public List<PostStatisticalDTO> getPostCreateCount(int year) {
+        List<Object[]> results = groupRepository.groupCreateInMonth(year);
+
+        List<PostStatisticalDTO> postStatisticalDTOs = new ArrayList<>();
+
+        for (Object[] row : results) {
+            PostStatisticalDTO dto = new PostStatisticalDTO();
+            dto.setMonth(((Number) row[0]).intValue());
+            dto.setPost_count(((Number) row[1]).intValue());
+            postStatisticalDTOs.add(dto);
+        }
+        return postStatisticalDTOs;
     }
 }

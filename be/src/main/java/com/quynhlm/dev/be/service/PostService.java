@@ -2,6 +2,7 @@ package com.quynhlm.dev.be.service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.model.entity.HashTag;
@@ -175,11 +177,12 @@ public class PostService {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
         }
 
-        // List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+        // List<FriendShip> friendShips =
+        // friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
 
         // List<Integer> friendUserIds = friendShips.stream()
-        //         .map(FriendShip::getUserSendId)
-        //         .collect(Collectors.toList());
+        // .map(FriendShip::getUserSendId)
+        // .collect(Collectors.toList());
 
         Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(userId, pageable);
 
@@ -233,68 +236,77 @@ public class PostService {
         });
     }
 
-    // public Page<PostResponseDTO> getAllPostsAndSharedPosts(Integer userId, Pageable pageable)
-    //         throws UserAccountNotFoundException {
+    // public Page<PostResponseDTO> getAllPostsAndSharedPosts(Integer userId,
+    // Pageable pageable)
+    // throws UserAccountNotFoundException {
 
-    //     User foundUser = userRepository.getAnUser(userId);
+    // User foundUser = userRepository.getAnUser(userId);
 
-    //     if (foundUser == null) {
-    //         throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
-    //     }
+    // if (foundUser == null) {
+    // throw new UserAccountNotFoundException("Found user with " + userId + " not
+    // found . Please try again !");
+    // }
 
-    //     // List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+    // // List<FriendShip> friendShips =
+    // friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
 
-    //     // List<Integer> friendUserIds = friendShips.stream()
-    //     //         .map(FriendShip::getUserSendId)
-    //     //         .collect(Collectors.toList());
+    // // List<Integer> friendUserIds = friendShips.stream()
+    // // .map(FriendShip::getUserSendId)
+    // // .collect(Collectors.toList());
 
-    //     Page<Object[]> results = postRepository.getAllPostsExceptFriends(userId, pageable);
+    // Page<Object[]> results = postRepository.getAllPostsExceptFriends(userId,
+    // pageable);
 
-    //     return results.map(row -> {
-    //         PostResponseDTO post = new PostResponseDTO();
+    // return results.map(row -> {
+    // PostResponseDTO post = new PostResponseDTO();
 
-    //         post.setOwnerId(((Number) row[0]).intValue());
-    //         post.setPostId(((Number) row[1]).intValue());
-    //         post.setLocationId(((Number) row[2]).intValue());
-    //         post.setLocation((String) row[3]);
-    //         post.setOwnerName((String) row[4]);
-    //         post.setAvatarUrl((String) row[5]);
-    //         post.setContent((String) row[6]);
-    //         post.setStatus((String) row[7]);
-    //         post.setType((String) row[8]);
-    //         post.setIsShare(((Number) row[9]).intValue());
-    //         post.setCreate_time((String) row[10]);
-    //         post.setShare_by_user(row[11] != null ? ((Number) row[11]).intValue() : null);
-    //         post.setReaction_count(((Number) row[12]).intValue());
-    //         post.setComment_count(((Number) row[13]).intValue());
-    //         post.setShare_count(((Number) row[14]).intValue());
-    //         post.setIsTag(((Number) row[15]).intValue());
-    //         post.setUser_reaction_type((String) row[16]);
+    // post.setOwnerId(((Number) row[0]).intValue());
+    // post.setPostId(((Number) row[1]).intValue());
+    // post.setLocationId(((Number) row[2]).intValue());
+    // post.setLocation((String) row[3]);
+    // post.setOwnerName((String) row[4]);
+    // post.setAvatarUrl((String) row[5]);
+    // post.setContent((String) row[6]);
+    // post.setStatus((String) row[7]);
+    // post.setType((String) row[8]);
+    // post.setIsShare(((Number) row[9]).intValue());
+    // post.setCreate_time((String) row[10]);
+    // post.setShare_by_user(row[11] != null ? ((Number) row[11]).intValue() :
+    // null);
+    // post.setReaction_count(((Number) row[12]).intValue());
+    // post.setComment_count(((Number) row[13]).intValue());
+    // post.setShare_count(((Number) row[14]).intValue());
+    // post.setIsTag(((Number) row[15]).intValue());
+    // post.setUser_reaction_type((String) row[16]);
 
-    //         Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
-    //         post.setAverageRating(averageRating != null ? averageRating : 0.0);
+    // Double averageRating = reviewRepository.averageStarWithLocation(((Number)
+    // row[2]).intValue());
+    // post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-    //         List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+    // List<String> medias = mediaRepository.findMediaByPostId(((Number)
+    // row[1]).intValue());
 
-    //         post.setMediaUrls(medias);
+    // post.setMediaUrls(medias);
 
-    //         List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
+    // List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number)
+    // row[1]).intValue());
 
-    //         post.setHashtags(hashtags);
+    // post.setHashtags(hashtags);
 
-    //         if (((Number) row[15]).intValue() >= 1) {
-    //             List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number) row[1]).intValue());
-    //             List<UserTagPostResponse> responses = rawResults.stream()
-    //                     .map(u -> new UserTagPostResponse(
-    //                             ((Number) u[0]).intValue(),
-    //                             (String) u[1],
-    //                             (String) u[2]))
-    //                     .collect(Collectors.toList());
+    // if (((Number) row[15]).intValue() >= 1) {
+    // List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number)
+    // row[1]).intValue());
+    // List<UserTagPostResponse> responses = rawResults.stream()
+    // .map(u -> new UserTagPostResponse(
+    // ((Number) u[0]).intValue(),
+    // (String) u[1],
+    // (String) u[2]))
+    // .collect(Collectors.toList());
 
-    //             post.setTags(responses);
-    //         }
-    //         return post;
-    //     });
+    // post.setTags(responses);
+    // }
+    // return post;
+    // });
     // }
 
     public void deletePost(int post_id) throws PostNotFoundException {
@@ -541,8 +553,8 @@ public class PostService {
     }
 
     // Get All Video
-    public Page<VideoPostDTO> getAllPostTypeVideo(Integer user_id,Pageable pageable) {
-        Page<Object[]> results = postRepository.fetchPostWithMediaTypeVideo(user_id , pageable);
+    public Page<VideoPostDTO> getAllPostTypeVideo(Integer user_id, Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchPostWithMediaTypeVideo(user_id, pageable);
 
         return results.map(row -> {
             VideoPostDTO post = new VideoPostDTO();
@@ -570,8 +582,8 @@ public class PostService {
     }
 
     // Get All Post
-    public Page<PostMediaDTO> getAllPost(Integer user_id , Pageable pageable) {
-        Page<Object[]> results = postRepository.fetchAllPost(user_id,pageable);
+    public Page<PostMediaDTO> getAllPost(Integer user_id, Pageable pageable) {
+        Page<Object[]> results = postRepository.fetchAllPost(user_id, pageable);
 
         return results.map(row -> {
             PostMediaDTO post = new PostMediaDTO();
@@ -589,6 +601,37 @@ public class PostService {
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
+
+            List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
+
+            post.setHashtags(hashtags);
+
+            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[0]).intValue());
+
+            post.setMediaUrls(medias);
+
+            return post;
+        });
+    }
+
+    public Page<PostMediaDTO> postStatistical(Pageable pageable) {
+        Page<Object[]> results = postRepository.statisticalPost(pageable);
+
+        return results.map(row -> {
+            PostMediaDTO post = new PostMediaDTO();
+            post.setPostId(((Number) row[0]).intValue());
+            post.setOwnerId(((Number) row[1]).intValue());
+            post.setLocationId(((Number) row[2]).intValue());
+            post.setLocation((String) row[3]);
+            post.setContent((String) row[4]);
+            post.setStatus((String) row[5]);
+            post.setFullname((String) row[6]);
+            post.setAvatar((String) row[7]);
+            post.setType((String) row[8]);
+            post.setCreate_time((String) row[9]);
+            post.setReaction_count(((Number) row[10]).intValue());
+            post.setComment_count(((Number) row[11]).intValue());
+            post.setShare_count(((Number) row[12]).intValue());
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
@@ -621,7 +664,7 @@ public class PostService {
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
-            
+
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
             post.setHashtags(hashtags);
@@ -633,8 +676,22 @@ public class PostService {
             return post;
         });
     }
-    // Feature search with hashtag
-    public List<String> getAllHashTag () {
+
+    public List<String> getAllHashTag() {
         return hashTagRespository.findHashtag();
+    }
+
+    public List<PostStatisticalDTO> getPostCreateCount(int year) {
+        List<Object[]> results = postRepository.PostCreateInMonth(year);
+
+        List<PostStatisticalDTO> postStatisticalDTOs = new ArrayList<>();
+
+        for (Object[] row : results) {
+            PostStatisticalDTO dto = new PostStatisticalDTO();
+            dto.setMonth(((Number) row[0]).intValue());
+            dto.setPost_count(((Number) row[1]).intValue());
+            postStatisticalDTOs.add(dto);
+        }
+        return postStatisticalDTOs;
     }
 }

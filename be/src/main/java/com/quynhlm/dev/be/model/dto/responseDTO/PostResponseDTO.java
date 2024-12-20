@@ -25,7 +25,7 @@ public class PostResponseDTO {
     private String create_time;
     private Integer share_by_user;
     private String share_by_name;
-    private String share_by_avatar;
+    private String share_by_avatar; 
     private Integer reaction_count;
     private Integer comment_count;
     private Integer share_count;
