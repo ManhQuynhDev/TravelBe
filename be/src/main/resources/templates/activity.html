@@ -216,6 +216,9 @@
             $('#addActivityModal').modal('show');
         });
         document.getElementById('saveActivityButton').addEventListener('click', async function () {
+            const saveButton = document.getElementById('saveActivityButton');
+            saveButton.disabled = true;  // Vô hiệu hóa nút khi bắt đầu
+
             const activityName = document.getElementById('activityName').value;
             const planId = document.getElementById('planId').value;
             const locationId = document.getElementById('locationSelect').value;
@@ -227,42 +230,57 @@
             // Validate input fields
             if (!planId) {
                 alert('Vui lòng chọn kế hoạch.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
             if (!activityName) {
                 alert('Vui lòng nhập tên hoạt động.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (activityName.length < 3 || activityName.length > 50) {
                 alert('Tên hoạt động phải có độ dài từ 3 đến 50 ký tự.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (/[^a-zA-Z0-9\s]/.test(activityName)) {
                 alert('Tên hoạt động không được chứa ký tự đặc biệt.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!locationId) {
                 alert('Vui lòng chọn vị trí.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!activityTime) {
                 alert('Vui lòng chọn thời gian.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!activityStatus) {
                 alert('Vui lòng chọn trạng thái.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!activityDescription) {
                 alert('Vui lòng nhập mô tả.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!activityCost || activityCost < 0) {
                 alert('Vui lòng nhập chi phí hợp lệ.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
+            const token = localStorage.getItem("authToken");  // Lấy token từ localStorage
+            if (!token) {
+                alert('Phiên đăng nhập không hợp lệ. Vui lòng đăng nhập lại.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
+                return;
+            }
 
             const activityData = {
                 planId: planId,
@@ -291,13 +309,16 @@
 
                 const result = await response.json();
                 alert('Thêm hoạt động thành công!');
-                $('#addActivityModal').modal('hide'); // Close modal
-                window.location.reload();
+                $('#addActivityModal').modal('hide'); // Đóng modal
+                window.location.reload();  // Tải lại trang
             } catch (error) {
                 console.error('Lỗi khi lưu hoạt động:', error);
                 alert('Có lỗi xảy ra khi thêm hoạt động.');
+            } finally {
+                saveButton.disabled = false;  // Kích hoạt lại nút khi hoàn tất hoặc có lỗi
             }
         });
+
 
 
 

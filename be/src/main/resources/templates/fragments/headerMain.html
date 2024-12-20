@@ -43,7 +43,7 @@
                    &quot;type&quot;: &quot;css-animation&quot;
                  }" data-hs-unfold-target="#notificationDropdown" data-hs-unfold-invoker="">
                 <i class="tio-notifications-on-outlined"></i>
-                <span class="btn-status btn-sm-status btn-status-danger"></span>
+                <span class="btn-status btn-sm-status btn-status-danger" id="notificationButton"></span>
               </a>
 
               <div id="notificationDropdown"
@@ -55,40 +55,6 @@
                   <span class="card-title h4">Notifications</span>
 
                   <!-- Unfold -->
-                  <div class="hs-unfold">
-                    <a class="js-hs-unfold-invoker btn btn-icon btn-sm btn-ghost-secondary rounded-circle"
-                      href="javascript:;" data-hs-unfold-options="{
-                         &quot;target&quot;: &quot;#notificationSettingsOneDropdown&quot;,
-                         &quot;type&quot;: &quot;css-animation&quot;
-                       }" data-hs-unfold-target="#notificationSettingsOneDropdown" data-hs-unfold-invoker="">
-                      <i class="tio-more-vertical"></i>
-                    </a>
-                    <div id="notificationSettingsOneDropdown"
-                      class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right hs-unfold-hidden hs-unfold-content-initialized hs-unfold-css-animation animated"
-                      data-hs-target-height="0" data-hs-unfold-content=""
-                      data-hs-unfold-content-animation-in="slideInUp" data-hs-unfold-content-animation-out="fadeOut"
-                      style="animation-duration: 300ms;">
-                      <span class="dropdown-header">Settings</span>
-                      <a class="dropdown-item" href="#">
-                        <i class="tio-archive dropdown-item-icon"></i> Archive all
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <i class="tio-all-done dropdown-item-icon"></i> Mark all as read
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <i class="tio-toggle-off dropdown-item-icon"></i> Disable notifications
-                      </a>
-                      <a class="dropdown-item" href="#">
-                        <i class="tio-gift dropdown-item-icon"></i> What's new?
-                      </a>
-                      <div class="dropdown-divider"></div>
-                      <span class="dropdown-header">Feedback</span>
-                      <a class="dropdown-item" href="#">
-                        <i class="tio-chat-outlined dropdown-item-icon"></i> Report
-                      </a>
-                    </div>
-                  </div>
-                  <!-- End Unfold -->
                 </div>
                 <!-- End Header -->
 
@@ -96,11 +62,8 @@
                 <ul class="nav nav-tabs nav-justified" id="notificationTab" role="tablist">
                   <li class="nav-item">
                     <a class="nav-link active" id="notificationNavOne-tab" data-toggle="tab" href="#notificationNavOne"
-                      role="tab" aria-controls="notificationNavOne" aria-selected="true">Messages</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" id="notificationNavTwo-tab" data-toggle="tab" href="#notificationNavTwo"
-                      role="tab" aria-controls="notificationNavTwo" aria-selected="false">Archived</a>
+                      role="tab" aria-controls="notificationNavOne" aria-selected="true"
+                      >Reports </a>
                   </li>
                 </ul>
                 <!-- End Nav -->
@@ -111,20 +74,20 @@
                   <div class="tab-content" id="notificationTabContent">
                     <div class="tab-pane fade show active" id="notificationNavOne" role="tabpanel"
                       aria-labelledby="notificationNavOne-tab">
-                      <ul class="list-group list-group-flush navbar-card-list-group" id="list_notification">
-
-                        <div class="tab-pane fade" id="notificationNavTwo" role="tabpanel"
-                          aria-labelledby="notificationNavTwo-tab">
-                          <ul class="list-group list-group-flush navbar-card-list-group">
-
-                          </ul>
-                        </div>
+                      <ul class="list-group list-group-flush navbar-card-list-group" id="reportList">
+                        <!-- Dữ liệu sẽ được render ở đây -->
+                      </ul>
                     </div>
-                    <!-- End Tab Content -->
+
                   </div>
-                  <!-- End Card Footer -->
                 </div>
+
+                <a class="card-footer text-center" href="#">
+
+                </a>
+                <!-- End Card Footer -->
               </div>
+            </div>
           </li>
 
           <li class="nav-item">
@@ -179,6 +142,10 @@
     </div>
   </header>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.7/plugin/relativeTime.js"></script>
+
+
 <script>
 
   fetch(`http://localhost:8080/onboarding/users/${localStorage.getItem('user_id')}`, {
@@ -193,14 +160,128 @@
       const user = data.data;
 
       const avatarUrl = user.avatarUrl ? user.avatarUrl : `https://ui-avatars.com/api/?name=${user.fullname}&size=128&background=random`;
-      document.getElementById("userAvatar1").src = avatarUrl;  // Sử dụng avatar từ API hoặc tạo avatar mặc định
-      document.getElementById("userAvatar").src = avatarUrl;  // Sử dụng avatar từ API hoặc tạo avatar mặc định
-      document.getElementById("userName").textContent = user.fullname || "Tên người dùng";  // Cập nhật tên người dùng
-      document.getElementById("userEmail").textContent = user.email || "email@example.com";  // Cập nhật email người dùng
+      document.getElementById("userAvatar1").src = avatarUrl;
+      document.getElementById("userAvatar").src = avatarUrl;
+      document.getElementById("userName").textContent = user.fullname || "Tên người dùng";
+      document.getElementById("userEmail").textContent = user.email || "email@example.com";
     })
     .catch(error => {
       console.error('Có lỗi khi lấy thông tin người dùng:', error);
     });
+
+  const API_URL = "http://localhost:8080/api/report?size=100&page=0";
+  const TOKEN = localStorage.getItem("authToken");
+
+  async function fetchReports() {
+    try {
+      // Lấy dữ liệu từ API
+      const response = await fetch(API_URL, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${TOKEN}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      // Kiểm tra lỗi phản hồi
+      if (!response.ok) {
+        throw new Error(`Lỗi ${response.status}: ${response.statusText}`);
+      }
+
+      // Chuyển đổi phản hồi thành JSON
+      const result = await response.json();
+      console.log(result);
+
+      // Lọc các báo cáo có trạng thái là PENDING
+      const reports = Array.isArray(result.content) ? result.content.filter(report => report.status === "PENDING") : [];
+
+      // Lấy phần tử DOM
+      const reportList = document.getElementById("reportList");
+      const notificationButton = document.getElementById("notificationButton");
+
+      // Nếu không có báo cáo, hiển thị thông báo
+      if (reports.length === 0) {
+        reportList.innerHTML = `<li class="list-group-item text-center">Không có thông báo nào</li>`;
+        if (notificationButton) {
+          notificationButton.style.display = "none";
+        }
+        return;
+      }
+
+      if (notificationButton) {
+        notificationButton.style.display = "inline";
+      }
+
+      reportList.innerHTML = "";
+      dayjs.extend(dayjs_plugin_relativeTime);
+      dayjs.locale('vi');
+
+      reports.reverse();
+
+      reports.forEach(report => {
+        const timeAgo = dayjs(report.create_time);
+        const diffInMinutes = timeAgo.diff(dayjs(), 'minute');
+        let formattedTime = '';
+
+        if (diffInMinutes < 60) {
+          formattedTime = `${Math.abs(diffInMinutes)} m`;
+        } else if (diffInMinutes < 1440) {
+          const diffInHours = timeAgo.diff(dayjs(), 'hour');
+          formattedTime = `${Math.abs(diffInHours)} h`;
+        } else if (diffInMinutes < 43200) {
+          const diffInDays = timeAgo.diff(dayjs(), 'day');
+          formattedTime = `${Math.abs(diffInDays)} d`;
+        } else {
+          const diffInMonths = timeAgo.diff(dayjs(), 'month');
+          formattedTime = `${Math.abs(diffInMonths)} m`;
+        }
+
+        const listItem = `
+        <li class="list-group-item custom-checkbox-list-wrapper border-0 rounded shadow-sm mb-3">
+          <div class="row d-flex align-items-center">
+            <!-- Avatar and Checkbox -->
+            <div class="col-auto position-static">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm avatar-circle">
+                  ${report.avatarUrl ?
+            `<img class="avatar-img" src="${report.avatarUrl}" alt="Image Description">` :
+            `<span class="avatar-img" style="display: flex; align-items: center; justify-content: center; background-color: #ccc; color: white; font-weight: bold; width: 35px; height: 35px; border-radius: 50%;">${(report.fullname.charAt(0).toUpperCase()) || '?'}</span>`}
+                </div>
+              </div>
+            </div>
+
+            <!-- Report Details (Làm cho phần này rộng nhất) -->
+            <div class="col flex-grow-1 ml-n3">
+              <span class="card-title h5">${report.fullname || "Người dùng ẩn danh"}</span>
+              <p class="card-text font-size-sm">
+                Đã báo cáo bài viết có ID: ${report.postId} với lý do: ${report.reason || "Không có lý do"}
+              </p>
+            </div>
+
+            <!-- Time -->
+            <div class="text-muted text-cap" style="font-size: 0.8rem;">
+              <small>${formattedTime} ago</small>
+            </div>
+          </div>
+
+          <a class="stretched-link" href="#"></a>
+        </li>
+      `;
+
+        reportList.insertAdjacentHTML("beforeend", listItem);
+      });
+
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+      document.getElementById("reportList").innerHTML =
+        `<li class="list-group-item text-danger text-center">Không thể tải dữ liệu</li>`;
+    }
+  }
+
+  fetchReports();
+
+
+
 
 
 

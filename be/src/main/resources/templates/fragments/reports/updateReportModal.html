@@ -44,6 +44,29 @@
                     </div>
                 </div>
 
+                <!-- Violation Type Dropdown -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Loại vi phạm</label>
+                    <div class="col-sm-9">
+                        <select id="updateViolationTypeSelect" class="form-control">
+                            <option value="Spam">Spam</option>
+                            <option value="Ngôn ngữ thù địch">Ngôn ngữ thù địch</option>
+                            <option value="Quấy rối">Quấy rối</option>
+                            <option value="Nội dung không phù hợp">Nội dung không phù hợp</option>
+                            <option value="Other">Khác</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <!-- "Khác" Lý do (cho phép nhập) -->
+                <div id="otherReasonInput" class="row mb-3" style="display: none;">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Lý do khác</label>
+                    <div class="col-sm-9 d-flex">
+                        <input type="text" id="otherReason" class="form-control" placeholder="Vui lòng nhập lý do khác">
+                    </div>
+                </div>
+
                 <!-- Action Selection -->
                 <div class="row mb-3">
                     <label class="col-sm-3 col-form-label" style="font-weight: bold;">Hành động</label>
@@ -53,6 +76,7 @@
                             <option value="Khóa tài khoản vĩnh viễn">Khóa tài khoản vĩnh viễn</option>
                             <option value="Xóa bài viết">Xóa bài viết</option>
                             <option value="Cảnh báo người dùng">Cảnh báo người dùng</option>
+                            <option value="Từ chối báo cáo">Từ chối báo cáo</option>
                         </select>
                     </div>
                 </div>
@@ -66,3 +90,18 @@
         </div>
     </div>
 </div>
+
+<!-- JS để xử lý sự kiện lựa chọn "Khác" -->
+<script>
+    document.getElementById("updateViolationTypeSelect").addEventListener("change", function () {
+        var selectedValue = this.value;
+        var otherReasonInput = document.getElementById("otherReasonInput");
+
+        // Hiện hoặc ẩn input "Khác" nếu chọn "Khác"
+        if (selectedValue === "Other") {
+            otherReasonInput.style.display = "flex";
+        } else {
+            otherReasonInput.style.display = "none";
+        }
+    });
+</script>

@@ -244,20 +244,20 @@
                         noDataRow.innerHTML = `<td colspan="7" class="text-center">Không tìm thấy thành viên nào</td>`;
                         tableBody.appendChild(noDataRow);
                     } else {
-                        data.content.forEach(member => {
+                        data.content.forEach((member, index) => { // Thêm tham số index vào forEach
                             const row = document.createElement('tr');
                             row.innerHTML = `
-                <td>${member.userId}</td>
-                <td>
-                    <div class="member-info d-flex align-items-center">
-                        <img src="${member.avatar_url || '/assets/img/avatar.jpg'}" alt="Avatar" 
-                            class="rounded-circle mr-2" style="width: 40px; height: 40px;">
-                        <span>${member.fullname}</span>
-                    </div>
-                </td>
-                <td>${member.role}</td>
-                <td>${new Date(member.join_time).toLocaleString()}</td>
-            `;
+                                    <td>${index + 1}</td> <!-- Cột index bắt đầu từ 1 -->
+                                    <td>
+                                        <div class="member-info d-flex align-items-center">
+                                            <img src="${member.avatar_url || '/assets/img/avatar.jpg'}" alt="Avatar" 
+                                                class="rounded-circle mr-2" style="width: 40px; height: 40px;">
+                                            <span>${member.fullname}</span>
+                                        </div>
+                                    </td>
+                                    <td>${member.role}</td>
+                                    <td>${new Date(member.join_time).toLocaleString()}</td>
+                                `;
                             tableBody.appendChild(row);
                         });
                     }
@@ -364,6 +364,9 @@
         });
 
         document.getElementById("saveTravelPlanButton").addEventListener("click", function () {
+            const button = document.getElementById("saveTravelPlanButton");
+            button.disabled = true;  // Disable the button to prevent multiple clicks
+
             const groupId = document.getElementById('groupId').value;
             const planName = document.getElementById('planName').value.trim();
             const startDate = document.getElementById('startDate').value;
@@ -376,6 +379,7 @@
             // Kiểm tra các trường bắt buộc
             if (!groupId || !planName || !startDate || !endDate || !locationId || !totalBudget) {
                 alert('Vui lòng điền đầy đủ các trường bắt buộc.');
+                button.disabled = false;  // Re-enable the button if validation fails
                 return;
             }
 
@@ -383,10 +387,12 @@
             const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
             if (!nameRegex.test(planName)) {
                 alert("Tên kế hoạch không được chứa ký tự đặc biệt.");
+                button.disabled = false;  // Re-enable the button if validation fails
                 return;
             }
             if (planName.length < 3) {
                 alert("Tên kế hoạch phải có ít nhất 3 ký tự.");
+                button.disabled = false;  // Re-enable the button if validation fails
                 return;
             }
 
@@ -399,12 +405,14 @@
 
             if (startDateObj > endDateObj) {
                 alert('Ngày bắt đầu phải trước ngày kết thúc.');
+                button.disabled = false;  // Re-enable the button if validation fails
                 return;
             }
 
             // Kiểm tra ngân sách
             if (isNaN(totalBudget) || totalBudget <= 0) {
                 alert('Vui lòng nhập ngân sách hợp lệ.');
+                button.disabled = false;  // Re-enable the button if validation fails
                 return;
             }
 
@@ -444,8 +452,12 @@
                 .catch(error => {
                     console.error('Lỗi khi thêm kế hoạch du lịch:', error);
                     alert('Đã xảy ra lỗi khi thêm kế hoạch du lịch.');
+                })
+                .finally(() => {
+                    button.disabled = false;  // Re-enable the button after the request is completed
                 });
         });
+
 
 
 

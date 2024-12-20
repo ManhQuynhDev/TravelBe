@@ -36,6 +36,8 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
                INNER JOIN Location l on l.id = s.location_id
                LEFT JOIN
                   story_reaction r ON s.id = r.story_id
+
+
                WHERE s.id =:id
                GROUP BY
                   s.id , u.id , s.location_id,s.create_time,s.music_url,s.content;

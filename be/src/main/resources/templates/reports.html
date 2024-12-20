@@ -128,15 +128,13 @@
                                                 th:attr="data-id=${report.id}">
                                                 Chi tiết
                                             </button>
-                                            <button class="btn btn-sm btn-outline-danger mr-2" id="deleteReport"
-                                                th:attr="data-id=${report.id}">
-                                                Từ chối
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-success mr-2" id="approveReport"
+
+                                            <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}"
-                                                th:disabled="${report.status == 'processed'}">
+                                                th:disabled="${#strings.toLowerCase(report.status) == 'processed'}">
                                                 Phê duyệt
                                             </button>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -251,49 +249,7 @@
                     console.error("Failed: ", error);
                 });
         }
-        document.querySelectorAll('#deleteReport').forEach(button => {
-            button.addEventListener("click", function () {
-                const report_id = this.getAttribute("data-id");
-                const modal = new bootstrap.Modal(document.getElementById("denyReportModal"));
-                console.log(report_id);
-                modal.show();
 
-                const confirmButton = document.getElementById("confirmDeny");
-
-                const newConfirmButton = confirmButton.cloneNode(true);
-                confirmButton.replaceWith(newConfirmButton);
-
-                document.getElementById("confirmDeny").addEventListener("click", () => {
-                    fetch(`http://localhost:8080/api/report/${report_id}`, {
-                        method: "DELETE",
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem("authToken")}`
-                        }
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log(data);
-
-                            if (data.status) {
-                                alert("Từ chối thành công!");
-                                modal.hide();
-
-                                // Xóa dòng báo cáo từ bảng
-                                const reportRow = button.closest('tr');
-                                if (reportRow) {
-                                    reportRow.remove();
-                                }
-                            } else {
-                                alert("Không thể xóa báo cáo. Vui lòng thử lại.");
-                            }
-                        })
-                        .catch(error => {
-                            console.log(error);
-                            alert("Có lỗi xảy ra. Vui lòng thử lại.");
-                        });
-                });
-            });
-        });
 
         document.addEventListener('DOMContentLoaded', () => {
             const viewReviewButtons = document.querySelectorAll('#approveReport');
@@ -329,7 +285,9 @@
                             // Lưu thông tin reviewId và userId vào modal (nếu cần dùng sau)
                             modalElement._reviewId = reviewId;
                             modalElement._userId = userId;
+                            modalElement._adminId = data.data.adminId
                             modalElement._postId = data.data.postId;
+                            modalElement._reportId = data.data.id
                             console.log(data.data.postId);
                         })
                         .catch(error => {
@@ -344,50 +302,64 @@
                     const modalElement = document.getElementById('updateReportModal');
                     const modal = new bootstrap.Modal(modalElement);  // Mở modal trực tiếp mà không cần getInstance
                     const userId = modalElement._userId;
+                    const userErrorId = modalElement._adminId;
                     const reviewId = modalElement._reviewId;
                     const postId = modalElement._postId;
+                    const reportId = modalElement._reportId;
                     console.log(userId);
                     console.log(postId);
 
 
-                    const action = document.getElementById('updateActionSelect').value;
+                    var violationType = document.getElementById("updateViolationTypeSelect").value;
+                    var otherReason = document.getElementById("otherReason").value;
+                    var action = document.getElementById("updateActionSelect").value;
 
-                    const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?action=${action}&status=processed`;
+                    if (violationType === "Other") {
+                        if (otherReason.trim() === "") {
+                            alert("Vui lòng nhập lý do khác");
+                            return;
+                        } else {
+                            violationType = otherReason.trim();  // Gán giá trị lý do khác
+                        }
+                    }
+
+                    console.log(violationType);
+
+                    const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=PROCESSED&action=${encodeURIComponent(action)}`;
 
                     if (action === "Khóa tài khoản 3 ngày") {
-                        const url = `http://localhost:8080/onboarding/${userId}/lock-status?isLock=LOOK`;
+                        const url = `http://localhost:8080/onboarding/${userErrorId}/lock-status?isLock=LOOK`;
                         fetch(url, {
-                            method: 'PUT', // Chọn phương thức PUT
+                            method: 'PUT',
                             headers: {
-                                'Authorization': `Bearer ${token}`, // Token nếu cần thiết
-                                'Content-Type': 'application/json' // Định dạng dữ liệu JSON
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
                             },
                         })
-                            .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
+                            .then(response => response.json())
                             .then(data => {
-                                console.log('Xử lý thành công:', data);  // In ra kết quả trả về từ server
-                                alert('Tài khoản đã được khóa 3 ngày!');  // Thông báo cho người dùng
+                                alert('Tài khoản đã được khóa 3 ngày!');
                             })
                             .catch(error => {
-                                console.error('Lỗi khi xử lý khóa tài khoản:', error);  // In ra lỗi nếu có
-                                alert('Xử lý không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                                console.error('Lỗi khi xử lý khóa tài khoản:', error);
+                                alert('Xử lý không thành công. Vui lòng thử lại.');
                             });
                     } else if (action === "Khóa tài khoản vĩnh viễn") {
-                        fetch(`http://localhost:8080/onboarding/locked-account/${userId}/isLocked?isLocked=LOOK`, {
+                        fetch(`http://localhost:8080/onboarding/locked-account/${userErrorId}/isLocked?isLocked=LOOK`, {
                             method: "PUT",
                             headers: {
-                                'Authorization': `Bearer ${token}`, // Token nếu cần thiết
-                                'Content-Type': 'application/json' // Định dạng dữ liệu JSON
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
                             },
                         })
-                            .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
+                            .then(response => response.json())
                             .then(data => {
-                                console.log('Tài khoản đã bị khóa vĩnh viễn:', data);  // Xử lý kết quả trả về từ server
-                                alert('Tài khoản đã bị khóa vĩnh viễn!');  // Thông báo cho người dùng
+                                console.log('Tài khoản đã bị khóa vĩnh viễn:', data);
+                                alert('Tài khoản đã bị khóa vĩnh viễn!');
                             })
                             .catch(error => {
-                                console.error('Lỗi khi khóa tài khoản vĩnh viễn:', error);  // In ra lỗi nếu có
-                                alert('Xử lý không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                                console.error('Lỗi khi khóa tài khoản vĩnh viễn:', error);
+                                alert('Xử lý không thành công. Vui lòng thử lại.');
                             });
                     } else if (action === "Xóa bài viết") {
                         fetch(`http://localhost:8080/api/posts/${postId}`, {
@@ -398,25 +370,46 @@
                         })
                             .then(response => {
                                 if (response.ok) {
-                                    return response.json();  // Chuyển đổi phản hồi thành JSON
+                                    return response.json();
                                 } else {
-                                    throw new Error('Lỗi khi xóa bài viết');  // Thông báo lỗi nếu không thành công
+                                    throw new Error('Lỗi khi xóa bài viết');
                                 }
                             })
                             .then(data => {
-                                console.log('Bài viết đã được xóa:', data);  // Xử lý kết quả trả về từ server
-                                alert('Bài viết đã được xóa!');  // Thông báo cho người dùng
+                                console.log('Bài viết đã được xóa:', data);
+                                alert('Bài viết đã được xóa!');
                             })
                             .catch(error => {
-                                console.error('Lỗi khi xóa bài viết:', error);  // In ra lỗi nếu có
-                                alert('Xóa bài viết không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                                console.error('Lỗi khi xóa bài viết:', error);
+                                alert('Xóa bài viết không thành công. Vui lòng thử lại.');
                             });
                     } else if (action === "Cảnh báo người dùng") {
                         console.log("lô lô");
 
+                    } else if (action === "Từ chối báo cáo") {
+                        fetch(`http://localhost:8080/api/report/${reportId}`, {
+                            method: "DELETE",
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem("authToken")}`
+                            }
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                console.log(data);
+
+                                if (data.status) {
+                                    alert("Từ chối thành công!");
+                                } else {
+                                    alert("Không thể xóa báo cáo. Vui lòng thử lại.");
+                                }
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                alert("Có lỗi xảy ra. Vui lòng thử lại.");
+                            });
                     }
                     fetch(requestUrl, {
-                        method: 'PUT',  // Đổi từ POST thành PUT
+                        method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
@@ -424,9 +417,8 @@
                     })
                         .then(response => response.json())
                         .then(data => {
-                            console.log('Xử lý thành công:', data);
-                            alert('Báo cáo đã được xử lý!');
-                            modal.hide();  // Đóng modal sau khi xử lý
+                            modal.hide();
+                            window.location.reload()
                         })
                         .catch(error => {
                             console.error('Lỗi khi xử lý báo cáo:', error);
