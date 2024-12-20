@@ -118,7 +118,7 @@ public class ReportService {
         reportRepository.delete(report);
     }
 
-    public void handleReport(Integer userId, Integer report_id, String action , String status)
+    public void handleReport(Integer userId, Integer report_id, String action, String status)
             throws UnknownException, UserAccountNotFoundException, ReportNotFoundException {
         Report report = reportRepository.findReportById(report_id);
         if (report == null) {
@@ -154,18 +154,19 @@ public class ReportService {
 
         ReportResponseDTO report = new ReportResponseDTO();
         report.setId(((Number) result[0]).intValue());
-        report.setPostId(((Number) result[1]).intValue());
-        report.setOwnerId(((Number) result[2]).intValue());
-        report.setFullname((String) result[3]);
-        report.setAvatarUrl((String) result[4]);
-        report.setContentPost((String) result[5]);
-        report.setMediaUrl((String) result[6]);
-        report.setMediaType((String) result[7]);
-        report.setReason((String) result[8]);
-        report.setViolationType((String) result[9]);
-        report.setStatus((String) result[10]);
-        report.setCreate_time((String) result[11]);
-        report.setResponseTime((String) result[12]);
+        report.setOwnerId(((Number) result[1]).intValue());
+        report.setPostId(((Number) result[2]).intValue());
+        report.setAdminPost(((Number) result[3]).intValue());
+        report.setFullname((String) result[4]);
+        report.setAvatarUrl((String) result[5]);
+        report.setContentPost((String) result[6]);
+        report.setMediaUrl((String) result[7]);
+        report.setMediaType((String) result[8]);
+        report.setReason((String) result[9]);
+        report.setViolationType((String) result[10]);
+        report.setStatus((String) result[11]);
+        report.setCreate_time((String) result[12]);
+        report.setResponseTime((String) result[13]);
 
         return report;
     }
@@ -186,18 +187,19 @@ public class ReportService {
         return results.map(row -> {
             ReportResponseDTO report = new ReportResponseDTO();
             report.setId(((Number) row[0]).intValue());
-            report.setPostId(((Number) row[1]).intValue());
-            report.setOwnerId(((Number) row[2]).intValue());
-            report.setFullname((String) row[3]);
-            report.setAvatarUrl((String) row[4]);
-            report.setContentPost((String) row[5]);
-            report.setMediaUrl((String) row[6]);
-            report.setMediaType((String) row[7]);
-            report.setReason((String) row[8]);
-            report.setViolationType((String) row[9]);
-            report.setStatus((String) row[10]);
-            report.setCreate_time((String) row[11]);
-            report.setResponseTime((String) row[12]);
+            report.setOwnerId(((Number) row[1]).intValue());
+            report.setPostId(((Number) row[2]).intValue());
+            report.setAdminPost(((Number) row[3]).intValue());
+            report.setFullname((String) row[4]);
+            report.setAvatarUrl((String) row[5]);
+            report.setContentPost((String) row[6]);
+            report.setMediaUrl((String) row[7]);
+            report.setMediaType((String) row[8]);
+            report.setReason((String) row[9]);
+            report.setViolationType((String) row[10]);
+            report.setStatus((String) row[11]);
+            report.setCreate_time((String) row[12]);
+            report.setResponseTime((String) row[13]);
             return report;
         });
     }
@@ -211,18 +213,19 @@ public class ReportService {
         return results.map(row -> {
             ReportResponseDTO report = new ReportResponseDTO();
             report.setId(((Number) row[0]).intValue());
-            report.setPostId(((Number) row[1]).intValue());
-            report.setOwnerId(((Number) row[2]).intValue());
-            report.setFullname((String) row[3]);
-            report.setAvatarUrl((String) row[4]);
-            report.setContentPost((String) row[5]);
-            report.setMediaUrl((String) row[6]);
-            report.setMediaType((String) row[7]);
-            report.setReason((String) row[8]);
-            report.setViolationType((String) row[9]);
-            report.setStatus((String) row[10]);
-            report.setCreate_time((String) row[11]);
-            report.setResponseTime((String) row[12]);
+            report.setOwnerId(((Number) row[1]).intValue());
+            report.setPostId(((Number) row[2]).intValue());
+            report.setAdminPost(((Number) row[3]).intValue());
+            report.setFullname((String) row[4]);
+            report.setAvatarUrl((String) row[5]);
+            report.setContentPost((String) row[6]);
+            report.setMediaUrl((String) row[7]);
+            report.setMediaType((String) row[8]);
+            report.setReason((String) row[9]);
+            report.setViolationType((String) row[10]);
+            report.setStatus((String) row[11]);
+            report.setCreate_time((String) row[12]);
+            report.setResponseTime((String) row[13]);
             return report;
         });
     }

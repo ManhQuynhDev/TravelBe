@@ -260,7 +260,7 @@ public class CommentService {
                         reply.setReplys(responseReply);
 
                         return reply;
-                    })
+                    })  
                     .collect(Collectors.toList());
 
             comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());

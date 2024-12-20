@@ -28,13 +28,11 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
-import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
-import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
@@ -77,8 +75,8 @@ public class PostService {
     @Autowired
     private LocationRepository locationRepository;
 
-    @Autowired
-    private FriendShipRepository friendShipRepository;
+    // @Autowired
+    // private FriendShipRepository friendShipRepository;
 
     @Autowired
     private HashTagRespository hashTagRespository;
@@ -177,11 +175,11 @@ public class PostService {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
         }
 
-        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+        // List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
 
-        List<Integer> friendUserIds = friendShips.stream()
-                .map(FriendShip::getUserSendId)
-                .collect(Collectors.toList());
+        // List<Integer> friendUserIds = friendShips.stream()
+        //         .map(FriendShip::getUserSendId)
+        //         .collect(Collectors.toList());
 
         Page<Object[]> results = postRepository.getAllPostsExceptFriends(userId, pageable);
 

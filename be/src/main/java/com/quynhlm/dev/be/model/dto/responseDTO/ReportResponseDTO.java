@@ -13,6 +13,7 @@ public class ReportResponseDTO {
     private Integer id;
     private Integer ownerId;
     private Integer postId;
+    private Integer adminPost;
     private String fullname;
     private String avatarUrl;
     private String contentPost;
