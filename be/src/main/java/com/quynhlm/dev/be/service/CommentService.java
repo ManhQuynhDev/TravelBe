@@ -233,9 +233,9 @@ public class CommentService {
             comment.setUrl((String) row[5]);
             comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[8]);
-            comment.setReaction_count(((Number) row[9]).intValue());
-            comment.setUser_reaction_type((String) row[10]);
+            comment.setCreate_time((String) row[9]);
+            comment.setReaction_count(((Number) row[10]).intValue());
+            comment.setUser_reaction_type((String) row[11]);
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
@@ -312,9 +312,9 @@ public class CommentService {
             comment.setUrl((String) row[5]);
             comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[8]);
-            comment.setReaction_count(((Number) row[9]).intValue());
-            comment.setUser_reaction_type((String) row[10]);
+            comment.setCreate_time((String) row[9]);
+            comment.setReaction_count(((Number) row[10]).intValue());
+            comment.setUser_reaction_type((String) row[11]);
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()

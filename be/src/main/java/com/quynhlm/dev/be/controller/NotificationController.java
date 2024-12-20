@@ -19,7 +19,6 @@ import com.quynhlm.dev.be.repositories.NotificationResponseDTO;
 import com.quynhlm.dev.be.service.NotificationService;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 @RequestMapping("/api/notifications")
 public class NotificationController {

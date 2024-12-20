@@ -604,8 +604,7 @@
 
 
                 try {
-                    const data = JSON.parse(responseText); // Sử dụng JSON.parse() thay vì .json()
-
+                    const data = JSON.parse(responseText); 
 
                     if (data.status === false) {
                         console.error('Lỗi từ API:', data.message);
@@ -615,6 +614,7 @@
                     const notifications = data.data;
 
                     notifications.forEach(notification => {
+                        console.log(notification);
                         const listItem = document.createElement('li');
                         listItem.classList.add('list-group-item', 'custom-checkbox-list-wrapper');
 
@@ -642,7 +642,6 @@
                                 </div>
                                 <a class="stretched-link" href="#"></a>
                             `;
-
 
                         // Thêm thông báo vào danh sách
                         list_notification.appendChild(listItem);

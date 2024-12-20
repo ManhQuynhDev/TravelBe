@@ -215,8 +215,13 @@ public class PostService {
             post.setUser_reaction_type((String) row[19]);
             post.setShareId(row[20] != null ? ((Number) row[20]).intValue() : null);
 
-            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
-            post.setComment_count(comment_count == null ? 0 : comment_count);
+            if(((Number) row[10]).intValue() == 1){
+                Integer comment_count = commentRepository.commentCountWithShareId(row[20] != null ? ((Number) row[20]).intValue() : null);
+                post.setComment_count(comment_count == null ? 0 : comment_count);
+            }else{
+                Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+                post.setComment_count(comment_count == null ? 0 : comment_count);
+            }
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
