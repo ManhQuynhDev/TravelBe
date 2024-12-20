@@ -190,6 +190,17 @@ if (!token) {
 
     fetchLocations();
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const selectedPostId = localStorage.getItem('selectedPostId');
+
+    if (selectedPostId) {
+        // Gọi hàm loadGroupDetails với ID nhóm đã lưu trong localStorage
+        loadPostDetails(selectedPostId);
+
+        // Sau khi mở modal, xóa ID khỏi localStorage
+        localStorage.removeItem('selectedPostId');
+    }
+});
 
 document.getElementById('savePostButton').addEventListener('click', function () {
     // Vô hiệu hóa nút save khi bắt đầu

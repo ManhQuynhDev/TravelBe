@@ -73,101 +73,8 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
-            <div class="row mt-3 mb-0">
-                <!-- Card 1 -->
-                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                    <a class="card card-hover-shadow h-70" href="#">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2">Total users</h6>
-                            <div class="row align-items-center gx-2">
-                                <div class="col">
-                                    <span class="js-counter display-4 text-dark" th:text="${userCount}">24</span>
-                                    <span class="text-body font-size-sm ml-1">from 9</span>
-                                </div>
 
-                                <div class="col-auto">
-                                    <span class="badge badge-soft-success p-1">
-                                        <i class="tio-trending-up"></i> <span
-                                            th:text="${formattedPercentage}">5.0</span>%
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                    </a>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                    <a class="card card-hover-shadow h-70" href="#">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2">Active members</h6>
-
-                            <div class="row align-items-center gx-2">
-                                <div class="col">
-                                    <span class="js-counter display-4 text-dark" data-value="12">12</span>
-                                    <span class="text-body font-size-sm ml-1">from 11</span>
-                                </div>
-
-                                <div class="col-auto">
-                                    <span class="badge badge-soft-success p-1">
-                                        <i class="tio-trending-up"></i> 1.2%
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- End Row -->
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                    <a class="card card-hover-shadow h-70" href="#">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2">New/returning</h6>
-
-                            <div class="row align-items-center gx-2">
-                                <div class="col">
-                                    <span class="js-counter display-4 text-dark" data-value="56">56</span>
-                                    <span class="display-4 text-dark">%</span>
-                                    <span class="text-body font-size-sm ml-1">from 48.7</span>
-                                </div>
-
-                                <div class="col-auto">
-                                    <span class="badge badge-soft-danger p-1">
-                                        <i class="tio-trending-down"></i> 2.8%
-                                    </span>
-                                </div>
-                            </div>
-                            <!-- End Row -->
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                    <a class="card card-hover-shadow h-70" href="#">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2">Active members</h6>
-
-                            <div class="row align-items-center gx-2">
-                                <div class="col">
-                                    <span class="js-counter display-4 text-dark" data-value="28">28</span>
-                                    <span class="display-4 text-dark">%</span>
-                                    <span class="text-body font-size-sm ml-1">from 28.6%</span>
-                                </div>
-
-                                <div class="col-auto">
-                                    <span class="badge badge-soft-secondary p-1">0.0%</span>
-                                </div>
-                            </div>
-                            <!-- End Row -->
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <div class="card">
+            <div class="card mt-3">
                 <div class="card-header">
                     <h5 class="card-title">Người dùng</h5>
                     <button class="btn btn-primary float-right" id="addUser">
@@ -257,6 +164,7 @@
             <div th:replace="fragments/users/switchUserModal"></div>
             <div th:replace="fragments/users/addUserModal"></div>
             <div th:replace="fragments/users/userDetailsModal"></div>
+            
         </div>
     </div>
 
@@ -288,6 +196,7 @@
 
 
     </script>
+
 
     <script th:src="@{/assets/js/userjs.js}"></script>
 
