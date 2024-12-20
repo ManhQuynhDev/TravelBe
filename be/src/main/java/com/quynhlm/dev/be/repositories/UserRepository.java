@@ -47,32 +47,36 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Page<Object[]> findAllUser(Pageable pageable);
 
     @Query(value = """
-                     SELECT 
-                        months.month AS month,
-                        COUNT(u.id) AS user_count
-                    FROM 
-                        (
-                            SELECT '2024-01' AS month UNION ALL
-                            SELECT '2024-02' UNION ALL
-                            SELECT '2024-03' UNION ALL
-                            SELECT '2024-04' UNION ALL
-                            SELECT '2024-05' UNION ALL
-                            SELECT '2024-06' UNION ALL
-                            SELECT '2024-07' UNION ALL
-                            SELECT '2024-08' UNION ALL
-                            SELECT '2024-09' UNION ALL
-                            SELECT '2024-10' UNION ALL
-                            SELECT '2024-11' UNION ALL
-                            SELECT '2024-12'
-                        ) months
-                    LEFT JOIN 
-                        User u ON DATE_FORMAT(u.create_at, '%Y-%m') = months.month
-                    GROUP BY 
-                        months.month
-                    ORDER BY 
-                        months.month;
+                     WITH months AS (
+                SELECT 1 AS month UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9 UNION ALL
+                SELECT 10 UNION ALL
+                SELECT 11 UNION ALL
+                SELECT 12
+            )
+            SELECT
+                m.month AS month_number,
+                COALESCE(COUNT(p.id), 0) AS post_count
+            FROM months m
+            LEFT JOIN (
+                SELECT
+                    MONTH(create_at) AS month,
+                    YEAR(create_at) AS year,
+                    id
+                FROM user
+                WHERE YEAR(create_at) = :year
+            ) p ON m.month = p.month
+            GROUP BY m.month
+            ORDER BY m.month;
                     """, nativeQuery = true)
-    List<Object[]> registerInMonth();
+    List<Object[]> registerInMonth(@Param("year") Integer year);
 
     @Query(value = """
             SELECT *

@@ -202,7 +202,7 @@ public class PostService {
             post.setPostContent(row[6] != null ? ((String) row[6]) : null);
             post.setShareContent(row[7] != null ? ((String) row[7]) : null);
             post.setStatus((String) row[8]);
-            post.setType((String) row[9]);
+            post.setType((String) row[9]); 
             post.setIsShare(((Number) row[10]).intValue());
             post.setCreate_time((String) row[11]);
             post.setShare_by_user(row[12] != null ? ((Number) row[12]).intValue() : null);
@@ -213,6 +213,7 @@ public class PostService {
             post.setShare_count(((Number) row[17]).intValue());
             post.setIsTag(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+            post.setShareId(row[20] != null ? ((Number) row[20]).intValue() : null);
 
             Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
             post.setComment_count(comment_count == null ? 0 : comment_count);
@@ -619,7 +620,6 @@ public class PostService {
             post.setReaction_count(((Number) row[10]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
-
 
             Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
             post.setComment_count(comment_count == null ? 0 : comment_count);

@@ -25,10 +25,27 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
         Page<Object[]> getAllReportUserCreate(Integer user_id, Pageable pageable);
 
         @Query(value = """
-                        select DISTINCT r.id ,u.id as user_id , r.post_id , p.user_id as admin_post, u.fullname , u.avatar_url , p.content as contentPost , m.media_url , m.type, r.reason , r.violation_type ,r.status, r.create_time ,r.action, r.response_time  from report r
-                        INNER JOIN User u on u.id = r.user_id
-                        INNER JOIN Post p on p.id = r.post_id
-                        INNER JOIN Media m on m.post_id = p.id""", nativeQuery = true)
+                        SELECT r.id,
+                               u.id AS user_id,
+                               r.post_id,
+                               p.user_id AS admin_post,
+                               u.fullname,
+                               u.avatar_url,
+                               p.content AS contentPost,
+                               m.media_url,
+                               m.type,
+                               r.reason,
+                               r.violation_type,
+                               r.status,
+                               r.create_time,
+                               r.action,
+                               r.response_time
+                        FROM report r
+                        INNER JOIN User u ON u.id = r.user_id
+                        INNER JOIN Post p ON p.id = r.post_id
+                        LEFT JOIN Media m ON m.post_id = p.id
+                        GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, m.media_url, m.type, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
+                        """, nativeQuery = true)
         Page<Object[]> getAllReport(Pageable pageable);
 
         @Query(value = """

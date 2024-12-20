@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserStatisticalRegister {
-    private String date;
-    private Integer register_count;
+    private int month;
+    private Integer count;
 }

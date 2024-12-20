@@ -122,7 +122,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 COUNT(DISTINCT c.id) AS comment_count,
                 COUNT(DISTINCT s2.id) AS share_count,
                 COUNT(t.id) AS isTag,
-            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
+            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type,
+            NULL AS share_id
             FROM Post p
             INNER JOIN Media m ON p.id = m.post_id
             INNER JOIN Location l ON l.id = p.location_id
@@ -158,7 +159,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 COUNT(DISTINCT c.id) AS comment_count,
                 COUNT(DISTINCT s2.id) AS share_count,
                 COUNT(t.id) AS isTag,
-            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
+            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type,
+            s.id AS share_id
             FROM Share s
             INNER JOIN Post p ON s.post_id = p.id
             INNER JOIN Media m ON p.id = m.post_id

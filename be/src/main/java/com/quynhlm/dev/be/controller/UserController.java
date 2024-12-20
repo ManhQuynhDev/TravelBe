@@ -220,9 +220,9 @@ public class UserController {
         return userService.getAllListManager(page, size);
     }
 
-    @GetMapping("/statistical_register")
-    public List<UserStatisticalRegister> getUserRegistrationCountByMonth() {
-        return userService.getUserRegistrationCountByMonth();
+    @GetMapping("/statistical_register/{year}")
+    public List<UserStatisticalRegister> getUserRegistrationCountByMonth(@PathVariable int year) {
+        return userService.getUserRegistrationCountByMonth(year);
     }
 
     @GetMapping("/users/fullname/{userId}")

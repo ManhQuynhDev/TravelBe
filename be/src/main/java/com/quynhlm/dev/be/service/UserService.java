@@ -568,15 +568,15 @@ public class UserService {
         }
     }
 
-    public List<UserStatisticalRegister> getUserRegistrationCountByMonth() {
-        List<Object[]> results = userRepository.registerInMonth();
+    public List<UserStatisticalRegister> getUserRegistrationCountByMonth(int year) {
+        List<Object[]> results = userRepository.registerInMonth(year);
 
         List<UserStatisticalRegister> userRegisterDTOList = new ArrayList<>();
 
         for (Object[] row : results) {
             UserStatisticalRegister dto = new UserStatisticalRegister();
-            dto.setDate((String) row[0]);
-            dto.setRegister_count(((Number) row[1]).intValue());
+            dto.setMonth(((Number) row[0]).intValue());
+            dto.setCount(((Number) row[1]).intValue());
             userRegisterDTOList.add(dto);
         }
         return userRegisterDTOList;
