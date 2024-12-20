@@ -43,7 +43,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
                      FROM report r
                      INNER JOIN User u ON u.id = r.user_id
                      INNER JOIN Post p ON p.id = r.post_id
-                     LEFT JOIN Media m ON m.post_id = p.id
+                     INNER JOIN Media m ON m.post_id = p.id
                      GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, m.media_url, m.type, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
                      """, nativeQuery = true)
        Page<Object[]> getAllReport(Pageable pageable);
@@ -57,21 +57,28 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
        List<Object[]> getAnReport(Integer id);
 
        @Query(value = """
-                     SELECT v.violation_type,
-                            COALESCE(COUNT(r.violation_type), 0) AS count
-                     FROM (
-                         SELECT 'Spam' AS violation_type
-                         UNION ALL
-                         SELECT 'Ngôn ngữ thù địch'
-                         UNION ALL
-                         SELECT 'Quấy rối'
-                         UNION ALL
-                         SELECT 'Nội dung không phù hợp'
-                         UNION ALL
-                         SELECT 'Khác'
-                     ) AS v
-                     LEFT JOIN report r ON r.violation_type = v.violation_type
-                     GROUP BY v.violation_type
-                     ORDER BY count DESC;""", nativeQuery = true)
-       Page<Object[]> statisticsReport(Pageable pageable);
+              SELECT v.violation_type,
+                     COALESCE(COUNT(r.violation_type), 0) AS count
+              FROM (
+                  SELECT 'Spam' AS violation_type
+                  UNION ALL
+                  SELECT 'Ngôn ngữ thù địch'
+                  UNION ALL
+                  SELECT 'Quấy rối'
+                  UNION ALL
+                  SELECT 'Nội dung không phù hợp'
+                  UNION ALL
+                  SELECT 'Khác'
+              ) AS v
+              LEFT JOIN report r ON r.violation_type = v.violation_type
+              GROUP BY v.violation_type
+              UNION ALL
+              SELECT 'Các loại khác' AS violation_type,
+                     COUNT(*) AS count
+              FROM report r
+              WHERE r.violation_type NOT IN ('Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp', 'Khác')
+              ORDER BY count DESC;
+          """, nativeQuery = true)
+          Page<Object[]> statisticsReport(Pageable pageable);
+          
 }

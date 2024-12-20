@@ -119,6 +119,7 @@ public class UserController {
         userService.setNewPassWord(changePassDTO);
         result.setData(true);
         result.setMessage("Change password successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
