@@ -43,7 +43,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
                      FROM report r
                      INNER JOIN User u ON u.id = r.user_id
                      INNER JOIN Post p ON p.id = r.post_id
-                     LEFT JOIN Media m ON m.post_id = p.id
+                     INNER JOIN Media m ON m.post_id = p.id
                      GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, m.media_url, m.type, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
                      """, nativeQuery = true)
        Page<Object[]> getAllReport(Pageable pageable);
