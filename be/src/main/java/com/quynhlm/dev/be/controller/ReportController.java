@@ -61,10 +61,11 @@ public class ReportController {
     @PutMapping("/{userId}/{reportId}/action")
     public ResponseEntity<ResponseObject<Void>> handleReport(@PathVariable Integer userId,
             @PathVariable Integer reportId,
+            @RequestParam String violation,
             @RequestParam String action,
             @RequestParam String status) {
         ResponseObject<Void> result = new ResponseObject<>();
-        reportService.handleReport(userId, reportId, action , status);
+        reportService.handleReport(userId, reportId, violation, action, status);
         result.setMessage("Handel report successfully");
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

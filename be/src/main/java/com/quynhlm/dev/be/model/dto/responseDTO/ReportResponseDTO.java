@@ -13,7 +13,7 @@ public class ReportResponseDTO {
     private Integer id;
     private Integer ownerId;
     private Integer postId;
-    private Integer adminPost;
+    private Integer adminId;
     private String fullname;
     private String avatarUrl;
     private String contentPost;
@@ -23,5 +23,6 @@ public class ReportResponseDTO {
     private String violationType;
     private String status;
     private String create_time;
+    private String action;
     private String responseTime;
 }

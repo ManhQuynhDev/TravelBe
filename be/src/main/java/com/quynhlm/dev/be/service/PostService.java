@@ -553,7 +553,8 @@ public class PostService {
             post.setReaction_count(((Number) row[10]).intValue());
             post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
-
+            post.setUser_reaction_type((String) row[13]);
+            
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
             post.setHashtags(hashtags);

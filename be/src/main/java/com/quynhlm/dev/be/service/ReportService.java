@@ -118,7 +118,7 @@ public class ReportService {
         reportRepository.delete(report);
     }
 
-    public void handleReport(Integer userId, Integer report_id, String action, String status)
+    public void handleReport(Integer userId, Integer report_id, String violationType, String action, String status)
             throws UnknownException, UserAccountNotFoundException, ReportNotFoundException {
         Report report = reportRepository.findReportById(report_id);
         if (report == null) {
@@ -132,7 +132,8 @@ public class ReportService {
                     "Found user with " + report.getUserId() + " not found , please try with other id");
         }
 
-        report.setViolationType(action);
+        report.setViolationType(violationType);
+        report.setAction(action);
         report.setStatus(status);
         report.setResponse_time(new Timestamp(System.currentTimeMillis()).toString());
         Report saveReport = reportRepository.save(report);
@@ -156,7 +157,7 @@ public class ReportService {
         report.setId(((Number) result[0]).intValue());
         report.setOwnerId(((Number) result[1]).intValue());
         report.setPostId(((Number) result[2]).intValue());
-        report.setAdminPost(((Number) result[3]).intValue());
+        report.setAdminId(((Number) result[3]).intValue());
         report.setFullname((String) result[4]);
         report.setAvatarUrl((String) result[5]);
         report.setContentPost((String) result[6]);
@@ -166,7 +167,8 @@ public class ReportService {
         report.setViolationType((String) result[10]);
         report.setStatus((String) result[11]);
         report.setCreate_time((String) result[12]);
-        report.setResponseTime((String) result[13]);
+        report.setAction((String) result[13]);
+        report.setResponseTime((String) result[14]);
 
         return report;
     }
@@ -189,7 +191,7 @@ public class ReportService {
             report.setId(((Number) row[0]).intValue());
             report.setOwnerId(((Number) row[1]).intValue());
             report.setPostId(((Number) row[2]).intValue());
-            report.setAdminPost(((Number) row[3]).intValue());
+            report.setAdminId(((Number) row[3]).intValue());
             report.setFullname((String) row[4]);
             report.setAvatarUrl((String) row[5]);
             report.setContentPost((String) row[6]);
@@ -199,7 +201,8 @@ public class ReportService {
             report.setViolationType((String) row[10]);
             report.setStatus((String) row[11]);
             report.setCreate_time((String) row[12]);
-            report.setResponseTime((String) row[13]);
+            report.setAction((String) row[13]);
+        report.setResponseTime((String) row[14]);
             return report;
         });
     }
@@ -215,7 +218,7 @@ public class ReportService {
             report.setId(((Number) row[0]).intValue());
             report.setOwnerId(((Number) row[1]).intValue());
             report.setPostId(((Number) row[2]).intValue());
-            report.setAdminPost(((Number) row[3]).intValue());
+            report.setAdminId(((Number) row[3]).intValue());
             report.setFullname((String) row[4]);
             report.setAvatarUrl((String) row[5]);
             report.setContentPost((String) row[6]);
@@ -225,7 +228,8 @@ public class ReportService {
             report.setViolationType((String) row[10]);
             report.setStatus((String) row[11]);
             report.setCreate_time((String) row[12]);
-            report.setResponseTime((String) row[13]);
+            report.setAction((String) row[13]);
+        report.setResponseTime((String) row[14]);
             return report;
         });
     }

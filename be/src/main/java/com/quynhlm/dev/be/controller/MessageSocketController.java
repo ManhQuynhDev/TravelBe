@@ -133,8 +133,10 @@ public class MessageSocketController {
             String fullname = userService.getUserFullname(saveMessage.getSenderId());
             notification.setTitle(fullname);
 
-            if (saveMessage.getMediaUrl() != null) {
-                notification.setMediaUrl(saveMessage.getMediaUrl());
+            UserMessageResponseDTO result = messageService.sendMessage(saveMessage);
+
+            if (result.getMediaUrl() != null) {
+                notification.setMediaUrl(result.getMediaUrl());
             }
             
             notification.setUserSendId(saveMessage.getSenderId());
@@ -143,7 +145,7 @@ public class MessageSocketController {
 
             Notification response = notificationService.saveNotification(notification);
 
-            UserMessageResponseDTO result = messageService.sendMessage(saveMessage);
+            
 
             this.namespace.getRoomOperations(room).sendEvent("notification", response);
 

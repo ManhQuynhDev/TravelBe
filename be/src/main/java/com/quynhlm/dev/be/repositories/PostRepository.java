@@ -348,7 +348,8 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             	FROM comment c
             	WHERE c.type = 'POST' AND c.post_id = p.id
             ) AS comment_count,
-                        COUNT(DISTINCT s.id) AS share_count
+                        COUNT(DISTINCT s.id) AS share_count,
+                        MAX(CASE WHEN r.user_id = :user_id THEN r.type ELSE NULL END) AS user_reaction_type
                     FROM
                         post p
                     INNER JOIN

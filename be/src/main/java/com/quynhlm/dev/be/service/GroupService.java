@@ -60,7 +60,7 @@ public class GroupService {
             group.setUser_id(groupRequestDTO.getUser_id());
             group.setName(groupRequestDTO.getName());
             group.setStatus(groupRequestDTO.getStatus());
-            if (group.getBio() != null) {
+            if (groupRequestDTO.getBio() != null) {
                 group.setBio(groupRequestDTO.getBio());
             }
             if (file != null && !file.isEmpty()) {

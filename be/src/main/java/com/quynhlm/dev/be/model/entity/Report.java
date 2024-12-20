@@ -27,5 +27,6 @@ public class Report {
     private String reason;
     private String violationType;
     private String create_time;
+    private String action;
     private String response_time;
 }
