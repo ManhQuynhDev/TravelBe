@@ -116,9 +116,8 @@
                                     <span class="card-title h2" th:text="${groupCount}">10</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-warning">
-                                <i class="tio-trending-up"></i>5%</span>
-                            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+                            <div id="growthInfoGroup">
+                            </div>
                         </div>
                     </a>
                 </div>
@@ -133,9 +132,8 @@
                                     <span class="card-title h2" th:text="${postCount}">14</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-danger">
-                                <i class="tio-trending-down"></i>5%</span>
-                            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+                            <div id="growthInfoPost">
+                            </div>
                         </div>
                     </a>
                 </div>
@@ -200,7 +198,7 @@
                 </div>
 
                 <!-- Cột phải: Bảng Top 5 Địa Điểm Check-in -->
-                <div class="col-md-4 mb-4">
+                <div class="col-lg-4 col-md-12 mb-4">
                     <div class="card shadow-sm mb-4">
                         <div class="card-header bg-primary text-white text-center">
                             <h5 class="card-title mb-0">Top 5 Địa Điểm Check-in</h5>
@@ -222,7 +220,7 @@
                     </div>
 
                     <div class="card shadow-sm">
-                        <div class="card-header bg-success text-white text-center">
+                        <div class="card-header bg-danger text-white text-center">
                             <h5 class="card-title mb-0">Thống Kê Vi Phạm</h5>
                         </div>
                         <div class="card-body p-0">
@@ -230,15 +228,16 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-                <!-- Cột phải: Biểu đồ Thống Kê Vi Phạm -->
-                <!-- <div th:replace="fragments/notification"></div> -->
-
-
 
             </div>
+
+
+            <!-- Cột phải: Biểu đồ Thống Kê Vi Phạm -->
+            <div th:replace="fragments/notification"></div>
+
+
+
+
 
 
         </div>
@@ -253,60 +252,109 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <!-- Đảm bảo plugin này đã được thêm vào -->
     <script>
-        var violationData = {
-            labels: ['Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp', 'Khác'],
-            datasets: [{
-                label: 'Số lượng vi phạm',
-                data: [120, 80, 50, 30, 20],
-                backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
-                borderColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
-                borderWidth: 1
-            }]
-        };
 
-        var ctx = document.getElementById('violationPieChart').getContext('2d');
-        var violationPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: violationData,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                var dataset = tooltipItem.chart.data.datasets[tooltipItem.datasetIndex];
-                                var total = dataset.data.reduce(function (acc, value) {
-                                    return acc + value;
-                                }, 0);
-                                var value = dataset.data[tooltipItem.dataIndex];
-                                var percentage = ((value / total) * 100).toFixed(2);
-                                return tooltipItem.label + ': ' + value + ' vi phạm (' + percentage + '%)';
+        fetch('http://localhost:8080/api/report/statistics?page=0&size=100', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,  // Gửi token trong header
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Kiểm tra nếu không có dữ liệu
+                if (!data.content || data.content.length === 0) {
+                    document.getElementById('violationPieChart').style.display = 'none'; // Ẩn canvas
+                    const message = document.createElement('div');
+                    message.className = 'alert alert-warning text-center';
+                    message.innerText = 'Không có dữ liệu vi phạm để hiển thị.';
+                    document.getElementById('violationChartContainer').appendChild(message); // Thêm thông báo
+                    return;
+                }
+
+                // Dữ liệu trả về từ API
+                const violationTypes = data.content.map(item => item.violation_type);
+                const violationCounts = data.content.map(item => item.count);
+
+                // Cập nhật dữ liệu vào biểu đồ
+                const violationData = {
+                    labels: violationTypes,
+                    datasets: [{
+                        label: 'Số lượng vi phạm',
+                        data: violationCounts,
+                        backgroundColor: [
+                            '#FFB6C1', // Hồng nhạt
+                            '#FFD700', // Vàng sáng
+                            '#87CEFA', // Xanh dương sáng
+                            '#98FB98', // Xanh lá nhạt
+                            '#FF69B4'  // Hồng tươi
+                        ],
+                        borderColor: [
+                            '#FFB6C1',
+                            '#FFD700',
+                            '#87CEFA',
+                            '#98FB98',
+                            '#FF69B4'
+                        ],
+                        borderWidth: 1
+                    }]
+                };
+
+
+                var ctx = document.getElementById('violationPieChart').getContext('2d');
+                var violationPieChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: violationData,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (tooltipItem) {
+                                        var dataset = tooltipItem.chart.data.datasets[tooltipItem.datasetIndex];
+                                        var total = dataset.data.reduce(function (acc, value) {
+                                            return acc + value;
+                                        }, 0);
+                                        var value = dataset.data[tooltipItem.dataIndex];
+                                        var percentage = ((value / total) * 100).toFixed(2);
+                                        return tooltipItem.label + ': ' + value + ' vi phạm (' + percentage + '%)';
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                formatter: function (value, context) {
+                                    var total = context.dataset.data.reduce(function (acc, currentValue) {
+                                        return acc + currentValue;
+                                    }, 0);
+                                    var percentage = ((value / total) * 100).toFixed(2);
+                                    return percentage + '%';
+                                },
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold',
+                                    size: 14
+                                },
+                                anchor: 'center',
+                                align: 'center'
                             }
                         }
-                    },
-                    datalabels: {
-                        formatter: function (value, context) {
-                            var total = context.dataset.data.reduce(function (acc, currentValue) {
-                                return acc + currentValue;
-                            }, 0);
-                            var percentage = ((value / total) * 100).toFixed(2);
-                            return percentage + '%';
-                        },
-                        color: '#fff',
-                        font: {
-                            weight: 'bold',
-                            size: 14
-                        },
-                        anchor: 'center',
-                        align: 'center'
                     }
-                }
-            }
-        });
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.getElementById('violationPieChart').style.display = 'none'; // Ẩn canvas khi có lỗi
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger text-center';
+                errorMessage.innerText = 'Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.';
+                document.getElementById('violationChartContainer').appendChild(errorMessage);
+            });
+
     </script>
+
 
 
 
@@ -317,7 +365,7 @@
         const token = localStorage.getItem("authToken");
 
         // Fetch dữ liệu người dùng
-        const fetchUserData = fetch('http://localhost:8080/onboarding/statistical_register', {
+        const fetchUserData = fetch('http://localhost:8080/onboarding/statistical_register/2024', {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -343,56 +391,130 @@
         // Khi tất cả các yêu cầu hoàn thành
         Promise.all([fetchUserData, fetchPostData, fetchGroupData])
             .then(([userData, postData, groupData]) => {
-                // Xử lý dữ liệu người dùng
-                const userLabels = userData.map(item => {
-                    if (item.date) {
-                        const dateParts = item.date.split("-");
-                        return dateParts[1];  // Tháng
+                console.log('User Data:', userData);
+                console.log('Post Data:', postData);
+                console.log('Group Data:', groupData);
+
+                // Xử lý dữ liệu người dùng (User Data)
+                const safeUserData = Array.isArray(userData) ? userData : [];
+                const userLabels = safeUserData.map(item => {
+                    if (item?.month) {
+                        return item.month.toString().padStart(2, '0');
                     }
-                    return '';  // Nếu không có date, trả về chuỗi rỗng
+                    return ''; // Trả về chuỗi rỗng nếu không có month
                 });
 
-                const userRegisterCounts = userData.map(item => item.register_count);
-                const month11User = userData.find(item => item.date === "2024-11");
-                const month12User = userData.find(item => item.date === "2024-12");
+                const userRegisterCounts = safeUserData.map(item => item?.count || 0);
+                const month11User = safeUserData.find(item => item.month === 11);
+                const month12User = safeUserData.find(item => item.month === 12);
 
+                // Tính sự thay đổi phần trăm cho User
+                let percentageChangeUser = 0;
                 if (month11User && month12User) {
-                    const differenceUser = month12User.register_count - month11User.register_count;
-                    const percentageChangeUser = ((differenceUser / month11User.register_count) * 100).toFixed(2);
+                    const differenceUser = month12User.count - month11User.count;
+                    if (month11User.count !== 0) {
+                        percentageChangeUser = ((differenceUser / month11User.count) * 100).toFixed(2);
+                    } else if (month12User.count > 0) {
+                        percentageChangeUser = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                    }
+                }
 
-                    const growthInfoElement = document.getElementById("growthInfo");
-                    let htmlContent = "";
-
-                    if (differenceUser > 0) {
-                        htmlContent = `
+                const growthInfoElement = document.getElementById("growthInfo");
+                let htmlContent = "";
+                if (percentageChangeUser > 0) {
+                    htmlContent = `
                 <span class="badge badge-soft-success">
                     <i class="tio-trending-up"></i> ${percentageChangeUser}%
                 </span>
                 <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-                `;
-                    } else if (differenceUser < 0) {
-                        htmlContent = `
+            `;
+                } else if (percentageChangeUser < 0) {
+                    htmlContent = `
                 <span class="badge badge-soft-danger">
                     <i class="tio-trending-down"></i> ${Math.abs(percentageChangeUser)}%
                 </span>
                 <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-                `;
-                    }
+            `;
+                }
+                growthInfoElement.innerHTML = htmlContent;
 
-                    growthInfoElement.innerHTML = htmlContent;
+                // Xử lý dữ liệu bài viết (Post Data)
+                const safePostData = Array.isArray(postData) ? postData : [];
+                const postLabels = safePostData.map(item => item?.month || '');
+                const postCounts = safePostData.map(item => item?.post_count || 0);
+                const month11Post = safePostData.find(item => item.month === 11);
+                const month12Post = safePostData.find(item => item.month === 12);
+
+                // Tính sự thay đổi phần trăm cho Posts
+                let percentageChangePost = 0;
+                if (month11Post && month12Post) {
+                    const differencePost = month12Post.post_count - month11Post.post_count;
+                    if (month11Post.post_count !== 0) {
+                        percentageChangePost = ((differencePost / month11Post.post_count) * 100).toFixed(2);
+                    } else if (month12Post.post_count > 0) {
+                        percentageChangePost = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                    }
                 }
 
-                // Xử lý dữ liệu bài viết
-                const postLabels = postData.map(item => item.month); // Tháng từ dữ liệu bài viết
-                const postCounts = postData.map(item => item.post_count); // Số lượng bài viết
+                const growthInfoElementPost = document.getElementById("growthInfoPost");
+                let htmlContentPost = "";
+                if (percentageChangePost > 0) {
+                    htmlContentPost = `
+                <span class="badge badge-soft-success">
+                    <i class="tio-trending-up"></i> ${percentageChangePost}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+            `;
+                } else if (percentageChangePost < 0) {
+                    htmlContentPost = `
+                <span class="badge badge-soft-danger">
+                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangePost)}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+            `;
+                }
+                growthInfoElementPost.innerHTML = htmlContentPost;
 
-                // Xử lý dữ liệu nhóm
-                const groupLabels = groupData.map(item => item.month); // Tháng từ dữ liệu nhóm
-                const groupCounts = groupData.map(item => item.post_count); // Số lượng nhóm
+                // Xử lý dữ liệu nhóm (Group Data)
+                const safeGroupData = Array.isArray(groupData) ? groupData : [];
+                const groupLabels = safeGroupData.map(item => item?.month || '');
+                const groupCounts = safeGroupData.map(item => item?.post_count || 0);
+                const month11Group = safeGroupData.find(item => item.month === 11);
+                const month12Group = safeGroupData.find(item => item.month === 12);
 
-                // Cập nhật dữ liệu cho biểu đồ
+                // Tính sự thay đổi phần trăm cho Groups
+                let percentageChangeGroup = 0;
+                if (month11Group && month12Group) {
+                    const differenceGroup = month12Group.post_count - month11Group.post_count;
+                    if (month11Group.post_count !== 0) {
+                        percentageChangeGroup = ((differenceGroup / month11Group.post_count) * 100).toFixed(2);
+                    } else if (month12Group.post_count > 0) {
+                        percentageChangeGroup = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                    }
+                }
+
+                const growthInfoElementGroup = document.getElementById("growthInfoGroup");
+                let htmlContentGroup = "";
+                if (percentageChangeGroup > 0) {
+                    htmlContentGroup = `
+                <span class="badge badge-soft-success">
+                    <i class="tio-trending-up"></i> ${percentageChangeGroup}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+            `;
+                } else if (percentageChangeGroup < 0) {
+                    htmlContentGroup = `
+                <span class="badge badge-soft-danger">
+                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangeGroup)}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+            `;
+                }
+                growthInfoElementGroup.innerHTML = htmlContentGroup;
+
+                // Dữ liệu cho biểu đồ
                 const chartData = {
-                    labels: userLabels,  // Chúng ta sẽ dùng labels của user để giữ thống nhất
+                    labels: userLabels,  // Dùng labels của user để giữ thống nhất
                     datasets: [
                         {
                             label: 'Users',
@@ -421,7 +543,7 @@
                 // Vẽ biểu đồ
                 const ctx = document.getElementById('growthChart').getContext('2d');
                 const growthChart = new Chart(ctx, {
-                    type: 'line',
+                    type: 'bar',
                     data: chartData,
                     options: {
                         responsive: true,
@@ -452,13 +574,9 @@
                     }
                 });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error fetching data:', error);
             });
-
-
-
-
 
         document.addEventListener("DOMContentLoaded", function () {
             const token = localStorage.getItem("authToken");
@@ -472,6 +590,7 @@
 
                 window.location.href = '/web-server/groups';
             }
+
 
             fetch("http://localhost:8080/api/groups/top_member", {
                 method: "GET",
@@ -489,8 +608,7 @@
                     <tr>
                         <td>${index + 1}</td>
                         <td>
-                            <img src="${group.cover_photo || 'https://via.placeholder.com/50'}" alt="${group.group_name}" 
-                                class="img-fluid rounded-3" style="width: 100px; height: 50px; object-fit: cover;">
+                            <img src="${group.cover_photo || 'https://via.placeholder.com/50'}" style="width: 100px; height: 50px; object-fit: cover;">
                         </td>
                         <td>${group.group_name}</td>
                         <td>${group.admin_name}</td>
@@ -514,45 +632,57 @@
                     console.error("Error fetching groups:", error);
                 });
         });
-        const url = "http://localhost:8080/api/posts/statistical?page=0&size=10";
+
+        document.addEventListener("DOMContentLoaded", function () {
+            function logPostId(event) {
+                const postId = event.target.getAttribute("data-id");
 
 
-        fetch(url, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
+                localStorage.setItem('selectedPostId', postId);
+
+
+                window.location.href = '/web-server/posts';
             }
-        })
-            .then(response => response.json())
-            .then(data => {
-
-                console.log(data);
+            const url = "http://localhost:8080/api/posts/statistical?page=0&size=10";
 
 
-                const tableBody = document.getElementById("post-list");
-                data.content.forEach((post, index) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
+            fetch(url, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+
+                    console.log(data);
+
+
+                    const tableBody = document.getElementById("post-list");
+                    data.content.forEach((post, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
             <td>${index + 1}</td>
-            <td><img src="${post.mediaUrls}" alt="Avatar" style="width: 100px; height: 50px;object-fit: cover;"></td>
+            <td><img src="${post.mediaUrls[0]}" alt="Avatar" style="width: 100px; height: 50px;object-fit: cover;"></td>
+            <td>${post.content}</td>
             <td>${post.fullname}</td>
-            <td>${post.location}</td>
             <td>${post.reaction_count}</td>
             <td>
-                <button class="btn btn-primary">Chi tiết</button>
+                <button class="btn btn-primary" data-id="${post.postId}">Chi tiết</button>
             </td>
         `;
-                    tableBody.appendChild(row);
+                        tableBody.appendChild(row);
+                    });
+                    const buttons = document.querySelectorAll('.btn-primary');
+                    buttons.forEach(button => {
+                        button.addEventListener('click', logPostId);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                 });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
-
-
-
+        })
 
 
     </script>
@@ -637,7 +767,7 @@
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
-    <!-- <script>
+    <script>
         $(document).on('ready', function () {
             // INITIALIZATION OF TOASTS
             // =======================================================
@@ -647,7 +777,7 @@
 
             $('.toast-show').toast('show');
 
-            $('#toast-invoker').click(function () {
+            $('#toast-invokers').click(function () {
                 $('#toast').toast({
                     delay: 1500
                 });
@@ -655,7 +785,7 @@
                 $('#toast').toast('show');
             });
         });
-    </script> -->
+    </script>
 
 </body>
 
