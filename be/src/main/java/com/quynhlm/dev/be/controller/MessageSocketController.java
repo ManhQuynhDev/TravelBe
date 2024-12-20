@@ -129,7 +129,7 @@ public class MessageSocketController {
             saveMessage.setSenderId(data.getSender());
             saveMessage.setReceiverId(data.getReceiver());
             saveMessage.setMediaUrl(data.getFile());
-
+            
             Notification notification = new Notification();
             String fullname = userService.getUserFullname(saveMessage.getSenderId());
             notification.setTitle(fullname);

@@ -614,7 +614,6 @@
                     const notifications = data.data;
 
                     notifications.forEach(notification => {
-                        console.log(notification);
                         const listItem = document.createElement('li');
                         listItem.classList.add('list-group-item', 'custom-checkbox-list-wrapper');
 
@@ -642,8 +641,6 @@
                                 </div>
                                 <a class="stretched-link" href="#"></a>
                             `;
-
-                        // Thêm thông báo vào danh sách
                         list_notification.appendChild(listItem);
                     });
 
@@ -787,8 +784,7 @@
             });
 
             socket.on('notification', (data) => {
-                console.log(data);
-                if (data.userId == senderId) {
+                if (data.userId != senderId) {
                     showNotification(data.title, data.message, data.mediaUrl);
 
                     const listItem = document.createElement('li');
