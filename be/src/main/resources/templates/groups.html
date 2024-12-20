@@ -231,22 +231,35 @@
                         noDataRow.innerHTML = `<td colspan="7" class="text-center">Không có thành viên nào.</td>`;
                         tableBody.appendChild(noDataRow);
                     } else {
-                        data.data.userJoined.forEach(member => {
+                        data.data.userJoined.forEach((member, index) => {
                             const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${member.userId}</td>
-                                <td>
-                                    <div class="member-info d-flex align-items-center">
-                                        <img src="${member.avatar_url || '/assets/img/avatar.jpg'}" alt="Avatar" 
-                                            class="rounded-circle mr-2" style="width: 40px; height: 40px;">
-                                        <span>${member.fullname}</span>
-                                    </div>
-                                </td>
-                                <td>${member.role}</td>
-                                <td>${new Date(member.join_time).toLocaleString()}</td>
-                            `;
-                            tableBody.appendChild(row);
+
+                            const avatarHtml = member.avatar_url
+                                ? `<img src="${member.avatar_url}" alt="Avatar" 
+                                            class="rounded-circle mr-2" 
+                                            style="width: 40px; height: 40px; object-fit: cover;">`
+                                                            : `<div class="rounded-circle mr-2" 
+                                            style="width: 40px; height: 40px; background-color: #ccc; display: flex; 
+                                            justify-content: center; align-items: center; font-size: 18px; color: #fff; text-transform: uppercase;">
+                                            ${member.fullname.charAt(0)}
+                                    </div>`;
+
+                                                        row.innerHTML = `
+                                    <td>${index + 1}</td> <!-- Thêm số thứ tự -->
+                                    <td>
+                                        <div class="member-info d-flex align-items-center">
+                                            ${avatarHtml}
+                                            <span>${member.fullname}</span>
+                                        </div>
+                                    </td>
+                                    <td>${member.role}</td>
+                                    <td>${new Date(member.join_time).toLocaleString()}</td>
+                                `;
+
+                            tableBody.appendChild(row); // Giả sử tableBody là tbody đã được khai báo trước đó
                         });
+
+
                     }
 
                     const modal = new bootstrap.Modal(document.getElementById('memberListModal'));

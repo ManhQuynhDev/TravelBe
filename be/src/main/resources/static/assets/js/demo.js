@@ -31,6 +31,7 @@ function HSDemo() {
     style.textContent = "         \n      .content,\n      .footer {\n        width: 100%;\n        padding-right: 15px !important;\n        padding-left: 15px !important;\n        margin-right: auto;\n        margin-left: auto;\n      }\n      \n      @media (min-width: 1400px) {\n        .content,\n        .footer {\n          max-width: 1320px;\n        }\n      }       \n      \n      @media (min-width: 1400px) {\n        .content,\n        .footer {\n          max-width: 1320px;\n        }\n      }\n    ";
   }
 
+
   if (sidebarMode !== false || headerMode !== false) {
     body.classList.remove('navbar-vertical-aside-mini-mode');
   }
@@ -127,11 +128,11 @@ function HSDemo() {
       }
 
       for (var i = 0; i < document.getElementsByClassName('navbar-brand-logo-mini').length; i++) {
-        document.getElementsByClassName('navbar-brand-logo-mini')[i].setAttribute('src', document.getElementsByClassName('navbar-brand-logo-mini')[0].getAttribute('src').replace('logo-short.svg', 'logo-short-white.svg'));
+        document.getElementsByClassName('navbar-brand-logo-mini')[i].setAttribute('src', document.getElementsByClassName('navbar-brand-logo-mini')[0].getAttribute('src').replace('logo.svg', 'logo-white.svg'));
       }
 
-      for (var i = 0; i < document.getElementsByClassName('navbar-brand-logo-short').length; i++) {
-        document.getElementsByClassName('navbar-brand-logo-short')[i].setAttribute('src', document.getElementsByClassName('navbar-brand-logo-short')[0].getAttribute('src').replace('logo-short.svg', 'logo-short-white.svg'));
+      for (var i = 0; i < document.getElementsByClassName('navbar-brand-logo-mini').length; i++) {
+        document.getElementsByClassName('navbar-brand-logo-mini')[i].setAttribute('src', document.getElementsByClassName('navbar-brand-logo-mini')[0].getAttribute('src').replace('logo.svg', 'logo-white.svg'));
       }
     }
   }
@@ -249,13 +250,19 @@ function HSDemo() {
   document.getElementById("toggleNavbar").addEventListener("click", function () {
     const navbarText = document.getElementById("navbarText");
 
-    // Kiểm tra trạng thái hiện tại và ẩn/hiện
-    if (navbarText.style.display === "none") {
-      navbarText.style.display = "block"; // Hiện lại thẻ <p>
+    if (document.body.classList.contains('navbar-vertical-aside-mini-mode')) {
+      navbarText.style.display = "block";
     } else {
-      navbarText.style.display = "none"; // Ẩn thẻ <p>
+      if (navbarText.style.display === "none") {
+        navbarText.style.display = "block"; 
+      } else {
+        navbarText.style.display = "none"; 
+      }
     }
   });
+
+
+
 
 }
 
