@@ -52,7 +52,7 @@ public interface MemberPlanRepository extends JpaRepository<MemberPlan, Integer>
        from member_plan m
       inner join travel_plan t on t.id = m.plan_id
       inner join user u on u.id = m.user_id
-      where m.plan_id  = :planId AND m.role <> 'ADMIN';
+      where m.plan_id  = :planId;
                               """, nativeQuery = true)
   Page<Object[]> foundMemberJoinWithPlan(@Param("planId") Integer planId, Pageable pageable);
 
@@ -68,7 +68,7 @@ public interface MemberPlanRepository extends JpaRepository<MemberPlan, Integer>
        from member_plan m
       inner join travel_plan t on t.id = m.plan_id
       inner join user u on u.id = m.user_id
-      where m.plan_id =:planId AND m.role <> 'ADMIN';
+      where m.plan_id =:planId;
                               """, nativeQuery = true)
   List<Object[]> foundMemberJoinPlan(@Param("planId") Integer planId);
 }

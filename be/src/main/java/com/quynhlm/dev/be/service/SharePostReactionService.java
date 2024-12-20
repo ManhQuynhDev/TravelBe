@@ -46,8 +46,9 @@ public class SharePostReactionService {
 
         SharePostReaction foundReaction = sharePostReactionRepository.findByShareIdAndUserId(shareReaction.getShareId(),
                 shareReaction.getUserId());
+
         if (foundReaction != null) {
-            if (foundReaction.getType() == shareReaction.getType()) {
+            if (foundReaction.getType().equals(shareReaction.getType())) {
                 sharePostReactionRepository.delete(foundReaction);
             } else {
                 foundReaction.setType(shareReaction.getType());

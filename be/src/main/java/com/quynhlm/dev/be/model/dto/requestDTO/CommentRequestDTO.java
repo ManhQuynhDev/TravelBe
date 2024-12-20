@@ -14,7 +14,7 @@ import lombok.Setter;
 public class CommentRequestDTO {
     private String content;
     @Column(name = "post_id",nullable = true)
-    private Integer postId;
+    private Integer postId; 
     @Column(name = "share_id",nullable = true)
     private Integer shareId;
     private int userId;
