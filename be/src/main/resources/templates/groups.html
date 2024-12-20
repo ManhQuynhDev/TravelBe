@@ -238,13 +238,13 @@
                                 ? `<img src="${member.avatar_url}" alt="Avatar" 
                                             class="rounded-circle mr-2" 
                                             style="width: 40px; height: 40px; object-fit: cover;">`
-                                                            : `<div class="rounded-circle mr-2" 
+                                : `<div class="rounded-circle mr-2" 
                                             style="width: 40px; height: 40px; background-color: #ccc; display: flex; 
                                             justify-content: center; align-items: center; font-size: 18px; color: #fff; text-transform: uppercase;">
                                             ${member.fullname.charAt(0)}
                                     </div>`;
 
-                                                        row.innerHTML = `
+                            row.innerHTML = `
                                     <td>${index + 1}</td> <!-- Thêm số thứ tự -->
                                     <td>
                                         <div class="member-info d-flex align-items-center">
@@ -322,6 +322,9 @@
         });
         document.getElementById("saveGroupButton").addEventListener("click", () => {
             // Lấy dữ liệu từ form
+            const saveButton = document.getElementById("saveGroupButton");
+            saveButton.disabled = true;  // Vô hiệu hóa nút save khi bắt đầu
+
             const groupData = {
                 coverPhoto: document.getElementById("groupCoverPhoto").files[0],
                 name: document.getElementById("groupName").value.trim(),  // Loại bỏ khoảng trắng thừa
@@ -333,18 +336,26 @@
             const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
             if (!nameRegex.test(groupData.name)) {
                 alert("Tên nhóm không được chứa ký tự đặc biệt. Vui lòng nhập lại!");
+                saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;
             }
 
             // Kiểm tra độ dài tối thiểu
             if (groupData.name.length < 3) {
                 alert("Tên nhóm phải có ít nhất 3 ký tự!");
+                saveButton.disabled = false;  // Kích hoạt lại nút save
+                return;
+            }
+            if (groupData.name.length > 50) {
+                alert("Tên nhóm không được quá 50 ký tự!");
+                saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;
             }
 
             // Kiểm tra xem các trường bắt buộc có bị bỏ trống không
             if (!groupData.name || !groupData.status || !groupData.bio) {
                 alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
+                saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;  // Dừng nếu có trường bị bỏ trống
             }
 
@@ -371,15 +382,22 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    alert("Nhóm đã được tạo thành công!");
-                    $('#addGroupModal').modal('hide');
-                    window.location.reload();
+                    if (data.status) {
+                        alert("Nhóm đã được tạo thành công!");
+                        $('#addGroupModal').modal('hide');
+                        window.location.reload();
+                    } else {
+                        alert("Tên nhóm đã tồn tại, vui lòng thử lại!");
+                    }
+                    saveButton.disabled = false;  // Kích hoạt lại nút save sau khi hoàn tất
                 })
                 .catch(error => {
                     console.log("Lỗi khi gọi fetch:", error);
                     alert("Đã xảy ra lỗi trong quá trình tạo nhóm.");
+                    saveButton.disabled = false;  // Kích hoạt lại nút save nếu có lỗi
                 });
         });
+
 
 
 

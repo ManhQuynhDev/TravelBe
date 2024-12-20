@@ -102,14 +102,13 @@
                                 <tr th:each="story, iterStat : ${storyList}">
                                     <td th:text="${iterStat.index + 1}">1</td>
                                     <td class="text-start" style="max-width: 250px;">
-                                        <div>
-                                            <a href="#" class="text-body text-decoration-none" data-toggle="modal"
-                                                th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'">
-                                                <span th:text="${story.content}"></span>
-                                            </a>
-
-                                        </div>
+                                        <a href="#" data-toggle="modal"
+                                            th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'"
+                                             class="text-body text-decoration-none">
+                                            <span th:text="${story.content}"></span>
+                                        </a>
                                     </td>
+
                                     <td class="text-start">
                                         <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}"
                                             alt="Story Media" class="img-fluid"
@@ -224,8 +223,102 @@
         const user_id = localStorage.getItem("user_id")
 
         // details storry
-        function loadStoryDetails(id) {
-            fetch(`http://localhost:8080/api/stories/${id}`, {
+
+        // delete story
+        document.querySelectorAll('#deleteStory').forEach(button => {
+            button.addEventListener("click", function () {
+                const storyId = this.getAttribute("data-id");
+                const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+                modal.show();
+
+                const confirmButton = document.getElementById("confirmDeleteBtn");
+                const newConfirmButton = confirmButton.cloneNode(true);
+                confirmButton.replaceWith(newConfirmButton);
+
+                const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+                confirmDeleteBtn.removeEventListener("click", deleteStory);
+
+                confirmDeleteBtn.addEventListener("click", function deleteStory() {
+                    fetch(`http://localhost:8080/api/stories/${storyId}`, {
+                        method: "DELETE",
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.message === "Delete story successfully") {
+                                alert("Xóa story thành công");
+                                modal.hide();
+
+                                const storyRow = button.closest('tr');
+                                if (storyRow) {
+                                    storyRow.remove();
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert("Xóa story thất bại");
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                });
+            });
+        });
+
+
+        document.getElementById("addStory").addEventListener("click", function () {
+            $('#addStoryModal').modal('show');
+
+        });
+        const apiURL = 'http://localhost:8080/locations?page=0&size=100';
+        // const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
+
+        const storyLocation = document.getElementById('storyLocation');
+
+        if (!token) {
+            console.error("No token found in localStorage");
+        } else {
+            async function fetchLocations() {
+                try {
+                    const response = await fetch(apiURL, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log("Fetched Locations:", data);
+
+                    storyLocation.innerHTML = '<option value="">Chọn địa điểm</option>';
+
+                    if (data.content && Array.isArray(data.content)) {
+                        data.content.forEach(location => {
+                            const option = document.createElement('option');
+                            option.value = location.address;
+                            option.textContent = location.address;
+                            storyLocation.appendChild(option);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching locations:', error);
+                }
+            }
+
+
+            fetchLocations();
+        }
+        function loadStoryDetails(idStory) {
+            console.log(idStory);
+
+            fetch(`http://localhost:8080/api/stories/${idStory}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -233,7 +326,11 @@
             })
                 .then(res => res.json())
                 .then(data => {
+                    console.log(data);
+
                     const story = data.data;
+                    console.log(story);
+
 
                     const storyMediaImg = document.getElementById('storyMediaImgModal');
                     storyMediaImg.src = story.mediaUrl || 'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2023/07/hinh-dep.jpg';
@@ -292,132 +389,53 @@
                     console.error("Failed: ", error);
                 });
         }
-        // delete story
-        document.querySelectorAll('#deleteStory').forEach(button => {
-            button.addEventListener("click", function () {
-                const storyId = this.getAttribute("data-id");
-                const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
-                modal.show();
-
-                const confirmButton = document.getElementById("confirmDeleteBtn");
-                const newConfirmButton = confirmButton.cloneNode(true);
-                confirmButton.replaceWith(newConfirmButton);
-
-                const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-                confirmDeleteBtn.removeEventListener("click", deleteStory);
-
-                confirmDeleteBtn.addEventListener("click", function deleteStory() {
-                    fetch(`http://localhost:8080/api/stories/${storyId}`, {
-                        method: "DELETE",
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.message === "Delete story successfully") {
-                                alert("Xóa story thành công");
-                                modal.hide();
-
-                                const storyRow = button.closest('tr');
-                                if (storyRow) {
-                                    storyRow.remove();
-                                    window.location.reload();
-                                }
-                            } else {
-                                alert("Xóa story thất bại");
-                            }
-                        })
-                        .catch(error => {
-                            console.log(error);
-                        });
-                });
-            });
-        });
-
-
-        document.getElementById("addStory").addEventListener("click", function () {
-            $('#addStoryModal').modal('show');
-            const apiURL = 'http://localhost:8080/locations?page=0&size=100';
-            // const groupApiURL = 'http://localhost:8080/api/groups?page=0&size=100';
-            const token = localStorage.getItem("authToken");
-
-            const storyLocation = document.getElementById('storyLocation');
-
-            if (!token) {
-                console.error("No token found in localStorage");
-            } else {
-                async function fetchLocations() {
-                    try {
-                        const response = await fetch(apiURL, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        console.log("Fetched Locations:", data);
-
-                        storyLocation.innerHTML = '<option value="">Chọn địa điểm</option>';
-
-                        if (data.content && Array.isArray(data.content)) {
-                            data.content.forEach(location => {
-                                const option = document.createElement('option');
-                                option.value = location.id;
-                                option.textContent = location.address;
-                                storyLocation.appendChild(option);
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error fetching locations:', error);
-                    }
-                }
-
-
-                fetchLocations();
-            }
-        });
         document.getElementById('saveStoryButton').addEventListener('click', function () {
+            const saveButton = document.getElementById('saveStoryButton');
+            saveButton.disabled = true;  // Vô hiệu hóa nút khi bắt đầu
+
             const content = document.getElementById('storyContent').value.trim();
             const status = document.getElementById('storyStatus').value.trim();
             const location = document.getElementById('storyLocation').value.trim();
             const mediaFile = document.getElementById('storyMediaInput').files[0];
             const musicFile = document.getElementById('storyMusicFile').files[0];
 
+            console.log(location);
+            
+
             // Kiểm tra nội dung
             if (!content) {
                 alert('Nội dung không được để trống.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!location) {
                 alert('Location không được để trống.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
             if (!mediaFile) {
                 alert('Vui lòng chọn ít nhất một hình ảnh hoặc video.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
             const validMediaTypes = ['image/jpeg', 'image/png', 'image/gif', 'video/mp4', 'video/webm'];
             if (!validMediaTypes.includes(mediaFile.type)) {
                 alert('File media không hợp lệ. Chỉ chấp nhận hình ảnh (jpeg, png, gif) hoặc video (mp4, webm).');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
             if (!musicFile) {
                 alert('Vui lòng chọn một file nhạc.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
             const validMusicTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3'];
             if (!validMusicTypes.includes(musicFile.type)) {
                 alert('File nhạc không hợp lệ. Chỉ chấp nhận các định dạng mp3, wav, và mpeg.');
+                saveButton.disabled = false;  // Kích hoạt lại nút khi có lỗi
                 return;
             }
 
@@ -426,8 +444,10 @@
                 content: content,
                 status: status,
                 location: location,
-                user_id: user_id
+                user_id: localStorage.getItem('user_id')  // Thêm user_id từ localStorage
             }));
+            console.log(location);
+
 
             formData.append('mediaUrl', mediaFile);
             formData.append('musicFile', musicFile);
@@ -435,21 +455,27 @@
             fetch('http://localhost:8080/api/stories', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
                 },
                 body: formData
             })
                 .then(response => response.json())
                 .then(data => {
+                    console.log(data);
+
                     alert('Thêm Story thành công!');
                     $('#addStoryModal').modal('hide');
-                    window.location.reload();
+                    // window.location.reload();
                 })
                 .catch(error => {
                     console.error('Lỗi:', error);
                     alert('Thêm Story thất bại.');
+                })
+                .finally(() => {
+                    saveButton.disabled = false;  // Kích hoạt lại nút khi hoàn tất hoặc có lỗi
                 });
         });
+
 
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");

@@ -192,6 +192,10 @@ if (!token) {
 }
 
 document.getElementById('savePostButton').addEventListener('click', function () {
+    // Vô hiệu hóa nút save khi bắt đầu
+    const saveButton = document.getElementById('savePostButton');
+    saveButton.disabled = true;
+
     var content = document.getElementById('postContent').value;
     var status = document.getElementById('postStatus').value;
     var location = document.getElementById('postLocation').value;
@@ -203,21 +207,25 @@ document.getElementById('savePostButton').addEventListener('click', function () 
 
     if (!content) {
         alert('Vui lòng điền nội dung bài viết!');
+        saveButton.disabled = false;  // Kích hoạt lại nút save
         return;
     }
 
     if (!status) {
         alert('Vui lòng chọn trạng thái bài viết!');
+        saveButton.disabled = false;  // Kích hoạt lại nút save
         return;
     }
 
     if (!location) {
         alert('Vui lòng nhập địa điểm!');
+        saveButton.disabled = false;  // Kích hoạt lại nút save
         return;
     }
 
     if (hashtags.length === 0 || hashtags[0] === "") {
         alert('Vui lòng nhập ít nhất một hashtag!');
+        saveButton.disabled = false;  // Kích hoạt lại nút save
         return;
     }
 
@@ -227,12 +235,14 @@ document.getElementById('savePostButton').addEventListener('click', function () 
             const fileType = file.type;
             if (!fileType.startsWith('image/') && !fileType.startsWith('video/')) {
                 alert('Chỉ cho phép tệp hình ảnh và video!');
+                saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;
             }
 
             const maxSize = 5 * 1024 * 1024; // 5MB
             if (file.size > maxSize) {
                 alert('Kích thước tệp vượt quá giới hạn tối đa 5MB!');
+                saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;
             }
         }
@@ -272,12 +282,17 @@ document.getElementById('savePostButton').addEventListener('click', function () 
             } else {
                 alert('Không thể tạo bài viết: ' + data.message);
             }
+            // Kích hoạt lại nút save sau khi hoàn tất
+            saveButton.disabled = false;
         })
         .catch(error => {
             console.error('Lỗi:', error);
             alert('Đã xảy ra lỗi trong quá trình tạo bài viết.');
+            // Kích hoạt lại nút save khi có lỗi
+            saveButton.disabled = false;
         });
 });
+
 
 
 

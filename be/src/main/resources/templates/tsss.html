@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white text-center">
+                <h5 class="card-title mb-0">Thống Kê Vi Phạm</h5>
+            </div>
+            <div class="card-body p-0">
+                <canvas id="violationPieChart"></canvas> <!-- Đây là nơi biểu đồ tròn sẽ hiển thị -->
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Đảm bảo plugin này đã được thêm vào -->
+<script>
+    var violationData = {
+        labels: ['Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp', 'Khác'],
+        datasets: [{
+            label: 'Số lượng vi phạm',
+            data: [120, 80, 50, 30, 20],
+            backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
+            borderColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
+            borderWidth: 1
+        }]
+    };
+
+    var ctx = document.getElementById('violationPieChart').getContext('2d');
+    var violationPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: violationData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            var dataset = tooltipItem.chart.data.datasets[tooltipItem.datasetIndex];
+                            var total = dataset.data.reduce(function (acc, value) {
+                                return acc + value;
+                            }, 0);
+                            var value = dataset.data[tooltipItem.dataIndex];
+                            var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
+                            return tooltipItem.label + ': ' + value + ' vi phạm (' + percentage + '%)';
+                        }
+                    }
+                },
+                datalabels: {
+                    formatter: function (value, context) {
+                        var total = context.dataset.data.reduce(function (acc, currentValue) {
+                            return acc + currentValue;
+                        }, 0);
+                        var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
+                        return percentage + '%'; // Trả về phần trăm
+                    },
+                    color: '#fff', // Màu chữ của phần trăm
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+                    anchor: 'center', // Đảm bảo phần trăm nằm giữa phần của biểu đồ
+                    align: 'center'
+                }
+            }
+        }
+    });
+</script>
+
+</html>

@@ -42,7 +42,7 @@ public class HomeController {
 
     @Autowired
     private ReviewService reviewService;
-    
+
     @Autowired
     private ReportService reportService;
 
@@ -61,15 +61,16 @@ public class HomeController {
         Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
         long groupCount = groupResponseDTOPage.getTotalElements();
         Pageable pageable = PageRequest.of(0, 1000);
-        Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(1,pageable);
+        Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(1, pageable);
         long postCount = postMediaDTOPage.getTotalElements();
 
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();
         long managerCount = userList.stream()
-                .filter(user -> user.getRoles().contains("MANAGER"))
+                .filter(user -> user.getRoles().contains("MANAGER") || user.getRoles().contains("ADMIN"))
                 .count();
+
         model.addAttribute("userCount", userCount);
         model.addAttribute("groupCount", groupCount);
         model.addAttribute("postCount", postCount);
@@ -110,7 +111,7 @@ public class HomeController {
     public String post(Model model) {
         // model.addAttribute("body", "posts");
         Pageable pageable = PageRequest.of(0, 1000);
-        model.addAttribute("postList", postService.getAllPost(1,pageable));
+        model.addAttribute("postList", postService.getAllPost(1, pageable));
         return "posts";
     }
 

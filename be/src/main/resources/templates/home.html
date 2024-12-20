@@ -202,6 +202,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white text-center">
+                            <h5 class="card-title mb-0">Thống Kê Vi Phạm</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <canvas id="violationPieChart"></canvas> <!-- Đây là nơi biểu đồ tròn sẽ hiển thị -->
+                        </div>
+                    </div>
+                </div>
+
+
 
 
                 <!-- Cột trái: Bảng Top 5 -->
@@ -216,24 +228,88 @@
     <script th:src="@{/assets/js/theme.min.js}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <!-- Đảm bảo plugin này đã được thêm vào -->
+    <script>
+        var violationData = {
+            labels: ['Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp', 'Khác'],
+            datasets: [{
+                label: 'Số lượng vi phạm',
+                data: [120, 80, 50, 30, 20],
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
+                borderColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#ff9f40'],
+                borderWidth: 1
+            }]
+        };
+
+        var ctx = document.getElementById('violationPieChart').getContext('2d');
+        var violationPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: violationData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                var dataset = tooltipItem.chart.data.datasets[tooltipItem.datasetIndex];
+                                var total = dataset.data.reduce(function (acc, value) {
+                                    return acc + value;
+                                }, 0);
+                                var value = dataset.data[tooltipItem.dataIndex];
+                                var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
+                                return tooltipItem.label + ': ' + value + ' vi phạm (' + percentage + '%)';
+                            }
+                        }
+                    },
+                    datalabels: {
+                        formatter: function (value, context) {
+                            var total = context.dataset.data.reduce(function (acc, currentValue) {
+                                return acc + currentValue;
+                            }, 0);
+                            var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
+                            return percentage + '%'; // Trả về phần trăm
+                        },
+                        color: '#fff', // Màu chữ của phần trăm
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        anchor: 'center', // Đảm bảo phần trăm nằm giữa phần của biểu đồ
+                        align: 'center'
+                    }
+                }
+            }
+        });
+    </script>
+
+
+
+
+
+
     <script>
         const token = localStorage.getItem("authToken")
-        // Fetch dữ liệu từ API
+
         fetch('http://localhost:8080/onboarding/statistical_register', {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(response => response.json()) // Chuyển dữ liệu trả về thành JSON
+            .then(response => response.json())
             .then(data => {
-                // Lấy danh sách các tháng từ dữ liệu
+
                 const labels = data.map(item => {
                     const dateParts = item.date.split("-");
-                    return dateParts[1]; // Lấy phần tháng từ "2024-01", "2024-02", ...
+                    return dateParts[1];
                 });
 
-                // Lấy danh sách số lượng người dùng đăng ký
+
                 const registerCounts = data.map(item => item.register_count);
                 const month11 = data.find(item => item.date === "2024-11");
                 const month12 = data.find(item => item.date === "2024-12");
@@ -242,7 +318,7 @@
                     const difference = month12.register_count - month11.register_count;
                     const percentageChange = ((difference / month11.register_count) * 100).toFixed(2);
 
-                    // Cập nhật badge hiển thị tăng/giảm
+
                     const growthInfoElement = document.getElementById("growthInfo");
                     let htmlContent = "";
 
@@ -265,27 +341,27 @@
                     growthInfoElement.innerHTML = htmlContent;
                 }
 
-                // Tạo cấu trúc dữ liệu cho biểu đồ
+
                 const chartData = {
-                    labels: labels, // Các tháng
+                    labels: labels,
                     datasets: [
                         {
                             label: 'Users',
-                            data: registerCounts, // Số lượng người dùng
+                            data: registerCounts,
                             borderColor: 'rgba(54, 162, 235, 1)',
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             fill: true
                         },
                         {
                             label: 'Posts',
-                            data: [5, 10, 20, 35, 50, 75], // Số lượng bài viết - bạn cần lấy dữ liệu thực tế từ API
+                            data: [5, 10, 20, 35, 50, 75],
                             borderColor: 'rgba(255, 99, 132, 1)',
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             fill: true
                         },
                         {
                             label: 'Groups',
-                            data: [2, 5, 8, 12, 20, 30], // Số lượng nhóm - bạn cần lấy dữ liệu thực tế từ API
+                            data: [2, 5, 8, 12, 20, 30],
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             fill: true
@@ -293,7 +369,7 @@
                     ]
                 };
 
-                // Lấy context của canvas và vẽ biểu đồ
+
                 const ctx = document.getElementById('growthChart').getContext('2d');
                 const growthChart = new Chart(ctx, {
                     type: 'line',
@@ -321,7 +397,7 @@
                                     display: true,
                                     text: 'Count'
                                 },
-                                suggestedMax: 120, // Giới hạn trục y cho phù hợp với số lượng thấp
+                                suggestedMax: 120,
                             }
                         }
                     }
@@ -338,10 +414,10 @@
             function logGroupId(event) {
                 const groupId = event.target.getAttribute("data-id");
 
-                // Lưu ID vào localStorage
+
                 localStorage.setItem('selectedGroupId', groupId);
 
-                // Chuyển hướng đến trang chi tiết nhóm
+
                 window.location.href = '/web-server/groups';
             }
 
@@ -351,11 +427,11 @@
                     "Authorization": `Bearer ${token}`
                 }
             })
-                .then(response => response.json()) // Chuyển dữ liệu thành JSON
+                .then(response => response.json())
                 .then(data => {
-                    const groupList = document.getElementById("group-list"); // Lấy tbody
+                    const groupList = document.getElementById("group-list");
 
-                    // Lặp qua dữ liệu nhóm và hiển thị trong bảng
+
                     data.forEach((group, index) => {
                         const row = `
                     <tr>
@@ -372,10 +448,10 @@
                         </td>
                     </tr>
                 `;
-                        groupList.innerHTML += row; // Thêm dòng vào tbody
+                        groupList.innerHTML += row;
                     });
 
-                    // Thêm sự kiện click cho các nút "Chi Tiết"
+
                     const buttons = document.querySelectorAll('.btn-info');
                     buttons.forEach(button => {
                         button.addEventListener('click', logGroupId);
@@ -418,13 +494,13 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             const top5CheckinList = document.getElementById('top5CheckinList');
-            const authToken = localStorage.getItem('authToken'); // Lấy token từ localStorage
+            const authToken = localStorage.getItem('authToken');
 
             fetch('http://localhost:8080/locations/top5_hot', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${authToken}`, // Gửi Token trong Header
-                    'Content-Type': 'application/json'     // Loại dữ liệu gửi
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
                 }
             })
                 .then(response => {
@@ -435,7 +511,7 @@
                 })
                 .then(data => {
                     if (data.status && data.data.length > 0) {
-                        // Render dữ liệu nếu API trả về thành công
+
                         const rows = data.data.map((location, index) => `
                 <tr>
                     <td>#${index + 1}</td>
@@ -445,7 +521,7 @@
             `).join('');
                         top5CheckinList.innerHTML = rows;
                     } else {
-                        // Hiển thị thông báo nếu không có dữ liệu
+
                         top5CheckinList.innerHTML = `
                 <tr>
                     <td colspan="3" class="text-center text-muted">No data available</td>

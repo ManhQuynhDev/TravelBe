@@ -34,8 +34,8 @@ function loadUserDetails(userId) {
                 document.getElementById("managerCreateTimeDetails").innerText = `Tham gia ${year} - ${month}`;
 
                 document.getElementById('userFullNamePro').innerText = 'Họ tên: ' + (user.fullname || 'Không có thông tin');
-                document.getElementById('userPosition').innerText = 'Vị trí: ' + (user.roles[0] || 'Không có thông tin');
-                document.getElementById('userBio').innerText = 'Tiểu sử: ' + (user.bio || 'Không có thông tin');
+                document.getElementById('userPosition').innerText = 'Chức vụ: ' + (user.roles[0] || 'Không có thông tin');
+                document.getElementById('userBio').innerText = 'Giới thiệu: ' + (user.bio || 'Không có thông tin');
                 document.getElementById('userDOB').innerText = 'Ngày sinh: ' + (user.dob || 'Không có thông tin');
 
                 // Hiển thị modal
@@ -247,6 +247,10 @@ document.getElementById('addManager').addEventListener('click', function () {
 });
 
 document.getElementById("submitAddManagerButton").addEventListener("click", function () {
+    // Vô hiệu hóa nút submit khi bắt đầu
+    const submitButton = document.getElementById("submitAddManagerButton");
+    submitButton.disabled = true;
+
     const fullname = document.getElementById('managerFullName').value.trim();
     const email = document.getElementById('managerEmail').value.trim();
     const phone = document.getElementById('managerPhone').value.trim();
@@ -254,30 +258,34 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
 
     if (!fullname || !email || !phone || !password) {
         alert("Vui lòng điền đầy đủ thông tin!");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     if (fullname.length < 3) {
         alert("Họ tên phải có ít nhất 3 ký tự.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     // Kiểm tra tên có chứa ký tự đặc biệt ngoài dấu cách không
     if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(fullname)) {
         alert("Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
-
 
     const emailRegex = /^[a-zA-Z][a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]*(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
         alert("Vui lòng nhập địa chỉ email hợp lệ.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
     if (!phoneRegex.test(phone)) {
         alert("Vui lòng nhập số điện thoại hợp lệ.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     const passwordRegexLowercase = /[a-z]/;
@@ -288,26 +296,29 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
 
     if (password.length < passwordMinLength) {
         alert("Mật khẩu phải có ít nhất 8 ký tự.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexLowercase.test(password)) {
         alert("Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexUppercase.test(password)) {
         alert("Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexNumber.test(password)) {
         alert("Mật khẩu phải có ít nhất 1 chữ số.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexSpecialChar.test(password)) {
         alert("Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
+        submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
-
-
 
     const managerData = {
         fullname: fullname,
@@ -327,19 +338,23 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
         .then(response => response.json())
         .then(data => {
             if (data.status) {
-                alert("Manager created successfully!");
+                alert("Thêm quản lý thành công!");
                 var addManagerModal = new bootstrap.Modal(document.getElementById("addManagerModal"));
                 addManagerModal.hide();
                 window.location.reload();
             } else {
                 alert("Failed to create manager: " + data.error.message);
             }
+            // Kích hoạt lại nút submit sau khi hoàn tất
+            submitButton.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while creating the manager.');
+            submitButton.disabled = false;  // Kích hoạt lại nút submit
         });
 });
+
 
 function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
@@ -523,6 +538,19 @@ function saveChanges(userId) {
 
     if (!phoneRegex.test(phoneNumber)) {
         alert("Vui lòng nhập số điện thoại hợp lệ.");
+        return;
+    }
+
+    const currentDate = new Date();
+    const birthDate = new Date(dob);
+    const age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    if (age < 18 || age > 100) {
+        alert("Ngày sinh phải trong khoảng từ 18 đến 100 tuổi.");
         return;
     }
 
