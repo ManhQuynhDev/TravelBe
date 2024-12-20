@@ -102,7 +102,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
               left join comment_reaction cr on cr.comment_id = c.id
               left join reply r on r.comment_id = c.id
               group by c.id , u.id , r.id , cr.id
-              having c.post_id = :shareId;
+              having c.share_id = :shareId;
                                       """, nativeQuery = true)
     Page<Object[]> fetchCommentWithShareId(Pageable pageable, @Param("shareId") Integer shareId,
             @Param("userId") Integer userId);

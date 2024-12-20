@@ -103,8 +103,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
     }
-
-    // Email
+    // Email    
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
         if (userService.validateOTP(verify.getEmail(), verify.getOtp())) {

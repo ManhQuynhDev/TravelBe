@@ -286,12 +286,12 @@ public class CommentService {
         });
     }
 
-    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, Integer userId, int page, int size)
-            throws PostNotFoundException, UserAccountNotFoundException {
+    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer shareId, Integer userId, int page, int size)
+            throws ShareNotFoundException, UserAccountNotFoundException {
 
-        Post foundPost = postRepository.getAnPost(postId);
-        if (foundPost == null) {
-            throw new PostNotFoundException("Post with ID " + postId + " not found. Please try again.");
+        Share foundShare = shareRepository.getAnShare(shareId);
+        if (foundShare == null) {
+            throw new ShareNotFoundException("Share with ID " + shareId + " not found. Please try again.");
         }
 
         User foundUser = userRepository.getAnUser(userId);
@@ -300,7 +300,7 @@ public class CommentService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, postId, userId);
+        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, shareId, userId);
 
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
@@ -354,7 +354,7 @@ public class CommentService {
                     })
                     .collect(Collectors.toList());
 
-            comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
+            comment.setIsAuthor(foundShare.getUserId() == ((Number) row[1]).intValue());
             comment.setReplys(responses);
 
             return comment;
