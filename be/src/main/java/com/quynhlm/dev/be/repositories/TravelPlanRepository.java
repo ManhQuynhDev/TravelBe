@@ -18,6 +18,9 @@ public interface TravelPlanRepository extends JpaRepository<Travel_Plan, Integer
     @Query(value = "SELECT * FROM Travel_Plan WHERE group_id = :group_id", nativeQuery = true)
     List<Travel_Plan> findByGroupId(@Param("group_id") int group_id);
 
+    @Query(value = "SELECT * FROM Travel_Plan WHERE user_id = :user_id", nativeQuery = true)
+    List<Travel_Plan> findByGroupUserId(@Param("user_id") int user_id);
+
     @Query(value = """
                 SELECT
             	p.id as planId,

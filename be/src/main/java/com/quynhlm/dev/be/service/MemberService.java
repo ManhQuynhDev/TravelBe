@@ -157,13 +157,16 @@ public class MemberService {
             throw new MemberNotFoundException("Member with ID " + memberId + " not found, please try another ID.");
         }
 
-        List<Travel_Plan> travelPlans = travelPlanRepository.findByGroupId(foundMember.getGroupId());
-
-        if (!travelPlans.isEmpty()) {
-            for (Travel_Plan travel_Plan : travelPlans) {
-                travelPlanService.deleteTravelPlan(travel_Plan.getId());
+        if (foundMember.getRole().equals(Role.ADMIN.name().toString())) {
+            List<Travel_Plan> travelPlans = travelPlanRepository.findByGroupUserId(foundMember.getUserId());
+            log.info("Length : " + travelPlans.size());
+            if (!travelPlans.isEmpty()) {
+                for (Travel_Plan travel_Plan : travelPlans) {
+                    travelPlanService.deleteTravelPlan(travel_Plan.getId());
+                }
             }
         }
+
         memberRepository.delete(foundMember);
     }
 
