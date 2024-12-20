@@ -145,44 +145,18 @@
             </div>
 
             <div class="row mb-5">
-                <div class="col-md-12 col-lg-8">
-                    <div class="card shadow-sm">
+                <!-- Cột duy nhất chứa cả Tăng Trưởng Theo Thời Gian và Nhóm Hoạt Động Nhiều Nhất -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card shadow-sm mb-4">
                         <div class="card-body">
-                            <h4 class="text-center">Tăng Trưởng Theo Thời Gian</h4>
+                            <h4 class="text-center">Biểu Đồ Tăng Trưởng Của Người Dùng, Bài Viết và Nhóm</h4>
                             <canvas id="growthChart"></canvas>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h5 class="card-title mb-0">Top 5 Địa Điểm Check-in Tại Việt Nam</h5>
-                        </div>
-                        <div class="card-body p-0">
-                            <table class="table table-striped mb-0">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th scope="col">Hạng</th>
-                                        <th scope="col">Địa điểm</th>
-                                        <th scope="col">Số Lượng Check-in</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="top5CheckinList">
-                                    <!-- Dữ liệu sẽ được thêm động ở đây -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Row 2: Bảng Top 5 và Nội dung Chính -->
-            <div class="row">
-                <!-- Cột phải: Nội dung khác -->
-                <div class="col-lg-8 mb-4">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm mb-4">
                         <div class="card-body">
+                            <h4>Top 10 Nhóm Hoạt Động Nhiều Nhất</h4>
                             <div class="col-12 table-responsive">
-                                <h4>Nhóm Hoạt Động Nhiều Nhất</h4>
                                 <table id="modernTable" class="table table-hover">
                                     <thead>
                                         <tr>
@@ -201,8 +175,52 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4>Top 10 Bài Viết Có Lượt Tương Tác Nhiều Nhất</h4>
+                            <div class="col-12 table-responsive">
+                                <table id="modernTable" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Ảnh</th>
+                                            <th>Nội Dung</th>
+                                            <th>Quản Trị Viên</th>
+                                            <th>Lượt Tương Tác</th>
+                                            <th>Hành Động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="post-list">
+                                        <!-- Dữ liệu sẽ được thêm vào đây qua JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-4 mb-4">
+
+                <!-- Cột phải: Bảng Top 5 Địa Điểm Check-in -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="card-title mb-0">Top 5 Địa Điểm Check-in</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Hạng</th>
+                                        <th scope="col">Địa điểm</th>
+                                        <th scope="col">Check-in</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top5CheckinList">
+                                    <!-- Dữ liệu sẽ được thêm động ở đây -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="card shadow-sm">
                         <div class="card-header bg-success text-white text-center">
                             <h5 class="card-title mb-0">Thống Kê Vi Phạm</h5>
@@ -212,13 +230,16 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="row">
+                <!-- Cột phải: Biểu đồ Thống Kê Vi Phạm -->
+                <!-- <div th:replace="fragments/notification"></div> -->
 
 
-
-
-                <!-- Cột trái: Bảng Top 5 -->
 
             </div>
+
 
         </div>
     </div>
@@ -261,7 +282,7 @@
                                     return acc + value;
                                 }, 0);
                                 var value = dataset.data[tooltipItem.dataIndex];
-                                var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
+                                var percentage = ((value / total) * 100).toFixed(2);
                                 return tooltipItem.label + ': ' + value + ' vi phạm (' + percentage + '%)';
                             }
                         }
@@ -271,15 +292,15 @@
                             var total = context.dataset.data.reduce(function (acc, currentValue) {
                                 return acc + currentValue;
                             }, 0);
-                            var percentage = ((value / total) * 100).toFixed(2); // Tính phần trăm
-                            return percentage + '%'; // Trả về phần trăm
+                            var percentage = ((value / total) * 100).toFixed(2);
+                            return percentage + '%';
                         },
-                        color: '#fff', // Màu chữ của phần trăm
+                        color: '#fff',
                         font: {
                             weight: 'bold',
                             size: 14
                         },
-                        anchor: 'center', // Đảm bảo phần trăm nằm giữa phần của biểu đồ
+                        anchor: 'center',
                         align: 'center'
                     }
                 }
@@ -293,75 +314,103 @@
 
 
     <script>
-        const token = localStorage.getItem("authToken")
+        const token = localStorage.getItem("authToken");
 
-        fetch('http://localhost:8080/onboarding/statistical_register', {
+        // Fetch dữ liệu người dùng
+        const fetchUserData = fetch('http://localhost:8080/onboarding/statistical_register', {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`
             }
-        })
-            .then(response => response.json())
-            .then(data => {
+        }).then(response => response.json());
 
-                const labels = data.map(item => {
-                    const dateParts = item.date.split("-");
-                    return dateParts[1];
+        // Fetch dữ liệu bài viết
+        const fetchPostData = fetch('http://localhost:8080/api/posts/statistical_post/2024', {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => response.json());
+
+        // Fetch dữ liệu nhóm
+        const fetchGroupData = fetch('http://localhost:8080/api/groups/statistical_group/2024', {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        }).then(response => response.json());
+
+        // Khi tất cả các yêu cầu hoàn thành
+        Promise.all([fetchUserData, fetchPostData, fetchGroupData])
+            .then(([userData, postData, groupData]) => {
+                // Xử lý dữ liệu người dùng
+                const userLabels = userData.map(item => {
+                    if (item.date) {
+                        const dateParts = item.date.split("-");
+                        return dateParts[1];  // Tháng
+                    }
+                    return '';  // Nếu không có date, trả về chuỗi rỗng
                 });
 
+                const userRegisterCounts = userData.map(item => item.register_count);
+                const month11User = userData.find(item => item.date === "2024-11");
+                const month12User = userData.find(item => item.date === "2024-12");
 
-                const registerCounts = data.map(item => item.register_count);
-                const month11 = data.find(item => item.date === "2024-11");
-                const month12 = data.find(item => item.date === "2024-12");
-
-                if (month11 && month12) {
-                    const difference = month12.register_count - month11.register_count;
-                    const percentageChange = ((difference / month11.register_count) * 100).toFixed(2);
-
+                if (month11User && month12User) {
+                    const differenceUser = month12User.register_count - month11User.register_count;
+                    const percentageChangeUser = ((differenceUser / month11User.register_count) * 100).toFixed(2);
 
                     const growthInfoElement = document.getElementById("growthInfo");
                     let htmlContent = "";
 
-                    if (difference > 0) {
+                    if (differenceUser > 0) {
                         htmlContent = `
-            <span class="badge badge-soft-success">
-                <i class="tio-trending-up"></i> ${percentageChange}%
-            </span>
-            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-        `;
-                    } else if (difference < 0) {
+                <span class="badge badge-soft-success">
+                    <i class="tio-trending-up"></i> ${percentageChangeUser}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+                `;
+                    } else if (differenceUser < 0) {
                         htmlContent = `
-            <span class="badge badge-soft-danger">
-                <i class="tio-trending-down"></i> ${Math.abs(percentageChange)}%
-            </span>
-            <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-        `;
+                <span class="badge badge-soft-danger">
+                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangeUser)}%
+                </span>
+                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
+                `;
                     }
 
                     growthInfoElement.innerHTML = htmlContent;
                 }
 
+                // Xử lý dữ liệu bài viết
+                const postLabels = postData.map(item => item.month); // Tháng từ dữ liệu bài viết
+                const postCounts = postData.map(item => item.post_count); // Số lượng bài viết
 
+                // Xử lý dữ liệu nhóm
+                const groupLabels = groupData.map(item => item.month); // Tháng từ dữ liệu nhóm
+                const groupCounts = groupData.map(item => item.post_count); // Số lượng nhóm
+
+                // Cập nhật dữ liệu cho biểu đồ
                 const chartData = {
-                    labels: labels,
+                    labels: userLabels,  // Chúng ta sẽ dùng labels của user để giữ thống nhất
                     datasets: [
                         {
                             label: 'Users',
-                            data: registerCounts,
+                            data: userRegisterCounts,
                             borderColor: 'rgba(54, 162, 235, 1)',
                             backgroundColor: 'rgba(54, 162, 235, 0.2)',
                             fill: true
                         },
                         {
                             label: 'Posts',
-                            data: [5, 10, 20, 35, 50, 75],
+                            data: postCounts,
                             borderColor: 'rgba(255, 99, 132, 1)',
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             fill: true
                         },
                         {
                             label: 'Groups',
-                            data: [2, 5, 8, 12, 20, 30],
+                            data: groupCounts,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             fill: true
@@ -369,7 +418,7 @@
                     ]
                 };
 
-
+                // Vẽ biểu đồ
                 const ctx = document.getElementById('growthChart').getContext('2d');
                 const growthChart = new Chart(ctx, {
                     type: 'line',
@@ -406,6 +455,9 @@
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
+
+
+
 
 
         document.addEventListener("DOMContentLoaded", function () {
@@ -462,6 +514,42 @@
                     console.error("Error fetching groups:", error);
                 });
         });
+        const url = "http://localhost:8080/api/posts/statistical?page=0&size=10";
+
+
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                console.log(data);
+
+
+                const tableBody = document.getElementById("post-list");
+                data.content.forEach((post, index) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+            <td>${index + 1}</td>
+            <td><img src="${post.mediaUrls}" alt="Avatar" style="width: 100px; height: 50px;object-fit: cover;"></td>
+            <td>${post.fullname}</td>
+            <td>${post.location}</td>
+            <td>${post.reaction_count}</td>
+            <td>
+                <button class="btn btn-primary">Chi tiết</button>
+            </td>
+        `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
 
 
 
@@ -549,6 +637,25 @@
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
+    <!-- <script>
+        $(document).on('ready', function () {
+            // INITIALIZATION OF TOASTS
+            // =======================================================
+            $('.toast-show').toast({
+                autohide: false
+            });
+
+            $('.toast-show').toast('show');
+
+            $('#toast-invoker').click(function () {
+                $('#toast').toast({
+                    delay: 1500
+                });
+
+                $('#toast').toast('show');
+            });
+        });
+    </script> -->
 
 </body>
 

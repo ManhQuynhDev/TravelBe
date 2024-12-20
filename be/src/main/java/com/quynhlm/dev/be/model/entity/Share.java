@@ -20,8 +20,9 @@ public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int userId;
-    private int postId;
+    private Integer userId;
+    private Integer postId;
+    private String content;
     private String create_time;
 }
     

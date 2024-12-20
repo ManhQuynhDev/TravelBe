@@ -22,6 +22,7 @@ import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.service.PostService;
 
@@ -41,6 +42,11 @@ public class PostController {
     @GetMapping("/{user_id}")
     public Page<PostMediaDTO> getAllPost(@PathVariable Integer user_id, Pageable pageable) {
         return postService.getAllPost(user_id, pageable);
+    }
+
+    @GetMapping("/statistical")
+    public Page<PostMediaDTO> postStatistical(Pageable pageable) {
+        return postService.postStatistical(pageable);
     }
 
     @GetMapping("/user-create/{user_id}")
@@ -144,5 +150,10 @@ public class PostController {
     @GetMapping("/hash_tag")
     public List<String> getHashTag() {
         return postService.getAllHashTag();
+    }
+
+    @GetMapping("/statistical_post/{year}")
+    public List<PostStatisticalDTO> getPostCreateCount(@PathVariable int year) {
+        return postService.getPostCreateCount(year);
     }
 }

@@ -101,74 +101,80 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Object[]> getPostSave(@Param("post_id") Integer post_id);
 
     @Query(value = """
-                    (SELECT
-                    DISTINCT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.content,
-                        m.media_url,
-                        p.location_id,
-                        p.status,
-                        m.type,
-                        0 AS isShare,
-                        p.create_time,
-                        NULL AS share_by_user,
-                        COUNT(DISTINCT r.id) AS reaction_count,
-                        (
-            	SELECT COUNT(*)
-            	FROM comment c
-            	WHERE c.type = 'SHARE' AND c.post_id = p.id
-            ) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count
-                    FROM Post p
-                    INNER JOIN Media m ON p.id = m.post_id
-                    LEFT JOIN post_reaction r ON p.id = r.post_id
-                    LEFT JOIN comment c ON p.id = c.post_id
-                    LEFT JOIN share s2 ON p.id = s2.post_id
-                    WHERE p.status = 'PUBLIC'
-                    GROUP BY p.id, m.media_url, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, p.create_time)
+            (SELECT
+            DISTINCT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                l.address,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content as post_content,
+                NULL AS share_content,
+                p.status,
+                m.type,
+                0 AS isShare,
+                p.create_time,
+                NULL AS share_by_user,
+                NULL AS share_by_name,
+                NULL AS share_by_avatar,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                COUNT(t.id) AS isTag,
+            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
+            FROM Post p
+            INNER JOIN Media m ON p.id = m.post_id
+            INNER JOIN Location l ON l.id = p.location_id
+            LEFT JOIN post_reaction r ON p.id = r.post_id
+            INNER JOIN User a ON a.id = p.user_id
+            LEFT JOIN comment c ON p.id = c.post_id AND c.type = 'POST'
+            LEFT JOIN share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                tag t ON t.post_id = p.id
+            WHERE p.status = 'PUBLIC'
+            GROUP BY p.id, p.user_id, p.content, p.location_id, p.status, m.type, p.create_time, p.user_id)
 
-                    UNION ALL
+            UNION ALL
 
-                    (SELECT
-                    DISTINCT
-                        p.user_id AS owner_id,
-                        p.id AS post_id,
-                        p.content,
-                        m.media_url,
-                        p.location_id,
-                        p.status,
-                        m.type,
-                        1 AS isShare,
-                        s.create_time,
-                        s.user_id AS share_by_user,
-                        COUNT(DISTINCT r.id) AS reaction_count,
-                        COUNT(DISTINCT c.id) AS comment_count,
-                        COUNT(DISTINCT s2.id) AS share_count
-                    FROM Share s
-                    INNER JOIN Post p ON s.post_id = p.id
-                    INNER JOIN Media m ON p.id = m.post_id
-                    LEFT JOIN post_reaction r ON p.id = r.post_id
-                    LEFT JOIN comment c ON p.id = c.post_id
-                    LEFT JOIN share s2 ON p.id = s2.post_id
-                    WHERE p.status = 'PUBLIC'
-                    GROUP BY p.id, m.media_url, p.user_id, p.content, p.location_id, p.hastag, p.status, m.type, s.create_time, s.user_id)
-                    ORDER BY create_time DESC
-                    """, countQuery = """
-            SELECT COUNT(*) FROM (
-                (SELECT p.id
-                FROM Post p
-                INNER JOIN Media m ON p.id = m.post_id
-                WHERE p.status = 'PUBLIC')
-                UNION ALL
-                (SELECT p.id
-                FROM Share s
-                INNER JOIN Post p ON s.post_id = p.id
-                INNER JOIN Media m ON p.id = m.post_id
-                WHERE p.status = 'PUBLIC')
-            ) AS total
+            (SELECT
+            DISTINCT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                l.address,
+                a.fullname AS admin_name,
+                a.avatar_url,
+                p.content as post_content,
+                s.content as share_content,
+                p.status,
+                m.type,
+                1 AS isShare,
+                s.create_time,
+                s.user_id AS share_by_user,
+                u.fullname AS share_by_name,
+                u.avatar_url AS share_by_avatar,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+                COUNT(DISTINCT s2.id) AS share_count,
+                COUNT(t.id) AS isTag,
+            MAX(CASE WHEN r.user_id = :userId THEN r.type ELSE NULL END) AS user_reaction_type
+            FROM Share s
+            INNER JOIN Post p ON s.post_id = p.id
+            INNER JOIN Media m ON p.id = m.post_id
+            INNER JOIN Location l ON l.id = p.location_id
+            INNER JOIN User a ON a.id = p.user_id
+            INNER JOIN User u ON u.id = s.user_id
+            LEFT JOIN share_post_reaction r ON s.id = r.share_id
+            LEFT JOIN comment c ON s.id = c.share_id AND c.type = 'SHARE'
+            LEFT JOIN share s2 ON p.id = s2.post_id
+            LEFT JOIN
+                tag t ON t.post_id = p.id
+            WHERE p.status = 'PUBLIC'
+            GROUP BY p.id, p.user_id, p.content,s.content, p.location_id, p.status, m.type, s.create_time, s.user_id)
+            ORDER BY create_time DESC
             """, nativeQuery = true)
-    Page<Object[]> getAllPostsAndSharedPosts(Pageable pageable);
+    Page<Object[]> getAllPostsAndSharedPosts(@Param("userId") Integer userId, Pageable pageable);
 
     @Query(value = """
             SELECT
@@ -330,6 +336,42 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     Page<Object[]> fetchAllPost(@Param("user_id") Integer user_id, Pageable pageable);
 
     @Query(value = """
+                SELECT DISTINCT
+                    p.id AS post_id,
+                    u.id AS owner_id,
+                    p.location_id,
+                    l.address,
+                    p.content,
+                    p.status,
+                    u.fullname AS fullname,
+                    u.avatar_url AS avatar,
+                    m.type,
+                    p.create_time,
+                    COUNT(DISTINCT r.id) AS reaction_count,
+                    COUNT(DISTINCT c.id) AS comment_count,
+                    COUNT(DISTINCT s.id) AS share_count
+                FROM
+                    post p
+                INNER JOIN
+                    user u ON p.user_id = u.id
+                INNER JOIN
+                    location l ON l.id = p.location_id
+                INNER JOIN
+                    media m ON p.id = m.post_id
+                LEFT JOIN
+                    post_reaction r ON p.id = r.post_id
+                LEFT JOIN
+                    comment c ON p.id = c.post_id
+                LEFT JOIN
+                    share s ON p.id = s.post_id
+                GROUP BY
+                    p.id, u.id, p.location_id, l.address, p.content, p.status, u.fullname, u.avatar_url, m.type, p.create_time
+                ORDER BY
+                    reaction_count DESC
+            """, nativeQuery = true)
+    Page<Object[]> statisticalPost(Pageable pageable);
+
+    @Query(value = """
             SELECT
             DISTINCT
                         p.id AS post_id,
@@ -412,4 +454,36 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                     """, nativeQuery = true)
     Page<Object[]> searchPostWithContent(@Param("q") String keyword, @Param("userId") Integer userId,
             Pageable pageable);
+
+    @Query(value = """
+                WITH months AS (
+                SELECT 1 AS month UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9 UNION ALL
+                SELECT 10 UNION ALL
+                SELECT 11 UNION ALL
+                SELECT 12
+            )
+            SELECT
+                m.month AS month_number,
+                COALESCE(COUNT(p.id), 0) AS post_count
+            FROM months m
+            LEFT JOIN (
+                SELECT
+                    MONTH(create_time) AS month,
+                    YEAR(create_time) AS year,
+                    id
+                FROM post
+                WHERE YEAR(create_time) = :year
+            ) p ON m.month = p.month
+            GROUP BY m.month
+            ORDER BY m.month;
+                        """, nativeQuery = true)
+    List<Object[]> PostCreateInMonth(@Param("year") Integer year);
 }

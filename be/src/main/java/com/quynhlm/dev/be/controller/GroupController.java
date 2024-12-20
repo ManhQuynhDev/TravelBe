@@ -22,6 +22,7 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.GroupRequestDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.SettingsGroupDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.entity.Group;
 import com.quynhlm.dev.be.service.GroupService;
 
@@ -119,5 +120,10 @@ public class GroupController {
         result.setMessage("Create a new group successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
+    }
+
+     @GetMapping("/statistical_group/{year}")
+    public List<PostStatisticalDTO> getPostCreateCount(@PathVariable int year) {
+        return groupService.getPostCreateCount(year);
     }
 }

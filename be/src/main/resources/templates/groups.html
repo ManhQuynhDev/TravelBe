@@ -333,8 +333,8 @@
             };
 
             // Kiểm tra tên nhóm không chứa ký tự đặc biệt
-            const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
-            if (!nameRegex.test(groupData.name)) {
+            const nameRegex = /[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/; // Chỉ cho phép chữ cái, số và khoảng trắng
+            if (nameRegex.test(groupData.name)) {
                 alert("Tên nhóm không được chứa ký tự đặc biệt. Vui lòng nhập lại!");
                 saveButton.disabled = false;  // Kích hoạt lại nút save
                 return;

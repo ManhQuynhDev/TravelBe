@@ -17,12 +17,15 @@ public class PostResponseDTO {
     private String location;
     private String ownerName;
     private String avatarUrl;
-    private String content;
+    private String postContent;
+    private String shareContent;
     private String status;
     private String type;
     private Integer isShare;
     private String create_time;
     private Integer share_by_user;
+    private String share_by_name;
+    private String share_by_avatar; 
     private Integer reaction_count;
     private Integer comment_count;
     private Integer share_count;
