@@ -247,29 +247,63 @@ document.getElementById('addManager').addEventListener('click', function () {
 });
 
 document.getElementById("submitAddManagerButton").addEventListener("click", function () {
-    const fullname = document.getElementById('managerFullName').value;
-    const email = document.getElementById('managerEmail').value;
-    const phone = document.getElementById('managerPhone').value;
-    const password = document.getElementById('managerPassword').value;
+    const fullname = document.getElementById('managerFullName').value.trim();
+    const email = document.getElementById('managerEmail').value.trim();
+    const phone = document.getElementById('managerPhone').value.trim();
+    const password = document.getElementById('managerPassword').value.trim();
 
     if (!fullname || !email || !phone || !password) {
-        alert("Please fill in all fields!");
+        alert("Vui lòng điền đầy đủ thông tin!");
         return;
     }
 
     if (fullname.length < 3) {
-        alert("Full Name must be at least 3 characters long.");
+        alert("Họ tên phải có ít nhất 3 ký tự.");
         return;
     }
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Kiểm tra tên có chứa ký tự đặc biệt ngoài dấu cách không
+    if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(fullname)) {
+        alert("Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
+        return;
+    }
+
+
+    const emailRegex = /^[a-zA-Z][a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]*(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address.");
+        alert("Vui lòng nhập địa chỉ email hợp lệ.");
         return;
     }
 
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
     if (!phoneRegex.test(phone)) {
-        alert("Please enter a valid phone number.");
+        alert("Vui lòng nhập số điện thoại hợp lệ.");
+        return;
+    }
+    const passwordRegexLowercase = /[a-z]/;
+    const passwordRegexUppercase = /[A-Z]/;
+    const passwordRegexNumber = /\d/;
+    const passwordRegexSpecialChar = /[@$!%*?&]/;
+    const passwordMinLength = 8;
+
+    if (password.length < passwordMinLength) {
+        alert("Mật khẩu phải có ít nhất 8 ký tự.");
+        return;
+    }
+    if (!passwordRegexLowercase.test(password)) {
+        alert("Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
+        return;
+    }
+    if (!passwordRegexUppercase.test(password)) {
+        alert("Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
+        return;
+    }
+    if (!passwordRegexNumber.test(password)) {
+        alert("Mật khẩu phải có ít nhất 1 chữ số.");
+        return;
+    }
+    if (!passwordRegexSpecialChar.test(password)) {
+        alert("Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
         return;
     }
 
@@ -360,7 +394,7 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                             .then(data => {
                                 if (data) {
                                     modal.hide();
-                                    alert("OPEN Succesfully")
+                                    alert("Mở tài khoản thành công")
                                     location.reload();
                                 } else {
                                     alert("Có lỗi xảy ra khi mở khóa tài khoản.");
@@ -378,7 +412,7 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                             .then(data => {
                                 if (data) {
                                     modal.hide();
-                                    alert("LOCK Succesfully")
+                                    alert("Khóa tài khoản thành công")
                                     location.reload();
                                 } else {
                                     alert("Có lỗi xảy ra khi khóa tài khoản.");

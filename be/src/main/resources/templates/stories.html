@@ -89,7 +89,7 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="max-width: 200px;">Nội dung</th>
+                                    <th>Nội dung</th>
                                     <th>Media</th>
                                     <th>Thời gian tạo</th>
                                     <th>Trạng thái</th>
@@ -101,18 +101,19 @@
                             <tbody>
                                 <tr th:each="story, iterStat : ${storyList}">
                                     <td th:text="${iterStat.index + 1}">1</td>
-                                    <td class="text-start">
+                                    <td class="text-start" style="max-width: 250px;">
                                         <div>
-                                            <a href="#" data-toggle="modal"
+                                            <a href="#" class="text-body text-decoration-none" data-toggle="modal"
                                                 th:onclick="'loadStoryDetails(' + ${story.storyId} + ')'">
                                                 <span th:text="${story.content}"></span>
                                             </a>
+
                                         </div>
                                     </td>
                                     <td class="text-start">
                                         <img th:if="${story.mediaUrl != null}" th:src="${story.mediaUrl}"
                                             alt="Story Media" class="img-fluid"
-                                            style="max-width: 70px; height: auto; margin-right: 10px;"
+                                            style="max-width: 100px; height: auto; margin-right: 10px;"
                                             onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
                                     </td>
                                     <td class="text-start" th:text="${story.create_time.substring(0, 19)}">Created Time

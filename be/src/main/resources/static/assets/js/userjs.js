@@ -132,10 +132,10 @@ document.getElementById("addUser").addEventListener("click", function () {
 });
 
 document.getElementById("submitAddUserButton").addEventListener("click", () => {
-    const fullname = document.getElementById('managerFullName').value;
-    const email = document.getElementById('managerEmail').value;
-    const phone = document.getElementById('managerPhone').value;
-    const password = document.getElementById('managerPassword').value;
+    const fullname = document.getElementById('managerFullName').value.trim();
+    const email = document.getElementById('managerEmail').value.trim();
+    const phone = document.getElementById('managerPhone').value.trim();
+    const password = document.getElementById('managerPassword').value.trim();
 
     if (!fullname || !email || !phone || !password) {
         alert("Vui lòng điền đầy đủ thông tin!");
@@ -147,7 +147,14 @@ document.getElementById("submitAddUserButton").addEventListener("click", () => {
         return;
     }
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // Kiểm tra tên có chứa ký tự đặc biệt ngoài dấu cách không
+    if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(fullname)) {
+        alert("Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
+        return;
+    }
+
+
+    const emailRegex = /^[a-zA-Z][a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]*(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
         alert("Vui lòng nhập địa chỉ email hợp lệ.");
         return;
@@ -184,6 +191,7 @@ document.getElementById("submitAddUserButton").addEventListener("click", () => {
         alert("Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
         return;
     }
+
 
     const userData = {
         fullname: fullname,
