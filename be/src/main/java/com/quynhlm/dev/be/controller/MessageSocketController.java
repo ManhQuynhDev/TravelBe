@@ -19,6 +19,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MessageDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserMessageResponseDTO;
 import com.quynhlm.dev.be.model.entity.Message;
 import com.quynhlm.dev.be.model.entity.Notification;
+import com.quynhlm.dev.be.repositories.NotificationResponseDTO;
 import com.quynhlm.dev.be.service.MessageService;
 import com.quynhlm.dev.be.service.NotificationService;
 import com.quynhlm.dev.be.service.UserService;
@@ -138,14 +139,12 @@ public class MessageSocketController {
             if (result.getMediaUrl() != null) {
                 notification.setMediaUrl(result.getMediaUrl());
             }
-            
+
             notification.setUserSendId(saveMessage.getSenderId());
             notification.setMessage(saveMessage.getContent());
             notification.setUserReceivedId(saveMessage.getReceiverId());
 
-            Notification response = notificationService.saveNotification(notification);
-
-            
+            NotificationResponseDTO response = notificationService.saveNotification(notification);
 
             this.namespace.getRoomOperations(room).sendEvent("notification", response);
 
@@ -163,6 +162,19 @@ public class MessageSocketController {
             System.out.println("Room :" + roomId);
 
             UserMessageResponseDTO messageResponseDTO = messageService.updateMessage(data);
+
+            Notification notification = new Notification();
+            String fullname = userService.getUserFullname(Integer.parseInt(data.getSender()));
+            notification.setTitle(fullname);
+
+            notification.setUserSendId(Integer.parseInt(data.getSender()));
+            notification
+                    .setMessage(fullname + " đã thả biểu tượng cảm xúc " + data.getIcon() + " vào tin nhắn của bạn");
+            notification.setUserReceivedId(Integer.parseInt(data.getReceiver()));
+
+            NotificationResponseDTO response = notificationService.saveNotification(notification);
+
+            this.namespace.getRoomOperations(roomId).sendEvent("notification", response);
 
             this.namespace.getRoomOperations(roomId).sendEvent("user-chat-update", messageResponseDTO);
         } catch (Exception e) {

@@ -35,6 +35,7 @@ import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
@@ -73,6 +74,9 @@ public class PostService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private LocationRepository locationRepository;
@@ -195,7 +199,7 @@ public class PostService {
             post.setLocation((String) row[3]);
             post.setOwnerName((String) row[4]);
             post.setAvatarUrl((String) row[5]);
-            post.setShareContent(row[6] != null ? ((String) row[6]) : null);
+            post.setPostContent(row[6] != null ? ((String) row[6]) : null);
             post.setShareContent(row[7] != null ? ((String) row[7]) : null);
             post.setStatus((String) row[8]);
             post.setType((String) row[9]);
@@ -209,6 +213,9 @@ public class PostService {
             post.setShare_count(((Number) row[17]).intValue());
             post.setIsTag(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
@@ -347,9 +354,12 @@ public class PostService {
         postMediaDTO.setType((String) result[8]);
         postMediaDTO.setCreate_time((String) result[9]);
         postMediaDTO.setReaction_count(((Number) result[10]).intValue());
-        postMediaDTO.setComment_count(((Number) result[11]).intValue());
+        // postMediaDTO.setComment_count(((Number) result[11]).intValue());
         postMediaDTO.setShare_count(((Number) result[12]).intValue());
         postMediaDTO.setUser_reaction_type((String) result[13]);
+
+        Integer comment_count = commentRepository.commentCountWithPostId(((Number) result[1]).intValue());
+        postMediaDTO.setComment_count(comment_count == null ? 0 : comment_count);
 
         List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) result[1]).intValue());
 
@@ -381,9 +391,12 @@ public class PostService {
             postMediaDTO.setAvatar((String) result[7]);
             postMediaDTO.setCreate_time((String) result[8]);
             postMediaDTO.setReaction_count(((Number) result[9]).intValue());
-            postMediaDTO.setComment_count(((Number) result[10]).intValue());
+            // postMediaDTO.setComment_count(((Number) result[10]).intValue());
             postMediaDTO.setShare_count(((Number) result[11]).intValue());
             postMediaDTO.setUser_reaction_type((String) result[12]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) result[1]).intValue());
+            postMediaDTO.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) result[1]).intValue());
 
@@ -416,9 +429,12 @@ public class PostService {
             postMediaDTO.setType((String) row[8]);
             postMediaDTO.setCreate_time((String) row[9]);
             postMediaDTO.setReaction_count(((Number) row[10]).intValue());
-            postMediaDTO.setComment_count(((Number) row[11]).intValue());
+            // postMediaDTO.setComment_count(((Number) row[11]).intValue());
             postMediaDTO.setShare_count(((Number) row[12]).intValue());
             postMediaDTO.setUser_reaction_type((String) row[13]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+            postMediaDTO.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
@@ -570,9 +586,12 @@ public class PostService {
             post.setVideo((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
-            post.setComment_count(((Number) row[11]).intValue());
+            // post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
@@ -598,9 +617,12 @@ public class PostService {
             post.setType((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
-            post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
+
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
@@ -630,8 +652,11 @@ public class PostService {
             post.setType((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
-            post.setComment_count(((Number) row[11]).intValue());
+            // post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 
@@ -661,9 +686,12 @@ public class PostService {
             post.setType((String) row[8]);
             post.setCreate_time((String) row[9]);
             post.setReaction_count(((Number) row[10]).intValue());
-            post.setComment_count(((Number) row[11]).intValue());
+            // post.setComment_count(((Number) row[11]).intValue());
             post.setShare_count(((Number) row[12]).intValue());
             post.setUser_reaction_type((String) row[13]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[0]).intValue());
 

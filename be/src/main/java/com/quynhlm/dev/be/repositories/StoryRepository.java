@@ -32,17 +32,16 @@ public interface StoryRepository extends JpaRepository<Story, Integer> {
                   s.create_time,
                   COUNT(DISTINCT r.id) AS reaction_count
                from stories s
-
                INNER JOIN user u on u.id = s.user_id
-
                INNER JOIN Location l on l.id = s.location_id
-
                LEFT JOIN
                   story_reaction r ON s.id = r.story_id
-                  WHERE s.id =:id
 
+
+               WHERE s.id =:id
                GROUP BY
-                  s.id , u.id , s.location_id;""", nativeQuery = true)
+                  s.id , u.id , s.location_id,s.create_time,s.music_url,s.content;
+               """, nativeQuery = true)
    List<Object[]> getAnStoryWithId(@Param("id") int id);
 
    @Query(value = """

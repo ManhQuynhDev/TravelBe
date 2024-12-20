@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReportRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReportResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.StatisticsReportDTO;
 import com.quynhlm.dev.be.service.ReportService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -82,6 +83,13 @@ public class ReportController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return reportService.getAllReport(page, size);
+    }
+
+    @GetMapping("/statistics")
+    public Page<StatisticsReportDTO> statisticsReport(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return reportService.statisticsReport(page, size);
     }
 
     @GetMapping("/{id}")
