@@ -75,7 +75,7 @@
     <div th:replace="fragments/searchDropdown"></div>
     <div id="content" role="main" class="main pointer-event">
         <div class="container-fluid">
-            <div class="card mt-2">
+            <div class="card mt-3">
                 <div class="card-header">
                     <h5 class="card-title">Báo Cáo</h5>
                 </div>
@@ -133,7 +133,8 @@
                                                 Từ chối
                                             </button>
                                             <button class="btn btn-sm btn-outline-success mr-2" id="approveReport"
-                                                th:attr="data-id=${report.id}">
+                                                th:attr="data-id=${report.id}"
+                                                th:disabled="${report.status == 'processed'}">
                                                 Phê duyệt
                                             </button>
                                         </div>
@@ -147,6 +148,7 @@
 
             <div th:replace="fragments/reports/repostDetailModal"></div>
             <div th:replace="fragments/reports/deleteReportModal"></div>
+            <div th:replace="fragments/reports/updateReportModal"></div>
 
         </div>
     </div>
@@ -225,6 +227,8 @@
                         document.getElementById('reviewContent').innerText = report.contentPost || 'No content available';
                         document.getElementById('reviewViolationType').innerText = report.violationType || 'Unknown type';
                         document.getElementById('reviewStatus').innerText = report.status || 'Pending';
+                        document.getElementById('reviewPostId').innerText = report.postId || 'Unknown';
+
 
                         const date = new Date(report.create_time);
                         document.getElementById('reviewCreateTime').innerText = isNaN(date.getTime())
@@ -290,6 +294,152 @@
                 });
             });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewReviewButtons = document.querySelectorAll('#approveReport');
+
+            viewReviewButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const reviewId = this.getAttribute('data-id');
+
+                    fetch(`http://localhost:8080/api/report/${reviewId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+
+                            const userId = data.data.ownerId;
+
+                            document.getElementById('updateReportUserName').innerText = data.data.fullname;
+                            document.getElementById('updateReportPostId').innerText = data.data.postId;
+                            document.getElementById('updateReportReason').innerText = data.data.reason;
+
+                            const mediaImg = document.getElementById('updateReportMediaImg');
+                            mediaImg.src = data.data.mediaUrl || 'assets/img/default-image.jpg';
+
+                            // Khởi tạo modal Bootstrap 5 và hiển thị trực tiếp
+                            const modalElement = document.getElementById("updateReportModal");
+                            const modal = new bootstrap.Modal(modalElement);
+                            modal.show();
+
+                            // Lưu thông tin reviewId và userId vào modal (nếu cần dùng sau)
+                            modalElement._reviewId = reviewId;
+                            modalElement._userId = userId;
+                            modalElement._postId = data.data.postId;
+                            console.log(data.data.postId);
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi lấy thông tin báo cáo:', error);
+                        });
+                });
+            });
+
+            const processReportButton = document.getElementById('processReportButton');
+            if (processReportButton) {
+                processReportButton.addEventListener('click', function () {
+                    const modalElement = document.getElementById('updateReportModal');
+                    const modal = new bootstrap.Modal(modalElement);  // Mở modal trực tiếp mà không cần getInstance
+                    const userId = modalElement._userId;
+                    const reviewId = modalElement._reviewId;
+                    const postId = modalElement._postId;
+                    console.log(userId);
+                    console.log(postId);
+
+
+                    const action = document.getElementById('updateActionSelect').value;
+
+                    const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?action=${action}&status=processed`;
+
+                    if (action === "Khóa tài khoản 3 ngày") {
+                        const url = `http://localhost:8080/onboarding/${userId}/lock-status?isLock=LOOK`;
+                        fetch(url, {
+                            method: 'PUT', // Chọn phương thức PUT
+                            headers: {
+                                'Authorization': `Bearer ${token}`, // Token nếu cần thiết
+                                'Content-Type': 'application/json' // Định dạng dữ liệu JSON
+                            },
+                        })
+                            .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
+                            .then(data => {
+                                console.log('Xử lý thành công:', data);  // In ra kết quả trả về từ server
+                                alert('Tài khoản đã được khóa 3 ngày!');  // Thông báo cho người dùng
+                            })
+                            .catch(error => {
+                                console.error('Lỗi khi xử lý khóa tài khoản:', error);  // In ra lỗi nếu có
+                                alert('Xử lý không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                            });
+                    } else if (action === "Khóa tài khoản vĩnh viễn") {
+                        fetch(`http://localhost:8080/onboarding/locked-account/${userId}/isLocked?isLocked=LOOK`, {
+                            method: "PUT",
+                            headers: {
+                                'Authorization': `Bearer ${token}`, // Token nếu cần thiết
+                                'Content-Type': 'application/json' // Định dạng dữ liệu JSON
+                            },
+                        })
+                            .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
+                            .then(data => {
+                                console.log('Tài khoản đã bị khóa vĩnh viễn:', data);  // Xử lý kết quả trả về từ server
+                                alert('Tài khoản đã bị khóa vĩnh viễn!');  // Thông báo cho người dùng
+                            })
+                            .catch(error => {
+                                console.error('Lỗi khi khóa tài khoản vĩnh viễn:', error);  // In ra lỗi nếu có
+                                alert('Xử lý không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                            });
+                    } else if (action === "Xóa bài viết") {
+                        fetch(`http://localhost:8080/api/posts/${postId}`, {
+                            method: "DELETE",
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    return response.json();  // Chuyển đổi phản hồi thành JSON
+                                } else {
+                                    throw new Error('Lỗi khi xóa bài viết');  // Thông báo lỗi nếu không thành công
+                                }
+                            })
+                            .then(data => {
+                                console.log('Bài viết đã được xóa:', data);  // Xử lý kết quả trả về từ server
+                                alert('Bài viết đã được xóa!');  // Thông báo cho người dùng
+                            })
+                            .catch(error => {
+                                console.error('Lỗi khi xóa bài viết:', error);  // In ra lỗi nếu có
+                                alert('Xóa bài viết không thành công. Vui lòng thử lại.');  // Thông báo lỗi cho người dùng
+                            });
+                    } else if (action === "Cảnh báo người dùng") {
+                        console.log("lô lô");
+
+                    }
+                    fetch(requestUrl, {
+                        method: 'PUT',  // Đổi từ POST thành PUT
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Xử lý thành công:', data);
+                            alert('Báo cáo đã được xử lý!');
+                            modal.hide();  // Đóng modal sau khi xử lý
+                        })
+                        .catch(error => {
+                            console.error('Lỗi khi xử lý báo cáo:', error);
+                            alert('Xử lý không thành công. Vui lòng thử lại.');
+                        });
+                });
+            }
+        });
+
+
+
+
+
 
 
 

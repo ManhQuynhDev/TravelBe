@@ -1,0 +1,68 @@
+<!-- Modal -->
+<div class="modal fade" id="updateReportModal" tabindex="-1" aria-labelledby="updateReportModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <!-- Header -->
+            <div class="modal-header">
+                <h4 id="updateReportModalTitle" class="modal-title">Xử lý báo cáo</h4>
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Đóng">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <!-- Media Section -->
+                <div class="media-container text-center mb-4">
+                    <img id="updateReportMediaImg" class="img-fluid rounded" src="assets/img/default-image.jpg"
+                        alt="Hình ảnh báo cáo" style="width: 200px; height: auto;">
+                </div>
+
+                <!-- User Name -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Người gửi</label>
+                    <div class="col-sm-9">
+                        <span id="updateReportUserName" class="form-control-plaintext">Đang tải...</span>
+                    </div>
+                </div>
+
+                <!-- Post ID -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">ID Bài viết</label>
+                    <div class="col-sm-9">
+                        <span id="updateReportPostId" class="form-control-plaintext">Đang tải...</span>
+                    </div>
+                </div>
+
+                <!-- Reason -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Lý do vi phạm</label>
+                    <div class="col-sm-9">
+                        <span id="updateReportReason" class="form-control-plaintext">Đang tải...</span>
+                    </div>
+                </div>
+
+                <!-- Action Selection -->
+                <div class="row mb-3">
+                    <label class="col-sm-3 col-form-label" style="font-weight: bold;">Hành động</label>
+                    <div class="col-sm-9">
+                        <select id="updateActionSelect" class="form-control">
+                            <option value="Khóa tài khoản 3 ngày">Khóa tài khoản 3 ngày</option>
+                            <option value="Khóa tài khoản vĩnh viễn">Khóa tài khoản vĩnh viễn</option>
+                            <option value="Xóa bài viết">Xóa bài viết</option>
+                            <option value="Cảnh báo người dùng">Cảnh báo người dùng</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success" id="processReportButton">Xử lý</button>
+            </div>
+        </div>
+    </div>
+</div>
