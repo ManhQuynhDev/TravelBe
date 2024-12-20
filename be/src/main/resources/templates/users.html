@@ -233,7 +233,7 @@
                                     </td>
 
                                     <td class="text-start" th:text="${user.roles[0]}">Role</td>
-                                    <td class="text-start" th:text="${user.isLocked}">Role</td>
+                                    <td class="text-start" th:text="${user.isLocked == 'LOOK' ? 'LOCKED' : user.isLocked}">Role</td>
                                     <td class="text-start"
                                         th:text="${#dates.format(user.create_at, 'dd-MM-yyyy')}">Ngày Tạo</td>
 

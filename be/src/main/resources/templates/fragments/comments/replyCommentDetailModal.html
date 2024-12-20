@@ -1,8 +1,9 @@
+<!-- Modal Danh Sách Phản Hồi -->
 <div class="modal fade" id="memberListModal" tabindex="-1" aria-labelledby="memberListModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="memberListModalLabel">Danh Sách Thành Viên</h5>
+                <h5 class="modal-title" id="memberListModalLabel">Danh Sách Phản Hồi</h5>
                 <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
                     <i class="tio-clear tio-lg"></i>
                 </button>
@@ -12,26 +13,16 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th style="width: 200px;">Họ Tên</th> <!-- Kết hợp Họ Tên & Ảnh Đại Diện -->
-                            <th>Vai Trò</th>
-                            <th>Thời Gian Tham Gia</th>
+                            <th style="width: 200px;">Họ Tên</th>
+                            <th>Nội Dung</th>
+                            <th>Thời Gian</th>
                         </tr>
                     </thead>
                     <tbody id="memberListTable">
+                        <!-- Các dòng dữ liệu sẽ được thêm vào đây -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    td img {
-        max-width: 40px;
-        max-height: 40px;
-        width: auto;
-        height: auto;
-        margin-right: 10px;
-    }
-</style>
-
