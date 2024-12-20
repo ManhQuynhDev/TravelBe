@@ -18,11 +18,13 @@ import com.quynhlm.dev.be.enums.GroupRole;
 import com.quynhlm.dev.be.model.dto.responseDTO.MemberPlanResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.PlanResponseDTO;
 import com.quynhlm.dev.be.model.entity.Group;
+import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Member;
 import com.quynhlm.dev.be.model.entity.MemberPlan;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.GroupRepository;
+import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MemberPlanRepository;
 import com.quynhlm.dev.be.repositories.MemberRepository;
 import com.quynhlm.dev.be.repositories.TravelPlanRepository;
@@ -51,10 +53,13 @@ public class TravelPlanService {
     private GroupRepository groupRepository;
 
     @Autowired
+    private LocationRepository locationRepository;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     public Travel_Plan addTravelPlan(Travel_Plan travelPlan)
-            throws UserAccountNotFoundException,MemberNotFoundException, UnknownException, GroupNotFoundException {
+            throws UserAccountNotFoundException, MemberNotFoundException, UnknownException, GroupNotFoundException {
 
         User foundUser = userRepository.getAnUser(travelPlan.getUser_id());
         if (foundUser == null) {
@@ -68,9 +73,21 @@ public class TravelPlanService {
                     "Found group with " + travelPlan.getGroup_id() + " not found . Please try again !");
         }
 
+        Location foundLocation = locationRepository.getLocationWithLocation(travelPlan.getLocation());
+        if (foundLocation == null) {
+            Location location = new Location();
+            location.setAddress(travelPlan.getLocation());
+            Location saveLocation = locationRepository.save(location);
+
+            travelPlan.setLocation_id(saveLocation.getId());
+        } else {
+            travelPlan.setLocation_id(foundLocation.getId());
+        }
+
         Member foundUserJoin = memberRepository.findMemberByUserId(foundUser.getId(), foundGroup.getId());
-        if(foundUserJoin == null){
-            throw new MemberNotFoundException("User with id " +foundUser.getId() + " not found in group , please try again");
+        if (foundUserJoin == null) {
+            throw new MemberNotFoundException(
+                    "User with id " + foundUser.getId() + " not found in group , please try again");
         }
 
         travelPlan.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());

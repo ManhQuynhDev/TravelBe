@@ -50,7 +50,6 @@ public class ActivitiesService {
         if (foundPlan == null) {
             throw new TravelPlanNotFoundException("Found group with id not found please try again");
         }
-
         activities.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
         Activities saveActivity = activitiesRepository.save(activities);
         if (saveActivity.getId() == null) {

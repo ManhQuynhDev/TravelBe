@@ -20,9 +20,10 @@ public class Travel_Plan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int user_id; //admin
-    private int group_id; //groupId
+    private int user_id;
+    private int group_id;
     private int location_id;
+    private String location;
     private String plan_name;
     private String start_date;
     private String end_date;

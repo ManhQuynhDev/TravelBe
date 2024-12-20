@@ -424,6 +424,7 @@
     <div id="notification" class="notification">
         <div class="notification-content">
             <span id="notificationTitle">Thông Báo</span>
+            <img id="notificationImage" src="" alt="Notification Image" style="max-width: 100%; display: none;">
             <p id="notificationMessage">Đây là nội dung thông báo.</p>
         </div>
     </div>
@@ -464,6 +465,7 @@
     </script>
 
     <script>
+        const list_notification = document.querySelector("#list_notification");
         const managerList = document.querySelector('#managerList');
         const chatbody = document.querySelector('.chat-body');
         const user_received = document.querySelector('#user_received');
@@ -473,6 +475,7 @@
         const fileInput = document.querySelector("#fileInput");
         const token = localStorage.getItem('authToken');
         const senderId = localStorage.getItem('user_id');
+        console.log(list_notification);
 
         let currentManagerId = null;
 
@@ -557,9 +560,6 @@
         <span class="d-block text-break text-wrap">${messageData.content ? messageData.content : 'No message available'}</span>
     </div>
 `;
-
-
-
                         li.addEventListener('click', () => {
                             if (currentManagerId !== manager.id) {
                                 currentManagerId = manager.id;
@@ -568,6 +568,7 @@
                         });
 
                         managerList.appendChild(li);
+
                     } catch (err) {
                         console.error(`Error fetching last message for manager ${manager.id}:`, err);
                     }
@@ -576,6 +577,91 @@
                 console.error('Error fetching manager data:', err);
             }
         };
+
+
+        const handelCallNotification = async () => {
+            try {
+                // Gửi yêu cầu GET đến API
+                const response = await fetch(`http://localhost:8080/api/notifications/${senderId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+
+                const responseText = await response.text();
+
+                if (!responseText) {
+                    console.warn('Không có dữ liệu trả về từ API');
+                    return null;  // Trả về null nếu không có dữ liệu
+                }
+
+
+                try {
+                    const data = JSON.parse(responseText); // Sử dụng JSON.parse() thay vì .json()
+
+
+                    if (data.status === false) {
+                        console.error('Lỗi từ API:', data.message);
+                        return null;
+                    }
+
+                    const notifications = data.data;
+
+                    notifications.forEach(notification => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('list-group-item', 'custom-checkbox-list-wrapper');
+
+                        listItem.innerHTML = `
+                                <div class="row">
+                                    <div class="col-auto position-static">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar avatar-sm avatar-circle">
+                                                <!-- Nếu avatarUrl không có, hiển thị chữ cái đầu tiên của fullname -->
+                                                ${notification.avatarUrl ?
+                                `<img class="avatar-img" src="${notification.avatarUrl}" alt="Avatar">` :
+                                `<div class="d-flex justify-content-center align-items-center rounded-circle mr-2" 
+                                                        style="background-color: #2172dd; color: #fff; width: 40px; height: 40px; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                                        <span>${notification.fullname ? notification.fullname.charAt(0).toUpperCase() : 'N'}</span>
+                                                    </div>`
+                            }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col ml-n3">
+                                        <span class="card-title h5">${notification.fullname}</span>
+                                        <p class="card-text font-size-sm">${notification.message}</p>
+                                    </div>
+                                    <small class="col-auto text-muted text-cap">${new Date(notification.notificationTime).toLocaleString()}</small>
+                                </div>
+                                <a class="stretched-link" href="#"></a>
+                            `;
+
+
+                        // Thêm thông báo vào danh sách
+                        list_notification.appendChild(listItem);
+                    });
+
+                    return notifications;
+
+                } catch (jsonError) {
+                    console.error('Lỗi khi phân tích JSON:', jsonError);
+                    return null;
+                }
+
+            } catch (error) {
+                console.error('Lỗi khi gọi API:', error);  // Log lỗi nếu có
+                return null;
+            }
+        };
+
+        handelCallNotification();
         handelCallData();
 
         const showMessage = (user_id) => {
@@ -702,20 +788,66 @@
             });
 
             socket.on('notification', (data) => {
-                if (data.userSendId != senderId) {
-                    showNotification(data.title, data.message);
+                console.log(data);
+                if (data.userId == senderId) {
+                    showNotification(data.title, data.message, data.mediaUrl);
+
+                    const listItem = document.createElement('li');
+                    listItem.classList.add('list-group-item', 'custom-checkbox-list-wrapper');
+
+                    // Thêm nội dung vào phần tử li
+                    listItem.innerHTML = `
+                        <div class="row">
+                            <div class="col-auto position-static">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-sm avatar-circle">
+                                        <!-- Kiểm tra avatarUrl có tồn tại không -->
+                                        ${data.avatarUrl ?
+                            `<img class="avatar-img" src="${data.avatarUrl}" alt="Avatar">` :
+                            `<div class="d-flex justify-content-center align-items-center rounded-circle mr-2" 
+                                                style="background-color: #2172dd; color: #fff; width: 40px; height: 40px; font-size: 14px; font-weight: bold; flex-shrink: 0;">
+                                                <span>${data.fullname ? data.fullname.charAt(0).toUpperCase() : 'N'}</span>
+                                            </div>`
+                                }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col ml-n3">
+                                <span class="card-title h5">${data.fullname}</span>
+                                <p class="card-text font-size-sm">${data.message}</p>
+                            </div>
+                            <small class="col-auto text-muted text-cap">${new Date(data.notificationTime).toLocaleString()}</small>
+                        </div>
+                    <a class="stretched-link" href="#"></a>
+        `;
+
+                    list_notification.prepend(listItem);
                 }
             });
-            function showNotification(title, message) {
+
+            function showNotification(title, message, imageUrl) {
                 document.getElementById('notificationTitle').innerText = title;
                 document.getElementById('notificationMessage').innerText = message;
+
+
+                var notificationImage = document.getElementById('notificationImage');
+                if (imageUrl) {
+                    notificationImage.src = imageUrl;
+                    notificationImage.style.display = 'block';
+                } else {
+                    notificationImage.style.display = 'none';
+                }
 
                 // Hiển thị thông báo
                 var notification = document.getElementById('notification');
                 notification.style.display = 'block';
 
+                const audio = new Audio('/assets/img/notification.mp3');
+                audio.play();
+
                 setTimeout(function () {
                     notification.style.display = 'none';
+                    audio.pause();
                 }, 5000);
             }
 
@@ -861,6 +993,9 @@
                     if (message) {
                         socket.emit('send-message', data);
                         chatMess.value = '';
+                        if (fileInput) {
+                            fileInput.value = '';
+                        }
                     }
                 }
             })

@@ -120,8 +120,6 @@ public class CommentService {
             return findAnComment(saveComment.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
-        } catch (Exception e) {
-            throw new UnknownException(e.getMessage());
         }
     }
 
@@ -195,6 +193,7 @@ public class CommentService {
 
     public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, Integer userId, int page, int size)
             throws PostNotFoundException, UserAccountNotFoundException {
+                
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
             throw new PostNotFoundException("Found post with " + postId + " not found please try again");

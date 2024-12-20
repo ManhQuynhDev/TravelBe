@@ -23,6 +23,7 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.ResponseReport;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReportRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReportResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.StatisticsReportDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.Report;
 import com.quynhlm.dev.be.model.entity.User;
@@ -202,7 +203,22 @@ public class ReportService {
             report.setStatus((String) row[11]);
             report.setCreate_time((String) row[12]);
             report.setAction((String) row[13]);
-        report.setResponseTime((String) row[14]);
+            report.setResponseTime((String) row[14]);
+            return report;
+        });
+    }
+
+    public Page<StatisticsReportDTO> statisticsReport(int page, int size)
+            throws UserAccountNotFoundException {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Object[]> results = reportRepository.statisticsReport(pageable);
+
+        return results.map(row -> {
+            StatisticsReportDTO report = new StatisticsReportDTO();
+            report.setViolation_type((String) row[0]);
+            report.setCount(((Number) row[1]).intValue());
             return report;
         });
     }
@@ -229,7 +245,7 @@ public class ReportService {
             report.setStatus((String) row[11]);
             report.setCreate_time((String) row[12]);
             report.setAction((String) row[13]);
-        report.setResponseTime((String) row[14]);
+            report.setResponseTime((String) row[14]);
             return report;
         });
     }
