@@ -100,7 +100,7 @@ public class CommentController {
     }
 
     @GetMapping("/shareId")
-    public Page<CommentResponseDTO> foundCommentWithShareId(@RequestParam("shareId") Integer shareId,
+    public Page<CommentResponseDTO> foundCommentWithShareId(@RequestParam Integer shareId,
             @RequestParam Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {

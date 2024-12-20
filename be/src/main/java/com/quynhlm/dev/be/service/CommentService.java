@@ -18,6 +18,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
+import com.quynhlm.dev.be.core.exception.ShareNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.CommentRequestDTO;
@@ -26,11 +27,13 @@ import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReplyToReplyReponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Post;
+import com.quynhlm.dev.be.model.entity.Share;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
 import com.quynhlm.dev.be.repositories.ReplyToReplyRepositoty;
+import com.quynhlm.dev.be.repositories.ShareRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
@@ -52,6 +55,9 @@ public class CommentService {
     private PostRepository postRepository;
 
     @Autowired
+    private ShareRepository shareRepository;
+
+    @Autowired
     private ReplyToReplyRepositoty replyToReplyRepositoty;
 
     @Value("${aws.s3.bucketName}")
@@ -63,13 +69,23 @@ public class CommentService {
     }
 
     public CommentResponseDTO insertComment(CommentRequestDTO commentRequestDTO, MultipartFile imageFile)
-            throws UnknownException, PostNotFoundException, UserAccountNotFoundException {
+            throws UnknownException, ShareNotFoundException, PostNotFoundException, UserAccountNotFoundException {
         try {
 
-            Post foundPost = postRepository.getAnPost(commentRequestDTO.getPostId());
-            if (foundPost == null) {
-                throw new PostNotFoundException(
-                        "Found post with " + commentRequestDTO.getPostId() + " not found please try again");
+            if (commentRequestDTO.getPostId() != null) {
+                Post foundPost = postRepository.getAnPost(commentRequestDTO.getPostId());
+                if (foundPost == null) {
+                    throw new PostNotFoundException(
+                            "Found post with " + commentRequestDTO.getPostId() + " not found please try again");
+                }
+            }
+
+            if (commentRequestDTO.getShareId() != null) {
+                Share foundShare = shareRepository.getAnShare(commentRequestDTO.getShareId());
+                if (foundShare == null) {
+                    throw new ShareNotFoundException(
+                            "Found share with " + commentRequestDTO.getShareId() + " not found please try again");
+                }
             }
 
             User foundUser = userRepository.getAnUser(commentRequestDTO.getUserId());
@@ -81,6 +97,7 @@ public class CommentService {
             Comment comment = new Comment();
             comment.setContent(commentRequestDTO.getContent());
             comment.setUserId(commentRequestDTO.getUserId());
+
             if (commentRequestDTO.getPostId() != null) {
                 comment.setPostId(commentRequestDTO.getPostId());
             }
@@ -193,7 +210,7 @@ public class CommentService {
 
     public Page<CommentResponseDTO> fetchCommentWithPostId(Integer postId, Integer userId, int page, int size)
             throws PostNotFoundException, UserAccountNotFoundException {
-                
+
         Post foundPost = postRepository.getAnPost(postId);
         if (foundPost == null) {
             throw new PostNotFoundException("Found post with " + postId + " not found please try again");
@@ -216,7 +233,7 @@ public class CommentService {
             comment.setUrl((String) row[5]);
             comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[8]);    
+            comment.setCreate_time((String) row[8]);
             comment.setReaction_count(((Number) row[9]).intValue());
             comment.setUser_reaction_type((String) row[10]);
 
@@ -259,7 +276,7 @@ public class CommentService {
                         reply.setReplys(responseReply);
 
                         return reply;
-                    })  
+                    })
                     .collect(Collectors.toList());
 
             comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
@@ -269,12 +286,12 @@ public class CommentService {
         });
     }
 
-    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer postId, Integer userId, int page, int size)
-            throws PostNotFoundException, UserAccountNotFoundException {
+    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer shareId, Integer userId, int page, int size)
+            throws ShareNotFoundException, UserAccountNotFoundException {
 
-        Post foundPost = postRepository.getAnPost(postId);
-        if (foundPost == null) {
-            throw new PostNotFoundException("Post with ID " + postId + " not found. Please try again.");
+        Share foundShare = shareRepository.getAnShare(shareId);
+        if (foundShare == null) {
+            throw new ShareNotFoundException("Share with ID " + shareId + " not found. Please try again.");
         }
 
         User foundUser = userRepository.getAnUser(userId);
@@ -283,7 +300,7 @@ public class CommentService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, postId, userId);
+        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, shareId, userId);
 
         return results.map(row -> {
             CommentResponseDTO comment = new CommentResponseDTO();
@@ -295,7 +312,7 @@ public class CommentService {
             comment.setUrl((String) row[5]);
             comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
             comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[8]);    
+            comment.setCreate_time((String) row[8]);
             comment.setReaction_count(((Number) row[9]).intValue());
             comment.setUser_reaction_type((String) row[10]);
 
@@ -337,7 +354,7 @@ public class CommentService {
                     })
                     .collect(Collectors.toList());
 
-            comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
+            comment.setIsAuthor(foundShare.getUserId() == ((Number) row[1]).intValue());
             comment.setReplys(responses);
 
             return comment;

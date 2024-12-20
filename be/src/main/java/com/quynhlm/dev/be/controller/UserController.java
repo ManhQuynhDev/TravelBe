@@ -103,8 +103,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
     }
-
-    // Email
+    // Email    
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
         if (userService.validateOTP(verify.getEmail(), verify.getOtp())) {
@@ -120,6 +119,7 @@ public class UserController {
         userService.setNewPassWord(changePassDTO);
         result.setData(true);
         result.setMessage("Change password successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<Boolean>>(result, HttpStatus.OK);
     }
 
