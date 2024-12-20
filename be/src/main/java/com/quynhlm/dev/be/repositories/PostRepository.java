@@ -173,7 +173,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             LEFT JOIN
                 tag t ON t.post_id = p.id
             WHERE p.status = 'PUBLIC'
-            GROUP BY p.id, p.user_id, p.content,s.content, p.location_id, p.status, m.type, s.create_time, s.user_id)
+            GROUP BY p.id, s.id, p.user_id, p.content,s.content, p.location_id, p.status, m.type, s.create_time, s.user_id)
             ORDER BY create_time DESC
             """, nativeQuery = true)
     Page<Object[]> getAllPostsAndSharedPosts(@Param("userId") Integer userId, Pageable pageable);
