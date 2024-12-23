@@ -1,10 +1,14 @@
 package com.quynhlm.dev.be.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.core.exception.UserWasAlreadyRequest;
 import com.quynhlm.dev.be.enums.FriendRequest;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
@@ -43,6 +48,8 @@ public class FriendShipService {
 
     @Autowired
     private UserRepository userRepository;
+
+    private static final double EARTH_RADIUS = 6371.0;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -182,23 +189,74 @@ public class FriendShipService {
         });
     }
 
-    public Page<UserTagPostResponse> suggestionFriends(Integer userId, int page, int size) {
+    public double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return EARTH_RADIUS * c;
+    }
+
+    public Page<UserTagPostResponse> suggestionFriends(Integer userId, double maxDistanceKm, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
         User foundUser = userRepository.getAnUser(userId);
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
-                    "Find user send request with " + userId + " not found , please try again !");
+                    "User with ID " + userId + " not found. Please try again!");
         }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = friendShipRepository.suggestionFriends(userId, pageable);
+        if (foundUser.getLatitude() == null || foundUser.getLongitude() == null) {
+            Page<Object[]> suggestionFriendsOfFriends = friendShipRepository.suggestionFriendsOfFriends(userId,
+                    pageable);
+            return suggestionFriendsOfFriends.map(row -> {
+                UserTagPostResponse object = new UserTagPostResponse();
+                object.setUserId(((Number) row[0]).intValue());
+                object.setFullname(((String) row[1]));
+                object.setAvatarUrl((String) row[2]);
+                return object;
+            });
+        }
 
-        return results.map(row -> {
-            UserTagPostResponse object = new UserTagPostResponse();
-            object.setUserId(((Number) row[0]).intValue());
-            object.setFullname(((String) row[1]));
-            object.setAvatarUrl((String) row[2]);
-            return object;
-        });
+        List<Object[]> users = friendShipRepository.getUserArrowNotFriend(userId);
+
+        List<UserDTO> listUser = new ArrayList<>();
+        listUser = users.stream()
+                .map(user -> {
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setUserId(((Number) user[0]).intValue());
+                    userDTO.setFullname((String) user[1]);
+                    userDTO.setAvatar((String) user[2]);
+                    userDTO.setLatitude((String) user[3]);
+                    userDTO.setLongitude((String) user[4]);
+                    return userDTO;
+                })
+                .collect(Collectors.toList());
+
+        List<UserDTO> filteredUsers = listUser.stream()
+                .filter(user -> {
+                    double distance = calculateDistance(
+                            Double.parseDouble(foundUser.getLatitude()),
+                            Double.parseDouble(foundUser.getLongitude()),
+                            Double.parseDouble(user.getLatitude()),
+                            Double.parseDouble(user.getLongitude()));
+                    return distance <= maxDistanceKm;
+                })
+                .collect(Collectors.toList());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredUsers.size());
+        List<UserDTO> paginatedUsers = filteredUsers.subList(start, end);
+
+        List<UserTagPostResponse> response = paginatedUsers.stream()
+                .map(user -> new UserTagPostResponse(user.getUserId(), user.getFullname(), user.getAvatar()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(response, pageable, filteredUsers.size());
     }
 
     public void acceptFriend(int userSendId, int userReceivedId, String action)

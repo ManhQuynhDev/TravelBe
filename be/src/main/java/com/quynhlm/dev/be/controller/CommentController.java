@@ -49,14 +49,13 @@ public class CommentController {
         CommentRequestDTO comment = null;
         try {
             comment = objectMapper.readValue(commentJson, CommentRequestDTO.class);
-        } catch (Exception e) {
+        } catch (Exception e) { 
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        CommentResponseDTO commentResponse = commentService.insertComment(comment, imageFile);
+        commentService.insertComment(comment, imageFile);
         ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new comment successfully");
-        result.setData(commentResponse);
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -71,22 +70,23 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject<Void>> updateComment(
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> updateComment(
             @PathVariable Integer id,
-            @RequestParam String content,
+            @RequestPart(required = false) String content,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-        commentService.updateComment(id, content, imageFile);
-        ResponseObject<Void> result = new ResponseObject<>();
+        CommentResponseDTO response = commentService.updateComment(id, content, imageFile);
+        ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Update comment successfully");
+        result.setData(response);
         result.setStatus(true);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<CommentResponseDTO>>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<CommentResponseDTO>> findAnComment(@PathVariable Integer id) {
+    @GetMapping("/{id}/{userId}")
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> findAnComment(@PathVariable Integer id , @PathVariable Integer userId) {
         ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an comment with id " + id + " successfully");
-        result.setData(commentService.findAnComment(id));
+        result.setData(commentService.findAnComment(id , userId));
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<CommentResponseDTO>>(result, HttpStatus.OK);
     }
@@ -97,13 +97,5 @@ public class CommentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
         return commentService.fetchCommentWithPostId(postId, userId, page, size);
-    }
-
-    @GetMapping("/shareId")
-    public Page<CommentResponseDTO> foundCommentWithShareId(@RequestParam Integer shareId,
-            @RequestParam Integer userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
-        return commentService.fetchCommentWithShareId(shareId, userId, page, size);
     }
 }

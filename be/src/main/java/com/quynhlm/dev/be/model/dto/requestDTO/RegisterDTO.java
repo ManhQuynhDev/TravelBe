@@ -1,16 +1,18 @@
 package com.quynhlm.dev.be.model.dto.requestDTO;
 
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@RequiredArgsConstructor
-@Getter
 @Setter
-public class LoginDTO {
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+
+public class RegisterDTO {
     private String email;
     private String password;
-    private String deviceToken;
-    private String currentDevice;
+    private String fullname;
     private String location;
 }

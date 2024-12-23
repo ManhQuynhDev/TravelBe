@@ -16,18 +16,22 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "User")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @UserAccountElement.List({
         @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "Email is not in correct format"),
 })
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,4 +54,6 @@ public class User {
     private String currentDevice;
     private LocalDateTime lockDate;
     private LocalDateTime lastNameChangeDate;
+    private String latitude;
+    private String longitude;
 }

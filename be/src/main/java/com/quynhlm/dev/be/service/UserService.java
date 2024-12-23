@@ -51,6 +51,7 @@ import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.RegisterDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.OTPResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
@@ -87,15 +88,17 @@ public class UserService {
 
     private Map<String, OTPResponse> otpStorage = new HashMap<>();
 
-    private static final long OTP_VALID_DURATION = 1; // 1 minute
+    private static final long OTP_VALID_DURATION = 1;
 
     // Login Check
-    public TokenResponse<UserResponseDTO> login(LoginDTO request) throws UserAccountNotFoundException {
+    public TokenResponse<UserResponseDTO> login(LoginDTO request)
+            throws UserAccountNotFoundException, UserAccountExistingException {
         User user = userRepository.getAnUserByEmail(request.getEmail());
         if (user == null) {
             throw new UserAccountNotFoundException(
                     "Email " + request.getEmail() + " not found. Please try another!");
         }
+
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
         String token = generateToken(user);
@@ -111,6 +114,13 @@ public class UserService {
         if (request.getDeviceToken() != null && request.getCurrentDevice() != null) {
             user.setDeviceToken(request.getDeviceToken());
             user.setCurrentDevice(request.getCurrentDevice());
+            userRepository.save(user);
+        }
+
+        if(request.getLocation() != null) {
+            String[] location = request.getLocation().split(",");
+            user.setLatitude(location[0]);
+            user.setLongitude(location[1]);
             userRepository.save(user);
         }
 
@@ -166,15 +176,25 @@ public class UserService {
         });
     }
 
-    public void register(User user) throws UserAccountExistingException, UnknownException {
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
+    public void register(RegisterDTO userDto) throws UserAccountExistingException, UnknownException {
+        if (!userRepository.findByEmail(userDto.getEmail()).isEmpty()) {
+            throw new UserAccountExistingException("Email " + userDto.getEmail() + " already exist. Please try another!");
         }
 
+        User user = new User();
+
+        if(userDto.getLocation() != null && !userDto.getLocation().isEmpty()) {
+            String[] location = userDto.getLocation().split(",");
+            user.setLatitude(location[0]);
+            user.setLongitude(location[1]);
+        }
+
+        user.setFullname(userDto.getFullname());
+        user.setEmail(userDto.getEmail());
         user.setIsLocked(AccountStatus.OPEN.name());
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         HashSet<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
         user.setRoles(roles);

@@ -1,4 +1,5 @@
 package com.quynhlm.dev.be.model.entity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,8 +24,14 @@ public class Post {
     private Integer id;
     private String content;
     private String status;
+    private Integer user_id; //admin_id
+    private Integer location_id;
+    private Integer post_id;
+    private String shareContent;
+    private Integer isShare;
+    private Integer share_by_id;
+    private String statusShare;
     @Column(name = "create_time", updatable = false)
     private String create_time;
-    private Integer user_id;
-    private Integer location_id;
+    private String share_time;
 }

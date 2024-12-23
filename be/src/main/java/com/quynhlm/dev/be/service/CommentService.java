@@ -24,16 +24,12 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.CommentRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReplyResponseDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.ReplyToReplyReponseDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Post;
-import com.quynhlm.dev.be.model.entity.Share;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReplyRepository;
-import com.quynhlm.dev.be.repositories.ReplyToReplyRepositoty;
-import com.quynhlm.dev.be.repositories.ShareRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 @Service
@@ -54,12 +50,6 @@ public class CommentService {
     @Autowired
     private PostRepository postRepository;
 
-    @Autowired
-    private ShareRepository shareRepository;
-
-    @Autowired
-    private ReplyToReplyRepositoty replyToReplyRepositoty;
-
     @Value("${aws.s3.bucketName}")
     private String bucketName;
 
@@ -72,20 +62,10 @@ public class CommentService {
             throws UnknownException, ShareNotFoundException, PostNotFoundException, UserAccountNotFoundException {
         try {
 
-            if (commentRequestDTO.getPostId() != null) {
-                Post foundPost = postRepository.getAnPost(commentRequestDTO.getPostId());
-                if (foundPost == null) {
-                    throw new PostNotFoundException(
-                            "Found post with " + commentRequestDTO.getPostId() + " not found please try again");
-                }
-            }
-
-            if (commentRequestDTO.getShareId() != null) {
-                Share foundShare = shareRepository.getAnShare(commentRequestDTO.getShareId());
-                if (foundShare == null) {
-                    throw new ShareNotFoundException(
-                            "Found share with " + commentRequestDTO.getShareId() + " not found please try again");
-                }
+            Post foundPost = postRepository.getAnPost(commentRequestDTO.getPostId());
+            if (foundPost == null) {
+                throw new PostNotFoundException(
+                        "Found post with " + commentRequestDTO.getPostId() + " not found please try again");
             }
 
             User foundUser = userRepository.getAnUser(commentRequestDTO.getUserId());
@@ -97,16 +77,7 @@ public class CommentService {
             Comment comment = new Comment();
             comment.setContent(commentRequestDTO.getContent());
             comment.setUserId(commentRequestDTO.getUserId());
-
-            if (commentRequestDTO.getPostId() != null) {
-                comment.setPostId(commentRequestDTO.getPostId());
-            }
-
-            if (commentRequestDTO.getShareId() != null) {
-                comment.setShareId(commentRequestDTO.getShareId());
-            }
-
-            comment.setType(commentRequestDTO.getType());
+            comment.setPostId(commentRequestDTO.getPostId());
 
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageFileName = imageFile.getOriginalFilename();
@@ -126,7 +97,14 @@ public class CommentService {
 
                     String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
                             imageFileName);
-                    comment.setUrl(mediaUrl);
+
+                    String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                            ? "IMAGE"
+                            : "VIDEO";
+
+                    comment.setMediaUrl(mediaUrl);
+
+                    comment.setMediaType(mediaType);
                 }
             }
             comment.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
@@ -134,7 +112,7 @@ public class CommentService {
             if (saveComment == null) {
                 throw new UnknownException("Transaction cannot be completed!");
             }
-            return findAnComment(saveComment.getId());
+            return findAnComment(saveComment.getId(), saveComment.getUserId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
         }
@@ -152,7 +130,7 @@ public class CommentService {
         commentRepository.delete(foundComment);
     }
 
-    public void updateComment(Integer id, String newContent, MultipartFile imageFile)
+    public CommentResponseDTO updateComment(Integer id, String newContent, MultipartFile imageFile)
             throws CommentNotFoundException, UnknownException {
         Comment existingComment = commentRepository.findComment(id);
         if (existingComment == null) {
@@ -172,7 +150,7 @@ public class CommentService {
                 mediaMetadata.setContentType(imageContentType);
                 amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
                 String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s", imageFileName);
-                existingComment.setUrl(mediaUrl);
+                existingComment.setMediaUrl(mediaUrl);
             } catch (IOException e) {
                 throw new UnknownException("File handling error: " + e.getMessage());
             }
@@ -181,30 +159,62 @@ public class CommentService {
         if (saveComment == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
+        return findAnComment(saveComment.getId(), saveComment.getUserId());
     }
 
-    public CommentResponseDTO findAnComment(Integer id) throws CommentNotFoundException {
-
-        List<Object[]> results = commentRepository.findCommentWithId(id);
+    public CommentResponseDTO findAnComment(Integer id , Integer userId) throws CommentNotFoundException {
+        List<Object[]> results = commentRepository.findCommentWithId(id, userId);
 
         if (results.isEmpty()) {
             throw new CommentNotFoundException(
                     "Id " + id + " not found or invalid data. Please try another!");
         }
 
-        Object[] result = results.get(0);
+        Object[] row = results.get(0);
 
         CommentResponseDTO comment = new CommentResponseDTO();
-        comment.setCommentId(((Number) result[0]).intValue());
-        comment.setOwnerId(((Number) result[1]).intValue());
-        comment.setFullname((String) result[2]);
-        comment.setAvatar((String) result[3]);
-        comment.setContent((String) result[4]);
-        comment.setUrl((String) result[5]);
-        comment.setPostId(result[6] != null ? ((Number) result[6]).intValue() : null);
-        comment.setShareId(result[7] != null ? ((Number) result[7]).intValue() : null);
-        comment.setCreate_time((String) result[8]);
-        comment.setReaction_count(((Number) result[9]).intValue());
+        comment.setCommentId(((Number) row[0]).intValue());
+        comment.setOwnerId(((Number) row[1]).intValue());
+        comment.setFullname((String) row[2]);
+        comment.setAvatar((String) row[3]);
+        comment.setContent((String) row[4]);
+        comment.setMediaUrl((String) row[5]);
+        comment.setPostId(((Number) row[6]).intValue());
+        comment.setCreate_time((String) row[7]);
+        comment.setReaction_count(((Number) row[8]).intValue());
+        comment.setUser_reaction_type((String) row[9]);
+        Post foundPost = postRepository.getAnPost(((Number) row[6]).intValue());
+
+        if ((String) row[5] == null) {
+            comment.setMediaType(null);
+        } else {
+            comment.setMediaType(
+                    (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                            ? "IMAGE"
+                            : "VIDEO");
+        }
+        List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
+        List<ReplyResponseDTO> responses = rawResults.stream()
+                .map(r -> {
+                    ReplyResponseDTO reply = new ReplyResponseDTO();
+                    reply.setReplyId(((Number) r[0]).intValue());
+                    reply.setCommentId(((Number) r[1]).intValue());
+                    reply.setOwnerId(((Number) r[2]).intValue());
+                    reply.setFullname((String) r[3]);
+                    reply.setAvatar((String) r[4]);
+                    reply.setContent((String) r[5]);
+                    reply.setUrl((String) r[6]);
+                    reply.setCreate_time((String) r[7]);
+                    reply.setReaction_count(((Number) r[8]).intValue());
+                    reply.setUser_reaction_type((String) r[9]);
+                    reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
+                    return reply;
+                })
+                .collect(Collectors.toList());
+
+        comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
+        comment.setReplys(responses);
+
         return comment;
     }
 
@@ -230,12 +240,20 @@ public class CommentService {
             comment.setFullname((String) row[2]);
             comment.setAvatar((String) row[3]);
             comment.setContent((String) row[4]);
-            comment.setUrl((String) row[5]);
-            comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
-            comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[9]);
-            comment.setReaction_count(((Number) row[10]).intValue());
-            comment.setUser_reaction_type((String) row[11]);
+            comment.setMediaUrl((String) row[5]);
+            comment.setPostId(((Number) row[6]).intValue());
+            comment.setCreate_time((String) row[7]);
+            comment.setReaction_count(((Number) row[8]).intValue());
+            comment.setUser_reaction_type((String) row[9]);
+
+            if ((String) row[5] == null) {
+                comment.setMediaType(null);
+            } else {
+                comment.setMediaType(
+                        (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                ? "IMAGE"
+                                : "VIDEO");
+            }
 
             List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
             List<ReplyResponseDTO> responses = rawResults.stream()
@@ -252,113 +270,13 @@ public class CommentService {
                         reply.setReaction_count(((Number) r[8]).intValue());
                         reply.setUser_reaction_type((String) r[9]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[2]).intValue());
-
-                        List<Object[]> rawReplys = replyToReplyRepositoty
-                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue());
-
-                        List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
-                                .map(result -> {
-                                    ReplyToReplyReponseDTO reply_to_reply = new ReplyToReplyReponseDTO();
-                                    reply_to_reply.setId(((Number) result[0]).intValue());
-                                    reply_to_reply.setReplyId(((Number) result[1]).intValue());
-                                    reply_to_reply.setOwnerId(((Number) result[2]).intValue());
-                                    reply_to_reply.setFullname((String) result[3]);
-                                    reply_to_reply.setAvatar((String) result[4]);
-                                    reply_to_reply.setContent((String) result[5]);
-                                    reply_to_reply.setCreate_time((String) result[6]);
-
-                                    reply_to_reply
-                                            .setIsAuthor(foundPost.getUser_id() == ((Number) result[2]).intValue());
-
-                                    return reply_to_reply;
-                                }).collect(Collectors.toList());
-
-                        reply.setReplys(responseReply);
-
                         return reply;
                     })
                     .collect(Collectors.toList());
 
             comment.setIsAuthor(foundPost.getUser_id() == ((Number) row[1]).intValue());
             comment.setReplys(responses);
-
             return comment;
         });
     }
-
-    public Page<CommentResponseDTO> fetchCommentWithShareId(Integer shareId, Integer userId, int page, int size)
-            throws ShareNotFoundException, UserAccountNotFoundException {
-
-        Share foundShare = shareRepository.getAnShare(shareId);
-        if (foundShare == null) {
-            throw new ShareNotFoundException("Share with ID " + shareId + " not found. Please try again.");
-        }
-
-        User foundUser = userRepository.getAnUser(userId);
-        if (foundUser == null) {
-            throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again");
-        }
-
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Object[]> results = commentRepository.fetchCommentWithShareId(pageable, shareId, userId);
-
-        return results.map(row -> {
-            CommentResponseDTO comment = new CommentResponseDTO();
-            comment.setCommentId(((Number) row[0]).intValue());
-            comment.setOwnerId(((Number) row[1]).intValue());
-            comment.setFullname((String) row[2]);
-            comment.setAvatar((String) row[3]);
-            comment.setContent((String) row[4]);
-            comment.setUrl((String) row[5]);
-            comment.setPostId(row[6] != null ? ((Number) row[6]).intValue() : null);
-            comment.setShareId(row[7] != null ? ((Number) row[7]).intValue() : null);
-            comment.setCreate_time((String) row[9]);
-            comment.setReaction_count(((Number) row[10]).intValue());
-            comment.setUser_reaction_type((String) row[11]);
-
-            List<Object[]> rawResults = replyRepository.fetchReplyByCommentId(((Number) row[0]).intValue(), userId);
-            List<ReplyResponseDTO> responses = rawResults.stream()
-                    .map(r -> {
-                        ReplyResponseDTO reply = new ReplyResponseDTO();
-                        reply.setReplyId(((Number) r[0]).intValue());
-                        reply.setCommentId(((Number) r[1]).intValue());
-                        reply.setOwnerId(((Number) r[2]).intValue());
-                        reply.setFullname((String) r[3]);
-                        reply.setAvatar((String) r[4]);
-                        reply.setContent((String) r[5]);
-                        reply.setUrl((String) r[6]);
-                        reply.setCreate_time((String) r[8]);
-                        reply.setReaction_count(((Number) r[8]).intValue());
-
-                        // Fetch reply-to-reply data
-                        List<Object[]> rawReplys = replyToReplyRepositoty
-                                .fetchReplyToReplyByReplyId(((Number) r[0]).intValue());
-
-                        List<ReplyToReplyReponseDTO> responseReply = rawReplys.stream()
-                                .map(result -> {
-                                    ReplyToReplyReponseDTO reply_to_reply = new ReplyToReplyReponseDTO();
-                                    reply_to_reply.setId(((Number) result[0]).intValue());
-                                    reply_to_reply.setReplyId(((Number) result[1]).intValue());
-                                    reply_to_reply.setOwnerId(((Number) result[2]).intValue());
-                                    reply_to_reply.setFullname((String) result[3]);
-                                    reply_to_reply.setAvatar((String) result[4]);
-                                    reply_to_reply.setContent((String) result[5]);
-                                    reply_to_reply.setCreate_time((String) result[6]);
-
-                                    return reply_to_reply;
-                                }).collect(Collectors.toList());
-
-                        reply.setReplys(responseReply);
-
-                        return reply;
-                    })
-                    .collect(Collectors.toList());
-
-            comment.setIsAuthor(foundShare.getUserId() == ((Number) row[1]).intValue());
-            comment.setReplys(responses);
-
-            return comment;
-        });
-    }
-
 }

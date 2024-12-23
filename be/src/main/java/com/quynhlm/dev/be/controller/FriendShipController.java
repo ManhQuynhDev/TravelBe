@@ -78,12 +78,14 @@ public class FriendShipController {
         return friendShipService.findAllResquestFriends(userId, page, size);
     }
 
-    @GetMapping("/suggestion/{userId}")
-    public Page<UserTagPostResponse> suggestionFriends(@PathVariable Integer userId,
+    @GetMapping("/suggestions/{userId}")
+    public Page<UserTagPostResponse> suggestionFriends(
+            @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
-        return friendShipService.suggestionFriends(userId, page, size);
-    }
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "10") double maxDistanceKm) {
+        return friendShipService.suggestionFriends(userId, maxDistanceKm, page, size);
+    }   
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")
     public ResponseEntity<ResponseObject<Void>> sendRequestAddFriend(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId) {

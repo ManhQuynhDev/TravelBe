@@ -1,6 +1,5 @@
 package com.quynhlm.dev.be.model.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,13 +20,10 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String content;
-    private String url;
-    @Column(name = "post_id",nullable = true)
     private Integer postId;
-    @Column(name = "share_id",nullable = true)
-    private Integer shareId;
-    private int userId;
-    private String type;
+    private Integer userId;
+    private String content;
+    private String mediaUrl;
+    private String mediaType;
     private String create_time;
 }

@@ -18,9 +18,9 @@ public class CommentResponseDTO {
     private String fullname;
     private String avatar;
     private String content;
-    private String url;
+    private String mediaUrl;
+    private String mediaType;
     private Integer postId;
-    private Integer shareId; 
     private String create_time;
     private Integer reaction_count;
     private String user_reaction_type;
