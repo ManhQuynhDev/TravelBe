@@ -201,6 +201,21 @@ public class FriendShipService {
         return EARTH_RADIUS * c;
     }
 
+    public Page<UserDTO> mayBeYouKnow(Integer userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Object[]> suggestionFriendsOfFriends = friendShipRepository.suggestionFriendsOfFriends(userId,
+                pageable);
+        return suggestionFriendsOfFriends.map(row -> {
+            UserDTO object = new UserDTO();
+            object.setUserId(((Number) row[0]).intValue());
+            object.setFullname(((String) row[1]));
+            object.setAvatar((String) row[2]);
+            object.setLatitude((String) row[3]);
+            object.setLongitude((String) row[4]);
+            return object;
+        });
+    }
+
     public Page<UserTagPostResponse> suggestionFriends(Integer userId, double maxDistanceKm, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 

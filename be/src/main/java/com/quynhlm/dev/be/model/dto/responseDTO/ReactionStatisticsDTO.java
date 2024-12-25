@@ -11,11 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class ReactionStatisticsDTO {
-    private Integer id;
-    private int likeCount;
-    private int loveCount;
-    private int hahaCount;
-    private int wowCount;
-    private int sadCount;
-    private int angryCount;
+    private int like;
+    private int love;
+    private int haha;
+    private int wow;
+    private int sad;
+    private int angry;
 }

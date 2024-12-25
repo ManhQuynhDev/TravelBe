@@ -67,7 +67,7 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Integer>
   Page<Object[]> getAllFriends(@Param("user_id") Integer user_id, Pageable pageable);
 
   @Query(value = """
-      SELECT DISTINCT u.id, u.fullname, u.avatar_url
+      SELECT DISTINCT u.id, u.fullname, u.avatar_url , u.latitude, u.longitude
       FROM user u
       WHERE u.id != :user_id
         AND u.id NOT IN (

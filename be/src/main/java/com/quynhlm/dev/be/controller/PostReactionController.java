@@ -34,7 +34,7 @@ public class PostReactionController {
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
-
+    //GET REACTION WITH TYPE
     @GetMapping("")
     public Page<UserReactionDTO> getAllUserReactionWithType(
             @RequestParam Integer postId,

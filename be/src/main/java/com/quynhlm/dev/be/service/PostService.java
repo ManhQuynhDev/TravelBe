@@ -29,6 +29,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MediaResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
@@ -39,6 +40,7 @@ import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
+import com.quynhlm.dev.be.repositories.PostReactionRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReviewRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
@@ -76,6 +78,9 @@ public class PostService {
 
     @Autowired
     private LocationRepository locationRepository;
+
+    @Autowired
+    private PostReactionRepository postReactionRepository;
 
     @Autowired
     private HashTagRespository hashTagRespository;
@@ -244,9 +249,12 @@ public class PostService {
             post.setShare_time(row[14] != null ? ((String) row[14]) : null);
             post.setShare_status(row[15] != null ? ((String) row[15]) : null);
             post.setReaction_count(((Number) row[16]).intValue());
-            post.setComment_count(((Number) row[17]).intValue());
+            // post.setComment_count(((Number) row[17]).intValue());
             post.setShare_count(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
@@ -265,6 +273,25 @@ public class PostService {
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
             post.setHashtags(hashtags);
+
+            List<Object[]> reactions = postReactionRepository.reactionTypeCount(((Number) row[1]).intValue());
+
+            if (!reactions.isEmpty()) {
+                Object[] result = reactions.get(0);
+
+                if (result != null) {
+                    ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
+                    reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
+                    reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
+                    reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
+                    reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
+                    reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
+                    reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
+                    post.setReactionStatistics(reactionStatisticsDTO);
+                }
+            }else{
+                post.setReactionStatistics(new ReactionStatisticsDTO(0, 0, 0, 0, 0, 0));
+            }
             return post;
         });
     }
@@ -306,9 +333,12 @@ public class PostService {
         post.setShare_time(row[14] != null ? ((String) row[14]) : null);
         post.setShare_status(row[15] != null ? ((String) row[15]) : null);
         post.setReaction_count(((Number) row[16]).intValue());
-        post.setComment_count(((Number) row[17]).intValue());
+        // post.setComment_count(((Number) row[17]).intValue());
         post.setShare_count(((Number) row[18]).intValue());
         post.setUser_reaction_type((String) row[19]);
+
+        Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+        post.setComment_count(comment_count == null ? 0 : comment_count);
 
         Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
         post.setAverageRating(averageRating != null ? averageRating : 0.0);
@@ -596,9 +626,12 @@ public class PostService {
             post.setShare_time(row[14] != null ? ((String) row[14]) : null);
             post.setShare_status(row[15] != null ? ((String) row[15]) : null);
             post.setReaction_count(((Number) row[16]).intValue());
-            post.setComment_count(((Number) row[17]).intValue());
+            // post.setComment_count(((Number) row[17]).intValue());
             post.setShare_count(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);

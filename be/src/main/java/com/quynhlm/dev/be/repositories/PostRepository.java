@@ -61,7 +61,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Object[]> getPost(@Param("post_id") Integer post_id, @Param("userId") Integer userId);
 
     @Query(value = """
-                        SELECT
+                SELECT
                 p.user_id AS owner_id,
                 p.id AS post_id,
                 p.location_id,
@@ -102,7 +102,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Object[]> getPostWithPostId(@Param("postId") Integer postId, @Param("userId") Integer userId);
 
     @Query(value = """
-                        SELECT
+                SELECT
                 p.user_id AS owner_id,
                 p.id AS post_id,
                 p.location_id,
@@ -142,7 +142,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Object[]> getPostSave(@Param("postId") Integer postId);
 
     @Query(value = """
-                        SELECT
+                SELECT
                 p.user_id AS owner_id,
                 p.id AS post_id,
                 p.location_id,

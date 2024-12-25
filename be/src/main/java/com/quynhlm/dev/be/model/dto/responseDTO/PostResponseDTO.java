@@ -29,7 +29,7 @@ public class PostResponseDTO {
     private Integer user_share_id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String user_share_name;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.ALWAYS)
     private String user_share_avatar; 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String shareContent;
@@ -43,6 +43,7 @@ public class PostResponseDTO {
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private String user_reaction_type;
     private double averageRating;
+    private ReactionStatisticsDTO reactionStatistics;
     private List<String> hashtags;
     private List<MediaResponseDTO> mediaUrls;
     private List<UserTagPostResponse> tags;

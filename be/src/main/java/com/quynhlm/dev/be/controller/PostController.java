@@ -89,6 +89,7 @@ public class PostController {
         Page<PostMediaDTO> posts = postService.searchPostWithContent(userId, keyword, page, size);
         return ResponseEntity.ok(posts);
     }
+    
 
     @GetMapping("/hashtag/{userId}")
     public ResponseEntity<Page<PostMediaDTO>> searchPostWithHashtag(@PathVariable Integer userId,
