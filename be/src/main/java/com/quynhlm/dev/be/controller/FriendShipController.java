@@ -94,7 +94,6 @@ public class FriendShipController {
             @RequestParam(defaultValue = "10") double maxDistanceKm) {
         return friendShipService.suggestionFriends(userId, maxDistanceKm, page, size);
     }
-
     @GetMapping("/you-know/{userId}")
     public Page<UserDTO> mayBeYourKnow(@PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,

@@ -289,7 +289,7 @@ public class PostService {
                     reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
                     post.setReactionStatistics(reactionStatisticsDTO);
                 }
-            }else{
+            } else {
                 post.setReactionStatistics(new ReactionStatisticsDTO(0, 0, 0, 0, 0, 0));
             }
             return post;
@@ -355,6 +355,25 @@ public class PostService {
         post.setMediaUrls(mediaResponseDTOs);
 
         List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
+
+        List<Object[]> reactions = postReactionRepository.reactionTypeCount(((Number) row[1]).intValue());
+
+        if (!reactions.isEmpty()) {
+            Object[] result = reactions.get(0);
+
+            if (result != null) {
+                ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
+                reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
+                reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
+                reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
+                reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
+                reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
+                reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
+                post.setReactionStatistics(reactionStatisticsDTO);
+            }
+        } else {
+            post.setReactionStatistics(new ReactionStatisticsDTO(0, 0, 0, 0, 0, 0));
+        }
 
         post.setHashtags(hashtags);
         return post;

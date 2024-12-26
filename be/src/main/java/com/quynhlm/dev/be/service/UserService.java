@@ -178,7 +178,7 @@ public class UserService {
 
     public void register(RegisterDTO userDto) throws UserAccountExistingException, UnknownException {
         if (!userRepository.findByEmail(userDto.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + userDto.getEmail() + " already exist. Please try another!");
+            throw new UserAccountExistingException("Email " + userDto.getEmail() + " đã tồn tại , vui lòng thử lại với email khác!");
         }
 
         User user = new User();
