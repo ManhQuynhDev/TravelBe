@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
-import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.PostReaction;
 import com.quynhlm.dev.be.service.PostReactionService;
@@ -43,7 +43,7 @@ public class PostReactionController {
     }
 
     @GetMapping("/reaction_count")
-    public ReactionStatisticsDTO getReactionTypeCount(
+    public ReactionCountDTO getReactionTypeCount(
             @RequestParam Integer postId) {
         return postReactionService.getReactionTypeCount(postId);
     }

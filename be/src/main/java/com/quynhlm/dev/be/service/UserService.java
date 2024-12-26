@@ -45,6 +45,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
+import com.quynhlm.dev.be.core.exception.AccountIsDisabledException;
 import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.AccountStatus;
@@ -92,11 +93,24 @@ public class UserService {
 
     // Login Check
     public TokenResponse<UserResponseDTO> login(LoginDTO request)
-            throws UserAccountNotFoundException, UserAccountExistingException {
+            throws UserAccountNotFoundException, AccountIsDisabledException {
         User user = userRepository.getAnUserByEmail(request.getEmail());
         if (user == null) {
             throw new UserAccountNotFoundException(
-                    "Email " + request.getEmail() + " not found. Please try another!");
+                    "Tài khoản " + request.getEmail() + " không tồn tại, vui lòng kiểm tra lại để đăng nhập.");
+        }
+
+        if (user.getIsLocked() != null) {
+            if (user.getIsLocked().equals("LOCK")) {
+                if (user.getTermDate() != null) {
+                    throw new AccountIsDisabledException(
+                            "Tài khoản của bạn đã bị khóa đến ngày " + user.getTermDate().toString().substring(0, 9)
+                                    + " ,vui lòng thử lại.");
+                } else {
+                    throw new AccountIsDisabledException(
+                            "Tài khoản của bạn đã bị khóa vĩnh viễn, vui lòng thử lại.");
+                }
+            }
         }
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -107,7 +121,7 @@ public class UserService {
         TokenResponse<UserResponseDTO> response = new TokenResponse<>();
         if (isAuthenticated == false) { // Login failure
             response.setStatus(isAuthenticated);
-            response.setMessage("Login not successfully");
+            response.setMessage("Đăng nhập thất bại.");
             return response;
         }
 
@@ -117,7 +131,7 @@ public class UserService {
             userRepository.save(user);
         }
 
-        if(request.getLocation() != null) {
+        if (request.getLocation() != null) {
             String[] location = request.getLocation().split(",");
             user.setLatitude(location[0]);
             user.setLongitude(location[1]);
@@ -125,7 +139,7 @@ public class UserService {
         }
 
         response.setStatus(isAuthenticated);
-        response.setMessage("Authentication successful.");
+        response.setMessage("Đăng nhập thành công.");
         response.setToken(token);
 
         UserResponseDTO userResponseDTO = responseUser(user);
@@ -178,12 +192,13 @@ public class UserService {
 
     public void register(RegisterDTO userDto) throws UserAccountExistingException, UnknownException {
         if (!userRepository.findByEmail(userDto.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + userDto.getEmail() + " đã tồn tại , vui lòng thử lại với email khác!");
+            throw new UserAccountExistingException(
+                    "Email " + userDto.getEmail() + " đã tồn tại , vui lòng thử lại với email khác!");
         }
 
         User user = new User();
 
-        if(userDto.getLocation() != null && !userDto.getLocation().isEmpty()) {
+        if (userDto.getLocation() != null && !userDto.getLocation().isEmpty()) {
             String[] location = userDto.getLocation().split(",");
             user.setLatitude(location[0]);
             user.setLongitude(location[1]);
@@ -444,6 +459,7 @@ public class UserService {
     }
     // Change STATUS User
 
+    @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void switchIsLockedUser(Integer id, String isLock)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
         User user = userRepository.findOneById(id);
@@ -459,15 +475,17 @@ public class UserService {
             throw new MethodNotValidException("Invalid status user type. Please try again !");
         }
 
-        if (user.getIsLocked() != null && user.getIsLocked().equals(isLock)) {
-            throw new UnknownException("Transaction cannot complete because old status is the same as the new status!");
+        if (isLock == "LOOK") {
+            user.setLockDate(LocalDateTime.now());
+        } else {
+            user.setLockDate(null);
         }
-
         user.setIsLocked(isLock);
 
         userRepository.save(user);
     }
 
+    @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void lockAccountUser(Integer id, String isLock)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
         User user = userRepository.findOneById(id);
@@ -481,16 +499,14 @@ public class UserService {
             throw new MethodNotValidException("Invalid status user type. Please try again!");
         }
 
-        if ("LOCK".equals(isLock) && "LOCK".equals(user.getIsLocked())) {
-            throw new UnknownException("User is already locked!");
-        }
-
         if ("LOCK".equals(isLock)) {
             user.setIsLocked("LOCK");
             user.setLockDate(LocalDateTime.now());
+            user.setTermDate(LocalDateTime.now().plusDays(3));
         } else {
             user.setIsLocked("OPEN");
             user.setLockDate(null);
+            user.setTermDate(null);
         }
 
         userRepository.save(user);

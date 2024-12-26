@@ -241,10 +241,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/lock-status")
-    public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer id,
+    @PostMapping("/look_account/{userId}")
+    public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer userId,
             @RequestParam String isLock) {
-        userService.switchIsLockedUser(id, isLock);
+        userService.lockAccountUser(userId, isLock);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setStatus(true);
         response.setMessage("Transaction successfully.");

@@ -31,6 +31,7 @@ public class AppError {
         NOTIFICATION_NOT_FOUND,
         LOCATION_NOT_FOUND,
         REVIEW_EXIST,
+        ACCOUNT_DISABLED
     }
 
     private ErrorCode code;

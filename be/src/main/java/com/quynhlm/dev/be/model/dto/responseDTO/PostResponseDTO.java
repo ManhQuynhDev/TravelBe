@@ -43,7 +43,7 @@ public class PostResponseDTO {
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private String user_reaction_type;
     private double averageRating;
-    private ReactionStatisticsDTO reactionStatistics;
+    private List<ReactionCountDTO> reactionStatistics;
     private List<String> hashtags;
     private List<MediaResponseDTO> mediaUrls;
     private List<UserTagPostResponse> tags;

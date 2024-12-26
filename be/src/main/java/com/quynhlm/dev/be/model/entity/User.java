@@ -53,6 +53,7 @@ public class User {
     private String deviceToken;
     private String currentDevice;
     private LocalDateTime lockDate;
+    private LocalDateTime termDate;
     private LocalDateTime lastNameChangeDate;
     private String latitude;
     private String longitude;

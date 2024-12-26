@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
-import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserReactionDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.PostReaction;
@@ -114,8 +114,8 @@ public class PostReactionService {
         });
     }
 
-     public ReactionStatisticsDTO getReactionTypeCount(Integer post_id) throws PostNotFoundException {
-        List<Object[]> results = postReactionRepository.reactionTypeCount(post_id);
+     public ReactionCountDTO getReactionTypeCount(Integer post_id) throws PostNotFoundException {
+        List<Object[]> results = postReactionRepository.findTopReactions(post_id);
 
         if (results.isEmpty()) {
             throw new PostNotFoundException(
@@ -123,13 +123,9 @@ public class PostReactionService {
         }
 
         Object[] result = results.get(0);
-        ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
-        reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
-        reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
-        reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
-        reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
-        reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
-        reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
+        ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+        reactionStatisticsDTO.setType(((String) result[0]));
+        reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
 
         return reactionStatisticsDTO;
     }

@@ -29,7 +29,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.MediaResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.ReactionStatisticsDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
@@ -274,24 +274,22 @@ public class PostService {
 
             post.setHashtags(hashtags);
 
-            List<Object[]> reactions = postReactionRepository.reactionTypeCount(((Number) row[1]).intValue());
+            List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) row[1]).intValue());
 
             if (!reactions.isEmpty()) {
-                Object[] result = reactions.get(0);
+                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
 
-                if (result != null) {
-                    ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
-                    reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
-                    reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
-                    reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
-                    reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
-                    reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
-                    reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
-                    post.setReactionStatistics(reactionStatisticsDTO);
+                for (Object[] result : reactions) {
+                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                    reactionStatisticsDTO.setType((String) result[0]);
+                    reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                    reactionStatisticsList.add(reactionStatisticsDTO);
                 }
+                post.setReactionStatistics(reactionStatisticsList);
             } else {
-                post.setReactionStatistics(new ReactionStatisticsDTO(0, 0, 0, 0, 0, 0));
+                post.setReactionStatistics(null);
             }
+
             return post;
         });
     }
@@ -356,23 +354,20 @@ public class PostService {
 
         List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
-        List<Object[]> reactions = postReactionRepository.reactionTypeCount(((Number) row[1]).intValue());
+        List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) row[1]).intValue());
 
         if (!reactions.isEmpty()) {
-            Object[] result = reactions.get(0);
+            List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
 
-            if (result != null) {
-                ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
-                reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
-                reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
-                reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
-                reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
-                reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
-                reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
-                post.setReactionStatistics(reactionStatisticsDTO);
+            for (Object[] result : reactions) {
+                ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                reactionStatisticsDTO.setType((String) result[0]);
+                reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                reactionStatisticsList.add(reactionStatisticsDTO);
             }
+            post.setReactionStatistics(reactionStatisticsList);
         } else {
-            post.setReactionStatistics(new ReactionStatisticsDTO(0, 0, 0, 0, 0, 0));
+            post.setReactionStatistics(null);
         }
 
         post.setHashtags(hashtags);
