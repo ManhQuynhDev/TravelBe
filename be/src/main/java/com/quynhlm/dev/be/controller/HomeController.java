@@ -153,7 +153,7 @@ public class HomeController {
 
     @GetMapping("/reports")
     public String reports(Model model) {
-        model.addAttribute("listReports", reportService.getAllReport(0, 1000));
+        model.addAttribute("0/listReports", reportService.getAllReport(0, 1000));
         return "reports";
     }
 
