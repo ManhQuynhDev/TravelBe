@@ -28,6 +28,8 @@ public class PostResponseDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer user_share_id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer share_post_id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String user_share_name;
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private String user_share_avatar; 

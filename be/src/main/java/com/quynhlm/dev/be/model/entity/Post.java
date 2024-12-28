@@ -34,4 +34,5 @@ public class Post {
     @Column(name = "create_time", updatable = false)
     private String create_time;
     private String share_time;
+    private Integer delflag;
 }

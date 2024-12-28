@@ -26,6 +26,7 @@ public class PostMediaDTO {
     private Integer comment_count;
     private Integer share_count;
     private String user_reaction_type;
+    private List<ReactionCountDTO> reactionStatistics;
     private List<String> hashtags;
     private List<String> mediaUrls;
 }

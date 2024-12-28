@@ -64,7 +64,6 @@ public class PostController {
         }
 
         PostResponseDTO postResponse = postService.insertPost(post, files);
-
         ResponseObject<PostResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
         result.setStatus(true);
@@ -74,10 +73,11 @@ public class PostController {
 
     @PostMapping("/share")
     public ResponseEntity<ResponseObject<?>> sharePost(@RequestPart("post") @Valid ShareRequestDTO shareRequestDTO) {
-        postService.sharePost(shareRequestDTO);
-        ResponseObject<Void> result = new ResponseObject<>();
+        ResponseObject<PostResponseDTO> result = new ResponseObject<>();
+        PostResponseDTO response = postService.sharePost(shareRequestDTO);
         result.setMessage("Create a new share successfully");
         result.setStatus(true);
+        result.setData(response);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
@@ -89,7 +89,6 @@ public class PostController {
         Page<PostMediaDTO> posts = postService.searchPostWithContent(userId, keyword, page, size);
         return ResponseEntity.ok(posts);
     }
-    
 
     @GetMapping("/hashtag/{userId}")
     public ResponseEntity<Page<PostMediaDTO>> searchPostWithHashtag(@PathVariable Integer userId,

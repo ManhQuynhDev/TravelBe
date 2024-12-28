@@ -116,6 +116,7 @@ public class PostService {
 
             post.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
             post.setIsShare(0);
+            post.setDelflag(0);
             Post savedPost = postRepository.save(post);
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
@@ -172,11 +173,10 @@ public class PostService {
 
     // SHARE POST
     @Transactional
-    public void sharePost(ShareRequestDTO shareRequestDTO)
+    public PostResponseDTO sharePost(ShareRequestDTO shareRequestDTO)
             throws PostNotFoundException, UnknownException, UserAccountNotFoundException {
 
         Post foundPost = postRepository.getAnPost(shareRequestDTO.getPostId());
-
         if (foundPost == null) {
             throw new PostNotFoundException(
                     "Id " + shareRequestDTO.getPostId() + " not found or invalid data. Please try another!");
@@ -185,33 +185,44 @@ public class PostService {
         User foundUser = userRepository.getAnUser(shareRequestDTO.getShareById());
         if (foundUser == null) {
             throw new UserAccountNotFoundException(
-                    "Found user with " + shareRequestDTO.getShareById() + " not found . Please try again !");
+                    "User with ID " + shareRequestDTO.getShareById() + " not found. Please try again!");
         }
 
-        Post sharePost = new Post();
-
-        sharePost.setContent(foundPost.getContent());
-        sharePost.setUser_id(foundUser.getId());
-        sharePost.setLocation_id(foundPost.getLocation_id());
-        sharePost.setStatus(foundPost.getStatus());
-        sharePost.setPost_id(shareRequestDTO.getPostId());
-        sharePost.setShareContent(shareRequestDTO.getContent());
-        sharePost.setIsShare(1);
-        sharePost.setShare_by_id(foundPost.getUser_id());
-        sharePost.setStatusShare(shareRequestDTO.getStatus());
-        sharePost.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
-        sharePost.setShare_time(new Timestamp(System.currentTimeMillis()).toString());
-
+        Post sharePost = buildSharedPost(foundPost, foundUser, shareRequestDTO);
         Post savedPost = postRepository.save(sharePost);
 
         if (savedPost.getId() == null) {
             throw new UnknownException("Transaction cannot be completed!");
         }
 
-        if (!shareRequestDTO.getHashtags().isEmpty()) {
-            for (String hashtag : shareRequestDTO.getHashtags()) {
+        saveHashTags(shareRequestDTO.getHashtags(), savedPost.getId());
+
+        return getAnPostReturnSave(savedPost.getId());
+    }
+
+    private Post buildSharedPost(Post foundPost, User foundUser, ShareRequestDTO shareRequestDTO) {
+        log.info(shareRequestDTO.getShareById() + "");
+        Post sharePost = new Post();
+        sharePost.setDelflag(0);
+        sharePost.setContent(foundPost.getContent());
+        sharePost.setUser_id(foundPost.getUser_id());
+        sharePost.setLocation_id(foundPost.getLocation_id());
+        sharePost.setStatus(foundPost.getStatus());
+        sharePost.setPost_id(foundPost.getIsShare() == 0 ? shareRequestDTO.getPostId() : foundPost.getPost_id());
+        sharePost.setIsShare(1);
+        sharePost.setShareContent(shareRequestDTO.getContent());
+        sharePost.setShare_by_id(shareRequestDTO.getShareById());
+        sharePost.setStatusShare(shareRequestDTO.getStatus());
+        sharePost.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
+        sharePost.setShare_time(new Timestamp(System.currentTimeMillis()).toString());
+        return sharePost;
+    }
+
+    private void saveHashTags(List<String> hashtags, Integer postId) {
+        if (hashtags != null && !hashtags.isEmpty()) {
+            for (String hashtag : hashtags) {
                 HashTag newHashTag = new HashTag();
-                newHashTag.setPostId(savedPost.getId());
+                newHashTag.setPostId(postId);
                 newHashTag.setHashtag(hashtag);
                 hashTagRespository.save(newHashTag);
             }
@@ -252,14 +263,19 @@ public class PostService {
             // post.setComment_count(((Number) row[17]).intValue());
             post.setShare_count(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+            post.setShare_post_id(row[20] != null ? ((Number) row[20]).intValue() : null);
 
             Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
             post.setComment_count(comment_count == null ? 0 : comment_count);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
-
-            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+            List<String> medias;
+            if (((Number) row[9]).intValue() == 0) {
+                medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+            } else {
+                medias = mediaRepository.findMediaByPostId(((Number) row[20]).intValue());
+            }
 
             List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
                 MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
@@ -289,7 +305,6 @@ public class PostService {
             } else {
                 post.setReactionStatistics(null);
             }
-
             return post;
         });
     }
@@ -334,6 +349,7 @@ public class PostService {
         // post.setComment_count(((Number) row[17]).intValue());
         post.setShare_count(((Number) row[18]).intValue());
         post.setUser_reaction_type((String) row[19]);
+        post.setShare_post_id(row[20] != null ? ((Number) row[20]).intValue() : null);
 
         Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[1]).intValue());
         post.setComment_count(comment_count == null ? 0 : comment_count);
@@ -341,7 +357,13 @@ public class PostService {
         Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
         post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-        List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+        List<String> medias;
+
+        if (((Number) row[9]).intValue() == 0) {
+            medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+        } else {
+            medias = mediaRepository.findMediaByPostId(((Number) row[20]).intValue());
+        }
 
         List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
             MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
@@ -392,7 +414,8 @@ public class PostService {
             commentRepository.delete(comment);
         });
 
-        postRepository.delete(foundPost);
+        foundPost.setDelflag(1);
+        postRepository.save(foundPost);
     }
 
     public Page<PostMediaDTO> searchPostWithHashtag(String keyword, Integer user_id, int page, int size)
@@ -428,6 +451,22 @@ public class PostService {
             List<String> medias = mediaRepository.findMediaByPostId(((Number) result[1]).intValue());
 
             postMediaDTO.setMediaUrls(medias);
+
+            List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) result[1]).intValue());
+
+            if (!reactions.isEmpty()) {
+                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+
+                for (Object[] reaction : reactions) {
+                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                    reactionStatisticsDTO.setType((String) reaction[0]);
+                    reactionStatisticsDTO.setReactionCount(((Number) reaction[1]).intValue());
+                    reactionStatisticsList.add(reactionStatisticsDTO);
+                }
+                postMediaDTO.setReactionStatistics(reactionStatisticsList);
+            } else {
+                postMediaDTO.setReactionStatistics(null);
+            }
 
             return postMediaDTO;
         });
@@ -466,6 +505,22 @@ public class PostService {
             List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
 
             postMediaDTO.setMediaUrls(medias);
+
+            List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) row[1]).intValue());
+
+            if (!reactions.isEmpty()) {
+                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+
+                for (Object[] result : reactions) {
+                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                    reactionStatisticsDTO.setType((String) result[0]);
+                    reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                    reactionStatisticsList.add(reactionStatisticsDTO);
+                }
+                postMediaDTO.setReactionStatistics(reactionStatisticsList);
+            } else {
+                postMediaDTO.setReactionStatistics(null);
+            }
             return postMediaDTO;
         });
     }
@@ -501,6 +556,7 @@ public class PostService {
         post.setReaction_count(((Number) row[16]).intValue());
         // post.setComment_count(((Number) row[17]).intValue());
         post.setShare_count(((Number) row[18]).intValue());
+        post.setShare_post_id(row[19] != null ? ((Number) row[19]).intValue() : null);
 
         Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
         post.setComment_count(comment_count == null ? 0 : comment_count);
@@ -508,7 +564,12 @@ public class PostService {
         Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
         post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-        List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+        List<String> medias;
+        if (((Number) row[9]).intValue() == 0) {
+            medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+        } else {
+            medias = mediaRepository.findMediaByPostId(((Number) row[19]).intValue());
+        }
 
         List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
             MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
@@ -664,6 +725,22 @@ public class PostService {
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
             post.setHashtags(hashtags);
+
+            List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) row[1]).intValue());
+
+            if (!reactions.isEmpty()) {
+                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+
+                for (Object[] result : reactions) {
+                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                    reactionStatisticsDTO.setType((String) result[0]);
+                    reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                    reactionStatisticsList.add(reactionStatisticsDTO);
+                }
+                post.setReactionStatistics(reactionStatisticsList);
+            } else {
+                post.setReactionStatistics(null);
+            }
             return post;
         });
     }
@@ -735,11 +812,18 @@ public class PostService {
             post.setComment_count(((Number) row[17]).intValue());
             post.setShare_count(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
+            post.setShare_post_id(row[20] != null ? ((Number) row[20]).intValue() : null);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);
 
-            List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+            List<String> medias;
+
+            if (((Number) row[9]).intValue() == 0) {
+                medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
+            } else {
+                medias = mediaRepository.findMediaByPostId(((Number) row[20]).intValue());
+            }
 
             List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
                 MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
@@ -753,6 +837,21 @@ public class PostService {
             List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
 
             post.setHashtags(hashtags);
+            List<Object[]> reactions = postReactionRepository.findTopReactions(((Number) row[1]).intValue());
+
+            if (!reactions.isEmpty()) {
+                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+
+                for (Object[] result : reactions) {
+                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                    reactionStatisticsDTO.setType((String) result[0]);
+                    reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                    reactionStatisticsList.add(reactionStatisticsDTO);
+                }
+                post.setReactionStatistics(reactionStatisticsList);
+            } else {
+                post.setReactionStatistics(null);
+            }
             return post;
         });
     }
