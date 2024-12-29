@@ -77,10 +77,10 @@
             <div class="card mt-3">
                 <div class="card-header">
                     <h5 class="card-title">Danh Sách Kế Hoạch</h5>
-                    <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addTravelPlanModal"
+                    <!-- <button class="btn btn-primary float-right" data-toggle="modal" data-target="#addTravelPlanModal"
                         id="addTravelPlan">
                         <i class="tio-add mr-1"></i>Thêm kế hoạch mới
-                    </button>
+                    </button> -->
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -359,104 +359,103 @@
         });
 
         //add travel plan
-        document.getElementById("addTravelPlan").addEventListener("click", function () {
-            $('#addTravelPlanModal').modal('show');
-        });
+        // document.getElementById("addTravelPlan").addEventListener("click", function () {
+        //     $('#addTravelPlanModal').modal('show');
+        // });
 
-        document.getElementById("saveTravelPlanButton").addEventListener("click", function () {
-            const button = document.getElementById("saveTravelPlanButton");
-            button.disabled = true;  // Disable the button to prevent multiple clicks
+        // document.getElementById("saveTravelPlanButton").addEventListener("click", function () {
+        //     const button = document.getElementById("saveTravelPlanButton");
+        //     button.disabled = true;  // Disable the button to prevent multiple clicks
 
-            const groupId = document.getElementById('groupId').value;
-            const planName = document.getElementById('planName').value.trim();
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const description = document.getElementById('description').value;
-            const status = document.getElementById('status').value;
-            const locationId = document.getElementById('locationSelect').value;
-            const totalBudget = document.getElementById('totalBudget').value;
+        //     const groupId = document.getElementById('groupId').value;
+        //     const planName = document.getElementById('planName').value.trim();
+        //     const startDate = document.getElementById('startDate').value;
+        //     const endDate = document.getElementById('endDate').value;
+        //     const description = document.getElementById('description').value;
+        //     const status = document.getElementById('status').value;
+        //     const locationId = document.getElementById('locationSelect').value;
+        //     const totalBudget = document.getElementById('totalBudget').value;
 
-            // Kiểm tra các trường bắt buộc
-            if (!groupId || !planName || !startDate || !endDate || !locationId || !totalBudget) {
-                alert('Vui lòng điền đầy đủ các trường bắt buộc.');
-                button.disabled = false;  // Re-enable the button if validation fails
-                return;
-            }
+        //     // Kiểm tra các trường bắt buộc
+        //     if (!groupId || !planName || !startDate || !endDate || !locationId || !totalBudget) {
+        //         alert('Vui lòng điền đầy đủ các trường bắt buộc.');
+        //         button.disabled = false;  // Re-enable the button if validation fails
+        //         return;
+        //     }
 
-            // Validate tên kế hoạch: không chứa ký tự đặc biệt và có độ dài tối thiểu 3 ký tự
-            const nameRegex = /^[a-zA-Z0-9\s]+$/; // Chỉ cho phép chữ cái, số và khoảng trắng
-            if (!nameRegex.test(planName)) {
-                alert("Tên kế hoạch không được chứa ký tự đặc biệt.");
-                button.disabled = false;  // Re-enable the button if validation fails
-                return;
-            }
-            if (planName.length < 3) {
-                alert("Tên kế hoạch phải có ít nhất 3 ký tự.");
-                button.disabled = false;  // Re-enable the button if validation fails
-                return;
-            }
+        //     // Validate tên kế hoạch: không chứa ký tự đặc biệt và có độ dài tối thiểu 3 ký tự
+        //     if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(planName)) {
+        //         alert("Tên kế hoạch không được chứa ký tự đặc biệt ngoài dấu cách!");
+        //         button.disabled = false;  // Kích hoạt lại nút submit
+        //         return;
+        //     }
+        //     if (planName.length < 3) {
+        //         alert("Tên kế hoạch phải có ít nhất 3 ký tự.");
+        //         button.disabled = false;  // Re-enable the button if validation fails
+        //         return;
+        //     }
 
-            // Kiểm tra ngày bắt đầu và ngày kết thúc
-            const startDateObj = new Date(startDate);
-            const endDateObj = new Date(endDate);
+        //     // Kiểm tra ngày bắt đầu và ngày kết thúc
+        //     const startDateObj = new Date(startDate);
+        //     const endDateObj = new Date(endDate);
 
-            startDateObj.setHours(0, 0, 0, 0);
-            endDateObj.setHours(0, 0, 0, 0);
+        //     startDateObj.setHours(0, 0, 0, 0);
+        //     endDateObj.setHours(0, 0, 0, 0);
 
-            if (startDateObj > endDateObj) {
-                alert('Ngày bắt đầu phải trước ngày kết thúc.');
-                button.disabled = false;  // Re-enable the button if validation fails
-                return;
-            }
+        //     if (startDateObj > endDateObj) {
+        //         alert('Ngày bắt đầu phải trước ngày kết thúc.');
+        //         button.disabled = false;  // Re-enable the button if validation fails
+        //         return;
+        //     }
 
-            // Kiểm tra ngân sách
-            if (isNaN(totalBudget) || totalBudget <= 0) {
-                alert('Vui lòng nhập ngân sách hợp lệ.');
-                button.disabled = false;  // Re-enable the button if validation fails
-                return;
-            }
+        //     // Kiểm tra ngân sách
+        //     if (isNaN(totalBudget) || totalBudget <= 0) {
+        //         alert('Vui lòng nhập ngân sách hợp lệ.');
+        //         button.disabled = false;  // Re-enable the button if validation fails
+        //         return;
+        //     }
 
-            // Dữ liệu kế hoạch du lịch
-            const travelPlan = {
-                group_id: groupId,
-                plan_name: planName,
-                start_date: startDate,
-                end_date: endDate,
-                description: description,
-                status: status,
-                location_id: locationId,
-                total_budget: totalBudget,
-                user_id: localStorage.getItem("user_id")
-            };
+        //     // Dữ liệu kế hoạch du lịch
+        //     const travelPlan = {
+        //         group_id: groupId,
+        //         plan_name: planName,
+        //         start_date: startDate,
+        //         end_date: endDate,
+        //         description: description,
+        //         status: status,
+        //         location_id: locationId,
+        //         total_budget: totalBudget,
+        //         user_id: localStorage.getItem("user_id")
+        //     };
 
-            console.log(travelPlan);
-            const apiURL = 'http://localhost:8080/api/travel-plan';
-            const token = localStorage.getItem("authToken");
+        //     console.log(travelPlan);
+        //     const apiURL = 'http://localhost:8080/api/travel-plan';
+        //     const token = localStorage.getItem("authToken");
 
-            // Gửi yêu cầu API
-            fetch(apiURL, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(travelPlan)
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    alert('Kế hoạch du lịch đã được thêm thành công!');
-                    $('#addTravelPlanModal').modal('hide');
-                    window.location.reload();
-                })
-                .catch(error => {
-                    console.error('Lỗi khi thêm kế hoạch du lịch:', error);
-                    alert('Đã xảy ra lỗi khi thêm kế hoạch du lịch.');
-                })
-                .finally(() => {
-                    button.disabled = false;  // Re-enable the button after the request is completed
-                });
-        });
+        //     // Gửi yêu cầu API
+        //     fetch(apiURL, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Authorization': `Bearer ${token}`,
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(travelPlan)
+        //     })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             console.log(data);
+        //             alert('Kế hoạch du lịch đã được thêm thành công!');
+        //             $('#addTravelPlanModal').modal('hide');
+        //             window.location.reload();
+        //         })
+        //         .catch(error => {
+        //             console.error('Lỗi khi thêm kế hoạch du lịch:', error);
+        //             alert('Đã xảy ra lỗi khi thêm kế hoạch du lịch.');
+        //         })
+        //         .finally(() => {
+        //             button.disabled = false;  // Re-enable the button after the request is completed
+        //         });
+        // });
 
 
 
