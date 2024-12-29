@@ -19,14 +19,14 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.PostRequestDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.ShareRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.PostSaveResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.VideoPostDTO;
 import com.quynhlm.dev.be.service.PostService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,19 +38,13 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    // Find all
-    @GetMapping("/{user_id}")
-    public Page<PostMediaDTO> getAllPost(@PathVariable Integer user_id, Pageable pageable) {
-        return postService.getAllPost(user_id, pageable);
-    }
-
     @GetMapping("/statistical")
     public Page<PostMediaDTO> postStatistical(Pageable pageable) {
         return postService.postStatistical(pageable);
     }
 
     @GetMapping("/user-create/{user_id}")
-    public Page<PostMediaDTO> foundPostByUserId(@PathVariable Integer user_id, Pageable pageable) {
+    public Page<PostResponseDTO> foundPostByUserId(@PathVariable Integer user_id, Pageable pageable) {
         return postService.foundPostByUserId(user_id, pageable);
     }
 
@@ -69,12 +63,21 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        PostSaveResponseDTO postResponse = postService.insertPost(post, files);
+        PostResponseDTO postResponse = postService.insertPost(post, files);
 
-        ResponseObject<PostSaveResponseDTO> result = new ResponseObject<>();
+        ResponseObject<PostResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new post successfully");
         result.setStatus(true);
         result.setData(postResponse);
+        return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/share")
+    public ResponseEntity<ResponseObject<?>> sharePost(@RequestPart("post") @Valid ShareRequestDTO shareRequestDTO) {
+        postService.sharePost(shareRequestDTO);
+        ResponseObject<Void> result = new ResponseObject<>();
+        result.setMessage("Create a new share successfully");
+        result.setStatus(true);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }
 
@@ -86,6 +89,7 @@ public class PostController {
         Page<PostMediaDTO> posts = postService.searchPostWithContent(userId, keyword, page, size);
         return ResponseEntity.ok(posts);
     }
+    
 
     @GetMapping("/hashtag/{userId}")
     public ResponseEntity<Page<PostMediaDTO>> searchPostWithHashtag(@PathVariable Integer userId,
@@ -103,13 +107,13 @@ public class PostController {
     }
 
     @GetMapping("/{post_id}/{user_id}")
-    public ResponseEntity<ResponseObject<PostMediaDTO>> getAnPost(@PathVariable Integer post_id,
+    public ResponseEntity<ResponseObject<PostResponseDTO>> getAnPost(@PathVariable Integer post_id,
             @PathVariable Integer user_id) {
-        ResponseObject<PostMediaDTO> result = new ResponseObject<>();
-        result.setData(postService.getAnPost(post_id, user_id));
+        ResponseObject<PostResponseDTO> result = new ResponseObject<>();
+        result.setData(postService.getAnPostWithPostId(post_id, user_id));
         result.setMessage("Get an post by " + post_id + " successfully");
         result.setStatus(true);
-        return new ResponseEntity<ResponseObject<PostMediaDTO>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<PostResponseDTO>>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/{post_id}")
@@ -143,7 +147,7 @@ public class PostController {
     }
 
     @GetMapping("/videos/{user_id}")
-    public Page<VideoPostDTO> getAllPostTypeVideo(@PathVariable Integer user_id, Pageable pageable) {
+    public Page<PostResponseDTO> getAllPostTypeVideo(@PathVariable Integer user_id, Pageable pageable) {
         return postService.getAllPostTypeVideo(user_id, pageable);
     }
 

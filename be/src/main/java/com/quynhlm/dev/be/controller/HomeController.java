@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
@@ -61,8 +60,8 @@ public class HomeController {
         Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
         long groupCount = groupResponseDTOPage.getTotalElements();
         Pageable pageable = PageRequest.of(0, 1000);
-        Page<PostMediaDTO> postMediaDTOPage = postService.getAllPost(1, pageable);
-        long postCount = postMediaDTOPage.getTotalElements();
+        // Page<PostResponseDTO> postMediaDTOPage = postService.getAllPostsAndSharedPosts(1, pageable);
+        // long postCount = postMediaDTOPage.getTotalElements();
 
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
@@ -73,7 +72,7 @@ public class HomeController {
 
         model.addAttribute("userCount", userCount);
         model.addAttribute("groupCount", groupCount);
-        model.addAttribute("postCount", postCount);
+        // model.addAttribute("postCount", postCount);
         model.addAttribute("managerCount", managerCount);
         return "home";
     }
@@ -111,7 +110,7 @@ public class HomeController {
     public String post(Model model) {
         // model.addAttribute("body", "posts");
         Pageable pageable = PageRequest.of(0, 1000);
-        model.addAttribute("postList", postService.getAllPost(1, pageable));
+        model.addAttribute("postList", postService.getAllPostsAndSharedPosts(1, pageable));
         return "posts";
     }
 

@@ -24,6 +24,7 @@ import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.RegisterDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.VerifyDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.TokenResponse;
@@ -56,7 +57,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ResponseObject<Void>> register(@RequestBody @Valid User user) {
+    public ResponseEntity<ResponseObject<Void>> register(@RequestBody @Valid RegisterDTO user) {
         userService.register(user);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setStatus(true);
@@ -240,10 +241,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/lock-status")
-    public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer id,
+    @PostMapping("/look_account/{userId}")
+    public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer userId,
             @RequestParam String isLock) {
-        userService.switchIsLockedUser(id, isLock);
+        userService.lockAccountUser(userId, isLock);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setStatus(true);
         response.setMessage("Transaction successfully.");

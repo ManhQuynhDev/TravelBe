@@ -23,6 +23,7 @@ public class UnlockUserTask {
         for (User user : lockedUsers) {
             user.setIsLocked("OPEN");
             user.setLockDate(null);
+            user.setTermDate(null);
             userRepository.save(user);
         }
     }

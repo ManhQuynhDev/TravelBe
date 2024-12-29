@@ -1,4 +1,4 @@
-package com.quynhlm.dev.be.model.dto.requestDTO;
+package com.quynhlm.dev.be.model.dto.responseDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,8 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class CommentRequestDTO {
-    private String content;
-    private Integer postId; 
-    private int userId;
+public class ReactionCountDTO {
+    private String type;
+    private Integer reactionCount;
 }

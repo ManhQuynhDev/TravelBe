@@ -102,13 +102,12 @@ public class CommentReactionService {
 
         Object[] result = results.get(0);
         ReactionStatisticsDTO reactionStatisticsDTO = new ReactionStatisticsDTO();
-        reactionStatisticsDTO.setId(((Number) result[0]).intValue());
-        reactionStatisticsDTO.setLikeCount(((Number) result[1]).intValue());
-        reactionStatisticsDTO.setLoveCount(((Number) result[2]).intValue());
-        reactionStatisticsDTO.setHahaCount(((Number) result[3]).intValue());
-        reactionStatisticsDTO.setWowCount(((Number) result[4]).intValue());
-        reactionStatisticsDTO.setSadCount(((Number) result[5]).intValue());
-        reactionStatisticsDTO.setAngryCount(((Number) result[6]).intValue());
+        reactionStatisticsDTO.setLike(((Number) result[1]).intValue());
+        reactionStatisticsDTO.setLove(((Number) result[2]).intValue());
+        reactionStatisticsDTO.setHaha(((Number) result[3]).intValue());
+        reactionStatisticsDTO.setWow(((Number) result[4]).intValue());
+        reactionStatisticsDTO.setSad(((Number) result[5]).intValue());
+        reactionStatisticsDTO.setAngry(((Number) result[6]).intValue());
 
         return reactionStatisticsDTO;
     }

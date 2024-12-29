@@ -22,7 +22,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
 
     @Query(value = """
             SELECT n.id , n.title , n.message , n.media_url , n.status ,u.id , u.fullname , u.avatar_url , n.notification_time FROM notification n
-            INNER JOIN User u on u.id = n.user_received_id
+            INNER JOIN User u on u.id = n.user_send_id
             WHERE n.id = :id;
                                 """, nativeQuery = true)
     List<Object[]> getAllNotificationWithId(@Param("id") Integer id);

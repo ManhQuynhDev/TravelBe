@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.InviteRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.UserDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponse;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserFriendResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.UserTagPostResponse;
@@ -36,6 +37,7 @@ public class FriendShipController {
     @Autowired
     private InvitationService invitationService;
 
+    // Get all user friend
     @GetMapping("/user_friend")
     public Page<UserFriendResponseDTO> getAll(
             @RequestParam Integer userId,
@@ -44,6 +46,8 @@ public class FriendShipController {
             @RequestParam(defaultValue = "2") int size) {
         return friendShipService.getAllListUserFriend(userId, groupId, page, size);
     }
+
+    // Send invite
     @PostMapping("/send_invite")
     public ResponseEntity<ResponseObject<Void>> inviteFriends(@RequestBody InviteRequestDTO inviteRequestDTO) {
         ResponseObject<Void> result = new ResponseObject<>();
@@ -53,6 +57,7 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
+    // Accept invitaion
     @PutMapping("/accept_invitation")
     public ResponseEntity<ResponseObject<Void>> acceptInvitation(
             @RequestParam Integer userId,
@@ -64,6 +69,7 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
+    // Get all friends
     @GetMapping("/get-all-friends/{userId}")
     public Page<UserFriendResponse> getListRequestByStatus(@PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
@@ -71,6 +77,7 @@ public class FriendShipController {
         return friendShipService.findByGetListFriends(userId, page, size);
     }
 
+    // GET all request friends
     @GetMapping("/get-all-request/{userId}")
     public Page<UserFriendResponse> getAllRequestFriends(@PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
@@ -78,12 +85,23 @@ public class FriendShipController {
         return friendShipService.findAllResquestFriends(userId, page, size);
     }
 
-    @GetMapping("/suggestion/{userId}")
-    public Page<UserTagPostResponse> suggestionFriends(@PathVariable Integer userId,
+    // Suggestion friends
+    @GetMapping("/suggestions/{userId}")
+    public Page<UserTagPostResponse> suggestionFriends(
+            @PathVariable Integer userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
-        return friendShipService.suggestionFriends(userId, page, size);
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") double maxDistanceKm) {
+        return friendShipService.suggestionFriends(userId, maxDistanceKm, page, size);
     }
+    @GetMapping("/you-know/{userId}")
+    public Page<UserDTO> mayBeYourKnow(@PathVariable Integer userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return friendShipService.mayBeYouKnow(userId, page, size);
+    }
+
+    // Request to friend
     @PostMapping("/request-to-friend/{userSendId}/{userReceivedId}")
     public ResponseEntity<ResponseObject<Void>> sendRequestAddFriend(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId) {
@@ -94,16 +112,20 @@ public class FriendShipController {
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @PutMapping("/accept-friend/{userSendId}/{userReceivedId}/action")
-    public ResponseEntity<ResponseObject<Void>> acceptFriend(@PathVariable Integer userSendId,
-            @PathVariable Integer userReceivedId, @RequestParam String action) {
+    // Accept friend
+    @PutMapping("/accept-friend-request")
+    public ResponseEntity<ResponseObject<Void>> acceptFriendRequest(
+            @RequestParam Integer sendId,
+            @RequestParam Integer receiverId, 
+            @RequestParam String action) {
         ResponseObject<Void> result = new ResponseObject<>();
-        friendShipService.acceptFriend(userSendId, userReceivedId, action);
+        friendShipService.acceptFriend(sendId, receiverId, action);
         result.setMessage("Update accept friend successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
+    // Cancel friend
     @DeleteMapping("/cancel/{userSendId}/{userReceivedId}")
     public ResponseEntity<ResponseObject<Void>> cancelFriend(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId) {
@@ -113,8 +135,8 @@ public class FriendShipController {
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
-    // ChangeStatus friends
 
+    // ChangeStatus friends
     @PutMapping("/change-status/{userSendId}/{userReceivedId}/action")
     public ResponseEntity<ResponseObject<Void>> changeStatus(@PathVariable Integer userSendId,
             @PathVariable Integer userReceivedId, @RequestParam String action) {

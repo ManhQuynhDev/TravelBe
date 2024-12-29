@@ -5,16 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ReactionStatisticsDTO {
-    private int like;
-    private int love;
-    private int haha;
-    private int wow;
-    private int sad;
-    private int angry;
+public class UserDTO {
+    private Integer userId;
+    private String fullname;
+    private String avatar;
+    private String latitude;
+    private String longitude;
 }

@@ -15,6 +15,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Query(value = "SELECT DISTINCT * FROM Comment WHERE id = :id", nativeQuery = true)
     Comment findComment(@Param("id") Integer id);
 
+    List<Comment> findByPostId(Integer postId);
     @Query(value = """
             SELECT
                 COUNT(DISTINCT c.id) + COUNT(DISTINCT r.id) AS comment_count
@@ -31,39 +32,41 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findCommentWithPostId(@Param("post_id") Integer post_id);
 
     @Query(value = """
-             select
-                       DISTINCT
-                       c.id as comment_id,
-                       u.id as owner_id,
-                       u.fullname,
-                       u.avatar_url as avatar,
-                       c.content,
-                       c.url,
-                       c.post_id,
-                       c.share_id,
-                       c.create_time,
-                       COUNT(DISTINCT cr.id) AS reaction_count
-                    from comment c
-                      inner join user u on u.id = c.user_id
-                      left join comment_reaction cr on cr.comment_id = c.id
-                      left join reply r on r.comment_id = c.id
-                      where c.id = :comment_id
-                      group by c.id , u.id , r.id , cr.id ,c.post_id
-            """, nativeQuery = true)
-    List<Object[]> findCommentWithId(@Param("comment_id") Integer comment_id);
-
-    Page<Comment> findAll(Pageable pageable);
-
-    @Query(value = """
-                     SELECT
+             SELECT
                 c.id AS comment_id,
                 u.id AS owner_id,
                 u.fullname,
                 u.avatar_url AS avatar,
                 c.content,
-                c.url,
+                c.media_url AS mediaUrl,
                 c.post_id,
-                c.share_id,
+                c.create_time,
+                COUNT(DISTINCT cr.id) AS reaction_count,
+                MAX(CASE WHEN cr.user_id = :userId THEN cr.type ELSE NULL END) AS user_reaction_type
+            FROM
+                comment c
+            INNER JOIN
+                user u ON u.id = c.user_id
+            LEFT JOIN
+                comment_reaction cr ON cr.comment_id = c.id
+            WHERE
+                c.id = :comment_id
+            GROUP BY
+                c.id, u.id, c.content, c.post_id, c.create_time, u.fullname, u.avatar_url
+            """, nativeQuery = true)
+    List<Object[]> findCommentWithId(@Param("comment_id") Integer comment_id, @Param("userId") Integer userId);
+
+    Page<Comment> findAll(Pageable pageable);
+
+    @Query(value = """
+               SELECT
+                c.id AS comment_id,
+                u.id AS owner_id,
+                u.fullname,
+                u.avatar_url AS avatar,
+                c.content,
+                c.media_url AS mediaUrl,
+                c.post_id,
                 c.create_time,
                 COUNT(DISTINCT cr.id) AS reaction_count,
                 MAX(CASE WHEN cr.user_id = :userId THEN cr.type ELSE NULL END) AS user_reaction_type
@@ -76,34 +79,10 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             WHERE
                 c.post_id = :postId
             GROUP BY
-                c.id, u.id, c.content, c.post_id, c.share_id, c.create_time, u.fullname, u.avatar_url
-            ORDER BY
+                c.id, u.id, c.content, c.post_id, c.create_time, u.fullname, u.avatar_url
+            ORDER BY    
                 c.create_time DESC;
                                             """, nativeQuery = true)
     Page<Object[]> fetchCommentWithPostId(Pageable pageable, @Param("postId") Integer postId,
-            @Param("userId") Integer userId);
-
-    @Query(value = """
-               select
-                 DISTINCT
-               c.id as comment_id,
-               u.id as owner_id,
-               u.fullname,
-               u.avatar_url as avatar,
-               c.content,
-               c.url,
-               c.post_id,
-               c.share_id,
-               c.create_time,
-               COUNT(DISTINCT cr.id) AS reaction_count,
-               MAX(CASE WHEN cr.user_id = :userId THEN cr.type ELSE NULL END) AS user_reaction_type
-            from comment c
-              inner join user u on u.id = c.user_id
-              left join comment_reaction cr on cr.comment_id = c.id
-              left join reply r on r.comment_id = c.id
-              group by c.id , u.id , r.id , cr.id
-              having c.share_id = :shareId;
-                                      """, nativeQuery = true)
-    Page<Object[]> fetchCommentWithShareId(Pageable pageable, @Param("shareId") Integer shareId,
             @Param("userId") Integer userId);
 }

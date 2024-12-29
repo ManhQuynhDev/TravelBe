@@ -604,8 +604,7 @@
 
 
                 try {
-                    const data = JSON.parse(responseText); // Sử dụng JSON.parse() thay vì .json()
-
+                    const data = JSON.parse(responseText); 
 
                     if (data.status === false) {
                         console.error('Lỗi từ API:', data.message);
@@ -642,9 +641,6 @@
                                 </div>
                                 <a class="stretched-link" href="#"></a>
                             `;
-
-
-                        // Thêm thông báo vào danh sách
                         list_notification.appendChild(listItem);
                     });
 
@@ -788,8 +784,7 @@
             });
 
             socket.on('notification', (data) => {
-                console.log(data);
-                if (data.userId == senderId) {
+                if (data.userId != senderId) {
                     showNotification(data.title, data.message, data.mediaUrl);
 
                     const listItem = document.createElement('li');

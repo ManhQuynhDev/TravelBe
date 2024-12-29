@@ -85,58 +85,6 @@ public class ShareService {
     }
 
     public PostResponseDTO getAnShare(Integer shareId, Integer user_id) throws ShareNotFoundException {
-        List<Object[]> results = shareRepository.getAnShareWithID(shareId, user_id);
-
-        if (results.isEmpty()) {
-            throw new ShareNotFoundException(
-                    "Id " + shareId + " not found or invalid data. Please try another!");
-        }
-        Object[] row = results.get(0);
-        PostResponseDTO post = new PostResponseDTO();
-
-        post.setOwnerId(((Number) row[0]).intValue());
-        post.setPostId(((Number) row[1]).intValue());
-        post.setLocationId(((Number) row[2]).intValue());
-        post.setLocation((String) row[3]);
-        post.setOwnerName((String) row[4]);
-        post.setAvatarUrl((String) row[5]);
-        post.setShareContent(row[6] != null ? ((String) row[6]) : null);
-        post.setShareContent(row[7] != null ? ((String) row[7]) : null);
-        post.setStatus((String) row[8]);
-        post.setType((String) row[9]);
-        post.setIsShare(((Number) row[10]).intValue());
-        post.setCreate_time((String) row[11]);
-        post.setShare_by_user(row[12] != null ? ((Number) row[12]).intValue() : null);
-        post.setShare_by_name(row[13] != null ? ((String) row[13]) : null);
-        post.setShare_by_avatar(row[14] != null ? ((String) row[14]) : null);
-        post.setReaction_count(((Number) row[15]).intValue());
-        post.setComment_count(((Number) row[16]).intValue());
-        post.setShare_count(((Number) row[17]).intValue());
-        post.setIsTag(((Number) row[18]).intValue());
-        post.setUser_reaction_type((String) row[19]);
-
-        Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
-        post.setAverageRating(averageRating != null ? averageRating : 0.0);
-
-        List<String> medias = mediaRepository.findMediaByPostId(((Number) row[1]).intValue());
-
-        post.setMediaUrls(medias);
-
-        List<String> hashtags = hashTagRespository.findHashtagByPostId(((Number) row[1]).intValue());
-
-        post.setHashtags(hashtags);
-
-        if (((Number) row[15]).intValue() >= 1) {
-            List<Object[]> rawResults = tagRepository.foundUserTagPost(((Number) row[1]).intValue());
-            List<UserTagPostResponse> responses = rawResults.stream()
-                    .map(u -> new UserTagPostResponse(
-                            ((Number) u[0]).intValue(),
-                            (String) u[1],
-                            (String) u[2]))
-                    .collect(Collectors.toList());
-
-            post.setTags(responses);
-        }
-        return post;
+        return null;
     }
 }
