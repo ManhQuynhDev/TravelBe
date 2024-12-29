@@ -233,7 +233,7 @@
 
 
             <!-- Cột phải: Biểu đồ Thống Kê Vi Phạm -->
-            <div th:replace="fragments/notification"></div>
+            <!-- <div th:replace="fragments/notification"></div> -->
 
 
 
@@ -767,25 +767,7 @@
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
-    <script>
-        $(document).on('ready', function () {
-            // INITIALIZATION OF TOASTS
-            // =======================================================
-            $('.toast-show').toast({
-                autohide: false
-            });
-
-            $('.toast-show').toast('show');
-
-            $('#toast-invokers').click(function () {
-                $('#toast').toast({
-                    delay: 1500
-                });
-
-                $('#toast').toast('show');
-            });
-        });
-    </script>
+    
 
 </body>
 

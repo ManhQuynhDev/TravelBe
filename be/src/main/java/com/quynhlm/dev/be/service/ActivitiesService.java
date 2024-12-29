@@ -1,12 +1,13 @@
 package com.quynhlm.dev.be.service;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.sql.Timestamp;
-import java.util.List;
 
 import com.quynhlm.dev.be.core.exception.ActivitiesExistingException;
 import com.quynhlm.dev.be.core.exception.ActivitiesNotFoundException;
@@ -73,6 +74,11 @@ public class ActivitiesService {
         }
 
         List<Object[]> results = activitiesRepository.findActivitiesWithId(id);
+    
+        if (results.isEmpty()) {
+            throw new ActivitiesNotFoundException(
+                    "Id " + id + " not found or invalid data. Please try another!");
+        }
 
         Object[] result = results.get(0);
         ActivityResponseDTO activityResponseDTO = new ActivityResponseDTO();
