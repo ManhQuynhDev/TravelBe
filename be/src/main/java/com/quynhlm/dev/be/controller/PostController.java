@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -26,7 +27,6 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.service.PostService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +72,7 @@ public class PostController {
     }
 
     @PostMapping("/share")
-    public ResponseEntity<ResponseObject<?>> sharePost(@RequestPart("post") @Valid ShareRequestDTO shareRequestDTO) {
+    public ResponseEntity<ResponseObject<?>> sharePost(@RequestBody ShareRequestDTO shareRequestDTO) {
         ResponseObject<PostResponseDTO> result = new ResponseObject<>();
         PostResponseDTO response = postService.sharePost(shareRequestDTO);
         result.setMessage("Create a new share successfully");
