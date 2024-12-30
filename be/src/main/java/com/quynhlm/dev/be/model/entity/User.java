@@ -6,10 +6,6 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
-import com.quynhlm.dev.be.core.AppConstant.UserAccountRegex;
-import com.quynhlm.dev.be.core.validation.StrongPassword;
-import com.quynhlm.dev.be.core.validation.UserAccountElement;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,15 +24,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@UserAccountElement.List({
-        @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "Email is not in correct format"),
-})
 @Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @StrongPassword(message = "Incorrect password format . Please try other password")
+    
     private String password;
     private String fullname;
     private String email;

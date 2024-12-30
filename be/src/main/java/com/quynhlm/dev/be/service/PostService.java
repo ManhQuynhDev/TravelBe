@@ -303,7 +303,8 @@ public class PostService {
                 }
                 post.setReactionStatistics(reactionStatisticsList);
             } else {
-                post.setReactionStatistics(null);
+                List<ReactionCountDTO> newLis = new ArrayList<>();
+                post.setReactionStatistics(newLis);
             }
             return post;
         });
@@ -389,7 +390,8 @@ public class PostService {
             }
             post.setReactionStatistics(reactionStatisticsList);
         } else {
-            post.setReactionStatistics(null);
+            List<ReactionCountDTO> newLis = new ArrayList<>();
+            post.setReactionStatistics(newLis);
         }
 
         post.setHashtags(hashtags);
@@ -465,7 +467,8 @@ public class PostService {
                 }
                 postMediaDTO.setReactionStatistics(reactionStatisticsList);
             } else {
-                postMediaDTO.setReactionStatistics(null);
+                List<ReactionCountDTO> newLis = new ArrayList<>();
+                postMediaDTO.setReactionStatistics(newLis);
             }
 
             return postMediaDTO;
@@ -519,7 +522,8 @@ public class PostService {
                 }
                 postMediaDTO.setReactionStatistics(reactionStatisticsList);
             } else {
-                postMediaDTO.setReactionStatistics(null);
+                List<ReactionCountDTO> newLis = new ArrayList<>();
+                postMediaDTO.setReactionStatistics(newLis);
             }
             return postMediaDTO;
         });
@@ -739,7 +743,8 @@ public class PostService {
                 }
                 post.setReactionStatistics(reactionStatisticsList);
             } else {
-                post.setReactionStatistics(null);
+                List<ReactionCountDTO> newLis = new ArrayList<>();
+                post.setReactionStatistics(newLis);
             }
             return post;
         });
@@ -850,7 +855,8 @@ public class PostService {
                 }
                 post.setReactionStatistics(reactionStatisticsList);
             } else {
-                post.setReactionStatistics(null);
+                List<ReactionCountDTO> newLis = new ArrayList<>();
+                post.setReactionStatistics(newLis);
             }
             return post;
         });

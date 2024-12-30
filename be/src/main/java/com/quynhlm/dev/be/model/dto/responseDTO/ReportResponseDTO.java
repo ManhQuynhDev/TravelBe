@@ -1,5 +1,7 @@
 package com.quynhlm.dev.be.model.dto.responseDTO;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,12 +19,13 @@ public class ReportResponseDTO {
     private String fullname;
     private String avatarUrl;
     private String contentPost;
-    private String mediaUrl;
+    private String media_url_report;
     private String mediaType;
     private String reason;
     private String violationType;
     private String status;
-    private String create_time;
     private String action;
+    private String create_time;
     private String responseTime;
+    private List<MediaResponseDTO> mediaUrls;
 }

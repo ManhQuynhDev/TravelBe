@@ -150,11 +150,11 @@ public class HomeController {
         return "reviews";
     }
 
-    @GetMapping("/reports")
-    public String reports(Model model) {
-        model.addAttribute("0/listReports", reportService.getAllReport(0, 1000));
-        return "reports";
-    }
+    // @GetMapping("/reports")
+    // public String reports(Model model) {
+    //     model.addAttribute("0/listReports", reportService.getAllReport(0, 1000));
+    //     return "reports";
+    // }
 
     @GetMapping("/login")
     public String login(Model model) {
