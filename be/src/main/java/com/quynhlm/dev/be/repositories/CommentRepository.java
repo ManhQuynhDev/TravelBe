@@ -88,7 +88,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             FROM comment AS c
             INNER JOIN user u ON u.id = c.user_id
             LEFT JOIN comment_reaction r ON r.comment_id = c.id
-            WHERE c.post_id = :post_id AND c.del_flag = 0
+            WHERE c.post_id = :post_id AND c.is_reply = 0 AND c.del_flag = 0
             GROUP BY
                 c.id, u.id, u.fullname, u.avatar_url, c.content, c.media_url, c.post_id, c.is_reply, c.reply_to_id, c.create_time;
 
