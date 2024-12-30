@@ -30,7 +30,6 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
-import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
@@ -74,9 +73,6 @@ public class PostService {
     private UserRepository userRepository;
 
     @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
     private LocationRepository locationRepository;
 
     @Autowired
@@ -84,6 +80,9 @@ public class PostService {
 
     @Autowired
     private HashTagRespository hashTagRespository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     // INSERT POST
     @Transactional
@@ -411,11 +410,6 @@ public class PostService {
             mediaRepository.delete(media);
         }
 
-        List<Comment> comments = commentRepository.findByPostId(post_id);
-        comments.forEach(comment -> {
-            commentRepository.delete(comment);
-        });
-
         foundPost.setDelflag(1);
         postRepository.save(foundPost);
     }
@@ -558,12 +552,9 @@ public class PostService {
         post.setShare_time(row[14] != null ? ((String) row[14]) : null);
         post.setShare_status(row[15] != null ? ((String) row[15]) : null);
         post.setReaction_count(((Number) row[16]).intValue());
-        // post.setComment_count(((Number) row[17]).intValue());
+        post.setComment_count(((Number) row[17]).intValue());
         post.setShare_count(((Number) row[18]).intValue());
         post.setShare_post_id(row[19] != null ? ((Number) row[19]).intValue() : null);
-
-        Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
-        post.setComment_count(comment_count == null ? 0 : comment_count);
 
         Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
         post.setAverageRating(averageRating != null ? averageRating : 0.0);
@@ -818,6 +809,9 @@ public class PostService {
             post.setShare_count(((Number) row[18]).intValue());
             post.setUser_reaction_type((String) row[19]);
             post.setShare_post_id(row[20] != null ? ((Number) row[20]).intValue() : null);
+
+            Integer comment_count = commentRepository.commentCountWithPostId(((Number) row[0]).intValue());
+            post.setComment_count(comment_count == null ? 0 : comment_count);
 
             Double averageRating = reviewRepository.averageStarWithLocation(((Number) row[2]).intValue());
             post.setAverageRating(averageRating != null ? averageRating : 0.0);

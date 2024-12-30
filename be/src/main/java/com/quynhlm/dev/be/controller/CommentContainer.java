@@ -20,17 +20,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.model.dto.requestDTO.FeedBackRequestDTO;
-import com.quynhlm.dev.be.model.dto.responseDTO.FeedBackResponseDTO;
-import com.quynhlm.dev.be.service.FeedBackService;
+import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
+import com.quynhlm.dev.be.service.CommentService;
 
 @RestController
-@RequestMapping(path = "/api/feedbacks")
-public class FeedBackContainer {
+@RequestMapping(path = "/api/comments")
+public class CommentContainer {
     @Autowired
-    private FeedBackService feedBackService;
+    private CommentService commentService;
 
     @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseObject<FeedBackResponseDTO>> insertComment(
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> insertComment(
             @RequestPart("comment") String commentJson,
             @RequestPart(value = "file", required = false) MultipartFile imageFile) throws UnknownException {
 
@@ -42,8 +42,8 @@ public class FeedBackContainer {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        FeedBackResponseDTO response = feedBackService.insertComment(comment, imageFile);
-        ResponseObject<FeedBackResponseDTO> result = new ResponseObject<>();
+        CommentResponseDTO response = commentService.insertComment(comment, imageFile);
+        ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Create a new comment successfully");
         result.setData(response);
         result.setStatus(true);
@@ -52,7 +52,7 @@ public class FeedBackContainer {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject<Void>> deleteComment(@PathVariable Integer id) {
-        feedBackService.deleteComment(id);
+        commentService.deleteComment(id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete comment successfully");
         result.setStatus(true);
@@ -64,26 +64,27 @@ public class FeedBackContainer {
             @PathVariable Integer id,
             @RequestPart(required = false) String content,
             @RequestPart(value = "file", required = false) MultipartFile imageFile) {
-        feedBackService.updateComment(id, content, imageFile);
+        commentService.updateComment(id, content, imageFile);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Update comment successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<Void>>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<FeedBackResponseDTO>> findAnComment(@PathVariable Integer id) {
-        ResponseObject<FeedBackResponseDTO> result = new ResponseObject<>();
+    @GetMapping("/{id}/{userId}")
+    public ResponseEntity<ResponseObject<CommentResponseDTO>> findAnComment(@PathVariable Integer id,
+            @PathVariable Integer userId) {
+        ResponseObject<CommentResponseDTO> result = new ResponseObject<>();
         result.setMessage("Get an comment with id " + id + " successfully");
-        result.setData(feedBackService.findAnComment(id));
+        result.setData(commentService.findAnComment(id, userId));
         result.setStatus(true);
-        return new ResponseEntity<ResponseObject<FeedBackResponseDTO>>(result, HttpStatus.OK);
+        return new ResponseEntity<ResponseObject<CommentResponseDTO>>(result, HttpStatus.OK);
     }
 
-     @GetMapping("/postId")
-    public Page<FeedBackResponseDTO> foundCommentWithPostId(@RequestParam Integer postId,
+    @GetMapping("/postId")
+    public Page<CommentResponseDTO> foundCommentWithPostId(@RequestParam Integer postId, @RequestParam Integer userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size) {
-        return feedBackService.fetchCommentWithPostId(postId, page, size);
+        return commentService.fetchCommentWithPostId(postId, userId, page, size);
     }
 }

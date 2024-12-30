@@ -138,11 +138,11 @@ public class HomeController {
         return "stories";
     }
 
-    @GetMapping("/comments")
-    public String comments(Model model) {
-        model.addAttribute("listComment", commentService.getListData(0, 1000));
-        return "comments";
-    }
+    // @GetMapping("/comments")
+    // public String comments(Model model) {
+    //     model.addAttribute("listComment", commentService.getListData(0, 1000));
+    //     return "comments";
+    // }
 
     @GetMapping("/reviews")
     public String reviews(Model model) {
