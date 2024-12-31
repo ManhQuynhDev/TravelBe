@@ -131,7 +131,8 @@
 
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}"
-                                                th:disabled="${#strings.toLowerCase(report.status) == 'processed'}">
+                                                
+                                                >
                                                 Phê duyệt
                                             </button>
 
@@ -288,6 +289,8 @@
                             modalElement._adminId = data.data.adminId
                             modalElement._postId = data.data.postId;
                             modalElement._reportId = data.data.id
+                            console.log(data.data.adminId);
+
                             console.log(data.data.postId);
                         })
                         .catch(error => {
@@ -306,9 +309,8 @@
                     const reviewId = modalElement._reviewId;
                     const postId = modalElement._postId;
                     const reportId = modalElement._reportId;
-                    console.log(userId);
-                    console.log(postId);
-
+                    console.log(userErrorId+"userID");
+                    
 
                     var violationType = document.getElementById("updateViolationTypeSelect").value;
                     var otherReason = document.getElementById("otherReason").value;
@@ -323,17 +325,16 @@
                         }
                     }
 
-                    console.log(violationType);
+                    // console.log(violationType);
 
                     const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=PROCESSED&action=${encodeURIComponent(action)}`;
 
                     if (action === "Khóa tài khoản 3 ngày") {
-                        const url = `http://localhost:8080/onboarding/${userErrorId}/lock-status?isLock=LOOK`;
+                        const url = `http://localhost:8080/onboarding/look_account/${userErrorId}?isLock=LOCK`;
                         fetch(url, {
-                            method: 'PUT',
+                            method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
                             },
                         })
                             .then(response => response.json())
@@ -349,7 +350,6 @@
                             method: "PUT",
                             headers: {
                                 'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
                             },
                         })
                             .then(response => response.json())
@@ -361,7 +361,7 @@
                                 console.error('Lỗi khi khóa tài khoản vĩnh viễn:', error);
                                 alert('Xử lý không thành công. Vui lòng thử lại.');
                             });
-                    } else if (action === "Xóa bài viết") {
+                    } else if (action === "Khóa bài viết") {
                         fetch(`http://localhost:8080/api/posts/${postId}`, {
                             method: "DELETE",
                             headers: {

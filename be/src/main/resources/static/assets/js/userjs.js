@@ -63,6 +63,7 @@ function checkStatus(userId) {
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
+    
         const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
         modal.show();
 
