@@ -13,7 +13,6 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ShareRequestDTO {
     @NotNull(message = "Share by ID is required")
     private Integer shareById;

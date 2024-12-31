@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
 @Getter
-@NoArgsConstructor
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 
 public class CommentResponseDTO {
     private Integer commentId;
@@ -21,9 +21,11 @@ public class CommentResponseDTO {
     private String mediaUrl;
     private String mediaType;
     private Integer postId;
+    private Integer is_reply;
+    private Integer reply_to_id;
     private String create_time;
     private Integer reaction_count;
     private String user_reaction_type;
     private Boolean isAuthor;
-    private List<ReplyResponseDTO> replys;
+    private List<CommentResponseDTO> replys;
 }

@@ -87,9 +87,9 @@ public class ReportController {
 
     @GetMapping("/statistics")
     public Page<StatisticsReportDTO> statisticsReport(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        return reportService.statisticsReport(page, size);
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "5") int size) {
+    return reportService.statisticsReport(page, size);
     }
 
     @GetMapping("/{id}")

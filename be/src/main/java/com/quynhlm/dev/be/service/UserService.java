@@ -467,7 +467,7 @@ public class UserService {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         }
 
-        String[] statusUser = { "OPEN", "LOOK" };
+        String[] statusUser = { "OPEN", "LOCK" };
 
         Boolean isCheck = isLock == null || Arrays.asList(statusUser).contains(isLock);
 

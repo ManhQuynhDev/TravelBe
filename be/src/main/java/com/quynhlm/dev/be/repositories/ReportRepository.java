@@ -17,43 +17,72 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
        Report findReportById(Integer id);
 
        @Query(value = """
-                     select DISTINCT r.id ,u.id as user_id , r.post_id ,p.user_id as admin_post, u.fullname , u.avatar_url , p.content as contentPost , m.media_url , m.type, r.reason , r.violation_type ,r.status, r.create_time ,r.action, r.response_time  from report r
+                     select 
+                     DISTINCT
+                     r.id , 
+                     u.id as user_report , 
+                     r.post_id ,
+                     p.user_id as admin_post, 
+                     u.fullname , 
+                     u.avatar_url , 
+                     p.content as contentPost,
+                     r.media_url as media_report, 
+                     r.reason , 
+                     r.violation_type ,
+                     r.status,
+                     r.action,
+                     r.create_time ,
+                     r.response_time  
+                     from report r
                      INNER JOIN User u on u.id = r.user_id
                      INNER JOIN Post p on p.id = r.post_id
-                     INNER JOIN Media m on m.post_id = p.id
-                     where r.user_id = :user_id;""", nativeQuery = true)
+                     where r.user_id = :user_id; """, nativeQuery = true)
        Page<Object[]> getAllReportUserCreate(Integer user_id, Pageable pageable);
 
        @Query(value = """
-                     SELECT r.id,
-                            u.id AS user_id,
-                            r.post_id,
-                            p.user_id AS admin_post,
-                            u.fullname,
-                            u.avatar_url,
-                            p.content AS contentPost,
-                            m.media_url,
-                            m.type,
-                            r.reason,
-                            r.violation_type,
-                            r.status,
-                            r.create_time,
-                            r.action,
-                            r.response_time
+                     SELECT  
+                     DISTINCT
+                     r.id , 
+                     u.id as user_report , 
+                     r.post_id ,
+                     p.user_id as admin_post, 
+                     u.fullname , 
+                     u.avatar_url , 
+                     p.content as contentPost,
+                     r.media_url as media_report, 
+                     r.reason , 
+                     r.violation_type ,
+                     r.status,
+                     r.action,
+                     r.create_time ,
+                     r.response_time
                      FROM report r
                      INNER JOIN User u ON u.id = r.user_id
                      INNER JOIN Post p ON p.id = r.post_id
-                     INNER JOIN Media m ON m.post_id = p.id
-                     GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, m.media_url, m.type, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
+                     GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
                      """, nativeQuery = true)
        Page<Object[]> getAllReport(Pageable pageable);
 
        @Query(value = """
-                     select DISTINCT r.id ,u.id as user_id , r.post_id ,p.user_id as admin_post, u.fullname , u.avatar_url , p.content as contentPost , m.media_url,m.type, r.reason , r.violation_type ,r.status, r.create_time ,r.action, r.response_time  from report r
+                     select 
+                     r.id , 
+                     u.id as user_report , 
+                     r.post_id ,
+                     p.user_id as admin_post, 
+                     u.fullname , 
+                     u.avatar_url , 
+                     p.content as contentPost,
+                     r.media_url as media_report, 
+                     r.reason , 
+                     r.violation_type ,
+                     r.status,
+                     r.action,
+                     r.create_time ,
+                     r.response_time  from report r
                      INNER JOIN User u on u.id = r.user_id
                      INNER JOIN Post p on p.id = r.post_id
-                     INNER JOIN Media m on m.post_id = p.id
-                     where r.id = :id;""", nativeQuery = true)
+                     where p.delflag = 0 AND r.id = :id;
+                     """, nativeQuery = true)
        List<Object[]> getAnReport(Integer id);
 
        @Query(value = """
@@ -67,8 +96,6 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
                   SELECT 'Quấy rối'
                   UNION ALL
                   SELECT 'Nội dung không phù hợp'
-                  UNION ALL
-                  SELECT 'Khác'
               ) AS v
               LEFT JOIN report r ON r.violation_type = v.violation_type
               GROUP BY v.violation_type
@@ -76,7 +103,7 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
               SELECT 'Các loại khác' AS violation_type,
                      COUNT(*) AS count
               FROM report r
-              WHERE r.violation_type NOT IN ('Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp', 'Khác')
+              WHERE r.violation_type NOT IN ('Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp')
               ORDER BY count DESC;
           """, nativeQuery = true)
           Page<Object[]> statisticsReport(Pageable pageable);
