@@ -1,9 +1,12 @@
 package com.quynhlm.dev.be.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
@@ -108,9 +112,20 @@ public class HomeController {
 
     @GetMapping("/posts")
     public String post(Model model) {
-        // model.addAttribute("body", "posts");
         Pageable pageable = PageRequest.of(0, 1000);
-        model.addAttribute("postList", postService.getAllPostsAndSharedPosts(1, pageable));
+        Page<PostResponseDTO> postPage = postService.getAllPostsAndSharedPosts(1, pageable);
+
+        // Lấy danh sách nội dung từ Page
+        List<PostResponseDTO> reversedList = new ArrayList<>(postPage.getContent());
+
+        // Đảo ngược danh sách
+        Collections.reverse(reversedList);
+
+        // Tạo lại Page từ danh sách đã đảo ngược (nếu cần)
+        Page<PostResponseDTO> correctedPage = new PageImpl<>(reversedList, pageable, postPage.getTotalElements());
+
+        // Đưa Page hoặc List đã đảo ngược vào Model
+        model.addAttribute("postList", correctedPage);
         return "posts";
     }
 
@@ -152,7 +167,7 @@ public class HomeController {
 
     @GetMapping("/reports")
     public String reports(Model model) {
-        model.addAttribute("0/listReports", reportService.getAllReport(0, 1000));
+        model.addAttribute("listReports", reportService.getAllReport(0, 1000));
         return "reports";
     }
 

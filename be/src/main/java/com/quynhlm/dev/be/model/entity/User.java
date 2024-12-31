@@ -28,9 +28,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@UserAccountElement.List({
-        @UserAccountElement(field = "email", regex = UserAccountRegex.EMAIL, message = "Email is not in correct format"),
-})
+
 @Builder
 public class User {
     @Id
