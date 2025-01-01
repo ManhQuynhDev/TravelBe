@@ -1,5 +1,8 @@
 package com.quynhlm.dev.be.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -7,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +51,7 @@ import com.quynhlm.dev.be.repositories.ReviewRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,31 +129,17 @@ public class PostService {
                     if (file.isEmpty()) {
                         continue;
                     }
-                    String fileName = file.getOriginalFilename();
-                    long fileSize = file.getSize();
-                    String contentType = file.getContentType();
 
-                    try (InputStream inputStream = file.getInputStream()) {
+                    String mediaUrl = uploadMediaToS3(file);
+                    String mediaType = (mediaUrl != null && mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
+                            ? "IMAGE"
+                            : "VIDEO";
 
-                        ObjectMetadata metadata = new ObjectMetadata();
-                        metadata.setContentLength(fileSize);
-                        metadata.setContentType(contentType);
+                    Media media = new Media(null, savedPost.getId(),
+                            mediaUrl,
+                            mediaType);
 
-                        amazonS3.putObject(bucketName, fileName, inputStream, metadata);
-                        if (savedPost.getId() == null) {
-                            throw new UnknownException("Transaction cannot complete!");
-                        }
-
-                        String mediaType = (fileName != null && fileName.matches(".*\\.(jpg|jpeg|png|gif|webp)$"))
-                                ? "IMAGE"
-                                : "VIDEO";
-
-                        Media media = new Media(null, savedPost.getId(),
-                                String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s", fileName),
-                                mediaType);
-
-                        mediaRepository.save(media);
-                    }
+                    mediaRepository.save(media);
                 }
             }
             if (savedPost.getId() == null) {
@@ -167,6 +160,35 @@ public class PostService {
             throw new UnknownException("File handling error: " + e.getMessage());
         } catch (Exception e) {
             throw new UnknownException(e.getMessage());
+        }
+    }
+
+    private String uploadMediaToS3(MultipartFile file) throws IOException, UnknownException {
+        String fileName = file.getOriginalFilename();
+        String contentType = file.getContentType();
+
+        try (InputStream inputStream = file.getInputStream()) {
+            BufferedImage originalImage = ImageIO.read(inputStream);
+
+            BufferedImage resizedImage = Thumbnails.of(originalImage)
+                    .scale(0.5)
+                    .outputQuality(0.1)
+                    .asBufferedImage();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ImageIO.write(resizedImage, "jpg", outputStream);
+            InputStream resizedInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(outputStream.size());
+            metadata.setContentType(contentType);
+
+            amazonS3.putObject(bucketName, fileName, resizedInputStream, metadata);
+            String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                    fileName);
+            return mediaUrl;
+        } catch (Exception e) {
+            throw new UnknownException("Error uploading file to S3: " + e.getMessage());
         }
     }
 
