@@ -112,28 +112,39 @@ public class CommentService {
         String contentType = file.getContentType();
 
         if (!isValidFileType(contentType)) {
-            throw new UnknownException("Invalid file type. Only image files are allowed.");
+            throw new UnknownException("Invalid file type. Only image and video files are allowed.");
         }
 
         try (InputStream inputStream = file.getInputStream()) {
-            BufferedImage originalImage = ImageIO.read(inputStream);
+            if (contentType.startsWith("image/")) {
+                BufferedImage originalImage = ImageIO.read(inputStream);
 
-            BufferedImage resizedImage = Thumbnails.of(originalImage)
-                    .scale(0.5)
-                    .outputQuality(0.1) 
-                    .asBufferedImage();
+                BufferedImage resizedImage = Thumbnails.of(originalImage)
+                        .scale(0.5)
+                        .outputQuality(0.1)
+                        .asBufferedImage();
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(resizedImage, "jpg", outputStream);
-            InputStream resizedInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(resizedImage, "jpg", outputStream);
+                InputStream resizedInputStream = new ByteArrayInputStream(outputStream.toByteArray());
 
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(outputStream.size());
-            metadata.setContentType(contentType);
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(outputStream.size());
+                metadata.setContentType(contentType);
 
-            amazonS3.putObject(bucketName, fileName, resizedInputStream, metadata);
+                amazonS3.putObject(bucketName, fileName, resizedInputStream, metadata);
+
+            } else if (contentType.startsWith("video/")) {
+
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(file.getSize());
+                metadata.setContentType(contentType);
+
+                amazonS3.putObject(bucketName, fileName, inputStream, metadata);
+            }
+
             String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
-            fileName);
+                    fileName);
             return mediaUrl;
         } catch (Exception e) {
             throw new UnknownException("Error uploading file to S3: " + e.getMessage());
