@@ -16,8 +16,15 @@ import com.quynhlm.dev.be.model.entity.User;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     // Page<User> findAll(Pageable pageable);
-    @Query(value = "SELECT * FROM User WHERE email = :email", nativeQuery = true)
+    @Query(value = "SELECT * FROM User WHERE email = :email AND delflag = 0", nativeQuery = true)
     User getAnUserByEmail(@Param("email") String email);
+
+    @Query(value = """
+                SELECT *
+                    FROM User
+                    WHERE HEX(roles) = 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400045553455278' AND delflag = 0;
+            """, nativeQuery = true)
+    List<User> findAllListRolesUser();
 
     List<User> findByEmail(String email);
 
@@ -25,15 +32,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     List<User> findByPhoneNumber(String phoneNumber);
 
-    @Query(value = "SELECT * FROM User WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM User WHERE id = :id AND delflag = 0", nativeQuery = true)
     User getAnUser(@Param("id") Integer id);
 
     User findOneById(Integer id);
 
-    @Query(value = "SELECT * FROM User WHERE roles = BINARY :param1 OR roles = BINARY :param2", nativeQuery = true)
+    @Query(value = "SELECT * FROM User WHERE roles = BINARY :param1 OR roles = BINARY :param2 AND delflag = 0", nativeQuery = true)
     List<User> findUserWithRole(@Param("param1") String param1, @Param("param2") String param2);
 
-    @Query(value = "SELECT fullname FROM User WHERE id = :userId", nativeQuery = true)
+    @Query(value = "SELECT fullname FROM User WHERE id = :userId AND delflag = 0", nativeQuery = true)
     String findUserFullname(@Param("userId") Integer userId);
 
     @Query(value = """
@@ -44,7 +51,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                    u.is_locked AS isLocked,
                    u.avatar_url AS avatarUrl,
                    u.create_at
-            FROM User u;
+            FROM User u
+            WHERE u.delflag = 0;
                                             """, nativeQuery = true)
     Page<Object[]> findAllUser(Pageable pageable);
 
@@ -83,7 +91,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = """
             SELECT *
             FROM User
-            WHERE HEX(roles) <> 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400045553455278';
+            WHERE HEX(roles) <> 'ACED0005737200136A6176612E7574696C2E41727261794C6973747881D21D99C7619D03000149000473697A657870000000017704000000017400045553455278' AND delflag = 0;
              """, nativeQuery = true)
     Page<User> findAllManager(Pageable pageable);
 

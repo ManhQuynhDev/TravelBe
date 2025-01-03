@@ -190,31 +190,14 @@ public class CommentService {
 
         List<Object[]> reactions = commentReactionRepository.findTopReactions(((Number) row[0]).intValue());
 
-        if (!reactions.isEmpty()) {
-            List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
-
-            for (Object[] result : reactions) {
-                ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                reactionStatisticsDTO.setType((String) result[0]);
-                reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                reactionStatisticsList.add(reactionStatisticsDTO);
-            }
-            comment.setReactionStatistics(reactionStatisticsList);
-        } else {
-            List<ReactionCountDTO> newLis = new ArrayList<>();
-            comment.setReactionStatistics(newLis);
-        }
+        comment.setReactionStatistics(FindTopReactions(reactions));
 
         Post foundPost = postRepository.getAnPost(((Number) row[6]).intValue());
 
-        if ((String) row[5] == null) {
-            comment.setMediaType(null);
-        } else {
-            comment.setMediaType(
-                    (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
-                            ? "IMAGE"
-                            : "VIDEO");
-        }
+        comment.setMediaType((String) row[5] == null ? null
+                : (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                        ? "IMAGE"
+                        : "VIDEO");
 
         List<Object[]> rawResults = commentRepository.findReplyWithCommentId(((Number) row[0]).intValue(), userId);
         List<CommentResponseDTO> responses = rawResults.stream()
@@ -234,23 +217,15 @@ public class CommentService {
                     reply.setUser_reaction_type((String) r[11]);
                     reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[1]).intValue());
 
+                    reply.setMediaType((String) r[5] == null ? null
+                            : (String) r[5] != null && ((String) r[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                    ? "IMAGE"
+                                    : "VIDEO");
+
                     List<Object[]> reactionReply = commentReactionRepository
                             .findTopReactions(((Number) r[0]).intValue());
 
-                    if (!reactionReply.isEmpty()) {
-                        List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
-
-                        for (Object[] result : reactionReply) {
-                            ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                            reactionStatisticsDTO.setType((String) result[0]);
-                            reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                            reactionStatisticsList.add(reactionStatisticsDTO);
-                        }
-                        reply.setReactionStatistics(reactionStatisticsList);
-                    } else {
-                        List<ReactionCountDTO> newLis = new ArrayList<>();
-                        reply.setReactionStatistics(newLis);
-                    }
+                    comment.setReactionStatistics(FindTopReactions(reactionReply));
 
                     List<Object[]> rawResultsReply = commentRepository.findReplyWithCommentId(
                             ((Number) r[0]).intValue(),
@@ -280,23 +255,16 @@ public class CommentService {
                                 reply_to_reply
                                         .setIsAuthor(foundPost.getUser_id() == ((Number) nestedReply[1]).intValue());
 
+                                reply_to_reply.setMediaType((String) nestedReply[5] == null ? null
+                                        : (String) nestedReply[5] != null
+                                                && ((String) nestedReply[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                                        ? "IMAGE"
+                                                        : "VIDEO");
+
                                 List<Object[]> reactionReplyToReply = commentReactionRepository
                                         .findTopReactions(((Number) nestedReply[0]).intValue());
 
-                                if (!reactionReplyToReply.isEmpty()) {
-                                    List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
-
-                                    for (Object[] result : reactionReplyToReply) {
-                                        ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                                        reactionStatisticsDTO.setType((String) result[0]);
-                                        reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                                        reactionStatisticsList.add(reactionStatisticsDTO);
-                                    }
-                                    reply_to_reply.setReactionStatistics(reactionStatisticsList);
-                                } else {
-                                    List<ReactionCountDTO> newLis = new ArrayList<>();
-                                    reply_to_reply.setReactionStatistics(newLis);
-                                }
+                                reply_to_reply.setReactionStatistics(FindTopReactions(reactionReplyToReply));
 
                                 return reply_to_reply;
                             })
@@ -312,6 +280,21 @@ public class CommentService {
         comment.setReplys(responses);
 
         return comment;
+    }
+
+    private List<ReactionCountDTO> FindTopReactions(List<Object[]> reactionReplyToReply) {
+        List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+        if (!reactionReplyToReply.isEmpty()) {
+            for (Object[] result : reactionReplyToReply) {
+                ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                reactionStatisticsDTO.setType((String) result[0]);
+                reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                reactionStatisticsList.add(reactionStatisticsDTO);
+            }
+            return reactionStatisticsList;
+        } else {
+            return reactionStatisticsList;
+        }
     }
 
     public void updateComment(Integer id, String newContent, MultipartFile imageFile)
@@ -377,29 +360,12 @@ public class CommentService {
 
             List<Object[]> reactions = commentReactionRepository.findTopReactions(((Number) row[0]).intValue());
 
-            if (!reactions.isEmpty()) {
-                List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+            comment.setReactionStatistics(FindTopReactions(reactions));
 
-                for (Object[] result : reactions) {
-                    ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                    reactionStatisticsDTO.setType((String) result[0]);
-                    reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                    reactionStatisticsList.add(reactionStatisticsDTO);
-                }
-                comment.setReactionStatistics(reactionStatisticsList);
-            } else {
-                List<ReactionCountDTO> newLis = new ArrayList<>();
-                comment.setReactionStatistics(newLis);
-            }
-
-            if ((String) row[5] == null) {
-                comment.setMediaType(null);
-            } else {
-                comment.setMediaType(
-                        (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
-                                ? "IMAGE"
-                                : "VIDEO");
-            }
+            comment.setMediaType((String) row[5] == null ? null
+                    : (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                            ? "IMAGE"
+                            : "VIDEO");
 
             List<Object[]> rawResults = commentRepository.findReplyWithCommentId(((Number) row[0]).intValue(), userId);
 
@@ -420,23 +386,15 @@ public class CommentService {
                         reply.setUser_reaction_type((String) r[11]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[1]).intValue());
 
+                        reply.setMediaUrl((String) r[5] == null ? null
+                                : (String) r[5] != null && ((String) r[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                        ? "IMAGE"
+                                        : "VIDEO");
+
                         List<Object[]> reactionReply = commentReactionRepository
                                 .findTopReactions(((Number) r[0]).intValue());
 
-                        if (!reactionReply.isEmpty()) {
-                            List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
-
-                            for (Object[] result : reactionReply) {
-                                ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                                reactionStatisticsDTO.setType((String) result[0]);
-                                reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                                reactionStatisticsList.add(reactionStatisticsDTO);
-                            }
-                            reply.setReactionStatistics(reactionStatisticsList);
-                        } else {
-                            List<ReactionCountDTO> newLis = new ArrayList<>();
-                            reply.setReactionStatistics(newLis);
-                        }
+                        reply.setReactionStatistics(FindTopReactions(reactionReply));
 
                         List<Object[]> rawResultsReply = commentRepository.findReplyWithCommentId(
                                 ((Number) r[0]).intValue(),
@@ -466,23 +424,17 @@ public class CommentService {
                                             .setIsAuthor(
                                                     foundPost.getUser_id() == ((Number) nestedReply[1]).intValue());
 
+                                    reply_to_reply.setMediaType((String) nestedReply[5] == null ? null
+                                            : (String) nestedReply[5] != null
+                                                    && ((String) nestedReply[5])
+                                                            .matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                                                    ? "IMAGE"
+                                                                    : "VIDEO");
+
                                     List<Object[]> reactionReplyToReply = commentReactionRepository
                                             .findTopReactions(((Number) nestedReply[0]).intValue());
 
-                                    if (!reactionReplyToReply.isEmpty()) {
-                                        List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
-
-                                        for (Object[] result : reactionReplyToReply) {
-                                            ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
-                                            reactionStatisticsDTO.setType((String) result[0]);
-                                            reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
-                                            reactionStatisticsList.add(reactionStatisticsDTO);
-                                        }
-                                        reply_to_reply.setReactionStatistics(reactionStatisticsList);
-                                    } else {
-                                        List<ReactionCountDTO> newLis = new ArrayList<>();
-                                        reply_to_reply.setReactionStatistics(newLis);
-                                    }
+                                    reply_to_reply.setReactionStatistics(FindTopReactions(reactionReplyToReply));
 
                                     return reply_to_reply;
                                 })
