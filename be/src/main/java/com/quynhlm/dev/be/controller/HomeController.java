@@ -97,16 +97,7 @@ public class HomeController {
 
     @GetMapping("/users")
     public String user(Model model) {
-        List<User> userList = userService.getAllListUser();
-
-        long userCount = userList.stream()
-                .filter(user -> user.getRoles().contains("USER"))
-                .count();
-        double percentageChange = ((double) (userCount - 9) / 9) * 100;
-        String formattedPercentage = String.format("%.1f", percentageChange);
         model.addAttribute("userList", userService.getAllListUser());
-        model.addAttribute("userCount", userCount);
-        model.addAttribute("formattedPercentage", formattedPercentage);
         return "users";
     }
 
@@ -150,7 +141,6 @@ public class HomeController {
     //     model.addAttribute("listComment", commentService.getListData(0, 1000));
     //     return "comments";
     // }
-
     @GetMapping("/reviews")
     public String reviews(Model model) {
         model.addAttribute("listReview", reviewService.getListData(0, 1000));
@@ -162,10 +152,6 @@ public class HomeController {
         model.addAttribute("listReports", reportService.getAllReport(0, 1000));
         return "reports";
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> b649dc15d2c25dd6269fb54ab8bb3d2055acf134
 
     @GetMapping("/login")
     public String login(Model model) {
