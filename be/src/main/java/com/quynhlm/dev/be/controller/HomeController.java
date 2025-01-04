@@ -162,7 +162,10 @@ public class HomeController {
         model.addAttribute("listReports", reportService.getAllReport(0, 1000));
         return "reports";
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b649dc15d2c25dd6269fb54ab8bb3d2055acf134
 
     @GetMapping("/login")
     public String login(Model model) {
