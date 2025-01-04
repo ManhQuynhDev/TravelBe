@@ -78,8 +78,8 @@ public class CommentReactionService {
         }
     }
 
-    public Page<UserReactionDTO> getAllUserReactionWithType(Integer comment_id , String type, Pageable pageable) {
-        Page<Object[]> results = commentReactionRepository.getUserReactionByType(pageable, type , comment_id);
+    public Page<UserReactionDTO> getAllUserReactionWithType(Integer comment_id, String type, Pageable pageable) {
+        Page<Object[]> results = commentReactionRepository.getUserReactionByType(pageable, type, comment_id);
 
         return results.map(row -> {
             UserReactionDTO userReactionDTO = new UserReactionDTO();

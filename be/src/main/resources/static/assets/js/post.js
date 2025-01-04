@@ -224,7 +224,7 @@ document.getElementById("logoutLink").addEventListener("click", function () {
     window.location.replace("/web-server/login");
 });
 
-// viewComent
+// viewComment
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".viewComments").forEach(button => {
         button.addEventListener("click", function () {

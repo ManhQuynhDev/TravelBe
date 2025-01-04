@@ -44,7 +44,7 @@ function checkStatus(userId) {
         .then(res => res.json())
         .then(data => {
             const userAccount = data.data.isLocked;
-            if (userAccount === "LOOK") {
+            if (userAccount === "LOCK") {
                 openButton.disabled = false;
                 lockButton.disabled = true;
             } else {
@@ -75,7 +75,7 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
 
         checkStatus(userId)
             .then(userAccount => {
-                if (userAccount === "LOOK") {
+                if (userAccount === "LOCK") {
                     newOpenButton.addEventListener("click", () => {
                         fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
                             method: "PUT",
@@ -95,7 +95,7 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                     });
                 } else {
                     newLockButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOOK`, {
+                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOCK`, {
                             method: "PUT",
                             headers: AUTH_HEADER
                         })

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -22,11 +23,13 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.ResponseReport;
 import com.quynhlm.dev.be.model.dto.requestDTO.ReportRequestDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.MediaResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReportResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.StatisticsReportDTO;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.Report;
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.MediaRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.ReportRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
@@ -45,6 +48,9 @@ public class ReportService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MediaRepository mediaRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -105,8 +111,6 @@ public class ReportService {
             return findReportById(saveReport.getId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
-        } catch (Exception e) {
-            throw new UnknownException(e.getMessage());
         }
     }
 
@@ -162,15 +166,35 @@ public class ReportService {
         report.setFullname((String) result[4]);
         report.setAvatarUrl((String) result[5]);
         report.setContentPost((String) result[6]);
-        report.setMediaUrl((String) result[7]);
-        report.setMediaType((String) result[8]);
-        report.setReason((String) result[9]);
-        report.setViolationType((String) result[10]);
-        report.setStatus((String) result[11]);
+        report.setMedia_url_report((String) result[7]);
+        report.setReason((String) result[8]);
+        report.setViolationType((String) result[9]);
+        report.setStatus((String) result[10]);
+        report.setAction((String) result[11]);
         report.setCreate_time((String) result[12]);
-        report.setAction((String) result[13]);
-        report.setResponseTime((String) result[14]);
+        report.setResponseTime((String) result[13]);
+        String mediaUrlReport = (String) result[7];
+        report.setMediaType(
+                mediaUrlReport != null ? mediaUrlReport.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO"
+                        : null);
 
+        Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+
+        List<String> medias;
+        if (foundPost.getIsShare() == 0) {
+            medias = mediaRepository.findMediaByPostId(foundPost.getId());
+        } else {
+            medias = mediaRepository.findMediaByPostId(foundPost.getPost_id());
+        }
+
+        List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
+            MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
+            mediaResponseDTO.setMediaUrl(mediaUrl);
+            mediaResponseDTO.setMediaType(mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO");
+            return mediaResponseDTO;
+        }).collect(Collectors.toList());
+
+        report.setMediaUrls(mediaResponseDTOs);
         return report;
     }
 
@@ -185,25 +209,47 @@ public class ReportService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Object[]> results = reportRepository.getAllReportUserCreate(userId, pageable);
+        Page<Object[]> results = reportRepository.getAllReportUserCreate(userId,
+                pageable);
 
-        return results.map(row -> {
+        return results.map(result -> {
             ReportResponseDTO report = new ReportResponseDTO();
-            report.setId(((Number) row[0]).intValue());
-            report.setOwnerId(((Number) row[1]).intValue());
-            report.setPostId(((Number) row[2]).intValue());
-            report.setAdminId(((Number) row[3]).intValue());
-            report.setFullname((String) row[4]);
-            report.setAvatarUrl((String) row[5]);
-            report.setContentPost((String) row[6]);
-            report.setMediaUrl((String) row[7]);
-            report.setMediaType((String) row[8]);
-            report.setReason((String) row[9]);
-            report.setViolationType((String) row[10]);
-            report.setStatus((String) row[11]);
-            report.setCreate_time((String) row[12]);
-            report.setAction((String) row[13]);
-            report.setResponseTime((String) row[14]);
+            report.setId(((Number) result[0]).intValue());
+            report.setOwnerId(((Number) result[1]).intValue());
+            report.setPostId(((Number) result[2]).intValue());
+            report.setAdminId(((Number) result[3]).intValue());
+            report.setFullname((String) result[4]);
+            report.setAvatarUrl((String) result[5]);
+            report.setContentPost((String) result[6]);
+            report.setMedia_url_report((String) result[7]);
+            report.setReason((String) result[8]);
+            report.setViolationType((String) result[9]);
+            report.setStatus((String) result[10]);
+            report.setAction((String) result[11]);
+            report.setCreate_time((String) result[12]);
+            report.setResponseTime((String) result[13]);
+            String mediaUrlReport = (String) result[7];
+            report.setMediaType(
+                    mediaUrlReport != null ? mediaUrlReport.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO"
+                            : null);
+
+            Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+
+            List<String> medias;
+            if (foundPost.getIsShare() == 0) {
+                medias = mediaRepository.findMediaByPostId(foundPost.getId());
+            } else {
+                medias = mediaRepository.findMediaByPostId(foundPost.getPost_id());
+            }
+
+            List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
+                MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
+                mediaResponseDTO.setMediaUrl(mediaUrl);
+                mediaResponseDTO.setMediaType(mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO");
+                return mediaResponseDTO;
+            }).collect(Collectors.toList());
+
+            report.setMediaUrls(mediaResponseDTOs);
             return report;
         });
     }
@@ -229,23 +275,44 @@ public class ReportService {
 
         Page<Object[]> results = reportRepository.getAllReport(pageable);
 
-        return results.map(row -> {
+        return results.map(result -> {
             ReportResponseDTO report = new ReportResponseDTO();
-            report.setId(((Number) row[0]).intValue());
-            report.setOwnerId(((Number) row[1]).intValue());
-            report.setPostId(((Number) row[2]).intValue());
-            report.setAdminId(((Number) row[3]).intValue());
-            report.setFullname((String) row[4]);
-            report.setAvatarUrl((String) row[5]);
-            report.setContentPost((String) row[6]);
-            report.setMediaUrl((String) row[7]);
-            report.setMediaType((String) row[8]);
-            report.setReason((String) row[9]);
-            report.setViolationType((String) row[10]);
-            report.setStatus((String) row[11]);
-            report.setCreate_time((String) row[12]);
-            report.setAction((String) row[13]);
-            report.setResponseTime((String) row[14]);
+            report.setId(((Number) result[0]).intValue());
+            report.setOwnerId(((Number) result[1]).intValue());
+            report.setPostId(((Number) result[2]).intValue());
+            report.setAdminId(((Number) result[3]).intValue());
+            report.setFullname((String) result[4]);
+            report.setAvatarUrl((String) result[5]);
+            report.setContentPost((String) result[6]);
+            report.setMedia_url_report((String) result[7]);
+            report.setReason((String) result[8]);
+            report.setViolationType((String) result[9]);
+            report.setStatus((String) result[10]);
+            report.setAction((String) result[11]);
+            report.setCreate_time((String) result[12]);
+            report.setResponseTime((String) result[13]);
+            String mediaUrlReport = (String) result[7];
+            report.setMediaType(
+                    mediaUrlReport != null ? mediaUrlReport.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO"
+                            : null);
+
+            Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+
+            List<String> medias;
+            if (foundPost.getIsShare() == 0) {
+                medias = mediaRepository.findMediaByPostId(foundPost.getId());
+            } else {
+                medias = mediaRepository.findMediaByPostId(foundPost.getPost_id());
+            }
+
+            List<MediaResponseDTO> mediaResponseDTOs = medias.stream().map(mediaUrl -> {
+                MediaResponseDTO mediaResponseDTO = new MediaResponseDTO();
+                mediaResponseDTO.setMediaUrl(mediaUrl);
+                mediaResponseDTO.setMediaType(mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO");
+                return mediaResponseDTO;
+            }).collect(Collectors.toList());
+
+            report.setMediaUrls(mediaResponseDTOs);
             return report;
         });
     }

@@ -122,7 +122,6 @@
                     </a>
                 </div>
 
-                <!-- Card 3 -->
                 <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                     <a class="card card-hover-shadow h-100" href="#">
                         <div class="card-body">
@@ -138,12 +137,10 @@
                     </a>
                 </div>
 
-                <!-- Card 4 -->
 
             </div>
 
             <div class="row mb-5">
-                <!-- Cột duy nhất chứa cả Tăng Trưởng Theo Thời Gian và Nhóm Hoạt Động Nhiều Nhất -->
                 <div class="col-lg-8 mb-4">
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
@@ -372,7 +369,6 @@
             }
         }).then(response => response.json());
 
-        // Fetch dữ liệu bài viết
         const fetchPostData = fetch('http://localhost:8080/api/posts/statistical_post/2024', {
             method: "GET",
             headers: {
@@ -380,7 +376,6 @@
             }
         }).then(response => response.json());
 
-        // Fetch dữ liệu nhóm
         const fetchGroupData = fetch('http://localhost:8080/api/groups/statistical_group/2024', {
             method: "GET",
             headers: {
@@ -388,34 +383,31 @@
             }
         }).then(response => response.json());
 
-        // Khi tất cả các yêu cầu hoàn thành
         Promise.all([fetchUserData, fetchPostData, fetchGroupData])
             .then(([userData, postData, groupData]) => {
                 console.log('User Data:', userData);
                 console.log('Post Data:', postData);
                 console.log('Group Data:', groupData);
 
-                // Xử lý dữ liệu người dùng (User Data)
                 const safeUserData = Array.isArray(userData) ? userData : [];
                 const userLabels = safeUserData.map(item => {
                     if (item?.month) {
                         return item.month.toString().padStart(2, '0');
                     }
-                    return ''; // Trả về chuỗi rỗng nếu không có month
+                    return '';
                 });
 
                 const userRegisterCounts = safeUserData.map(item => item?.count || 0);
                 const month11User = safeUserData.find(item => item.month === 11);
                 const month12User = safeUserData.find(item => item.month === 12);
 
-                // Tính sự thay đổi phần trăm cho User
                 let percentageChangeUser = 0;
                 if (month11User && month12User) {
                     const differenceUser = month12User.count - month11User.count;
                     if (month11User.count !== 0) {
                         percentageChangeUser = ((differenceUser / month11User.count) * 100).toFixed(2);
                     } else if (month12User.count > 0) {
-                        percentageChangeUser = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                        percentageChangeUser = 100;
                     }
                 }
 
@@ -438,21 +430,19 @@
                 }
                 growthInfoElement.innerHTML = htmlContent;
 
-                // Xử lý dữ liệu bài viết (Post Data)
                 const safePostData = Array.isArray(postData) ? postData : [];
                 const postLabels = safePostData.map(item => item?.month || '');
                 const postCounts = safePostData.map(item => item?.post_count || 0);
                 const month11Post = safePostData.find(item => item.month === 11);
                 const month12Post = safePostData.find(item => item.month === 12);
 
-                // Tính sự thay đổi phần trăm cho Posts
                 let percentageChangePost = 0;
                 if (month11Post && month12Post) {
                     const differencePost = month12Post.post_count - month11Post.post_count;
                     if (month11Post.post_count !== 0) {
                         percentageChangePost = ((differencePost / month11Post.post_count) * 100).toFixed(2);
                     } else if (month12Post.post_count > 0) {
-                        percentageChangePost = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                        percentageChangePost = 100;
                     }
                 }
 
@@ -475,21 +465,19 @@
                 }
                 growthInfoElementPost.innerHTML = htmlContentPost;
 
-                // Xử lý dữ liệu nhóm (Group Data)
                 const safeGroupData = Array.isArray(groupData) ? groupData : [];
                 const groupLabels = safeGroupData.map(item => item?.month || '');
                 const groupCounts = safeGroupData.map(item => item?.post_count || 0);
                 const month11Group = safeGroupData.find(item => item.month === 11);
                 const month12Group = safeGroupData.find(item => item.month === 12);
 
-                // Tính sự thay đổi phần trăm cho Groups
                 let percentageChangeGroup = 0;
                 if (month11Group && month12Group) {
                     const differenceGroup = month12Group.post_count - month11Group.post_count;
                     if (month11Group.post_count !== 0) {
                         percentageChangeGroup = ((differenceGroup / month11Group.post_count) * 100).toFixed(2);
                     } else if (month12Group.post_count > 0) {
-                        percentageChangeGroup = 100; // Nếu tháng 11 = 0 và tháng 12 > 0, xem như tăng trưởng 100%
+                        percentageChangeGroup = 100; 
                     }
                 }
 
@@ -512,9 +500,8 @@
                 }
                 growthInfoElementGroup.innerHTML = htmlContentGroup;
 
-                // Dữ liệu cho biểu đồ
                 const chartData = {
-                    labels: userLabels,  // Dùng labels của user để giữ thống nhất
+                    labels: userLabels,  
                     datasets: [
                         {
                             label: 'Users',
@@ -540,7 +527,6 @@
                     ]
                 };
 
-                // Vẽ biểu đồ
                 const ctx = document.getElementById('growthChart').getContext('2d');
                 const growthChart = new Chart(ctx, {
                     type: 'bar',

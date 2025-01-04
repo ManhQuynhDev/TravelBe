@@ -30,37 +30,38 @@ public interface PostReactionRepository extends JpaRepository<PostReaction, Inte
     Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type, @Param("id") Integer id);
 
     @Query(value = """
-            WITH reactions AS (
-                SELECT 'LIKE' AS type
-                UNION ALL SELECT 'LOVE'
-                UNION ALL SELECT 'HAHA'
-                UNION ALL SELECT 'WOW'
-                UNION ALL SELECT 'SAD'
-                UNION ALL SELECT 'ANGRY'
-            ),
-            reaction_counts AS (
-                SELECT
-                    r.type,
-                    COUNT(pr.type) AS reaction_count
-                FROM
-                    reactions r
-                LEFT JOIN
-                    post_reaction pr
-                ON
-                    r.type = pr.type AND pr.post_id = :post_id
-                GROUP BY
-                    r.type
-            )
-            SELECT
-                type,
-                reaction_count
-            FROM
-                reaction_counts
-            ORDER BY
-                reaction_count DESC,
-                type
-            LIMIT 3;
-            """, nativeQuery = true)
+                        WITH reactions AS (
+                            SELECT 'LIKE' AS type
+                            UNION ALL SELECT 'LOVE'
+                            UNION ALL SELECT 'HAHA'
+                            UNION ALL SELECT 'WOW'
+                            UNION ALL SELECT 'SAD'
+                            UNION ALL SELECT 'ANGRY'
+                        ),
+                        reaction_counts AS (
+                            SELECT
+                                r.type,
+                                COUNT(pr.type) AS reaction_count
+                            FROM
+                                reactions r
+                            LEFT JOIN
+                                post_reaction pr
+                            ON
+                                r.type = pr.type AND pr.post_id = :post_id
+                            GROUP BY
+                                r.type
+                        )
+                        SELECT
+                            type,
+                            reaction_count
+                        FROM
+                            reaction_counts
+                        WHERE reaction_count > 0
+                        ORDER BY
+                            reaction_count DESC,
+                            type
+
+                        """, nativeQuery = true)
     List<Object[]> findTopReactions(@Param("post_id") Integer post_id);
 
 }

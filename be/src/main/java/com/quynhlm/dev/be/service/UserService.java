@@ -43,10 +43,10 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.quynhlm.dev.be.core.exception.UnknownException;
-import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.AccountIsDisabledException;
 import com.quynhlm.dev.be.core.exception.MethodNotValidException;
+import com.quynhlm.dev.be.core.exception.UnknownException;
+import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
@@ -467,7 +467,7 @@ public class UserService {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         }
 
-        String[] statusUser = { "OPEN", "LOOK" };
+        String[] statusUser = { "OPEN", "LOCK" };
 
         Boolean isCheck = isLock == null || Arrays.asList(statusUser).contains(isLock);
 
@@ -475,7 +475,7 @@ public class UserService {
             throw new MethodNotValidException("Invalid status user type. Please try again !");
         }
 
-        if (isLock == "LOOK") {
+        if (isLock == "LOCK") {
             user.setLockDate(LocalDateTime.now());
         } else {
             user.setLockDate(null);
