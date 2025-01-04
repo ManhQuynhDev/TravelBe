@@ -1,10 +1,16 @@
 package com.quynhlm.dev.be.service;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +28,16 @@ import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.model.dto.requestDTO.FeedBackRequestDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.CommentResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
 import com.quynhlm.dev.be.model.entity.Comment;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
+import com.quynhlm.dev.be.repositories.CommentReactionRepository;
 import com.quynhlm.dev.be.repositories.CommentRepository;
 import com.quynhlm.dev.be.repositories.PostRepository;
 import com.quynhlm.dev.be.repositories.UserRepository;
+
+import net.coobird.thumbnailator.Thumbnails;
 
 @Service
 public class CommentService {
@@ -45,6 +55,9 @@ public class CommentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CommentReactionRepository commentReactionRepository;
 
     public CommentResponseDTO insertComment(FeedBackRequestDTO commentRequestDTO, MultipartFile imageFile)
             throws UnknownException, PostNotFoundException, CommentNotFoundException, UserAccountNotFoundException {
@@ -65,7 +78,7 @@ public class CommentService {
             if (commentRequestDTO.getReplyToId() != null) {
                 Comment foundComment = commentRepository.findComment(commentRequestDTO.getReplyToId());
                 if (foundComment == null) {
-                    throw new UserAccountNotFoundException(
+                    throw new CommentNotFoundException(
                             "Found comment with " + commentRequestDTO.getReplyToId() + " not found please try again");
                 }
             }
@@ -79,27 +92,10 @@ public class CommentService {
             comment.setDelFlag(0);
 
             if (imageFile != null && !imageFile.isEmpty()) {
-                String imageFileName = imageFile.getOriginalFilename();
-                long imageFileSize = imageFile.getSize();
-                String imageContentType = imageFile.getContentType();
-
-                if (!isValidFileType(imageContentType)) {
-                    throw new UnknownException("Invalid file type. Only image files are allowed.");
-                }
-
-                try (InputStream mediaInputStream = imageFile.getInputStream()) {
-                    ObjectMetadata mediaMetadata = new ObjectMetadata();
-                    mediaMetadata.setContentLength(imageFileSize);
-                    mediaMetadata.setContentType(imageContentType);
-
-                    amazonS3.putObject(bucketName, imageFileName, mediaInputStream, mediaMetadata);
-
-                    String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
-                            imageFileName);
-
-                    comment.setMediaUrl(mediaUrl);
-                }
+                String mediaUrl = uploadMediaToS3(imageFile);
+                comment.setMediaUrl(mediaUrl);
             }
+
             comment.setCreateTime(new Timestamp(System.currentTimeMillis()).toString());
             Comment saveComment = commentRepository.save(comment);
             if (saveComment == null) {
@@ -108,6 +104,50 @@ public class CommentService {
             return findAnComment(saveComment.getId(), saveComment.getUserId());
         } catch (IOException e) {
             throw new UnknownException("File handling error: " + e.getMessage());
+        }
+    }
+
+    private String uploadMediaToS3(MultipartFile file) throws IOException, UnknownException {
+        String fileName = file.getOriginalFilename();
+        String contentType = file.getContentType();
+
+        if (!isValidFileType(contentType)) {
+            throw new UnknownException("Invalid file type. Only image and video files are allowed.");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            if (contentType.startsWith("image/")) {
+                BufferedImage originalImage = ImageIO.read(inputStream);
+
+                BufferedImage resizedImage = Thumbnails.of(originalImage)
+                        .scale(0.5)
+                        .outputQuality(0.1)
+                        .asBufferedImage();
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(resizedImage, "jpg", outputStream);
+                InputStream resizedInputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(outputStream.size());
+                metadata.setContentType(contentType);
+
+                amazonS3.putObject(bucketName, fileName, resizedInputStream, metadata);
+
+            } else if (contentType.startsWith("video/")) {
+
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setContentLength(file.getSize());
+                metadata.setContentType(contentType);
+
+                amazonS3.putObject(bucketName, fileName, inputStream, metadata);
+            }
+
+            String mediaUrl = String.format("https://travle-be.s3.ap-southeast-2.amazonaws.com/%s",
+                    fileName);
+            return mediaUrl;
+        } catch (Exception e) {
+            throw new UnknownException("Error uploading file to S3: " + e.getMessage());
         }
     }
 
@@ -148,16 +188,16 @@ public class CommentService {
         comment.setReaction_count(((Number) row[10]).intValue());
         comment.setUser_reaction_type((String) row[11]);
 
+        List<Object[]> reactions = commentReactionRepository.findTopReactions(((Number) row[0]).intValue());
+
+        comment.setReactionStatistics(FindTopReactions(reactions));
+
         Post foundPost = postRepository.getAnPost(((Number) row[6]).intValue());
 
-        if ((String) row[5] == null) {
-            comment.setMediaType(null);
-        } else {
-            comment.setMediaType(
-                    (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
-                            ? "IMAGE"
-                            : "VIDEO");
-        }
+        comment.setMediaType((String) row[5] == null ? null
+                : (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                        ? "IMAGE"
+                        : "VIDEO");
 
         List<Object[]> rawResults = commentRepository.findReplyWithCommentId(((Number) row[0]).intValue(), userId);
         List<CommentResponseDTO> responses = rawResults.stream()
@@ -176,6 +216,16 @@ public class CommentService {
                     reply.setReaction_count(((Number) r[10]).intValue());
                     reply.setUser_reaction_type((String) r[11]);
                     reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[1]).intValue());
+
+                    reply.setMediaType((String) r[5] == null ? null
+                            : (String) r[5] != null && ((String) r[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                    ? "IMAGE"
+                                    : "VIDEO");
+
+                    List<Object[]> reactionReply = commentReactionRepository
+                            .findTopReactions(((Number) r[0]).intValue());
+
+                    comment.setReactionStatistics(FindTopReactions(reactionReply));
 
                     List<Object[]> rawResultsReply = commentRepository.findReplyWithCommentId(
                             ((Number) r[0]).intValue(),
@@ -204,6 +254,18 @@ public class CommentService {
                                 reply_to_reply.setUser_reaction_type((String) nestedReply[11]);
                                 reply_to_reply
                                         .setIsAuthor(foundPost.getUser_id() == ((Number) nestedReply[1]).intValue());
+
+                                reply_to_reply.setMediaType((String) nestedReply[5] == null ? null
+                                        : (String) nestedReply[5] != null
+                                                && ((String) nestedReply[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                                        ? "IMAGE"
+                                                        : "VIDEO");
+
+                                List<Object[]> reactionReplyToReply = commentReactionRepository
+                                        .findTopReactions(((Number) nestedReply[0]).intValue());
+
+                                reply_to_reply.setReactionStatistics(FindTopReactions(reactionReplyToReply));
+
                                 return reply_to_reply;
                             })
                             .collect(Collectors.toList());
@@ -218,6 +280,21 @@ public class CommentService {
         comment.setReplys(responses);
 
         return comment;
+    }
+
+    private List<ReactionCountDTO> FindTopReactions(List<Object[]> reactionReplyToReply) {
+        List<ReactionCountDTO> reactionStatisticsList = new ArrayList<>();
+        if (!reactionReplyToReply.isEmpty()) {
+            for (Object[] result : reactionReplyToReply) {
+                ReactionCountDTO reactionStatisticsDTO = new ReactionCountDTO();
+                reactionStatisticsDTO.setType((String) result[0]);
+                reactionStatisticsDTO.setReactionCount(((Number) result[1]).intValue());
+                reactionStatisticsList.add(reactionStatisticsDTO);
+            }
+            return reactionStatisticsList;
+        } else {
+            return reactionStatisticsList;
+        }
     }
 
     public void updateComment(Integer id, String newContent, MultipartFile imageFile)
@@ -281,14 +358,14 @@ public class CommentService {
             comment.setReaction_count(((Number) row[10]).intValue());
             comment.setUser_reaction_type((String) row[11]);
 
-            if ((String) row[5] == null) {
-                comment.setMediaType(null);
-            } else {
-                comment.setMediaType(
-                        (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
-                                ? "IMAGE"
-                                : "VIDEO");
-            }
+            List<Object[]> reactions = commentReactionRepository.findTopReactions(((Number) row[0]).intValue());
+
+            comment.setReactionStatistics(FindTopReactions(reactions));
+
+            comment.setMediaType((String) row[5] == null ? null
+                    : (String) row[5] != null && ((String) row[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                            ? "IMAGE"
+                            : "VIDEO");
 
             List<Object[]> rawResults = commentRepository.findReplyWithCommentId(((Number) row[0]).intValue(), userId);
 
@@ -309,38 +386,61 @@ public class CommentService {
                         reply.setUser_reaction_type((String) r[11]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[1]).intValue());
 
+                        reply.setMediaUrl((String) r[5] == null ? null
+                                : (String) r[5] != null && ((String) r[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                        ? "IMAGE"
+                                        : "VIDEO");
+
+                        List<Object[]> reactionReply = commentReactionRepository
+                                .findTopReactions(((Number) r[0]).intValue());
+
+                        reply.setReactionStatistics(FindTopReactions(reactionReply));
+
                         List<Object[]> rawResultsReply = commentRepository.findReplyWithCommentId(
                                 ((Number) r[0]).intValue(),
                                 userId);
 
-                            List<CommentResponseDTO> responsesReply = rawResultsReply.stream()
-                                    .map(nestedReply -> {
-                                        if (nestedReply == null || nestedReply.length < 12 || nestedReply[0] == null) {
-                                            return null;
-                                        }
-                                        CommentResponseDTO reply_to_reply = new CommentResponseDTO();
-                                        reply_to_reply.setCommentId(((Number) nestedReply[0]).intValue());
-                                        reply_to_reply.setOwnerId(((Number) nestedReply[1]).intValue());
-                                        reply_to_reply.setFullname((String) nestedReply[2]);
-                                        reply_to_reply.setAvatar((String) nestedReply[3]);
-                                        reply_to_reply.setContent((String) nestedReply[4]);
-                                        reply_to_reply.setMediaUrl((String) nestedReply[5]);
-                                        reply_to_reply.setPostId(((Number) nestedReply[6]).intValue());
-                                        reply_to_reply.setIs_reply(
-                                                nestedReply[7] != null ? ((Number) nestedReply[7]).intValue() : null);
-                                        reply_to_reply.setReply_to_id(
-                                                nestedReply[8] != null ? ((Number) nestedReply[8]).intValue() : null);
-                                        reply_to_reply.setCreate_time((String) nestedReply[9]);
-                                        reply_to_reply.setReaction_count(((Number) nestedReply[10]).intValue());
-                                        reply_to_reply.setUser_reaction_type((String) nestedReply[11]);
-                                        reply_to_reply
-                                                .setIsAuthor(
-                                                        foundPost.getUser_id() == ((Number) nestedReply[1]).intValue());
-                                        return reply_to_reply;
-                                    })
-                                    .collect(Collectors.toList());
+                        List<CommentResponseDTO> responsesReply = rawResultsReply.stream()
+                                .map(nestedReply -> {
+                                    if (nestedReply == null || nestedReply.length < 12 || nestedReply[0] == null) {
+                                        return null;
+                                    }
+                                    CommentResponseDTO reply_to_reply = new CommentResponseDTO();
+                                    reply_to_reply.setCommentId(((Number) nestedReply[0]).intValue());
+                                    reply_to_reply.setOwnerId(((Number) nestedReply[1]).intValue());
+                                    reply_to_reply.setFullname((String) nestedReply[2]);
+                                    reply_to_reply.setAvatar((String) nestedReply[3]);
+                                    reply_to_reply.setContent((String) nestedReply[4]);
+                                    reply_to_reply.setMediaUrl((String) nestedReply[5]);
+                                    reply_to_reply.setPostId(((Number) nestedReply[6]).intValue());
+                                    reply_to_reply.setIs_reply(
+                                            nestedReply[7] != null ? ((Number) nestedReply[7]).intValue() : null);
+                                    reply_to_reply.setReply_to_id(
+                                            nestedReply[8] != null ? ((Number) nestedReply[8]).intValue() : null);
+                                    reply_to_reply.setCreate_time((String) nestedReply[9]);
+                                    reply_to_reply.setReaction_count(((Number) nestedReply[10]).intValue());
+                                    reply_to_reply.setUser_reaction_type((String) nestedReply[11]);
+                                    reply_to_reply
+                                            .setIsAuthor(
+                                                    foundPost.getUser_id() == ((Number) nestedReply[1]).intValue());
 
-                            reply.setReplys(responsesReply);
+                                    reply_to_reply.setMediaType((String) nestedReply[5] == null ? null
+                                            : (String) nestedReply[5] != null
+                                                    && ((String) nestedReply[5])
+                                                            .matches(".*\\.(jpg|jpeg|png|gif|webp)$")
+                                                                    ? "IMAGE"
+                                                                    : "VIDEO");
+
+                                    List<Object[]> reactionReplyToReply = commentReactionRepository
+                                            .findTopReactions(((Number) nestedReply[0]).intValue());
+
+                                    reply_to_reply.setReactionStatistics(FindTopReactions(reactionReplyToReply));
+
+                                    return reply_to_reply;
+                                })
+                                .collect(Collectors.toList());
+
+                        reply.setReplys(responsesReply);
 
                         return reply;
                     })

@@ -207,6 +207,7 @@ public class UserService {
         user.setFullname(userDto.getFullname());
         user.setEmail(userDto.getEmail());
         user.setIsLocked(AccountStatus.OPEN.name());
+        user.setDelflag(0);
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -395,7 +396,8 @@ public class UserService {
         if (foundUser == null) {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found please try again !");
         }
-        userRepository.delete(foundUser);
+        foundUser.setDelflag(1);
+        userRepository.save(foundUser);
     }
 
     public void changeProfile(Integer id, @Valid UpdateProfileDTO updateUser, MultipartFile imageFile)
@@ -555,7 +557,7 @@ public class UserService {
     }
 
     public List<User> getAllListUser() {
-        return userRepository.findAll();
+        return userRepository.findAllListRolesUser();
     }
 
     public String getUserFullname(Integer id) {

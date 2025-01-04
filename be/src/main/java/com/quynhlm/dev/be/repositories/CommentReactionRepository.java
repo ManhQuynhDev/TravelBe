@@ -26,8 +26,8 @@ public interface CommentReactionRepository extends JpaRepository<CommentReaction
             """, nativeQuery = true)
     Page<Object[]> getUserReactionByType(Pageable pageable, @Param("type") String type, @Param("id") Integer id);
 
-     @Query(value = """
-             SELECT 
+    @Query(value = """
+             SELECT
                 comment_id,
                 SUM(CASE WHEN type = 'LIKE' THEN 1 ELSE 0 END) AS like_count,
                 SUM(CASE WHEN type = 'LOVE' THEN 1 ELSE 0 END) AS love_count,
@@ -35,12 +35,47 @@ public interface CommentReactionRepository extends JpaRepository<CommentReaction
                 SUM(CASE WHEN type = 'WOW' THEN 1 ELSE 0 END) AS wow_count,
                 SUM(CASE WHEN type = 'SAD' THEN 1 ELSE 0 END) AS sad_count,
                 SUM(CASE WHEN type = 'ANGRY' THEN 1 ELSE 0 END) AS angry_count
-            FROM 
+            FROM
                 comment_reaction
-            WHERE 
+            WHERE
                 comment_id = :comment_id
-            GROUP BY 
+            GROUP BY
                 comment_id;
             """, nativeQuery = true)
     List<Object[]> reactionTypeCount(@Param("comment_id") Integer comment_id);
+
+    @Query(value = """
+            WITH reactions AS (
+                SELECT 'LIKE' AS type
+                UNION ALL SELECT 'LOVE'
+                UNION ALL SELECT 'HAHA'
+                UNION ALL SELECT 'WOW'
+                UNION ALL SELECT 'SAD'
+                UNION ALL SELECT 'ANGRY'
+            ),
+            reaction_counts AS (
+                SELECT
+                    r.type,
+                    COUNT(cr.type) AS reaction_count
+                FROM
+                    reactions r
+                LEFT JOIN
+                    comment_reaction cr
+                ON
+                    r.type = cr.type AND cr.comment_id = :comment_id
+                GROUP BY
+                    r.type
+            )
+            SELECT
+                type,
+                reaction_count
+            FROM
+                reaction_counts
+            WHERE reaction_count > 0
+            ORDER BY
+                reaction_count DESC,
+                type
+                
+            """, nativeQuery = true)
+    List<Object[]> findTopReactions(@Param("comment_id") Integer comment_id);
 }

@@ -29,7 +29,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
     private String password;
     private String fullname;
     private String email;
@@ -50,4 +49,5 @@ public class User {
     private LocalDateTime lastNameChangeDate;
     private String latitude;
     private String longitude;
+    private Integer delflag;
 }

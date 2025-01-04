@@ -27,5 +27,6 @@ public class CommentResponseDTO {
     private Integer reaction_count;
     private String user_reaction_type;
     private Boolean isAuthor;
+    private List<ReactionCountDTO> reactionStatistics;
     private List<CommentResponseDTO> replys;
 }

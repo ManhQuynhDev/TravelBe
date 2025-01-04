@@ -54,8 +54,9 @@ public class CommentReactionService {
         CommentReaction foundReaction = commentReactionRepository.findByCommentIdAndUserId(
                 commentReaction.getCommentId(),
                 commentReaction.getUserId());
+                
         if (foundReaction != null) {
-            if (foundReaction.getType() == commentReaction.getType()) {
+            if (foundReaction.getType().equals(commentReaction.getType())) {
                 commentReactionRepository.delete(foundReaction);
             } else {
                 foundReaction.setType(commentReaction.getType());
