@@ -1,0 +1,156 @@
+[33m52ca1e7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mweb_server[m[33m, [m[1;31morigin/web_server[m[33m)[m Fix bug user,manager, sory,comment
+[33m64be81d[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #17 from ManhQuynhDev/web_server
+[33m5881d61[m Change VietNamese
+[33m16920f0[m add statistical group
+[33m62c2a34[m get all info user sender
+[33mc6916c7[m update future change friends
+[33m4e53f76[m change future get all status friend
+[33md34f65c[m add feature get user reaction commmnet
+[33mad9843d[m fix response friend post
+[33m5007d35[m change response friends post
+[33mc8f8c0b[m Merge pull request #16 from ManhQuynhDev/web_server
+[33m7dc6d56[m Update UI
+[33mf24ad3f[m fix comflic
+[33mcd83119[m Fix message loading
+[33m709efb5[m Merge pull request #15 from ManhQuynhDev/web_server
+[33ma21f47f[m crud reports
+[33mb28a481[m CRUD review
+[33m41f70ef[m fix future get all post user create
+[33m1310246[m add api get all report
+[33m54edf51[m UI Edit Profile and Profile
+[33me69283d[m change future cancel friends
+[33m54b939e[m fix api get all review location
+[33md753842[m change future login and change device token
+[33m5d40872[m change verify token and save device tole
+[33m20ce7a5[m Update ViewComment, Post Details
+[33mfc2a65a[m fix future delete post and update post
+[33m967206a[m add averageRating location
+[33m85c61ad[m popup show choose icon message
+[33m0e928de[m Change Posts
+[33md34f216[m change method insert post
+[33m5599525[m change methor insert post
+[33med8707f[m headerMain
+[33m9c42da4[m Merge pull request #14 from ManhQuynhDev/web_server
+[33md5327b1[m change input location
+[33m11d6da1[m feature send message and change response post
+[33m424b04e[m Update remember, crud manager
+[33m42e44cc[m change feild user and api register device
+[33md1cfcb5[m change response get an review and get all review by userId and change feature delete member
+[33m4bc757d[m change update review
+[33m0b83a67[m change request insert location
+[33m4cb4cbd[m feature review location
+[33m0b53d5f[m Save local changes before merge
+[33mdc6f799[m Update Users
+[33m5d928f2[m change response save post
+[33mdc15752[m Future send message 1 : 1
+[33mf2bac3f[m feature send message 1 : 1 web
+[33m4b701ec[m Merge pull request #13 from ManhQuynhDev/web_server
+[33mce3ff13[m View Activity
+[33m7b725c6[m change post location
+[33m1e50ba8[m[33m ([m[1;32mmaster[m[33m)[m change response save post
+[33m469ae60[m Merge branch 'master' of
+[33m492abd4[m fix comflic
+[33mffea31b[m change api get all friend
+[33mfdd154b[m Merge pull request #12 from ManhQuynhDev/web_server
+[33m5e8d2a7[m Fix loi
+[33m5c96605[m Merge branch 'web_server' of https://github.com/ManhQuynhDev/TravelBe into web_server
+[33m36660dd[m Resolve merge conflict and update with remote changes
+[33md5c737d[m Fix loi
+[33m9e873c7[m Merge pull request #11 from ManhQuynhDev/web_server
+[33mbdf22ea[m Merge branch 'master' into web_server
+[33ma6faf82[m Update User Details
+[33me0eeb20[m fix post
+[33mac0e7aa[m Merge pull request #10 from ManhQuynhDev/web_server
+[33m9ef91d7[m change response reply
+[33mc5d44a6[m Merge branch 'master' into web_server
+[33m1fad893[m Sua 1 so loi va them theme thay doi giao dien
+[33m7b62ecd[m add api get all group id user create group  and user join group id
+[33m0521c1f[m change response post friedn
+[33m18eab73[m change delete api friend ship
+[33m63edbb0[m change response comment with post id
+[33m668cf28[m change response friend ship
+[33mb16d532[m add feature push notificaton and sending message
+[33m0f056e9[m viewPlan and add Plan
+[33m0e5a54e[m change response story
+[33m74e7a43[m change reponse get all post
+[33m16e67d8[m fix bug put post-reaction
+[33m1aa2848[m fix bug put post_reaction
+[33m1413d08[m fix bug delete post reacion
+[33m6d855fd[m Future add group, delete,viewMember group
+[33m4de5e69[m change api delete group
+[33m55c1245[m change response post
+[33m9040f73[m finish api report posrt
+[33m90228f5[m change response get list reqest friends
+[33m0f5eadf[m Merge pull request #8 from ManhQuynhDev/web_server
+[33m7ffa4bd[m change response comment with postid
+[33m67c735d[m complete feature send invitaion join group
+[33mf11f9c0[m change response get all comment
+[33m8e72278[m change response save comment
+[33ma9483bf[m feature send invitaion join group and accept to join
+[33m959d981[m Lưu lại các thay đổi trước khi pull
+[33m46946dc[m change response get list member join group
+[33m375d311[m insert api reject memmber
+[33m7872d68[m Future
+[33mbfc54dd[m change api request to join plan
+[33mb95531a[m change response member join plan
+[33ma5b022e[m change response change get all member join group
+[33m024c2e4[m add field mediaType get story
+[33ma74616c[m insert api get all user joiner plan
+[33m317d6e2[m fix feature accept group
+[33m889de41[m change response story
+[33me271c8a[m Giao diện Story và Activity
+[33m844c1fc[m Merge pull request #7 from ManhQuynhDev/web_server
+[33m497dd29[m Create README.md
+[33mbba0769[m change feature insert activity
+[33mc466f7d[m Comments và chức năng add Post
+[33m4daa841[m finish api change role admin and change feature delete group
+[33m5ccc16a[m change response update response save post
+[33m97ff9e2[m change feature send message group
+[33m283f0cb[m change feature send message group
+[33md5913ca[m feature send message 1 : 1 and change response get all user with group and status
+[33m5ac8e54[m finish get all post user create và story create
+[33mf8ddef3[m Merge pull request #6 from ManhQuynhDev/web_server
+[33mf467442[m UI Groups and Groups Details
+[33md844716[m UI Post and Post Details
+[33mefb3d66[m Add change-profile, lock/unlock account, and user detail view features
+[33me94665e[m Update login and registration forms with layout and validation
+[33m572083f[m Add images, CSS, and JS for WebServer
+[33m1019509[m thêm SecurityConfig và HomeController
+[33m43d307e[m add url remove member from plan
+[33m0b5a534[m change response member_plan
+[33m9e4a3a9[m change add url user get all use
+[33m69ee24c[m finish feature reply to reply
+[33mc0e59e5[m search group join and group create and change response story
+[33m9425ed7[m feature send message to group and change reponse reply
+[33ma750638[m change response group memmber
+[33m59cb6be[m add feature get all post and change response get post video
+[33m2bafea9[m change response users
+[33mc444860[m update response post
+[33m83d86e4[m app update response group joinner
+[33md9b1026[m app update feature  group
+[33mfbb1519[m api get an group and search group by name
+[33m676f181[m change status code feature request to join group
+[33m93db428[m change feature add story and fix get comment
+[33m8a1b129[m change response group and api get an group by id
+[33mae96a84[m Change response travel  plan
+[33meddf995[m add url get activities with plan
+[33m70608e7[m change response travel_plan and commment and post
+[33mb82242e[m change response travel plan
+[33mbf0a627[m error response post
+[33m1ba4af7[m finish feature reply-reaction
+[33m31f4696[m change response post and response media url
+[33me731ab8[m response post and change response comment
+[33m8d77784[m get data post and feature change status friends ship
+[33m9fa2918[m change response and fix 415 create group
+[33m115ab9e[m update feature commnet and fix response group share_post_reaction
+[33m919947a[m post result and fix error when create post content-type
+[33m1996fe8[m convert data comment reponse DTO and story response
+[33m2dc9a45[m valid user status change and feature story_reaction
+[33m7530499[m send file with feature send message
+[33mf5da961[m config  Access-Control-Allow-Origin
+[33m27cfb2c[m feature login get response result client
+[33m1ab6aba[m feature member plan and fix method register
+[33mdff976d[m fix feature call group and request member
+[33m0363910[m fix feature register
+[33m2566308[m url get list user with type reaction
+[33mf9fd60d[m url get post with type video 

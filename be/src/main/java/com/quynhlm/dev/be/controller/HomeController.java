@@ -64,8 +64,8 @@ public class HomeController {
         Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
         long groupCount = groupResponseDTOPage.getTotalElements();
         Pageable pageable = PageRequest.of(0, 1000);
-        // Page<PostResponseDTO> postMediaDTOPage = postService.getAllPostsAndSharedPosts(1, pageable);
-        // long postCount = postMediaDTOPage.getTotalElements();
+        Page<PostResponseDTO> postMediaDTOPage = postService.getAllPostsAndSharedPosts(1, pageable);
+        long postCount = postMediaDTOPage.getTotalElements();
 
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
@@ -76,7 +76,7 @@ public class HomeController {
 
         model.addAttribute("userCount", userCount);
         model.addAttribute("groupCount", groupCount);
-        // model.addAttribute("postCount", postCount);
+        model.addAttribute("postCount", postCount);
         model.addAttribute("managerCount", managerCount);
         return "home";
     }
@@ -97,16 +97,7 @@ public class HomeController {
 
     @GetMapping("/users")
     public String user(Model model) {
-        List<User> userList = userService.getAllListUser();
-
-        long userCount = userList.stream()
-                .filter(user -> user.getRoles().contains("USER"))
-                .count();
-        double percentageChange = ((double) (userCount - 9) / 9) * 100;
-        String formattedPercentage = String.format("%.1f", percentageChange);
         model.addAttribute("userList", userService.getAllListUser());
-        model.addAttribute("userCount", userCount);
-        model.addAttribute("formattedPercentage", formattedPercentage);
         return "users";
     }
 
@@ -114,17 +105,9 @@ public class HomeController {
     public String post(Model model) {
         Pageable pageable = PageRequest.of(0, 1000);
         Page<PostResponseDTO> postPage = postService.getAllPostsAndSharedPosts(1, pageable);
-
-        // Lấy danh sách nội dung từ Page
         List<PostResponseDTO> reversedList = new ArrayList<>(postPage.getContent());
-
-        // Đảo ngược danh sách
         Collections.reverse(reversedList);
-
-        // Tạo lại Page từ danh sách đã đảo ngược (nếu cần)
         Page<PostResponseDTO> correctedPage = new PageImpl<>(reversedList, pageable, postPage.getTotalElements());
-
-        // Đưa Page hoặc List đã đảo ngược vào Model
         model.addAttribute("postList", correctedPage);
         return "posts";
     }
@@ -158,7 +141,6 @@ public class HomeController {
     //     model.addAttribute("listComment", commentService.getListData(0, 1000));
     //     return "comments";
     // }
-
     @GetMapping("/reviews")
     public String reviews(Model model) {
         model.addAttribute("listReview", reviewService.getListData(0, 1000));

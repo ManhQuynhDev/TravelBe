@@ -99,11 +99,11 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-                                                <img th:if="${report.mediaUrl != null}" th:src="${report.mediaUrl}"
+                                                <img th:if="${report.mediaUrls != null}" th:src="${report.mediaUrls[0]}"
                                                     alt="Content Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
-                                                <img th:if="${report.mediaUrl == null}" src="/assets/img/anhload.jpg"
+                                                <img th:if="${report.mediaUrls == null}" src="/assets/img/anhload.jpg"
                                                     alt="No Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;">
                                                 <span
@@ -130,12 +130,9 @@
                                             </button>
 
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
-                                                th:attr="data-id=${report.id}"
-                                                
-                                                >
+                                                th:attr="data-id=${report.id}, disabled=${report.status == 'PROCESSED'}">
                                                 Phê duyệt
                                             </button>
-
                                         </div>
                                     </td>
                                 </tr>
@@ -145,7 +142,7 @@
                 </div>
             </div>
 
-            <div th:replace="fragments/reports/repostDetailModal"></div>
+            <div th:replace="fragments/reports/reportDetailModal"></div>
             <div th:replace="fragments/reports/deleteReportModal"></div>
             <div th:replace="fragments/reports/updateReportModal"></div>
 
@@ -216,40 +213,71 @@
                     'Authorization': `Bearer ${token}`
                 }
             })
-                .then(res => res.json()) // Chuyển dữ liệu phản hồi sang JSON
+                .then(res => res.json())
                 .then(data => {
                     if (data.status) {
                         const report = data.data;
 
-                        document.getElementById('reviewUserName').innerText = report.fullname || 'Unknown user';
-                        document.getElementById('reviewReason').innerText = report.reason || 'No reason provided';
-                        document.getElementById('reviewContent').innerText = report.contentPost || 'No content available';
-                        document.getElementById('reviewViolationType').innerText = report.violationType || 'Unknown type';
-                        document.getElementById('reviewStatus').innerText = report.status || 'Pending';
-                        document.getElementById('reviewPostId').innerText = report.postId || 'Unknown';
+                        // Hiển thị media
+                        const mediaContainer = document.getElementById('reportMediaContainer');
+                        mediaContainer.innerHTML = '';
+                        if (report.mediaUrls && report.mediaUrls.length > 0) {
+                            report.mediaUrls.forEach(media => {
+                                const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
+                                mediaElement.src = media.mediaUrl || '/assets/img/anhload.jpg';
+                                mediaElement.onerror = function () {
+                                    this.src = '/assets/img/anhload.jpg';
+                                };
+                                mediaElement.className = 'img-fluid rounded mb-2';
+                                mediaElement.style.width = '200px';
+                                mediaElement.style.height = '112px';
+                                mediaElement.style.objectFit = 'cover';
 
+                                // Nếu là video, thêm thuộc tính controls
+                                if (media.mediaType === 'VIDEO') {
+                                    mediaElement.controls = true;
+                                }
 
-                        const date = new Date(report.create_time);
-                        document.getElementById('reviewCreateTime').innerText = isNaN(date.getTime())
-                            ? 'No time available'
-                            : date.toLocaleString();
-
-                        const mediaImg = document.getElementById('reviewMediaImg');
-                        mediaImg.src = report.mediaUrl;
-                        mediaImg.onerror = function () {
-                            this.src = '/assets/img/anhload.jpg';
+                                mediaContainer.appendChild(mediaElement);
+                            });
+                        } else {
+                            mediaContainer.innerText = 'No media available';
                         }
 
-                        const modal = new bootstrap.Modal(document.getElementById("reviewDetailModal"));
+                        // Hiển thị chi tiết báo cáo
+                        document.getElementById('reportUserName').innerText = report.fullname || 'Unknown user';
+                        document.getElementById('reportReason').innerText = report.reason || 'No reason provided';
+                        document.getElementById('reportContent').innerText = report.contentPost || 'No content available';
+                        document.getElementById('reportViolationType').innerText = report.violationType || 'Unknown type';
+                        document.getElementById('reportStatus').innerText = report.status || 'Pending';
+                        document.getElementById('reportPostId').innerText = report.postId || 'Unknown';
+
+                        // Hiển thị thời gian tạo báo cáo
+                        const date = new Date(report.create_time);
+                        if (!isNaN(date.getTime())) {
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const year = date.getFullYear();
+                            const hours = String(date.getHours()).padStart(2, '0');
+                            const minutes = String(date.getMinutes()).padStart(2, '0');
+                            const seconds = String(date.getSeconds()).padStart(2, '0');
+                            document.getElementById('reportCreateTime').innerText = `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+                        } else {
+                            document.getElementById('reportCreateTime').innerText = 'No time available';
+                        }
+
+                        // Hiển thị modal chi tiết báo cáo
+                        const modal = new bootstrap.Modal(document.getElementById("reportDetailModal"));
                         modal.show();
                     } else {
-                        console.error("Error: " + data.message);
+                        console.error("Error: " + (data.message || "Unable to fetch report details"));
                     }
                 })
                 .catch(error => {
-                    console.error("Failed: ", error);
+                    console.error("Failed to fetch report details: ", error);
                 });
         }
+
 
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -275,15 +303,33 @@
                             document.getElementById('updateReportPostId').innerText = data.data.postId;
                             document.getElementById('updateReportReason').innerText = data.data.reason;
 
-                            const mediaImg = document.getElementById('updateReportMediaImg');
-                            mediaImg.src = data.data.mediaUrl || 'assets/img/default-image.jpg';
+                            const mediaContainer = document.getElementById('reportMediaContainer1');
+                            mediaContainer.innerHTML = '';
+                            if (data.data.mediaUrls && data.data.mediaUrls.length > 0) {
+                                data.data.mediaUrls.forEach(media => {
+                                    const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
+                                    mediaElement.src = media.mediaUrl || '/assets/img/anhload.jpg';
+                                    mediaElement.onerror = function () {
+                                        this.src = '/assets/img/anhload.jpg';
+                                    };
+                                    mediaElement.className = 'img-fluid rounded mb-2';
+                                    mediaElement.style.width = '200px';
+                                    mediaElement.style.height = '112px';
+                                    mediaElement.style.objectFit = 'cover';
 
-                            // Khởi tạo modal Bootstrap 5 và hiển thị trực tiếp
+                                    if (media.mediaType === 'VIDEO') {
+                                        mediaElement.controls = true;
+                                    }
+
+                                    mediaContainer.appendChild(mediaElement);
+                                });
+                            } else {
+                                mediaContainer.innerText = 'No media available';
+                            }
                             const modalElement = document.getElementById("updateReportModal");
                             const modal = new bootstrap.Modal(modalElement);
                             modal.show();
 
-                            // Lưu thông tin reviewId và userId vào modal (nếu cần dùng sau)
                             modalElement._reviewId = reviewId;
                             modalElement._userId = userId;
                             modalElement._adminId = data.data.adminId
@@ -303,14 +349,14 @@
             if (processReportButton) {
                 processReportButton.addEventListener('click', function () {
                     const modalElement = document.getElementById('updateReportModal');
-                    const modal = new bootstrap.Modal(modalElement);  // Mở modal trực tiếp mà không cần getInstance
+                    const modal = new bootstrap.Modal(modalElement);
                     const userId = modalElement._userId;
                     const userErrorId = modalElement._adminId;
                     const reviewId = modalElement._reviewId;
                     const postId = modalElement._postId;
                     const reportId = modalElement._reportId;
-                    console.log(userErrorId+"userID");
-                    
+                    console.log(userErrorId + "userID");
+
 
                     var violationType = document.getElementById("updateViolationTypeSelect").value;
                     var otherReason = document.getElementById("otherReason").value;
@@ -321,11 +367,10 @@
                             alert("Vui lòng nhập lý do khác");
                             return;
                         } else {
-                            violationType = otherReason.trim();  // Gán giá trị lý do khác
+                            violationType = otherReason.trim();
                         }
                     }
 
-                    // console.log(violationType);
 
                     const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=PROCESSED&action=${encodeURIComponent(action)}`;
 
@@ -340,13 +385,14 @@
                             .then(response => response.json())
                             .then(data => {
                                 alert('Tài khoản đã được khóa 3 ngày!');
+
                             })
                             .catch(error => {
                                 console.error('Lỗi khi xử lý khóa tài khoản:', error);
                                 alert('Xử lý không thành công. Vui lòng thử lại.');
                             });
                     } else if (action === "Khóa tài khoản vĩnh viễn") {
-                        fetch(`http://localhost:8080/onboarding/locked-account/${userErrorId}/isLocked?isLocked=LOOK`, {
+                        fetch(`http://localhost:8080/onboarding/locked-account/${userErrorId}/isLocked?isLocked=LOCK`, {
                             method: "PUT",
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -418,7 +464,7 @@
                         .then(response => response.json())
                         .then(data => {
                             modal.hide();
-                            // window.location.reload()
+                            window.location.reload()
                         })
                         .catch(error => {
                             console.error('Lỗi khi xử lý báo cáo:', error);
