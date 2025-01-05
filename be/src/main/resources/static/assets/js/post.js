@@ -57,15 +57,16 @@ function loadPostDetails(id) {
             if (data.status) {
                 const post = data.data;
 
+                // Hiển thị media
                 const mediaContainer = document.getElementById('mediaContainer');
                 mediaContainer.innerHTML = '';
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
-                    post.mediaUrls.forEach(url => {
+                    post.mediaUrls.forEach(media => {
                         const img = document.createElement('img');
-                        img.src = url;
+                        img.src = media.mediaUrl || '/assets/img/anhload.jpg';
                         img.onerror = function () {
                             this.src = '/assets/img/anhload.jpg';
-                        }
+                        };
                         img.className = 'img-fluid rounded mb-2';
                         img.style.width = '200px';
                         img.style.height = '112px';
@@ -74,8 +75,10 @@ function loadPostDetails(id) {
                     });
                 }
 
-                document.getElementById('postContentDetails').innerText = post.content || 'No content available';
+                // Hiển thị nội dung bài viết
+                document.getElementById('postContentDetails').innerText = post.postContent || 'No content available';
 
+                // Hiển thị thời gian tạo bài viết
                 const date = new Date(post.create_time);
                 if (!isNaN(date.getTime())) {
                     const day = String(date.getDate()).padStart(2, '0');
@@ -89,12 +92,14 @@ function loadPostDetails(id) {
                     document.getElementById('postCreatedTimeDetails').innerText = 'No time available';
                 }
 
+                // Hiển thị các thông tin khác
                 document.getElementById('postLocationDetails').innerText = post.location || 'No location available';
                 document.getElementById('postStatusDetails').innerText = post.status || 'No status available';
-                document.getElementById('postFullnameDetails').innerText = post.fullname || 'Anonymous';
+                document.getElementById('postFullnameDetails').innerText = post.ownerName || 'Anonymous';
                 document.getElementById('postReactionCountDetails').innerText = post.reaction_count || '0';
                 document.getElementById('postCommentCountDetails').innerText = post.comment_count || '0';
 
+                // Hiển thị hashtags
                 const hashtagsContainer = document.getElementById('postHashtagsDetails');
                 hashtagsContainer.innerHTML = '';
                 if (post.hashtags && post.hashtags.length > 0) {
@@ -103,57 +108,59 @@ function loadPostDetails(id) {
                     hashtagsContainer.innerText = 'No hashtags available';
                 }
 
+                // Hiển thị modal chi tiết
                 const modal = new bootstrap.Modal(document.getElementById("postDetailModal"));
                 modal.show();
             } else {
-                console.log("Error: " + data.message);
+                console.error("Error: " + (data.message || "Unable to fetch post details"));
             }
         })
         .catch(error => {
-            console.error("Failed: ", error);
+            console.error("Failed to fetch post details: ", error);
         });
 }
 
-const apiURL = 'http://localhost:8080/locations?page=0&size=100';
-const locationSelect = document.getElementById('postLocation');
 
-if (!token) {
-    console.error("Không tìm thấy token trong localStorage");
-} else {
-    async function fetchLocations() {
-        try {
-            const response = await fetch(apiURL, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+// const apiURL = 'http://localhost:8080/locations?page=0&size=100';
+// const locationSelect = document.getElementById('postLocation');
 
-            if (!response.ok) {
-                throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
-            }
+// if (!token) {
+//     console.error("Không tìm thấy token trong localStorage");
+// } else {
+//     async function fetchLocations() {
+//         try {
+//             const response = await fetch(apiURL, {
+//                 method: 'GET',
+//                 headers: {
+//                     'Authorization': `Bearer ${token}`,
+//                     'Content-Type': 'application/json'
+//                 }
+//             });
 
-            const data = await response.json();
-            console.log("Danh sách Vị Trí:", data);
+//             if (!response.ok) {
+//                 throw new Error(`Lỗi HTTP! Mã trạng thái: ${response.status}`);
+//             }
 
-            locationSelect.innerHTML = '<option value="">Chọn Vị Trí</option>';
+//             const data = await response.json();
+//             console.log("Danh sách Vị Trí:", data);
 
-            if (data.content && Array.isArray(data.content)) {
-                data.content.forEach(location => {
-                    const option = document.createElement('option');
-                    option.value = location.address;
-                    option.textContent = location.address;
-                    locationSelect.appendChild(option);
-                });
-            }
-        } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu vị trí:', error);
-        }
-    }
+//             locationSelect.innerHTML = '<option value="">Chọn Vị Trí</option>';
 
-    fetchLocations();
-}
+//             if (data.content && Array.isArray(data.content)) {
+//                 data.content.forEach(location => {
+//                     const option = document.createElement('option');
+//                     option.value = location.address;
+//                     option.textContent = location.address;
+//                     locationSelect.appendChild(option);
+//                 });
+//             }
+//         } catch (error) {
+//             console.error('Lỗi khi lấy dữ liệu vị trí:', error);
+//         }
+//     }
+
+//     fetchLocations();
+// }
 document.addEventListener("DOMContentLoaded", function () {
     const selectedPostId = localStorage.getItem('selectedPostId');
 
@@ -217,7 +224,7 @@ document.getElementById("logoutLink").addEventListener("click", function () {
     window.location.replace("/web-server/login");
 });
 
-// viewComent
+// viewComment
 document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".viewComments").forEach(button => {
         button.addEventListener("click", function () {

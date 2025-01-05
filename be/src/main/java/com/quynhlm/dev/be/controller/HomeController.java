@@ -1,9 +1,12 @@
 package com.quynhlm.dev.be.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.quynhlm.dev.be.model.dto.responseDTO.GroupResponseDTO;
+import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
@@ -60,8 +64,8 @@ public class HomeController {
         Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
         long groupCount = groupResponseDTOPage.getTotalElements();
         Pageable pageable = PageRequest.of(0, 1000);
-        // Page<PostResponseDTO> postMediaDTOPage = postService.getAllPostsAndSharedPosts(1, pageable);
-        // long postCount = postMediaDTOPage.getTotalElements();
+        Page<PostResponseDTO> postMediaDTOPage = postService.getAllPostsAndSharedPosts(1, pageable);
+        long postCount = postMediaDTOPage.getTotalElements();
 
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
@@ -72,7 +76,7 @@ public class HomeController {
 
         model.addAttribute("userCount", userCount);
         model.addAttribute("groupCount", groupCount);
-        // model.addAttribute("postCount", postCount);
+        model.addAttribute("postCount", postCount);
         model.addAttribute("managerCount", managerCount);
         return "home";
     }
@@ -93,24 +97,18 @@ public class HomeController {
 
     @GetMapping("/users")
     public String user(Model model) {
-        List<User> userList = userService.getAllListUser();
-
-        long userCount = userList.stream()
-                .filter(user -> user.getRoles().contains("USER"))
-                .count();
-        double percentageChange = ((double) (userCount - 9) / 9) * 100;
-        String formattedPercentage = String.format("%.1f", percentageChange);
         model.addAttribute("userList", userService.getAllListUser());
-        model.addAttribute("userCount", userCount);
-        model.addAttribute("formattedPercentage", formattedPercentage);
         return "users";
     }
 
     @GetMapping("/posts")
     public String post(Model model) {
-        // model.addAttribute("body", "posts");
         Pageable pageable = PageRequest.of(0, 1000);
-        model.addAttribute("postList", postService.getAllPostsAndSharedPosts(1, pageable));
+        Page<PostResponseDTO> postPage = postService.getAllPostsAndSharedPosts(1, pageable);
+        List<PostResponseDTO> reversedList = new ArrayList<>(postPage.getContent());
+        Collections.reverse(reversedList);
+        Page<PostResponseDTO> correctedPage = new PageImpl<>(reversedList, pageable, postPage.getTotalElements());
+        model.addAttribute("postList", correctedPage);
         return "posts";
     }
 
@@ -143,18 +141,17 @@ public class HomeController {
     //     model.addAttribute("listComment", commentService.getListData(0, 1000));
     //     return "comments";
     // }
-
     @GetMapping("/reviews")
     public String reviews(Model model) {
         model.addAttribute("listReview", reviewService.getListData(0, 1000));
         return "reviews";
     }
 
-    // @GetMapping("/reports")
-    // public String reports(Model model) {
-    //     model.addAttribute("0/listReports", reportService.getAllReport(0, 1000));
-    //     return "reports";
-    // }
+    @GetMapping("/reports")
+    public String reports(Model model) {
+        model.addAttribute("listReports", reportService.getAllReport(0, 1000));
+        return "reports";
+    }
 
     @GetMapping("/login")
     public String login(Model model) {
