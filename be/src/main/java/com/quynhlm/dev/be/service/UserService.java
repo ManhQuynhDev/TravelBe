@@ -268,8 +268,7 @@ public class UserService {
         }
         // Generate OTP
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-
-        // Create and store OTP details
+        
         OTPResponse otpData = new OTPResponse(otp, LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
         otpStorage.put(email, otpData);
 

@@ -386,7 +386,7 @@ public class CommentService {
                         reply.setUser_reaction_type((String) r[11]);
                         reply.setIsAuthor(foundPost.getUser_id() == ((Number) r[1]).intValue());
 
-                        reply.setMediaUrl((String) r[5] == null ? null
+                        reply.setMediaType((String) r[5] == null ? null
                                 : (String) r[5] != null && ((String) r[5]).matches(".*\\.(jpg|jpeg|png|gif|webp)$")
                                         ? "IMAGE"
                                         : "VIDEO");
