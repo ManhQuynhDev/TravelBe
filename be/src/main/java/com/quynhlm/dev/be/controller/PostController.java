@@ -105,6 +105,14 @@ public class PostController {
         return postService.getAllPostsAndSharedPosts(userId, pageable);
     }
 
+  
+
+    @GetMapping("/all_posts")
+    public Page<PostResponseDTO> getAllPosts(
+            Pageable pageable) {
+        return postService.getAllPosts(pageable);
+    }
+
     @GetMapping("/{post_id}/{user_id}")
     public ResponseEntity<ResponseObject<PostResponseDTO>> getAnPost(@PathVariable Integer post_id,
             @PathVariable Integer user_id) {
@@ -120,6 +128,15 @@ public class PostController {
         postService.deletePost(post_id);
         ResponseObject<Void> result = new ResponseObject<>();
         result.setMessage("Delete post successfully");
+        result.setStatus(true);
+        return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
+    }
+
+    @PutMapping(path = "/restore/{post_id}")
+    public ResponseEntity<ResponseObject<?>> restorePost(@PathVariable Integer post_id) throws Exception {
+        postService.restorePost(post_id);
+        ResponseObject<Void> result = new ResponseObject<>();
+        result.setMessage("Restore post successfully");
         result.setStatus(true);
         return new ResponseEntity<ResponseObject<?>>(result, HttpStatus.OK);
     }

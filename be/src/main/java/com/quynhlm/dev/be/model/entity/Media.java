@@ -21,4 +21,5 @@ public class Media {
     private int post_id;
     private String media_url;
     private String type;
+    private int delflag;
 }

@@ -49,4 +49,5 @@ public class PostResponseDTO {
     private List<String> hashtags;
     private List<MediaResponseDTO> mediaUrls;
     private List<UserTagPostResponse> tags;
+    private Integer delflag;
 }

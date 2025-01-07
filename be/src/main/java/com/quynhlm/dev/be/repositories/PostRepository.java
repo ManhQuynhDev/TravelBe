@@ -15,6 +15,10 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id AND delflag = 0", nativeQuery = true)
     Post getAnPost(@Param("id") int id);
 
+
+    @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id AND delflag = 1", nativeQuery = true)
+    Post getAnPostRestore(@Param("id") int id);
+
     @Query(value = """
                 SELECT
                 p.user_id AS owner_id,
@@ -140,6 +144,50 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
             ORDER BY p.create_time DESC;
                         """, nativeQuery = true)
     Page<Object[]> getAllPostsAndSharedPosts(@Param("userId") Integer userId, Pageable pageable);
+
+    @Query(value = """
+                SELECT
+                p.user_id AS owner_id,
+                p.id AS post_id,
+                p.location_id,
+                l.address,
+                u.fullname AS admin_name,
+                u.avatar_url,
+                p.content,
+                p.status,
+                p.create_time,
+                p.is_share,
+                p.share_by_id,
+                us.fullname AS user_share_name,
+                us.avatar_url AS user_share_avatar,
+                p.share_content,
+                p.share_time,
+                p.status_share,
+                COUNT(DISTINCT r.id) AS reaction_count,
+                COUNT(DISTINCT c.id) AS comment_count,
+            	(SELECT COUNT(*) FROM post WHERE is_share = 1 AND id = p.id) AS share_count,
+                MAX(CASE WHEN r.user_id = 1 THEN r.type ELSE NULL END) AS user_reaction_type,
+                p.post_id,
+                p.delflag
+            FROM
+                Post p
+            INNER JOIN
+                Location l ON l.id = p.location_id
+            INNER JOIN
+                User u ON u.id = p.user_id
+            LEFT JOIN
+                User us ON us.id = p.share_by_id
+            LEFT JOIN
+                post_reaction r ON p.id = r.post_id
+            LEFT JOIN
+            	comment c ON c.id = p.post_id
+            WHERE
+                p.status = 'PUBLIC'
+            GROUP BY
+                p.id, p.user_id, p.content,p.post_id, p.location_id, p.status, p.is_share, p.share_time, p.share_by_id, u.fullname, u.avatar_url, l.address, us.fullname, us.avatar_url
+            ORDER BY p.create_time DESC;
+                        """, nativeQuery = true)
+    Page<Object[]> getAllPost(Pageable pageable);
 
     @Query(value = """
                 SELECT
