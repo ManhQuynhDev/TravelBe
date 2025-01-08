@@ -543,10 +543,11 @@ function saveChanges(userId) {
 
     const currentDate = new Date();
     const birthDate = new Date(dob);
-    const age = currentDate.getFullYear() - birthDate.getFullYear();
+    let age = currentDate.getFullYear() - birthDate.getFullYear(); // Sử dụng let thay vì const
     const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+
     if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
-        age--;
+        age--; // Giảm giá trị của age
     }
 
     if (age < 18 || age > 100) {
@@ -574,6 +575,8 @@ function saveChanges(userId) {
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
+            
             if (data.status) {
                 alert('Cập nhật thông tin thành công!');
                 location.reload();
