@@ -23,9 +23,9 @@ public class UnlockUserTask {
         LocalDateTime now = LocalDateTime.now();
         String date = now.toString().substring(0,9);
         List<User> lockedUsers = userRepository.findAllByIsLockedAndLockDateBefore("LOCK", date);
-        log.info(lockedUsers.size() + "");
         for (User user : lockedUsers) {
             user.setIsLocked("OPEN");
+            user.setReason(null);
             user.setLockDate(null);
             user.setTermDate(null);
             userRepository.save(user);

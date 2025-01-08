@@ -52,6 +52,7 @@ import com.quynhlm.dev.be.core.exception.UserAccountNotFoundException;
 import com.quynhlm.dev.be.enums.AccountStatus;
 import com.quynhlm.dev.be.enums.Role;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.LockUserDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.RegisterDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
@@ -269,7 +270,7 @@ public class UserService {
         }
         // Generate OTP
         String otp = String.valueOf(new Random().nextInt(900000) + 100000);
-        
+
         OTPResponse otpData = new OTPResponse(otp, LocalDateTime.now().plusMinutes(OTP_VALID_DURATION));
         otpStorage.put(email, otpData);
 
@@ -462,7 +463,7 @@ public class UserService {
     // Change STATUS User
 
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public void switchIsLockedUser(Integer id, String isLock)
+    public void switchIsLockedUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
         User user = userRepository.findOneById(id);
         if (user == null) {
@@ -471,24 +472,30 @@ public class UserService {
 
         String[] statusUser = { "OPEN", "LOCK" };
 
-        Boolean isCheck = isLock == null || Arrays.asList(statusUser).contains(isLock);
+        Boolean isCheck = lockUserDTO.getIsLock() == null
+                || Arrays.asList(statusUser).contains(lockUserDTO.getIsLock());
 
         if (isCheck == false) {
             throw new MethodNotValidException("Invalid status user type. Please try again !");
         }
 
-        if (isLock == "LOCK") {
+        if (lockUserDTO.getIsLock() == "LOCK") {
             user.setLockDate(LocalDateTime.now());
+            user.setIsLocked(lockUserDTO.getIsLock());
+            user.setReason(lockUserDTO.getReason() == null ? null : lockUserDTO.getReason());
+            user.setTermDate(null);
         } else {
+            user.setIsLocked("OPEN");
+            user.setReason(null);
+            user.setTermDate(null);
             user.setLockDate(null);
         }
-        user.setIsLocked(isLock);
 
         userRepository.save(user);
     }
 
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
-    public void lockAccountUser(Integer id, String isLock)
+    public void lockAccountUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, BadResquestException {
         User user = userRepository.findOneById(id);
         if (user == null) {
@@ -497,14 +504,15 @@ public class UserService {
 
         String[] statusUser = { "OPEN", "LOCK" };
 
-        if (isLock == null || !Arrays.asList(statusUser).contains(isLock)) {
+        if (lockUserDTO.getIsLock() == null || !Arrays.asList(statusUser).contains(lockUserDTO.getIsLock())) {
             throw new MethodNotValidException("Invalid status user type. Please try again!");
         }
 
-        if (isLock.equals("LOCK")) {
+        if (lockUserDTO.getIsLock().equals("LOCK")) {
             user.setIsLocked("LOCK");
             user.setLockDate(LocalDateTime.now());
             user.setTermDate(LocalDateTime.now().plusDays(3));
+            user.setReason(lockUserDTO.getReason() == null ? null : lockUserDTO.getReason());
         } else {
             user.setIsLocked("OPEN");
             user.setLockDate(null);
@@ -529,7 +537,8 @@ public class UserService {
         }
 
         if (user.getStatus() != null && user.getIsLocked().equals(status)) {
-            throw new BadResquestException("Transaction cannot complete because old status is the same as the new status!");
+            throw new BadResquestException(
+                    "Transaction cannot complete because old status is the same as the new status!");
         }
 
         user.setStatus(status);

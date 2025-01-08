@@ -23,6 +23,7 @@ import com.nimbusds.jose.JOSEException;
 import com.quynhlm.dev.be.core.ResponseObject;
 import com.quynhlm.dev.be.model.dto.requestDTO.ChangePassDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.ConfirmEmailDTO;
+import com.quynhlm.dev.be.model.dto.requestDTO.LockUserDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.LoginDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.RegisterDTO;
 import com.quynhlm.dev.be.model.dto.requestDTO.UpdateProfileDTO;
@@ -104,7 +105,8 @@ public class UserController {
             return ResponseEntity.badRequest().body("Please wait 1 minute before requesting a new OTP.");
         }
     }
-    // Email    
+
+    // Email
     @PostMapping("/verify")
     public ResponseEntity<Boolean> verifyOTP(@RequestBody VerifyDTO verify) {
         if (userService.validateOTP(verify.getEmail(), verify.getOtp())) {
@@ -186,10 +188,10 @@ public class UserController {
         return new ResponseEntity<ResponseObject<Void>>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/locked-account/{id}/isLocked")
+    @PutMapping("/locked-forever/{id}")
     public ResponseEntity<ResponseObject<Void>> switchLockedUser(@PathVariable Integer id,
-            @RequestParam String isLocked) {
-        userService.switchIsLockedUser(id, isLocked);
+            @RequestBody LockUserDTO lockUserDTO) {
+        userService.switchIsLockedUser(id, lockUserDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setStatus(true);
         response.setMessage("Switch status user successfully.");
@@ -241,10 +243,10 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("/look_account/{userId}")
+    @PostMapping("/look_three_days/{userId}")
     public ResponseEntity<ResponseObject<Void>> updateLockStatus(@PathVariable Integer userId,
-            @RequestParam String isLock) {
-        userService.lockAccountUser(userId, isLock);
+            @RequestBody LockUserDTO lockUserDTO) {
+        userService.lockAccountUser(userId, lockUserDTO);
         ResponseObject<Void> response = new ResponseObject<>();
         response.setStatus(true);
         response.setMessage("Transaction successfully.");

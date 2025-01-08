@@ -50,4 +50,5 @@ public class User {
     private String latitude;
     private String longitude;
     private Integer delflag;
+    private String reason;
 }
