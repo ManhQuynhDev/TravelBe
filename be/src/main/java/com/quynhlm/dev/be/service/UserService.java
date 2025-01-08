@@ -44,6 +44,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.quynhlm.dev.be.core.exception.AccountIsDisabledException;
+import com.quynhlm.dev.be.core.exception.BadResquestException;
 import com.quynhlm.dev.be.core.exception.MethodNotValidException;
 import com.quynhlm.dev.be.core.exception.UnknownException;
 import com.quynhlm.dev.be.core.exception.UserAccountExistingException;
@@ -488,7 +489,7 @@ public class UserService {
 
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void lockAccountUser(Integer id, String isLock)
-            throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
+            throws UserAccountNotFoundException, MethodNotValidException, BadResquestException {
         User user = userRepository.findOneById(id);
         if (user == null) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
@@ -500,7 +501,7 @@ public class UserService {
             throw new MethodNotValidException("Invalid status user type. Please try again!");
         }
 
-        if ("LOCK".equals(isLock)) {
+        if (isLock.equals("LOCK")) {
             user.setIsLocked("LOCK");
             user.setLockDate(LocalDateTime.now());
             user.setTermDate(LocalDateTime.now().plusDays(3));
@@ -513,7 +514,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public void switchStatusUser(Integer id, String status) throws UserAccountNotFoundException, UnknownException {
+    public void switchStatusUser(Integer id, String status) throws UserAccountNotFoundException, BadResquestException {
         User user = userRepository.findOneById(id);
         if (user == null) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
@@ -528,7 +529,7 @@ public class UserService {
         }
 
         if (user.getStatus() != null && user.getIsLocked().equals(status)) {
-            throw new UnknownException("Transaction cannot complete because old status is the same as the new status!");
+            throw new BadResquestException("Transaction cannot complete because old status is the same as the new status!");
         }
 
         user.setStatus(status);

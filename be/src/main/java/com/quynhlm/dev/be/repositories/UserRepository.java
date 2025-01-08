@@ -1,6 +1,5 @@
 package com.quynhlm.dev.be.repositories;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -95,5 +94,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
              """, nativeQuery = true)
     Page<User> findAllManager(Pageable pageable);
 
-    List<User> findAllByIsLockedAndLockDateBefore(String isLocked, LocalDateTime lockDate);
+    @Query("SELECT u FROM User u WHERE u.isLocked = :isLocked AND  CAST(u.termDate AS string) LIKE CONCAT(:term_date, '%')")
+    List<User> findAllByIsLockedAndLockDateBefore(@Param("isLocked") String isLocked,
+            @Param("term_date") String term_date);
 }
