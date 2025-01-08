@@ -89,7 +89,7 @@
                                     <th>#</th>
                                     <th>Họ và Tên</th>
                                     <th>Email</th>
-                                    <th>Số điện thoại</th>
+                                    <!-- <th>Số điện thoại</th> -->
                                     <th>Chức vụ</th>
                                     <th>Trạng thái</th>
                                     <th>Ngày tạo</th>
@@ -97,8 +97,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="user : ${userList}">
-                                    <td class="text-start" th:text="${user.id}">ID</td>
+                                <tr th:each="user, iterStat :  ${userList}">
+                                    <td class="text-start" th:text="${iterStat.index + 1}">ID</td>
 
                                     <td class="table-column-pl-0">
                                         <a class="d-flex align-items-center"
@@ -129,17 +129,18 @@
 
 
                                     <td class="text-start" th:text="${user.email}">Email</td>
-                                    <td class="text-start">
+                                    <!-- <td class="text-start">
                                         <span th:if="${user.phoneNumber != null}"
                                             th:text="${user.phoneNumber}">Phone</span>
                                         <span th:unless="${user.phoneNumber != null}"
                                             th:text="'No phone number'">Phone</span>
-                                    </td>
+                                    </td> -->
 
                                     <td class="text-start" th:text="${user.roles[0]}">Role</td>
-                                    <td class="text-start" th:text="${user.isLocked == 'LOOK' ? 'LOCK' : user.isLocked}">Role</td>
                                     <td class="text-start"
-                                        th:text="${#dates.format(user.create_at, 'dd-MM-yyyy')}">Ngày Tạo</td>
+                                        th:text="${user.isLocked == 'LOOK' ? 'LOCK' : user.isLocked}">Role</td>
+                                    <td class="text-start" th:text="${#dates.format(user.create_at, 'dd-MM-yyyy')}">Ngày
+                                        Tạo</td>
 
                                     <td>
                                         <button class="btn btn-sm btn-outline-success" th:attr="data-id=${user.id}">
@@ -161,7 +162,7 @@
             <div th:replace="fragments/users/switchUserModal"></div>
             <div th:replace="fragments/users/addUserModal"></div>
             <div th:replace="fragments/users/userDetailsModal"></div>
-            
+
         </div>
     </div>
 
@@ -215,7 +216,7 @@
                 pageLength: 5,
                 columnDefs: [
                     {
-                        targets: [7],
+                        targets: [6],
                         orderable: false
                     }
                 ],

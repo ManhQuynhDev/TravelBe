@@ -61,6 +61,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         List<User> userList = userService.getAllListUser();
+        Page<User> managerList = userService.getAllListManager(0, 1000);
         Page<GroupResponseDTO> groupResponseDTOPage = groupService.getAllGroup(0, 1000);
         long groupCount = groupResponseDTOPage.getTotalElements();
         Pageable pageable = PageRequest.of(0, 1000);
@@ -70,10 +71,9 @@ public class HomeController {
         long userCount = userList.stream()
                 .filter(user -> user.getRoles().contains("USER"))
                 .count();
-        long managerCount = userList.stream()
+        long managerCount = managerList.getContent().stream()
                 .filter(user -> user.getRoles().contains("MANAGER") || user.getRoles().contains("ADMIN"))
                 .count();
-
         model.addAttribute("userCount", userCount);
         model.addAttribute("groupCount", groupCount);
         model.addAttribute("postCount", postCount);
