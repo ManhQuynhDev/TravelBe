@@ -138,11 +138,11 @@
                         if (data.error?.message?.includes("not found")) {
                             throw new Error("Tài khoản không tồn tại. Vui lòng thử lại.");
                         }
-                        throw new Error(data.error?.message || "Email hoặc mật khẩu không hợp lệ.");
+                        throw new Error(data.error?.message);
                     }
 
                     if (!data.userInfo || !data.userInfo.id) {
-                        throw new Error("Email hoặc mật khẩu không hợp lệ.");
+                        throw new Error("Mật khẩu không chính xác, vui lòng kiểm tra lại để đăng nhập.");
                     }
 
 
