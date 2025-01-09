@@ -26,7 +26,7 @@ public class AppExceptionHandler {
             ActivitiesExistingException.class, ActivitiesNotFoundException.class, ShareNotFoundException.class,
             ReplyNotFoundException.class, ReportExistingException.class, TagNotFoundException.class,
             LocationNotFoundException.class, NotificationNotFoundException.class, ReviewExitstingException.class,
-            AccountIsDisabledException.class })
+            AccountIsDisabledException.class, NotFoundException.class })
     public ResponseEntity<ResponseObject> handleCustomExceptions(RuntimeException ex, HttpServletRequest request) {
         ResponseObject response = new ResponseObject();
         response.setMessage("Data is invalid.");
@@ -100,6 +100,8 @@ public class AppExceptionHandler {
                 break;
             case "AccountIsDisabledException":
                 errorCode = AppError.ErrorCode.ACCOUNT_DISABLED;
+            case "NotFoundException":
+                errorCode = AppError.ErrorCode.NOT_FOUND;
             default:
                 errorCode = AppError.ErrorCode.UNKNOWN;
                 break;
