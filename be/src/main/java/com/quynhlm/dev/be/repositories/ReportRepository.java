@@ -13,99 +13,156 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
        @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND post_id = :postId", nativeQuery = true)
        Report foundReportExitByUserIdAndPostId(int userId, int postId);
 
+       @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND comment_id = :commentId", nativeQuery = true)
+       Report foundReportExitByUserIdAndCommentId(int userId, int commentId);
+
        @Query(value = "SELECT * FROM Report WHERE id = :id", nativeQuery = true)
        Report findReportById(Integer id);
 
        @Query(value = """
-                     select 
-                     DISTINCT
-                     r.id , 
-                     u.id as user_report , 
-                     r.post_id ,
-                     p.user_id as admin_post, 
-                     u.fullname , 
-                     u.avatar_url , 
-                     p.content as contentPost,
-                     r.media_url as media_report, 
-                     r.reason , 
-                     r.violation_type ,
-                     r.status,
-                     r.action,
-                     r.create_time ,
-                     r.response_time  
-                     from report r
-                     INNER JOIN User u on u.id = r.user_id
-                     INNER JOIN Post p on p.id = r.post_id
-                     where r.user_id = :user_id; """, nativeQuery = true)
+                         SELECT DISTINCT
+                         r.id,
+                         u.id AS user_report,
+                         COALESCE(r.post_id, r.comment_id) AS related_id,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.user_id
+                             ELSE p.user_id
+                         END AS admin_related,
+                         u.fullname,
+                         u.avatar_url,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.content
+                             ELSE p.content
+                         END AS contentRelated,
+                         r.media_url AS media_report,
+                         r.reason,
+                         r.violation_type,
+                         r.status,
+                         r.action,
+                         r.create_time,
+                         r.response_time,
+                         CASE
+                            WHEN r.comment_id IS NOT NULL THEN "COMMENT"
+                            ELSE "POST"
+                            END AS type
+                     FROM
+                         report r
+                     INNER JOIN
+                         User u ON u.id = r.user_id
+                     LEFT JOIN
+                         Post p ON p.id = r.post_id
+                     LEFT JOIN
+                         Comment c ON c.id = r.comment_id
+                     WHERE r.user_id = :user_id
+                     GROUP BY
+                         r.id, u.id, r.post_id, r.comment_id, u.fullname, u.avatar_url,
+                         p.content, c.content, r.reason, r.violation_type, r.status,
+                         r.create_time, r.action, r.response_time, c.user_id, p.user_id""", nativeQuery = true)
        Page<Object[]> getAllReportUserCreate(Integer user_id, Pageable pageable);
 
        @Query(value = """
-                     SELECT  
-                     DISTINCT
-                     r.id , 
-                     u.id as user_report , 
-                     r.post_id ,
-                     p.user_id as admin_post, 
-                     u.fullname , 
-                     u.avatar_url , 
-                     p.content as contentPost,
-                     r.media_url as media_report, 
-                     r.reason , 
-                     r.violation_type ,
-                     r.status,
-                     r.action,
-                     r.create_time ,
-                     r.response_time
-                     FROM report r
-                     INNER JOIN User u ON u.id = r.user_id
-                     INNER JOIN Post p ON p.id = r.post_id
-                     GROUP BY r.id, u.id, r.post_id, p.user_id, u.fullname, u.avatar_url, p.content, r.reason, r.violation_type, r.status, r.create_time, r.action, r.response_time
-                     """, nativeQuery = true)
+                         SELECT DISTINCT
+                         r.id,
+                         u.id AS user_report,
+                         COALESCE(r.post_id, r.comment_id) AS related_id,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.user_id
+                             ELSE p.user_id
+                         END AS admin_related,
+                         u.fullname,
+                         u.avatar_url,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.content
+                             ELSE p.content
+                         END AS contentRelated,
+                         r.media_url AS media_report,
+                         r.reason,
+                         r.violation_type,
+                         r.status,
+                         r.action,
+                         r.create_time,
+                         r.response_time,
+                            CASE
+                            WHEN r.comment_id IS NOT NULL THEN "COMMENT"
+                            ELSE "POST"
+                            END AS type
+                     FROM
+                         report r
+                     INNER JOIN
+                         User u ON u.id = r.user_id
+                     LEFT JOIN
+                         Post p ON p.id = r.post_id
+                     LEFT JOIN
+                         Comment c ON c.id = r.comment_id
+                     GROUP BY
+                         r.id, u.id, r.post_id, r.comment_id, u.fullname, u.avatar_url,
+                         p.content, c.content, r.reason, r.violation_type, r.status,
+                         r.create_time, r.action, r.response_time, c.user_id, p.user_id;
+                                          """, nativeQuery = true)
        Page<Object[]> getAllReport(Pageable pageable);
 
        @Query(value = """
-                     select 
-                     r.id , 
-                     u.id as user_report , 
-                     r.post_id ,
-                     p.user_id as admin_post, 
-                     u.fullname , 
-                     u.avatar_url , 
-                     p.content as contentPost,
-                     r.media_url as media_report, 
-                     r.reason , 
-                     r.violation_type ,
-                     r.status,
-                     r.action,
-                     r.create_time ,
-                     r.response_time  from report r
-                     INNER JOIN User u on u.id = r.user_id
-                     INNER JOIN Post p on p.id = r.post_id
-                     where p.delflag = 0 AND r.id = :id;
-                     """, nativeQuery = true)
+                         SELECT DISTINCT
+                         r.id,
+                         u.id AS user_report,
+                         COALESCE(r.post_id, r.comment_id) AS related_id,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.user_id
+                             ELSE p.user_id
+                         END AS admin_related,
+                         u.fullname,
+                         u.avatar_url,
+                         CASE
+                             WHEN r.comment_id IS NOT NULL THEN c.content
+                             ELSE p.content
+                         END AS contentRelated,
+                         r.media_url AS media_report,
+                         r.reason,
+                         r.violation_type,
+                         r.status,
+                         r.action,
+                         r.create_time,
+                         r.response_time,
+                         CASE
+                            WHEN r.comment_id IS NOT NULL THEN "COMMENT"
+                            ELSE "POST"
+                            END AS type
+                     FROM
+                         report r
+                     INNER JOIN
+                         User u ON u.id = r.user_id
+                     LEFT JOIN
+                         Post p ON p.id = r.post_id
+                     LEFT JOIN
+                         Comment c ON c.id = r.comment_id
+                     WHERE r.id = :id
+                     GROUP BY
+                         r.id, u.id, r.post_id, r.comment_id, u.fullname, u.avatar_url,
+                         p.content, c.content, r.reason, r.violation_type, r.status,
+                         r.create_time, r.action, r.response_time, c.user_id, p.user_id""", nativeQuery = true)
        List<Object[]> getAnReport(Integer id);
 
        @Query(value = """
-              SELECT v.violation_type,
-                     COALESCE(COUNT(r.violation_type), 0) AS count
-              FROM (
-                  SELECT 'Spam' AS violation_type
-                  UNION ALL
-                  SELECT 'Ngôn ngữ thù địch'
-                  UNION ALL
-                  SELECT 'Quấy rối'
-                  UNION ALL
-                  SELECT 'Nội dung không phù hợp'
-              ) AS v
-              LEFT JOIN report r ON r.violation_type = v.violation_type
-              GROUP BY v.violation_type
-              UNION ALL
-              SELECT 'Các loại khác' AS violation_type,
-                     COUNT(*) AS count
-              FROM report r
-              WHERE r.violation_type NOT IN ('Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp')
-              ORDER BY count DESC;
-          """, nativeQuery = true)
-          Page<Object[]> statisticsReport(Pageable pageable);
-          
+                         SELECT v.violation_type,
+                                COALESCE(COUNT(r.violation_type), 0) AS count
+                         FROM (
+                             SELECT 'Spam' AS violation_type
+                             UNION ALL
+                             SELECT 'Ngôn ngữ thù địch'
+                             UNION ALL
+                             SELECT 'Quấy rối'
+                             UNION ALL
+                             SELECT 'Nội dung không phù hợp'
+                         ) AS v
+                         LEFT JOIN report r ON r.violation_type = v.violation_type
+                         GROUP BY v.violation_type
+                         UNION ALL
+                         SELECT 'Các loại khác' AS violation_type,
+                                COUNT(*) AS count
+                         FROM report r
+                         WHERE r.violation_type NOT IN ('Spam', 'Ngôn ngữ thù địch', 'Quấy rối', 'Nội dung không phù hợp')
+                         ORDER BY count DESC;
+                     """, nativeQuery = true)
+       Page<Object[]> statisticsReport(Pageable pageable);
+
 }

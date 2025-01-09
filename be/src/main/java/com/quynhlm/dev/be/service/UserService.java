@@ -465,8 +465,8 @@ public class UserService {
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void switchIsLockedUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
-        User user = userRepository.findOneById(id);
-        if (user == null) {
+        User foundUser = userRepository.findOneById(id);
+        if (foundUser == null) {
             throw new UserAccountNotFoundException("ID: " + id + " not found. Please try another!");
         }
 
@@ -479,19 +479,19 @@ public class UserService {
             throw new MethodNotValidException("Invalid status user type. Please try again !");
         }
 
-        if (lockUserDTO.getIsLock() == "LOCK") {
-            user.setLockDate(LocalDateTime.now());
-            user.setIsLocked(lockUserDTO.getIsLock());
-            user.setReason(lockUserDTO.getReason() == null ? null : lockUserDTO.getReason());
-            user.setTermDate(null);
+        if (lockUserDTO.getIsLock().equals("LOCK")) {
+            foundUser.setLockDate(LocalDateTime.now());
+            foundUser.setIsLocked(lockUserDTO.getIsLock());
+            foundUser.setReason(lockUserDTO.getReason() == null ? null : lockUserDTO.getReason());
+            foundUser.setTermDate(null);
         } else {
-            user.setIsLocked("OPEN");
-            user.setReason(null);
-            user.setTermDate(null);
-            user.setLockDate(null);
+            foundUser.setIsLocked("OPEN");
+            foundUser.setReason(null);
+            foundUser.setTermDate(null);
+            foundUser.setLockDate(null);
         }
 
-        userRepository.save(user);
+        userRepository.save(foundUser);
     }
 
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")

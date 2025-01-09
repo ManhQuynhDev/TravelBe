@@ -170,4 +170,13 @@ public class AppExceptionHandler {
         response.setError(new AppError(ErrorCode.USER_ALREADY, ex.getMessage()));
         return new ResponseEntity<ResponseObject>(response, HttpStatus.OK);
     }
+
+    @ExceptionHandler(value = { BadResquestException.class })
+    public ResponseEntity<?> badRequest(Exception ex, HttpServletRequest request) {
+        ResponseObject response = new ResponseObject();
+        response.setStatus(false);
+        response.setMessage("Bad request exception!.");
+        response.setError(new AppError(ErrorCode.USER_ALREADY, ex.getMessage()));
+        return new ResponseEntity<ResponseObject>(response, HttpStatus.BAD_REQUEST);
+    }
 }

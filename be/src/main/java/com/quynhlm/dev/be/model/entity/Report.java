@@ -17,10 +17,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Report {
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private int postId;
+    private Integer postId;
+    private Integer commentId;
     private int userId;
     private String status;
     private String mediaUrl;
@@ -30,3 +31,4 @@ public class Report {
     private String action;
     private String response_time;
 }
+ 

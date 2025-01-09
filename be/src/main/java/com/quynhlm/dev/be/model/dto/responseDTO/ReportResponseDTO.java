@@ -15,6 +15,7 @@ public class ReportResponseDTO {
     private Integer id;
     private Integer ownerId;
     private Integer postId;
+    private Integer commentId;
     private Integer adminId;
     private String fullname;
     private String avatarUrl;
@@ -27,5 +28,6 @@ public class ReportResponseDTO {
     private String action;
     private String create_time;
     private String responseTime;
+    private String type;
     private List<MediaResponseDTO> mediaUrls;
 }

@@ -43,9 +43,9 @@ public class ReportController {
         }
 
         ResponseObject<ReportResponseDTO> result = new ResponseObject<>();
-        ReportResponseDTO response = reportService.createReport(report, file);
+        ReportResponseDTO reportResponseDTO = reportService.createReport(report, file);
         result.setMessage("Create a new report successfully");
-        result.setData(response);
+        result.setData(reportResponseDTO);
         result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

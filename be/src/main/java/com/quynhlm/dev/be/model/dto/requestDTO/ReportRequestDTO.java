@@ -10,7 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReportRequestDTO {
-    private int postId;
+    private Integer postId;
+    private Integer commentId;
     private int userId;
     private String reason;
     private String violationType;

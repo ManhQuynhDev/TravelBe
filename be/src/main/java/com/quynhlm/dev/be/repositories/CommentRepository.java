@@ -20,6 +20,9 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Query(value = "SELECT * FROM Comment WHERE id = :id and del_flag = 0", nativeQuery = true)
     Comment findComment(@Param("id") Integer id);
 
+    @Query(value = "SELECT media_url FROM Comment WHERE id = :id and del_flag = 0", nativeQuery = true)
+    String findMediaUrlComment(@Param("id") Integer id);
+
     @Modifying
     @Transactional
     @Query("UPDATE Comment f SET f.delFlag = 1 WHERE f.id = :feedbackId OR f.replyToId = :feedbackId")
