@@ -115,7 +115,9 @@
                                         th:text="${report.violationType != null ? report.violationType : 'Unknown'}">
                                         Violation Type</td>
                                     <td class="text-start"
-                                        th:text="${report.status != null ? report.status : 'Pending'}">Status</td>
+                                        th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : 'Chưa xử lý'}">Status
+                                    </td>
+
                                     <td class="text-start"
                                         th:text="${report.reason != null ? report.reason : 'No reason specified'}">
                                         Reason</td>
