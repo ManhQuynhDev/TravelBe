@@ -19,6 +19,7 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.service.ActivitiesService;
 import com.quynhlm.dev.be.service.CommentService;
+import com.quynhlm.dev.be.service.ComplaintService;
 import com.quynhlm.dev.be.service.GroupService;
 import com.quynhlm.dev.be.service.PostService;
 import com.quynhlm.dev.be.service.ReportService;
@@ -57,6 +58,9 @@ public class HomeController {
 
     @Autowired
     private StoryService storyService;
+    
+    @Autowired
+    private ComplaintService complaintService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -84,6 +88,7 @@ public class HomeController {
     @GetMapping("/manager")
     public String getContentPage(Model model) {
         Page<User> managers = userService.getAllListManager(0, 1000);
+        System.out.println("Number of managers: " + managers.getTotalElements());
         model.addAttribute("managers", managers);
         return "manager";
     }
@@ -104,7 +109,7 @@ public class HomeController {
     @GetMapping("/posts")
     public String post(Model model) {
         Pageable pageable = PageRequest.of(0, 1000);
-        Page<PostResponseDTO> postPage = postService.getAllPostsAndSharedPosts(1, pageable);
+        Page<PostResponseDTO> postPage = postService.getAllPosts(pageable);
         List<PostResponseDTO> reversedList = new ArrayList<>(postPage.getContent());
         Collections.reverse(reversedList);
         Page<PostResponseDTO> correctedPage = new PageImpl<>(reversedList, pageable, postPage.getTotalElements());
@@ -136,11 +141,11 @@ public class HomeController {
         return "stories";
     }
 
-    // @GetMapping("/comments")
-    // public String comments(Model model) {
-    //     model.addAttribute("listComment", commentService.getListData(0, 1000));
-    //     return "comments";
-    // }
+    @GetMapping("/complaints")
+    public String comments(Model model) {
+        model.addAttribute("listComplaints", complaintService.getAllComplaint(0, 1000));
+        return "complaints";
+    }
     @GetMapping("/reviews")
     public String reviews(Model model) {
         model.addAttribute("listReview", reviewService.getListData(0, 1000));
