@@ -182,16 +182,18 @@ public class ComplaintService {
         return results.map((row) -> {
             ComplaintResponseDTO complaintResponseDTO = new ComplaintResponseDTO();
             complaintResponseDTO.setUserId(((Number) row[0]).intValue());
-            complaintResponseDTO.setComplaintId(((Number) row[1]).intValue());
-            complaintResponseDTO.setType((String) row[2]);
-            complaintResponseDTO.setComplaintReason((String) row[3]);
-            complaintResponseDTO.setAttachment((String) row[4]);
-            complaintResponseDTO.setStatus((String) row[5]);
-            complaintResponseDTO.setResponseTime((String) row[6]);
-            complaintResponseDTO.setResponseMessage((String) row[7]);
-            complaintResponseDTO.setReport_reason((String) row[8]);
-            complaintResponseDTO.setViolation_type((String) row[9]);
-            complaintResponseDTO.setLock_date((LocalDateTime) row[10]);
+            complaintResponseDTO.setEmail((String) row[1]);
+            complaintResponseDTO.setAvatar((String) row[2]);
+            complaintResponseDTO.setComplaintId(((Number) row[3]).intValue());
+            complaintResponseDTO.setType((String) row[4]);
+            complaintResponseDTO.setComplaintReason((String) row[5]);
+            complaintResponseDTO.setAttachment((String) row[5]);
+            complaintResponseDTO.setStatus((String) row[7]);
+            complaintResponseDTO.setResponseTime((String) row[8]);
+            complaintResponseDTO.setResponseMessage((String) row[9]);
+            complaintResponseDTO.setReport_reason((String) row[10]);
+            complaintResponseDTO.setViolation_type((String) row[11]);
+            complaintResponseDTO.setLock_date((LocalDateTime) row[12]);
 
             return complaintResponseDTO;
         });
