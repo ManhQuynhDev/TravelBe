@@ -11,7 +11,7 @@ $(document).ready(function () {
         pageLength: 5,
         columnDefs: [
             {
-                targets: [6],
+                targets: [5],
                 orderable: false
             }
         ],
@@ -201,16 +201,16 @@ document.querySelectorAll('#deletePost').forEach(button => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.message === "Delete post successfully") {
-                        alert("Xóa bài viết thành công");
+                        showModal("success", "Thông báo", "Ẩn bài viết thành công");
                         modal.hide();
 
-                        const storyRow = button.closest('tr');
-                        if (storyRow) {
-                            storyRow.remove();
-                        }
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     } else {
                         alert("Failed to delete post");
                     }
+
                 })
                 .catch(error => {
                     console.log(error);
@@ -278,6 +278,27 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+function showModal(type, title, message) {
+    document.getElementById('notificationModalLabel').textContent = title;
+    document.getElementById('notificationModalBody').textContent = message;
+
+    const modalElement = document.getElementById('notificationModal');
+    modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+    if (type === 'success') {
+        modalElement.classList.add('modal-success');
+    } else if (type === 'info') {
+        modalElement.classList.add('modal-info');
+    } else if (type === 'warning') {
+        modalElement.classList.add('modal-warning');
+    } else if (type === 'danger') {
+        modalElement.classList.add('modal-danger');
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}
 
 
 

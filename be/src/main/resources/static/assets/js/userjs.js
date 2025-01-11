@@ -63,7 +63,7 @@ function checkStatus(userId) {
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
-    
+
         const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
         modal.show();
 
@@ -85,10 +85,9 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                             .then(data => {
                                 if (data) {
                                     modal.hide();
-                                    alert("Mở tài khoản thành công")
-                                    location.reload();
+                                    showNotification("Mở tài khoản thành công");
                                 } else {
-                                    alert("Có lỗi xảy ra khi mở khóa tài khoản.");
+                                    showNotification("Có lỗi xảy ra khi mở khóa tài khoản.");
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
@@ -103,10 +102,9 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                             .then(data => {
                                 if (data) {
                                     modal.hide();
-                                    alert("Khóa tài khoản thành công")
-                                    location.reload();
+                                    showNotification("Khóa tài khoản thành công");
                                 } else {
-                                    alert("Có lỗi xảy ra khi khóa tài khoản.");
+                                    showNotification("Có lỗi xảy ra khi khóa tài khoản.");
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
@@ -119,15 +117,23 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
     });
 });
 
+function showNotification(message) {
+    const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+    const notificationModalLabel = document.getElementById('notificationModalLabel');
+    const notificationModalBody = document.getElementById('notificationModalBody');
+
+    notificationModalLabel.textContent = "Thông báo";
+    notificationModalBody.textContent = message;
+
+    notificationModal.show();
+}
+
+
 function replaceButtonWithClone(button) {
     const newButton = button.cloneNode(true);
     button.parentNode.replaceChild(newButton, button);
     return newButton;
 }
-
-
-
-
 function loadUserDetails(userId) {
     fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',

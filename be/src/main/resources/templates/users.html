@@ -16,27 +16,20 @@
             display: block;
             width: 100%;
             overflow-x: auto;
-            /* Cho phép cuộn ngang khi cần thiết */
             -webkit-overflow-scrolling: touch;
-            /* Tạo hiệu ứng cuộn mượt trên thiết bị di động */
             margin-bottom: 15px;
-            /* Thêm khoảng cách dưới để tránh bị dính vào phần tử dưới */
         }
 
         #modernTable {
             width: 100%;
-            /* Đảm bảo bảng chiếm toàn bộ chiều rộng */
 
         }
 
         #modernTable th,
         #modernTable td {
             white-space: nowrap;
-            /* Ngăn các ô trong bảng xuống hàng */
             overflow: hidden;
-            /* Ẩn nội dung thừa nếu có */
             text-overflow: ellipsis;
-            /* Thêm dấu ba chấm nếu nội dung bị cắt */
         }
     </style>
 </head>
@@ -162,6 +155,7 @@
             <div th:replace="fragments/users/switchUserModal"></div>
             <div th:replace="fragments/users/addUserModal"></div>
             <div th:replace="fragments/users/userDetailsModal"></div>
+            <div th:replace="fragments/notification"></div>
 
         </div>
     </div>
