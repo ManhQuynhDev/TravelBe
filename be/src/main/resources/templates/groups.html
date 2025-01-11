@@ -147,6 +147,8 @@
             <div th:replace="fragments/groups/viewPlanModal"></div>
             <div th:replace="fragments/groups/addGroupModal"></div>
             <div th:replace="fragments/groups/deleteGroupModal"></div>
+            <div th:replace="fragments/notification"></div>
+
         </div>
     </div>
 
@@ -309,7 +311,7 @@
                 modal.show();
             } catch (error) {
                 console.error('Error loading group details:', error);
-                alert('Could not load group details. Please try again.');
+                // alert('Could not load group details. Please try again.');
             }
         }
 
@@ -420,14 +422,13 @@
                         .then(data => {
                             console.log(data);
 
-                            alert("Xóa nhóm thành công");
-                            modal.hide();
+                            showModal("success", "Thành công", "Xóa nhóm thành công.");
 
-                            const groupRow = button.closest('tr');
-                            if (groupRow) {
-                                groupRow.remove();
-                            }
-                            window.location.reload();
+                            modal.hide();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+
                         })
                         .catch(error => {
                             console.log(error);
@@ -494,7 +495,26 @@
                 });
             }
         }
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
 
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
 
 
 

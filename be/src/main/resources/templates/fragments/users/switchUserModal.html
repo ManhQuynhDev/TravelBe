@@ -1,18 +1,23 @@
-<div class="modal fade" id="lockUserModal" tabindex="-1" aria-labelledby="lockUserModalTitle" style="display: none;" aria-hidden="true">
+<div class="modal fade" id="lockUserModal" tabindex="-1" aria-labelledby="lockUserModalTitle" style="display: none;"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 id="lockUserModalTitle" class="modal-title">Chuyển trạng thái người dùng</h5>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal" aria-label="Đóng">
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-bs-dismiss="modal"
+                    aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <p>Bạn có chắc chắn muốn chuyển đổi trạng thái người dùng này không?</p>
+                <p id="unlockConfirmationText">Bạn có chắc chắn muốn mở khóa tài khoản này không?</p>
+                <label for="reasonInput" id="reasonInputLabel" class="form-label">Lý do khóa:</label>
+                <input type="text" id="reasonInput" class="form-control" placeholder="Nhập lý do khóa...">
             </div>
+            
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="openAccount" disabled>MỞ</button>
-                <button type="button" id="confirmLock" class="btn btn-danger" disabled>KHÓA</button>
+                <button type="button" class="btn btn-success" id="openAccount">MỞ</button>
+                <button type="button" id="confirmLock" class="btn btn-danger">KHÓA</button>
             </div>
         </div>
     </div>
