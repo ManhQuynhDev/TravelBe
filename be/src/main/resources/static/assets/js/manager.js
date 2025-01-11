@@ -257,34 +257,34 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
     const password = document.getElementById('managerPassword').value.trim();
 
     if (!fullname || !email || !phone || !password) {
-        showModal('danger',"Lỗi", "Vui lòng điền đầy đủ thông tin!");
+        showModal('danger', "Lỗi", "Vui lòng điền đầy đủ thông tin!");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     if (fullname.length < 3) {
-        showModal('danger',"Lỗi", "Họ tên phải có ít nhất 3 ký tự.");
+        showModal('danger', "Lỗi", "Họ tên phải có ít nhất 3 ký tự.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     // Kiểm tra tên có chứa ký tự đặc biệt ngoài dấu cách không
     if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(fullname)) {
-        showModal('danger',"Lỗi", "Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
+        showModal('danger', "Lỗi", "Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     const emailRegex = /^[a-zA-Z][a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]*(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-        showModal('danger',"Lỗi", "Vui lòng nhập địa chỉ email hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập địa chỉ email hợp lệ.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
     if (!phoneRegex.test(phone)) {
-        showModal('danger',"Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
@@ -296,27 +296,27 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
     const passwordMinLength = 8;
 
     if (password.length < passwordMinLength) {
-        showModal('danger',"Lỗi", "Mật khẩu phải có ít nhất 8 ký tự.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 8 ký tự.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexLowercase.test(password)) {
-        showModal('danger',"Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexUppercase.test(password)) {
-        showModal('danger',"Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexNumber.test(password)) {
-        showModal('danger',"Lỗi", "Mật khẩu phải có ít nhất 1 chữ số.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ số.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexSpecialChar.test(password)) {
-        showModal('danger',"Lỗi", "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
@@ -341,19 +341,22 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
             console.log(data);
 
             if (data.status) {
-                showModal('success',"Thông báo", "Thêm quản lý thành công!");
+                showModal('success', "Thông báo", "Thêm quản lý thành công!");
                 var addManagerModal = new bootstrap.Modal(document.getElementById("addManagerModal"));
                 addManagerModal.hide();
-                // window.location.reload();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                showModal('danger',"Lỗi", "Failed to create manager: " + data.error.message);
+                showModal('danger', "Lỗi", "Failed to create manager: " + data.error.message);
             }
             // Kích hoạt lại nút submit sau khi hoàn tất
             submitButton.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
-            showModal('danger',"Lỗi", 'An error occurred while creating the manager.');
+            showModal('danger', "Lỗi", 'An error occurred while creating the manager.');
             submitButton.disabled = false;  // Kích hoạt lại nút submit
         });
 });
@@ -362,6 +365,9 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
 function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
     const lockButton = document.getElementById('confirmLock');
+    const reasonInputLabel = document.getElementById("reasonInputLabel");
+    const reasonInput = document.getElementById("reasonInput");
+    const unlockConfirmationText = document.getElementById("unlockConfirmationText");
 
     return fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
@@ -369,75 +375,120 @@ function checkStatus(userId) {
     })
         .then(res => res.json())
         .then(data => {
-            const userAccount = data.data.isLocked; // Lấy trạng thái tài khoản
+            const userAccount = data.data.isLocked;
+
             if (userAccount === "LOCK") {
-                openButton.disabled = false;
-                lockButton.disabled = true;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Mở khóa tài khoản";
+                lockButton.style.display = "none"; // Ẩn nút khóa
+                openButton.style.display = "block";
+                reasonInputLabel.style.display = "none"; // Ẩn lý do khóa
+                reasonInput.style.display = "none"; // Ẩn input lý do khóa
+                unlockConfirmationText.style.display = "block"; // Hiển thị xác nhận mở khóa
             } else {
-                openButton.disabled = true;
-                lockButton.disabled = false;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Khóa tài khoản";
+                openButton.style.display = "none"; // Ẩn nút mở khóa
+                lockButton.style.display = "block";
+                reasonInputLabel.style.display = "block"; // Hiển thị lý do khóa
+                reasonInput.style.display = "block"; // Hiển thị input lý do khóa
+                unlockConfirmationText.style.display = "none"; // Ẩn văn bản xác nhận mở khóa
             }
-            return userAccount; // Trả về trạng thái tài khoản
+            return userAccount;
         })
         .catch(error => {
             console.error("Có lỗi xảy ra khi lấy thông tin người dùng:", error);
             alert("Có lỗi xảy ra khi lấy thông tin người dùng.");
-            throw error; // Quăng lỗi để xử lý bên ngoài
+            throw error;
         });
 }
+
+
+
 
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
-        const modal = new bootstrap.Modal(document.getElementById('lockManaModal'));
+
+        const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
         modal.show();
 
         const openButton = document.getElementById('openAccount');
         const lockButton = document.getElementById('confirmLock');
 
-        // Xóa các sự kiện cũ trước khi gắn sự kiện mới
         const newOpenButton = replaceButtonWithClone(openButton);
         const newLockButton = replaceButtonWithClone(lockButton);
 
-        // Kiểm tra trạng thái tài khoản
         checkStatus(userId)
             .then(userAccount => {
                 if (userAccount === "LOCK") {
                     newOpenButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "OPEN",
+                                reason: ""
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Mở tài khoản thành công');
                                     modal.hide();
-                                    showModal('success',"Thông báo", "Mở tài khoản thành công.");
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    showModal('danger',"Lỗi", "Có lỗi xảy ra khi mở khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi mở khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
                 } else {
                     newLockButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOCK`, {
+                        const reasonInput = document.getElementById("reasonInput").value.trim();
+
+                        if (!reasonInput) {
+                            showNotification('warning', 'Cảnh báo', 'Vui lòng nhập lý do khóa tài khoản.');
+                            return; // Dừng việc gửi yêu cầu nếu lý do rỗng
+                        }
+
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "LOCK",
+                                reason: reasonInput // Gửi lý do khóa người dùng
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Khóa tài khoản thành công');
                                     modal.hide();
-                                    showModal('success',"Thông báo", "Khóa tài khoản thành công.");
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    showModal('danger',"Lỗi", "Có lỗi xảy ra khi khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
+
                 }
             })
             .catch(error => {
@@ -541,7 +592,7 @@ function saveChanges(userId) {
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
 
     if (!phoneRegex.test(phoneNumber)) {
-        showModal('danger',"Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
         return;
     }
 
@@ -555,7 +606,7 @@ function saveChanges(userId) {
     }
 
     if (age < 18 || age > 100) {
-        showModal('danger',"Lỗi", "Ngày sinh phải trong khoảng từ 18 đến 100 tuổi.");
+        showModal('danger', "Lỗi", "Ngày sinh phải trong khoảng từ 18 đến 100 tuổi.");
         return;
     }
 
@@ -582,15 +633,18 @@ function saveChanges(userId) {
             console.log(data);
 
             if (data.status) {
-                showModal('success','Thông báo', 'Cập nhật thông tin thành công!');
-                // location.reload();
+                showModal('success', 'Thông báo', 'Cập nhật thông tin thành công!');
+                modal.hide();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                showModal('danger','Lỗi', 'Cập nhật thất bại: ' + data.error.message);
+                showModal('danger', 'Lỗi', 'Cập nhật thất bại: ' + data.error.message);
             }
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
-            showModal('danger','Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
+            showModal('danger', 'Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
         });
 }
 

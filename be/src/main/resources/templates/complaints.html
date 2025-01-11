@@ -103,8 +103,9 @@
                                     <td th:text="${complaint.type}">Tài khoản bị khóa.</td>
                                     <td th:text="${complaint.status}">PENDING</td>
                                     <td th:text="${complaint.report_reason}">Vi phạm quy định</td>
-                                    <td th:text="${complaint.lock_date}">
-                                        2025-01-09 22:06:08</td>
+                                    <td th:text="${#strings.substringBefore(complaint.lock_date, 'T')}">
+                                        2025-01-09
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary" id="details"
                                             th:attr="data-id=${complaint.complaintId}">
@@ -171,7 +172,7 @@
                     lengthMenu: "Hiển thị _MENU_ mục",
                 }
             });
-           
+
         });
 
 
