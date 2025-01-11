@@ -233,7 +233,7 @@ public class ReportService {
             }
             report.setMediaUrls(mediaResponseDTOs);
         } else {
-            Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+            Post foundPost = postRepository.findAnPostById(((Number) result[2]).intValue());
             if (foundPost.getIsShare() == 0) {
                 medias = mediaRepository.findMediaByPostId(foundPost.getId());
             } else {
@@ -314,7 +314,7 @@ public class ReportService {
                 }
                 report.setMediaUrls(mediaResponseDTOs);
             } else {
-                Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+                Post foundPost = postRepository.findAnPostById(((Number) result[2]).intValue());
                 if (foundPost.getIsShare() == 0) {
                     medias = mediaRepository.findMediaByPostId(foundPost.getId());
                 } else {
@@ -387,7 +387,7 @@ public class ReportService {
                 }
                 report.setMediaUrls(mediaResponseDTOs);
             } else {
-                Post foundPost = postRepository.getAnPost(((Number) result[2]).intValue());
+                Post foundPost = postRepository.findAnPostById(((Number) result[2]).intValue());
                 if (foundPost.getIsShare() == 0) {
                     medias = mediaRepository.findMediaByPostId(foundPost.getId());
                 } else {

@@ -552,6 +552,7 @@ public class UserService {
         }
 
         user.setIsLocked(AccountStatus.OPEN.name());
+        user.setDelflag(0);
 
         PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         user.setPassword(passwordEncoder.encode(user.getPassword()));

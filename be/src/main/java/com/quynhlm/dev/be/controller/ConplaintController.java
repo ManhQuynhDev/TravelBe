@@ -72,7 +72,7 @@ public class ConplaintController {
         return complaintService.foundComplaintUserCreate(email, page, size);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Page<ComplaintResponseDTO> getAllComplaint(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {

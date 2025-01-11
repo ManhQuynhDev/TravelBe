@@ -15,6 +15,9 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id AND delflag = 0", nativeQuery = true)
     Post getAnPost(@Param("id") int id);
 
+    @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id", nativeQuery = true)
+    Post findAnPostById(@Param("id") int id);
+
 
     @Query(value = "SELECT DISTINCT * FROM Post WHERE id= :id AND delflag = 1", nativeQuery = true)
     Post getAnPostRestore(@Param("id") int id);
