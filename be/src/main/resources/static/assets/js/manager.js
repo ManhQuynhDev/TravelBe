@@ -634,6 +634,7 @@ function saveChanges(userId) {
 
             if (data.status) {
                 showModal('success', 'Thông báo', 'Cập nhật thông tin thành công!');
+                const modal = new bootstrap.Modal(document.getElementById('editManagerModal'));
                 modal.hide();
                 setTimeout(() => {
                     window.location.reload();
@@ -644,7 +645,6 @@ function saveChanges(userId) {
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
-            showModal('danger', 'Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
         });
 }
 

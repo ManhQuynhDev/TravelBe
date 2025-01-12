@@ -63,9 +63,9 @@ function loadPostDetails(id) {
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
                     post.mediaUrls.forEach(media => {
                         const img = document.createElement('img');
-                        img.src = media.mediaUrl || '/assets/img/anhload.jpg';
+                        img.src = media.mediaUrl || '/assets/img/anhdep.jpg';
                         img.onerror = function () {
-                            this.src = '/assets/img/anhload.jpg';
+                            this.src = '/assets/img/anhdep.jpg';
                         };
                         img.className = 'img-fluid rounded mb-2';
                         img.style.width = '200px';
