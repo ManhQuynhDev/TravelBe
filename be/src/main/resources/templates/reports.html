@@ -99,11 +99,11 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-                                                <img th:if="${report.mediaUrls != null}" th:src="${report.mediaUrls[0]}"
+                                                <img th:if="${report.mediaUrls != null}" th:src="${report.mediaUrls[0].mediaUrl}"
                                                     alt="Content Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;"
-                                                    onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
-                                                <img th:if="${report.mediaUrls == null}" src="/assets/img/anhload.jpg"
+                                                    onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
+                                                <img th:if="${report.mediaUrls == null}" src="/assets/img/anhdep.jpg"
                                                     alt="No Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;">
                                                 <span
@@ -227,9 +227,9 @@
                         if (report.mediaUrls && report.mediaUrls.length > 0) {
                             report.mediaUrls.forEach(media => {
                                 const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
-                                mediaElement.src = media.mediaUrl || '/assets/img/anhload.jpg';
+                                mediaElement.src = media.mediaUrl || '/assets/img/anhdep.jpg';
                                 mediaElement.onerror = function () {
-                                    this.src = '/assets/img/anhload.jpg';
+                                    this.src = '/assets/img/anhdep.jpg';
                                 };
                                 mediaElement.className = 'img-fluid rounded mb-2';
                                 mediaElement.style.width = '200px';
@@ -311,9 +311,9 @@
                             if (data.data.mediaUrls && data.data.mediaUrls.length > 0) {
                                 data.data.mediaUrls.forEach(media => {
                                     const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
-                                    mediaElement.src = media.mediaUrl || '/assets/img/anhload.jpg';
+                                    mediaElement.src = media.mediaUrl || '/assets/img/anhdep.jpg';
                                     mediaElement.onerror = function () {
-                                        this.src = '/assets/img/anhload.jpg';
+                                        this.src = '/assets/img/anhdep.jpg';
                                     };
                                     mediaElement.className = 'img-fluid rounded mb-2';
                                     mediaElement.style.width = '200px';
