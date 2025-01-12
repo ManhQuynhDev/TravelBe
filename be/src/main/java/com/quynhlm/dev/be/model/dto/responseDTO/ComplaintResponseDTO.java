@@ -14,6 +14,7 @@ import lombok.Setter;
 
 public class ComplaintResponseDTO {
     private Integer userId;
+    private String fullname;
     private String email;
     private String avatar;
     private Integer complaintId;
