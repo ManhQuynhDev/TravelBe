@@ -257,37 +257,38 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
     const password = document.getElementById('managerPassword').value.trim();
 
     if (!fullname || !email || !phone || !password) {
-        alert("Vui lòng điền đầy đủ thông tin!");
+        showModal('danger', "Lỗi", "Vui lòng điền đầy đủ thông tin!");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     if (fullname.length < 3) {
-        alert("Họ tên phải có ít nhất 3 ký tự.");
+        showModal('danger', "Lỗi", "Họ tên phải có ít nhất 3 ký tự.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     // Kiểm tra tên có chứa ký tự đặc biệt ngoài dấu cách không
     if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(fullname)) {
-        alert("Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
+        showModal('danger', "Lỗi", "Tên không được chứa ký tự đặc biệt ngoài dấu cách!");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     const emailRegex = /^[a-zA-Z][a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]*(?:\.[a-zA-Z0-9_!#$%&'*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
-        alert("Vui lòng nhập địa chỉ email hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập địa chỉ email hợp lệ.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
 
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
     if (!phoneRegex.test(phone)) {
-        alert("Vui lòng nhập số điện thoại hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
+
     const passwordRegexLowercase = /[a-z]/;
     const passwordRegexUppercase = /[A-Z]/;
     const passwordRegexNumber = /\d/;
@@ -295,27 +296,27 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
     const passwordMinLength = 8;
 
     if (password.length < passwordMinLength) {
-        alert("Mật khẩu phải có ít nhất 8 ký tự.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 8 ký tự.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexLowercase.test(password)) {
-        alert("Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết thường.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexUppercase.test(password)) {
-        alert("Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ cái viết hoa.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexNumber.test(password)) {
-        alert("Mật khẩu phải có ít nhất 1 chữ số.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 chữ số.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
     if (!passwordRegexSpecialChar.test(password)) {
-        alert("Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
+        showModal('danger', "Lỗi", "Mật khẩu phải có ít nhất 1 ký tự đặc biệt.");
         submitButton.disabled = false;  // Kích hoạt lại nút submit
         return;
     }
@@ -337,20 +338,25 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
+
             if (data.status) {
-                alert("Thêm quản lý thành công!");
+                showModal('success', "Thông báo", "Thêm quản lý thành công!");
                 var addManagerModal = new bootstrap.Modal(document.getElementById("addManagerModal"));
                 addManagerModal.hide();
-                window.location.reload();
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                alert("Failed to create manager: " + data.error.message);
+                showModal('danger', "Lỗi", "Failed to create manager: " + data.error.message);
             }
             // Kích hoạt lại nút submit sau khi hoàn tất
             submitButton.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while creating the manager.');
+            showModal('danger', "Lỗi", 'An error occurred while creating the manager.');
             submitButton.disabled = false;  // Kích hoạt lại nút submit
         });
 });
@@ -359,6 +365,9 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
 function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
     const lockButton = document.getElementById('confirmLock');
+    const reasonInputLabel = document.getElementById("reasonInputLabel");
+    const reasonInput = document.getElementById("reasonInput");
+    const unlockConfirmationText = document.getElementById("unlockConfirmationText");
 
     return fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
@@ -366,75 +375,120 @@ function checkStatus(userId) {
     })
         .then(res => res.json())
         .then(data => {
-            const userAccount = data.data.isLocked; // Lấy trạng thái tài khoản
+            const userAccount = data.data.isLocked;
+
             if (userAccount === "LOCK") {
-                openButton.disabled = false;
-                lockButton.disabled = true;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Mở khóa tài khoản";
+                lockButton.style.display = "none"; // Ẩn nút khóa
+                openButton.style.display = "block";
+                reasonInputLabel.style.display = "none"; // Ẩn lý do khóa
+                reasonInput.style.display = "none"; // Ẩn input lý do khóa
+                unlockConfirmationText.style.display = "block"; // Hiển thị xác nhận mở khóa
             } else {
-                openButton.disabled = true;
-                lockButton.disabled = false;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Khóa tài khoản";
+                openButton.style.display = "none"; // Ẩn nút mở khóa
+                lockButton.style.display = "block";
+                reasonInputLabel.style.display = "block"; // Hiển thị lý do khóa
+                reasonInput.style.display = "block"; // Hiển thị input lý do khóa
+                unlockConfirmationText.style.display = "none"; // Ẩn văn bản xác nhận mở khóa
             }
-            return userAccount; // Trả về trạng thái tài khoản
+            return userAccount;
         })
         .catch(error => {
             console.error("Có lỗi xảy ra khi lấy thông tin người dùng:", error);
             alert("Có lỗi xảy ra khi lấy thông tin người dùng.");
-            throw error; // Quăng lỗi để xử lý bên ngoài
+            throw error;
         });
 }
+
+
+
 
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
-        const modal = new bootstrap.Modal(document.getElementById('lockManaModal'));
+
+        const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
         modal.show();
 
         const openButton = document.getElementById('openAccount');
         const lockButton = document.getElementById('confirmLock');
 
-        // Xóa các sự kiện cũ trước khi gắn sự kiện mới
         const newOpenButton = replaceButtonWithClone(openButton);
         const newLockButton = replaceButtonWithClone(lockButton);
 
-        // Kiểm tra trạng thái tài khoản
         checkStatus(userId)
             .then(userAccount => {
                 if (userAccount === "LOCK") {
                     newOpenButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "OPEN",
+                                reason: ""
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Mở tài khoản thành công');
                                     modal.hide();
-                                    alert("Mở tài khoản thành công")
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    alert("Có lỗi xảy ra khi mở khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi mở khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
                 } else {
                     newLockButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOCK`, {
+                        const reasonInput = document.getElementById("reasonInput").value.trim();
+
+                        if (!reasonInput) {
+                            showNotification('warning', 'Cảnh báo', 'Vui lòng nhập lý do khóa tài khoản.');
+                            return; // Dừng việc gửi yêu cầu nếu lý do rỗng
+                        }
+
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "LOCK",
+                                reason: reasonInput // Gửi lý do khóa người dùng
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Khóa tài khoản thành công');
                                     modal.hide();
-                                    alert("Khóa tài khoản thành công")
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    alert("Có lỗi xảy ra khi khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
+
                 }
             })
             .catch(error => {
@@ -448,6 +502,8 @@ function replaceButtonWithClone(button) {
     button.parentNode.replaceChild(newButton, button);
     return newButton;
 }
+
+
 
 //edit manager
 const avatarUploader = document.getElementById('editAvatarUploaderModal');
@@ -527,7 +583,6 @@ document.getElementById('submit').addEventListener('click', (e) => {
     const userId = e.target.getAttribute('data-user-id');
     saveChanges(userId);
 });
-
 function saveChanges(userId) {
     const phoneNumber = document.getElementById('editPhoneModal').value;
     const dob = document.getElementById('editBirthDayModalLabel').value;
@@ -537,21 +592,21 @@ function saveChanges(userId) {
     const phoneRegex = /^(\\+84|84|0)(3|5|7|8|9|1[2689])[0-9]{8}$/;
 
     if (!phoneRegex.test(phoneNumber)) {
-        alert("Vui lòng nhập số điện thoại hợp lệ.");
+        showModal('danger', "Lỗi", "Vui lòng nhập số điện thoại hợp lệ.");
         return;
     }
 
     const currentDate = new Date();
     const birthDate = new Date(dob);
-    let age = currentDate.getFullYear() - birthDate.getFullYear(); // Sử dụng let thay vì const
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
     const monthDifference = currentDate.getMonth() - birthDate.getMonth();
 
     if (monthDifference < 0 || (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())) {
-        age--; // Giảm giá trị của age
+        age--;
     }
 
     if (age < 18 || age > 100) {
-        alert("Ngày sinh phải trong khoảng từ 18 đến 100 tuổi.");
+        showModal('danger', "Lỗi", "Ngày sinh phải trong khoảng từ 18 đến 100 tuổi.");
         return;
     }
 
@@ -576,19 +631,24 @@ function saveChanges(userId) {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            
+
             if (data.status) {
-                alert('Cập nhật thông tin thành công!');
-                location.reload();
+                showModal('success', 'Thông báo', 'Cập nhật thông tin thành công!');
+                modal.hide();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             } else {
-                alert('Cập nhật thất bại: ' + data.message);
+                showModal('danger', 'Lỗi', 'Cập nhật thất bại: ' + data.error.message);
             }
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
-            alert('Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
+            showModal('danger', 'Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
         });
 }
+
+
 
 //change fullname
 document.getElementById("changeFullnameButton").addEventListener("click", function () {
@@ -603,26 +663,25 @@ document.getElementById("changeFullnameButton").addEventListener("click", functi
 
 });
 
-// Xử lý form đổi tên khi submit
+
 document.getElementById("saveName").addEventListener("click", function (event) {
     event.preventDefault();
 
     const userId = document.getElementById("changeFullnameButton").getAttribute('data-user-id');
     const newFullname = document.getElementById("newFullName").value;
 
-
+    // Hàm kiểm tra tên hợp lệ
     function validateFullname(name) {
-        // Kiểm tra tên có trống không
         if (!name || name.trim() === "") {
             return "Tên không được để trống!";
         }
 
         const firstChar = name.charAt(0);
-        if (!/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(firstChar)) {
+        if (!/^[A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯáàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(firstChar)) {
             return "Tên phải bắt đầu bằng chữ cái!";
         }
 
-        if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯ áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(name)) {
+        if (/[^A-Za-zÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯáàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵ\s]/.test(name)) {
             return "Tên không được chứa ký tự đặc biệt ngoài dấu cách!";
         }
 
@@ -634,11 +693,9 @@ document.getElementById("saveName").addEventListener("click", function (event) {
         return null; // Trả về null nếu tên hợp lệ
     }
 
-    console.log(newFullname);
-
     const validationError = validateFullname(newFullname);
     if (validationError) {
-        alert(validationError);
+        showModal("Lỗi", validationError);
         return;
     }
 
@@ -653,14 +710,35 @@ document.getElementById("saveName").addEventListener("click", function (event) {
         .then(response => response.json())
         .then(data => {
             if (data.status) {
-                alert('Cập nhật tên thành công!');
+                showModal('Thông báo', 'Cập nhật tên thành công!');
                 location.reload();  // Cập nhật lại trang nếu cần
             } else {
-                alert('Cập nhật tên thất bại: ' + (data.error?.message || 'Lỗi không xác định.'));
+                showModal('Lỗi', 'Cập nhật tên thất bại: ' + (data.error?.message || 'Lỗi không xác định.'));
             }
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
-            alert('Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
+            showModal('Lỗi', 'Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
         });
 });
+
+function showModal(type, title, message) {
+    document.getElementById('notificationModalLabel').textContent = title;
+    document.getElementById('notificationModalBody').textContent = message;
+
+    const modalElement = document.getElementById('notificationModal');
+    modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+    if (type === 'success') {
+        modalElement.classList.add('modal-success');
+    } else if (type === 'info') {
+        modalElement.classList.add('modal-info');
+    } else if (type === 'warning') {
+        modalElement.classList.add('modal-warning');
+    } else if (type === 'danger') {
+        modalElement.classList.add('modal-danger');
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}

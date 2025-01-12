@@ -4,10 +4,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Basic Sign Up | Front - Admin &amp; Dashboard Template</title>
+    <title>Đăng Nhập</title>
     <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/theme.min.css?v=1.0}">
+    <style>
+        body {
+            overflow-y: hidden;
+        }
+    </style>
 </head>
 
 <body>
@@ -88,11 +93,13 @@
                 </div>
             </div>
         </div>
+        <div th:replace="fragments/notification"></div>
     </main>
 
-    <script src="/assets/js/vendor.min.js"></script>
-    <script src="/assets/js/theme.min.js"></script>
-
+    <script th:src="@{/assets/js/demo.js}"></script>
+    <script th:src="@{/assets/js/vendor.min.js}"></script>
+    <script th:src="@{/assets/js/theme.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).on('ready', function () {
             $('.js-toggle-password').each(function () {
@@ -115,6 +122,20 @@
                 password.value = localStorage.getItem("savedPassword") || "";
                 rememberMe.checked = true;
             }
+
+            const showErrorModal = (message) => {
+                document.getElementById('notificationModalBody').textContent = message;
+                document.getElementById('notificationModalLabel').textContent = "Lỗi đăng nhập";
+
+                const modalElement = document.getElementById('notificationModal');
+                modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+                modalElement.classList.add('modal-danger');
+
+                const errorModal = new bootstrap.Modal(modalElement);
+                errorModal.show();
+            };
+
 
             const login = async () => {
                 const formData = {
@@ -145,7 +166,6 @@
                         throw new Error("Mật khẩu không chính xác, vui lòng kiểm tra lại để đăng nhập.");
                     }
 
-
                     const token = data.token;
                     const user_id = data.userInfo.id;
 
@@ -166,14 +186,13 @@
                     localStorage.setItem('userRole', userRole);
 
                     if (userRole === "ADMIN" || userRole === "MANAGER") {
-                        // alert("Đăng nhập thành công!");
                         window.location.href = '/web-server/';
                     } else {
                         throw new Error("Bạn không có quyền truy cập.");
                     }
 
                 } catch (error) {
-                    alert(error.message || "An unexpected error occurred.");
+                    showErrorModal(error.message || "An unexpected error occurred.");
                 } finally {
                     submit.disabled = false;
                     submit.textContent = 'Log in';
@@ -186,12 +205,10 @@
                 if (isValid) {
                     login();
                 } else {
-                    alert('Vui lòng kiểm tra dữ liệu đầu vào và thử lại.');
+                    showErrorModal('Vui lòng kiểm tra dữ liệu đầu vào và thử lại.');
                 }
             });
         });
-
-
 
 
     </script>

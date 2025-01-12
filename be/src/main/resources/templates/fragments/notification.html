@@ -1,18 +1,39 @@
-<button id="toast-invokers" class="btn btn-outline-danger">Toast</button>
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel"></h5>
+                <button type="button" class="btn btn-xs btn-icon btn-ghost-secondary" data-bs-dismiss="modal"
+                    aria-label="Close">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="notificationModalBody">
+                <!-- Nội dung thông báo lỗi sẽ được hiển thị ở đây -->
+            </div>
 
-<!-- Toast -->
-<div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"
-    style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-    <div class="toast-header">
-        <img class="avatar avatar-sm avatar-circle mr-2" src="../assets/img/160x160/img4.jpg" alt="Image description">
-        <h5 class="mb-0">Bob Dean</h5>
-        <small class="ml-auto">11 mins ago</small>
-        <button type="button" class="close ml-3" data-dismiss="toast" aria-label="Close">
-            <i class="tio-clear" aria-hidden="true"></i>
-        </button>
-    </div>
-    <div class="toast-body">
-        Hello, world! This is a toast message.
+        </div>
     </div>
 </div>
+<style>
+    .modal-success .modal-content {
+        background-color: #d4edda;
+        color: #155724;
+    }
 
+    .modal-info .modal-content {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .modal-warning .modal-content {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .modal-danger .modal-content {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>

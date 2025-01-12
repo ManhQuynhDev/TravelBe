@@ -36,6 +36,9 @@ document.getElementById('editAvatarUploaderModal').addEventListener('change', fu
 function checkStatus(userId) {
     const openButton = document.getElementById('openAccount');
     const lockButton = document.getElementById('confirmLock');
+    const reasonInputLabel = document.getElementById("reasonInputLabel");
+    const reasonInput = document.getElementById("reasonInput");
+    const unlockConfirmationText = document.getElementById("unlockConfirmationText");
 
     return fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
@@ -44,12 +47,23 @@ function checkStatus(userId) {
         .then(res => res.json())
         .then(data => {
             const userAccount = data.data.isLocked;
+
             if (userAccount === "LOCK") {
-                openButton.disabled = false;
-                lockButton.disabled = true;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Mở khóa tài khoản";
+                lockButton.style.display = "none"; // Ẩn nút khóa
+                openButton.style.display = "block";
+                reasonInputLabel.style.display = "none"; // Ẩn lý do khóa
+                reasonInput.style.display = "none"; // Ẩn input lý do khóa
+                unlockConfirmationText.style.display = "block"; // Hiển thị xác nhận mở khóa
             } else {
-                openButton.disabled = true;
-                lockButton.disabled = false;
+                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
+                document.getElementById("lockUserModalTitle").innerText = "Khóa tài khoản";
+                openButton.style.display = "none"; // Ẩn nút mở khóa
+                lockButton.style.display = "block";
+                reasonInputLabel.style.display = "block"; // Hiển thị lý do khóa
+                reasonInput.style.display = "block"; // Hiển thị input lý do khóa
+                unlockConfirmationText.style.display = "none"; // Ẩn văn bản xác nhận mở khóa
             }
             return userAccount;
         })
@@ -60,10 +74,13 @@ function checkStatus(userId) {
         });
 }
 
+
+
+
 document.querySelectorAll('.btn-outline-success').forEach(button => {
     button.addEventListener('click', function () {
         const userId = this.getAttribute('data-id');
-    
+
         const modal = new bootstrap.Modal(document.getElementById('lockUserModal'));
         modal.show();
 
@@ -77,40 +94,72 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
             .then(userAccount => {
                 if (userAccount === "LOCK") {
                     newOpenButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=OPEN`, {
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "OPEN",
+                                reason: ""
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Mở tài khoản thành công');
                                     modal.hide();
-                                    alert("Mở tài khoản thành công")
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    alert("Có lỗi xảy ra khi mở khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi mở khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
                 } else {
                     newLockButton.addEventListener("click", () => {
-                        fetch(`${API_BASE_URL}/locked-account/${userId}/isLocked?isLocked=LOCK`, {
+                        const reasonInput = document.getElementById("reasonInput").value.trim();
+
+                        if (!reasonInput) {
+                            showNotification('warning', 'Cảnh báo', 'Vui lòng nhập lý do khóa tài khoản.');
+                            return; // Dừng việc gửi yêu cầu nếu lý do rỗng
+                        }
+
+                        fetch(`${API_BASE_URL}/locked-forever/${userId}`, {
                             method: "PUT",
-                            headers: AUTH_HEADER
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                isLock: "LOCK",
+                                reason: reasonInput // Gửi lý do khóa người dùng
+                            })
                         })
                             .then(response => response.json())
                             .then(data => {
+                                console.log(data);
+
                                 if (data) {
+                                    showNotification('success', 'Thành công', 'Khóa tài khoản thành công');
                                     modal.hide();
-                                    alert("Khóa tài khoản thành công")
-                                    location.reload();
+
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
                                 } else {
-                                    alert("Có lỗi xảy ra khi khóa tài khoản.");
+                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
                     });
+
                 }
             })
             .catch(error => {
@@ -119,15 +168,34 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
     });
 });
 
+function showNotification(type, title, message) {
+    document.getElementById('notificationModalLabel').textContent = title;
+    document.getElementById('notificationModalBody').textContent = message;
+
+    const modalElement = document.getElementById('notificationModal');
+    modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+    if (type === 'success') {
+        modalElement.classList.add('modal-success');
+    } else if (type === 'info') {
+        modalElement.classList.add('modal-info');
+    } else if (type === 'warning') {
+        modalElement.classList.add('modal-warning');
+    } else if (type === 'danger') {
+        modalElement.classList.add('modal-danger');
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+}
+
+
+
 function replaceButtonWithClone(button) {
     const newButton = button.cloneNode(true);
     button.parentNode.replaceChild(newButton, button);
     return newButton;
 }
-
-
-
-
 function loadUserDetails(userId) {
     fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',

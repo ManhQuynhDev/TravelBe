@@ -87,7 +87,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Nội dung</th>
-                                    <th>Hashtag</th>
+                                    <!-- <th>Hashtag</th> -->
                                     <th>Vị trí</th>
                                     <th>Trạng thái</th>
                                     <th>Người dùng</th>
@@ -114,25 +114,29 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-start">
+                                    <!-- <td class="text-start">
                                         <span th:if="${post.hashtags != null}">
                                             <span th:each="hashtag : ${post.hashtags}" th:text="'#' + ${hashtag}">No
                                                 Hashtags</span>
                                         </span>
                                         <span th:if="${post.hashtags == null}">No Hashtags</span>
-                                    </td>
+                                    </td> -->
                                     <td class="text-start" th:text="${post.location}">Location</td>
-                                    <td class="text-start" th:text="${post.status}">Status</td>
+                                    <td class="text-start"
+                                        th:text="${post.delflag == 0 ? 'Đang hoạt động' : 'Ngừng hoạt động'}"
+                                        th:class="${post.delflag == 0 ? 'text-success' : 'text-danger'}">
+                                    </td>
+
                                     <td class="text-start" th:text="${post.ownerName}">User</td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center align-items-center"
                                             style="gap: 5px; flex-wrap: nowrap;">
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deletePost"
-                                                th:attr="data-id=${post.postId}">
-                                                <i class="tio-delete-outlined mr-1"></i>Ẩn Bài Viết
-                                            </button>
+                                                th:attr="data-id=${post.postId}" th:disabled="${post.delflag == 1}">Ẩn
+                                                Bài Viết</button>
+
                                             <button class="btn btn-sm btn-outline-secondary mr-2 viewComments"
-                                                th:attr="data-id=${post.postId}">
+                                                th:attr="data-id=${post.postId}" th:disabled="${post.delflag == 1}">
                                                 Xem Bình Luận
                                             </button>
                                         </div>
@@ -150,6 +154,7 @@
             <div th:replace="fragments/posts/addPostModal"></div>
             <div th:replace="fragments/posts/deletePostModal"></div>
             <div th:replace="fragments/posts/viewCommentModal"></div>
+            <div th:replace="fragments/notification"></div>
         </div>
     </div>
 
