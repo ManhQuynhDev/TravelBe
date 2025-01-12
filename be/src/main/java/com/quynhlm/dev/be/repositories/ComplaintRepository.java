@@ -19,6 +19,7 @@ public interface ComplaintRepository extends JpaRepository<Complaint, Integer> {
     @Query(value = """
                 SELECT
             	u.id ,
+                u.fullname,
                 u.email,
                 u.avatarUrl,
                 c.id as complaint_id,
