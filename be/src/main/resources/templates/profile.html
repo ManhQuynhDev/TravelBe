@@ -189,24 +189,37 @@
                                 <div class="card-header">
                                     <h2 class="card-header-title h5">Dòng hoạt động</h2>
                                 </div>
-                                <div class="card-body card-body-height card-body-centered">
-                                    <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
-                                        alt="Hình mô tả">
-                                    <p class="card-text">Không có dữ liệu để hiển thị</p>
+                                <div class="card-body">
+                                    <div id="postTableContainer" class="table-responsive">
+                                    </div>
+                                    <div id="noDataMessage" class="card-body card-body-height card-body-centered"
+                                        style="display: none;">
+                                        <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
+                                            alt="Hình mô tả">
+                                        <p class="card-text">Không có dữ liệu để hiển thị</p>
+                                    </div>
                                 </div>
+
                             </div>
+
                             <div class="card mb-3 mb-lg-5">
                                 <div class="card-header">
-                                    <h2 class="card-header-title h5">Dự án</h2>
-
+                                    <h2 class="card-header-title h5">Nhóm đã tạo</h2>
                                 </div>
 
                                 <div class="card-body card-body-height card-body-centered">
-                                    <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
-                                        alt="Hình mô tả">
-                                    <p class="card-text">Không có dữ liệu để hiển thị</p>
+                                    <div id="noDataMessage2" class="card-body card-body-height card-body-centered"
+                                        style="display: none;">
+                                        <img class="avatar avatar-xxl mb-3" src="/assets/svg/illustrations/yelling.svg"
+                                            alt="Hình mô tả">
+                                        <p class="card-text">Không có dữ liệu để hiển thị</p>
+                                    </div>
+
+                                    <div id="createdTableContainer" class="table-responsive">
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -218,7 +231,7 @@
     <script th:src="@{/assets/js/demo.js}"></script>
     <script th:src="@{/assets/js/vendor.min.js}"></script>
     <script th:src="@{/assets/js/theme.min.js}"></script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
+    <!-- <script th:src="@{/assets/js/userjs.js}"></script> -->
     <script>
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
@@ -244,6 +257,200 @@
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+        document.addEventListener("DOMContentLoaded", function () {
+            var postTableContainer = document.getElementById('postTableContainer');
+            var noDataMessage = document.getElementById('noDataMessage');
+
+            var token = localStorage.getItem("authToken");
+            var userID = localStorage.getItem("user_id");
+
+            fetch(`http://localhost:8080/api/posts/user-create/${userID}?page=0&size=100`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+
+                    function logPostId(event) {
+                        const postId = event.target.getAttribute("data-id");
+                        console.log(postId);
+
+
+                        localStorage.setItem('selectedPostId', postId);
+                        window.location.href = '/web-server/posts';
+                    }
+
+                    if (data.content && data.content.length > 0) {
+                        var table = document.createElement('table');
+                        table.classList.add('table', 'table-hover');
+                        table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th class="text-center">Content</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.content.map((post, index) => {
+                            const status = post.delflag == 0 ? 'Đang hoạt động' : 'Ngừng hoạt động';
+
+                            const mediaUrl = post.mediaUrls && post.mediaUrls.length > 0 ? post.mediaUrls[0].mediaUrl : '';
+
+                            const content = mediaUrl ? `
+                            <div class="d-flex align-items-center">
+                                <img src="${mediaUrl}" alt="Media" style="max-width: 50px; max-height: 50px; margin-right: 10px;"/>
+                                <span>${post.postContent}</span>
+                            </div>
+                        ` : post.postContent;
+
+                            return `
+                            <tr>
+                                <td class="text-center">${index + 1}</td> <!-- Hiển thị số thứ tự và căn giữa -->
+                                <td class="text-center">${content}</td> <!-- Hiển thị nội dung bài đăng và căn giữa -->
+                                <td class="text-center ${post.delflag == 0 ? 'text-success' : 'text-danger'}">${status}</td> <!-- Hiển thị trạng thái và căn giữa -->
+                                <td class="text-center">
+                                    <button class="btn btn-info btn-sm" data-id="${post.postId}">Chi Tiết</button>
+                                </td>
+                            </tr>
+                        `;
+                        }).join('')}
+                </tbody>
+            `;
+                        postTableContainer.appendChild(table);
+
+                        const buttons = document.querySelectorAll('.btn-info');
+                        buttons.forEach(button => {
+                            button.addEventListener('click', logPostId);
+                        });
+
+                        noDataMessage.style.display = 'none';
+                    } else {
+                        noDataMessage.style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    noDataMessage.style.display = 'flex';
+                    noDataMessage.querySelector('.card-text').textContent = 'Không thể tải dữ liệu.';
+                });
+        });
+
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var noDataMessage = document.getElementById('noDataMessage2');
+            var groupTable = document.getElementById('created-groups-table'); // Bảng nhóm
+
+            // Token và userID lấy từ localStorage
+            var token = localStorage.getItem("authToken");
+            var userID = localStorage.getItem("user_id");
+
+            userCreatedGroups(userID);
+
+            function getGroupDetails(groupId) {
+                const url = `http://localhost:8080/api/groups/${groupId}`;
+
+                return fetch(url, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status && data.data) {
+                            return {
+                                group_name: data.data.group_name || 'Không có',
+                                admin_name: data.data.admin_name || 'Không có',
+                                member_count: data.data.member_count || 0
+                            };
+                        }
+                        return null;
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy thông tin nhóm:", error);
+                        return null;
+                    });
+            }
+
+            function userCreatedGroups(userId) {
+                const url = `http://localhost:8080/api/member/user-create-id/${userId}`;
+                const createdTableContainer = document.getElementById('createdTableContainer');
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("hihi", data); // In ra dữ liệu API để kiểm tra
+
+                        
+                        if (data.data && data.data.length > 0) {
+                            // Lấy chi tiết nhóm cho từng groupId
+                            const groupDetailsPromises = data.data.map(groupId => getGroupDetails(groupId));
+
+                            Promise.all(groupDetailsPromises)
+                                .then(groupDetails => {
+                                    
+                                    createdTableContainer.innerHTML = ''; // Xóa danh sách cũ
+
+                                    const table = document.createElement('table');
+                                    table.classList.add('table', 'table-hover', 'mt-3');
+                                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th class="text-start">Nhóm</th>
+                                <th class="text-center">Số lượng</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${groupDetails.map((group, index) => `
+                                <tr>
+                                    <td class="text-center">${index + 1}</td>
+                                    <td class="text-start">
+                                        <img src="${group.cover_photo || 'https://via.placeholder.com/50'}" style="width: 100px; height: 50px; object-fit: cover;">
+                                        ${group.group_name}
+                                    </td>
+                                    <td class="text-center">${group.member_count}</td>
+                                    
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    `;
+
+                                    createdTableContainer.appendChild(table);
+
+                                
+                                    noDataMessage.style.display = 'none';
+                                })
+                                .catch(error => {
+                                    console.error('Lỗi khi lấy chi tiết nhóm:', error);
+                                    noDataMessage.style.display = 'block';
+                                });
+                        } else {
+                            noDataMessage.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lấy nhóm đã tạo của người dùng:', error);
+                        noDataMessage.style.display = 'block';
+                    });
+            }
+
+
+        });
+
+
+
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
