@@ -276,12 +276,7 @@ public class PostService {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
         }
 
-        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
-        List<Integer> friendIds = friendShips.stream()
-                .map(row -> row.getUserSendId())
-                .collect(Collectors.toList());
-
-        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(friendIds, userId, pageable);
+        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(userId, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();
