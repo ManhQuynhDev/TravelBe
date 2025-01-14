@@ -351,7 +351,6 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
             } else {
                 showModal('danger', "Lỗi", "Failed to create manager: " + data.error.message);
             }
-            // Kích hoạt lại nút submit sau khi hoàn tất
             submitButton.disabled = false;
         })
         .catch(error => {
@@ -378,21 +377,19 @@ function checkStatus(userId) {
             const userAccount = data.data.isLocked;
 
             if (userAccount === "LOCK") {
-                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
                 document.getElementById("lockUserModalTitle").innerText = "Mở khóa tài khoản";
-                lockButton.style.display = "none"; // Ẩn nút khóa
+                lockButton.style.display = "none"; 
                 openButton.style.display = "block";
-                reasonInputLabel.style.display = "none"; // Ẩn lý do khóa
-                reasonInput.style.display = "none"; // Ẩn input lý do khóa
-                unlockConfirmationText.style.display = "block"; // Hiển thị xác nhận mở khóa
+                reasonInputLabel.style.display = "none"; 
+                reasonInput.style.display = "none"; 
+                unlockConfirmationText.style.display = "block"; 
             } else {
-                // Cập nhật lại tiêu đề và các phần tử hiển thị đúng
                 document.getElementById("lockUserModalTitle").innerText = "Khóa tài khoản";
-                openButton.style.display = "none"; // Ẩn nút mở khóa
+                openButton.style.display = "none"; 
                 lockButton.style.display = "block";
-                reasonInputLabel.style.display = "block"; // Hiển thị lý do khóa
-                reasonInput.style.display = "block"; // Hiển thị input lý do khóa
-                unlockConfirmationText.style.display = "none"; // Ẩn văn bản xác nhận mở khóa
+                reasonInputLabel.style.display = "block"; 
+                reasonInput.style.display = "block"; 
+                unlockConfirmationText.style.display = "none"; 
             }
             return userAccount;
         })
@@ -634,6 +631,7 @@ function saveChanges(userId) {
 
             if (data.status) {
                 showModal('success', 'Thông báo', 'Cập nhật thông tin thành công!');
+                const modal = new bootstrap.Modal(document.getElementById('editManagerModal'));
                 modal.hide();
                 setTimeout(() => {
                     window.location.reload();
@@ -644,7 +642,6 @@ function saveChanges(userId) {
         })
         .catch(error => {
             console.error('Có lỗi xảy ra:', error);
-            showModal('danger', 'Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.');
         });
 }
 
@@ -742,3 +739,22 @@ function showModal(type, title, message) {
     const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
+$(document).on('ready', function () {
+    if (window.localStorage.getItem('hs-builder-popover') === null) {
+        $('#builderPopover').popover('show')
+            .on('shown.bs.popover', function () {
+                $('.popover').last().addClass('popover-dark')
+            });
+
+        $(document).on('click', '#closeBuilderPopover', function () {
+            window.localStorage.setItem('hs-builder-popover', true);
+            $('#builderPopover').popover('dispose');
+        });
+    } else {
+        $('#builderPopover').on('show.bs.popover', function () {
+            return false
+        });
+    }
+
+
+});

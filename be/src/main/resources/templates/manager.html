@@ -145,10 +145,11 @@
 
                                     <td>
                                         <button class="btn btn-sm btn-outline-primary" th:attr="data-id=${manager.id}"
-                                            id="editManager">
+                                            id="editManager" style="display: none;">
                                             <i class="tio-edit"></i> Chỉnh sửa
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success" th:attr="data-id=${manager.id}">
+                                        <button class="btn btn-sm btn-outline-success" th:attr="data-id=${manager.id}"
+                                            id="toggleStatus">
                                             <i class="tio-users-switch mr-1"></i> Đổi trạng thái
                                         </button>
                                     </td>
@@ -246,6 +247,25 @@
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+        document.addEventListener("DOMContentLoaded", function () {
+            var currentUserId = localStorage.getItem('user_id');
+            var managerButtons = document.querySelectorAll('#toggleStatus');
+            var managerEdit = document.querySelectorAll('#editManager');
+
+            managerButtons.forEach(function (button) {
+                var managerId = button.getAttribute('data-id');
+                if (managerId === currentUserId) {
+                    button.style.display = 'none';
+                }
+            });
+            managerEdit.forEach(function (button) {
+                var managerId = button.getAttribute('data-id');
+                if (managerId === currentUserId) {
+                    button.style.display = 'block';
+                }
+            });
+        });
+
 
     </script>
 
