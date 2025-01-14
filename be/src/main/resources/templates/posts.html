@@ -100,11 +100,23 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-                                                <img th:if="${post.mediaUrls != null and post.mediaUrls.size() > 0}"
+                                                <!-- Check if the first media is an image -->
+                                                <img th:if="${post.mediaUrls != null and post.mediaUrls.size() > 0 and post.mediaUrls[0].mediaType == 'IMAGE'}"
                                                     th:src="${post.mediaUrls[0].mediaUrl}" alt="Content Image"
                                                     class="img-fluid"
-                                                    style="max-width: 70px; height: auto; margin-right: 10px;"
+                                                    style="max-width: 100px; height: 100px; margin-right: 10px;object-fit: contain;"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
+
+                                                <!-- Check if the first media is a video -->
+                                                <video
+                                                    th:if="${post.mediaUrls != null and post.mediaUrls.size() > 0 and post.mediaUrls[0].mediaType == 'VIDEO'}"
+                                                    controls
+                                                    style="width: 100px; height: 100px; margin-right: 10px;object-fit: contain;">
+                                                    <source th:src="${post.mediaUrls[0].mediaUrl}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+
+                                                <!-- Post content and link -->
                                                 <a href="#" data-toggle="modal"
                                                     th:onclick="'loadPostDetails(' + ${post.postId} + ')'"
                                                     data-target="#postDetailModal"
@@ -114,6 +126,7 @@
                                             </div>
                                         </div>
                                     </td>
+
                                     <!-- <td class="text-start">
                                         <span th:if="${post.hashtags != null}">
                                             <span th:each="hashtag : ${post.hashtags}" th:text="'#' + ${hashtag}">No
@@ -132,9 +145,11 @@
                                         <div class="d-flex justify-content-center align-items-center"
                                             style="gap: 5px; flex-wrap: nowrap;">
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="deletePost"
-                                                th:attr="data-id=${post.postId}" th:disabled="${post.delflag == 1}">Ẩn
-                                                Bài Viết</button>
-
+                                                th:attr="data-id=${post.postId}"
+                                                th:disabled="${post.delflag == 1}">Ẩn</button>
+                                            <button class="btn btn-sm btn-outline-success mr-2" id="openPost"
+                                                th:attr="data-id=${post.postId}"
+                                                th:disabled="${post.delflag == 0}">Mở</button>
                                             <button class="btn btn-sm btn-outline-secondary mr-2 viewComments"
                                                 th:attr="data-id=${post.postId}" th:disabled="${post.delflag == 1}">
                                                 Xem Bình Luận
@@ -152,6 +167,7 @@
 
             <div th:replace="fragments/posts/postDetailModal"></div>
             <div th:replace="fragments/posts/addPostModal"></div>
+            <div th:replace="fragments/posts/openPostModal"></div>
             <div th:replace="fragments/posts/deletePostModal"></div>
             <div th:replace="fragments/posts/viewCommentModal"></div>
             <div th:replace="fragments/notification"></div>
