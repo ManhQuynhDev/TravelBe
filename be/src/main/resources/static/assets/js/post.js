@@ -59,21 +59,38 @@ function loadPostDetails(id) {
 
                 // Hiển thị media
                 const mediaContainer = document.getElementById('mediaContainer');
-                mediaContainer.innerHTML = '';
+                mediaContainer.innerHTML = ''; // Clear existing content
+
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
                     post.mediaUrls.forEach(media => {
-                        const img = document.createElement('img');
-                        img.src = media.mediaUrl || '/assets/img/anhdep.jpg';
-                        img.onerror = function () {
-                            this.src = '/assets/img/anhdep.jpg';
-                        };
-                        img.className = 'img-fluid rounded mb-2';
-                        img.style.width = '200px';
-                        img.style.height = '112px';
-                        img.style.objectFit = 'cover';
-                        mediaContainer.appendChild(img);
+                        if (media.mediaType === 'IMAGE') {
+                            const img = document.createElement('img');
+                            img.src = media.mediaUrl || '/assets/img/anhdep.jpg';
+                            img.onerror = function () {
+                                this.src = '/assets/img/anhdep.jpg';
+                            };
+                            img.className = 'img-fluid rounded mb-2';
+                            img.style.maxWidth = '200px';
+                            img.style.height = '112px';
+                            img.alt = 'Post Media';
+                            mediaContainer.appendChild(img);
+                        } else if (media.mediaType === 'VIDEO') {
+                            const video = document.createElement('video');
+                            video.controls = true;
+                            video.style.width = '200px';
+                            video.style.height = '112px';
+                            video.className = 'mb-2';
+
+                            const source = document.createElement('source');
+                            source.src = media.mediaUrl;
+                            source.type = 'video/mp4';
+                            video.appendChild(source);
+
+                            mediaContainer.appendChild(video);
+                        }
                     });
                 }
+
 
                 // Hiển thị nội dung bài viết
                 document.getElementById('postContentDetails').innerText = post.postContent || 'No content available';
@@ -218,6 +235,47 @@ document.querySelectorAll('#deletePost').forEach(button => {
         })
     })
 })
+document.querySelectorAll('#openPost').forEach(button => {
+    button.addEventListener("click", function () {
+        const post_id = this.getAttribute("data-id");
+        console.log(post_id);
+
+        const modal = new bootstrap.Modal(document.getElementById("openPostModal"));
+        modal.show();
+
+        const confirmButton = document.getElementById("confirmOpen");
+
+        confirmButton.replaceWith(confirmButton.cloneNode(true));
+        const newConfirmButton = document.getElementById("confirmOpen");
+
+        newConfirmButton.addEventListener("click", () => {
+            fetch(`http://localhost:8080/api/posts/restore/${post_id}`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status) {
+                        showModal("success", "Thông báo", "Mở khóa bài viết thành công");
+                        modal.hide();
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        alert("Failed to restore post");
+                    }
+
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        });
+    });
+});
 
 
 document.getElementById("logoutLink").addEventListener("click", function () {
