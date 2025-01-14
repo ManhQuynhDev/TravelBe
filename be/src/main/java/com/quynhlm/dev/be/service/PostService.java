@@ -36,12 +36,14 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
+import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
+import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
@@ -75,6 +77,9 @@ public class PostService {
 
     @Autowired
     private MediaRepository mediaRepository;
+
+    @Autowired
+    private FriendShipRepository friendShipRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -265,14 +270,18 @@ public class PostService {
     // GET ALL
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(Integer userId, Pageable pageable)
             throws UserAccountNotFoundException {
-
         User foundUser = userRepository.getAnUser(userId);
 
         if (foundUser == null) {
             throw new UserAccountNotFoundException("Found user with " + userId + " not found . Please try again !");
         }
 
-        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(userId, pageable);
+        List<FriendShip> friendShips = friendShipRepository.fetchByUserReceivedIdAndStatus(userId, "APPROVED");
+        List<Integer> friendIds = friendShips.stream()
+                .map(row -> row.getUserSendId())
+                .collect(Collectors.toList());
+
+        Page<Object[]> results = postRepository.getAllPostsAndSharedPosts(friendIds, userId, pageable);
 
         return results.map(row -> {
             PostResponseDTO post = new PostResponseDTO();

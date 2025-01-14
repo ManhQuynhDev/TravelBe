@@ -146,7 +146,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
                 p.id, p.user_id, p.content,p.post_id, p.location_id, p.status, p.is_share, p.share_time, p.share_by_id, u.fullname, u.avatar_url, l.address, us.fullname, us.avatar_url
             ORDER BY p.create_time DESC;
                         """, nativeQuery = true)
-    Page<Object[]> getAllPostsAndSharedPosts(@Param("userId") Integer userId, Pageable pageable);
+    Page<Object[]> getAllPostsAndSharedPosts(@Param("friendIds") List<Integer> friendIds , @Param("userId") Integer userId, Pageable pageable);
 
     @Query(value = """
                 SELECT

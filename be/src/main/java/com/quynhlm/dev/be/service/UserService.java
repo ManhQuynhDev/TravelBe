@@ -460,8 +460,7 @@ public class UserService {
             throw new UnknownException(e.getMessage());
         }
     }
-    // Change STATUS User
-
+    
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void switchIsLockedUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
@@ -490,7 +489,6 @@ public class UserService {
             foundUser.setTermDate(null);
             foundUser.setLockDate(null);
         }
-
         userRepository.save(foundUser);
     }
 
