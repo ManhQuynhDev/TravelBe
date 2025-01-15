@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Home</title>
+    <title>Quản lý kế hoạch</title>
     <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
@@ -130,6 +130,8 @@
         <div th:replace="fragments/travel_plan/addTravelPlanModal"></div>
         <div th:replace="fragments/travel_plan/viewActivitiesModal"></div>
         <div th:replace="fragments/travel_plan/deleteTravelPlanModal"></div>
+        <div th:replace="fragments/notification"></div>
+
 
     </div>
     </div>
@@ -349,9 +351,12 @@
                         .then(res => res.json())
                         .then(data => {
                             console.log(data);
+                            showModal("success", "Thông báo", "Xóa nhóm thành công");
+                            modal.hide();
 
-                            alert("Xóa thành công");
-                            // window.location.reload();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
                         })
                         .catch(err => console.log(err))
                 })
@@ -460,7 +465,26 @@
 
 
 
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
 
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
 
     </script>
     <script th:src="@{/assets/js/userjs.js}"></script>

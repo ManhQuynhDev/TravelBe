@@ -57,37 +57,39 @@ function loadPostDetails(id) {
             if (data.status) {
                 const post = data.data;
 
-                // Hiển thị media
                 const mediaContainer = document.getElementById('mediaContainer');
                 mediaContainer.innerHTML = ''; // Clear existing content
 
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
                     post.mediaUrls.forEach(media => {
+                        const col = document.createElement('div');
+                        col.className = 'col';
+
                         if (media.mediaType === 'IMAGE') {
                             const img = document.createElement('img');
-                            img.src = media.mediaUrl || '/assets/img/anhdep.jpg';
+                            img.src = media.mediaUrl;
                             img.onerror = function () {
                                 this.src = '/assets/img/anhdep.jpg';
                             };
-                            img.className = 'img-fluid rounded mb-2';
-                            img.style.maxWidth = '200px';
+                            img.className = 'img-fluid rounded';
+                            img.style.maxWidth = '100%';
                             img.style.height = '112px';
                             img.alt = 'Post Media';
-                            mediaContainer.appendChild(img);
+                            col.appendChild(img);
                         } else if (media.mediaType === 'VIDEO') {
                             const video = document.createElement('video');
                             video.controls = true;
-                            video.style.width = '200px';
+                            video.className = 'w-100';
                             video.style.height = '112px';
-                            video.className = 'mb-2';
 
                             const source = document.createElement('source');
                             source.src = media.mediaUrl;
                             source.type = 'video/mp4';
                             video.appendChild(source);
-
-                            mediaContainer.appendChild(video);
+                            col.appendChild(video);
                         }
+
+                        mediaContainer.appendChild(col);
                     });
                 }
 
