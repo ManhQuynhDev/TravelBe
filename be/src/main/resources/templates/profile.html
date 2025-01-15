@@ -226,6 +226,8 @@
                 </div>
             </div>
         </div>
+        <div th:replace="fragments/notification"></div>
+
 
     </div>
     <script th:src="@{/assets/js/demo.js}"></script>
@@ -255,13 +257,38 @@
         });
 
         document.getElementById("logoutLink").addEventListener("click", function () {
-            window.location.replace("/web-server/login");
+            window.location.href("/web-server/login");
         });
+        var token = localStorage.getItem("authToken");
+
+
+
+        function isTokenExpired(token) {
+            if (!token) return true;
+
+            const payloadBase64 = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(payloadBase64));
+
+            const expirationTime = decodedPayload.exp;
+
+            const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
+
+
+            const currentTime = Math.floor(Date.now() / 1000);
+            return expirationTime < currentTime;
+        }
+
+        if (isTokenExpired(token)) {
+            showModal('warning', 'Hết phiên đăng nhập', 'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+            setTimeout(() => {
+                window.location.href = '/web-server/login';
+            }, 1000);
+        }
         document.addEventListener("DOMContentLoaded", function () {
             var postTableContainer = document.getElementById('postTableContainer');
             var noDataMessage = document.getElementById('noDataMessage');
 
-            var token = localStorage.getItem("authToken");
+
             var userID = localStorage.getItem("user_id");
 
             fetch(`http://localhost:8080/api/posts/user-create/${userID}?page=0&size=100`, {
@@ -348,7 +375,6 @@
             var groupTable = document.getElementById('created-groups-table'); // Bảng nhóm
 
             // Token và userID lấy từ localStorage
-            var token = localStorage.getItem("authToken");
             var userID = localStorage.getItem("user_id");
 
             userCreatedGroups(userID);
@@ -391,14 +417,14 @@
                     .then(data => {
                         console.log("hihi", data); // In ra dữ liệu API để kiểm tra
 
-                        
+
                         if (data.data && data.data.length > 0) {
                             // Lấy chi tiết nhóm cho từng groupId
                             const groupDetailsPromises = data.data.map(groupId => getGroupDetails(groupId));
 
                             Promise.all(groupDetailsPromises)
                                 .then(groupDetails => {
-                                    
+
                                     createdTableContainer.innerHTML = ''; // Xóa danh sách cũ
 
                                     const table = document.createElement('table');
@@ -429,7 +455,7 @@
 
                                     createdTableContainer.appendChild(table);
 
-                                
+
                                     noDataMessage.style.display = 'none';
                                 })
                                 .catch(error => {
@@ -608,7 +634,26 @@
             joinedGroup(userId);
             userCreatedGroups(userId);
         });
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
 
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
 
     </script>
     <script th:src="@{/assets/js/userjs.js}"></script>

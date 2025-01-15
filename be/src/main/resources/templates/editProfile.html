@@ -267,6 +267,7 @@
             </div>
         </div>
         <div th:replace="fragments/profile/changeFullnameModal"></div>
+        <div th:replace="fragments/notification"></div>
 
 
     </div>
@@ -326,12 +327,37 @@
             });
 
         });
+        var token = localStorage.getItem("authToken");
+
+
+
+        function isTokenExpired(token) {
+            if (!token) return true;
+
+            const payloadBase64 = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(payloadBase64));
+
+            const expirationTime = decodedPayload.exp;
+
+            const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
+
+
+            const currentTime = Math.floor(Date.now() / 1000);
+            return expirationTime < currentTime;
+        }
+
+        if (isTokenExpired(token)) {
+            showModal('warning', 'Hết phiên đăng nhập', 'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+            setTimeout(() => {
+                window.location.href = '/web-server/login';
+            }, 1000);
+        }
         let initialData = {};
 
         function loadUserData(userId) {
             fetch(`http://localhost:8080/onboarding/users/${userId}`, {
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                headers: { 'Authorization': `Bearer + ${token}` }
             })
                 .then(response => {
                     if (!response.ok) {
@@ -595,7 +621,26 @@
                     alert('Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
                 });
         });
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
 
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
 
 
     </script>

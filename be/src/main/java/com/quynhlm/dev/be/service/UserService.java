@@ -548,7 +548,7 @@ public class UserService {
 
     public void createManager(User user) throws UserAccountExistingException, UnknownException {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
+            throw new UserAccountExistingException("Email " + user.getEmail() + " đã tồn tại vui lòng thử lại.");
         }
 
         user.setIsLocked(AccountStatus.OPEN.name());

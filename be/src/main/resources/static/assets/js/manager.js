@@ -1,5 +1,36 @@
 const API_BASE_URL = 'http://localhost:8080/onboarding';
-const AUTH_HEADER = { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` };
+const authToken = localStorage.getItem('authToken');
+const AUTH_HEADER = { 'Authorization': `Bearer ${authToken}` };
+
+function isTokenExpired(token) {
+    if (!token) return true;
+
+    const payloadBase64 = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payloadBase64));
+
+    // Get expiration time
+    const expirationTime = decodedPayload.exp;
+
+    // Convert to human-readable date
+    const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
+
+    // Log expiration time
+    console.log(`Token expires at: ${expirationDate}`);
+
+    // Check if the token is expired
+    const currentTime = Math.floor(Date.now() / 1000);
+    return expirationTime < currentTime;
+}
+
+// Check token and redirect if expired
+if (isTokenExpired(authToken)) {
+    showModal('warning', 'Hết phiên đăng nhập', 'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+    setTimeout(() => {
+        window.location.href = '/web-server/login';
+    }, 1000);
+}
+
+
 function loadUserDetails(userId) {
     fetch(`${API_BASE_URL}/users/${userId}`, {
         method: 'GET',
@@ -349,7 +380,7 @@ document.getElementById("submitAddManagerButton").addEventListener("click", func
                     window.location.reload();
                 }, 1000);
             } else {
-                showModal('danger', "Lỗi", "Failed to create manager: " + data.error.message);
+                showModal('danger', "Lỗi", data.error.message);
             }
             submitButton.disabled = false;
         })
@@ -378,18 +409,18 @@ function checkStatus(userId) {
 
             if (userAccount === "LOCK") {
                 document.getElementById("lockUserModalTitle").innerText = "Mở khóa tài khoản";
-                lockButton.style.display = "none"; 
+                lockButton.style.display = "none";
                 openButton.style.display = "block";
-                reasonInputLabel.style.display = "none"; 
-                reasonInput.style.display = "none"; 
-                unlockConfirmationText.style.display = "block"; 
+                reasonInputLabel.style.display = "none";
+                reasonInput.style.display = "none";
+                unlockConfirmationText.style.display = "block";
             } else {
                 document.getElementById("lockUserModalTitle").innerText = "Khóa tài khoản";
-                openButton.style.display = "none"; 
+                openButton.style.display = "none";
                 lockButton.style.display = "block";
-                reasonInputLabel.style.display = "block"; 
-                reasonInput.style.display = "block"; 
-                unlockConfirmationText.style.display = "none"; 
+                reasonInputLabel.style.display = "block";
+                reasonInput.style.display = "block";
+                unlockConfirmationText.style.display = "none";
             }
             return userAccount;
         })
@@ -718,7 +749,6 @@ document.getElementById("saveName").addEventListener("click", function (event) {
             showModal('Lỗi', 'Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
         });
 });
-
 function showModal(type, title, message) {
     document.getElementById('notificationModalLabel').textContent = title;
     document.getElementById('notificationModalBody').textContent = message;
