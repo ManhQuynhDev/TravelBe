@@ -3,7 +3,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 id="postDetailModalTitle" class="modal-title">Chi tiết bài viết</h4>
-                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal" aria-label="Đóng">
+                <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                    aria-label="Đóng">
                     <i class="tio-clear tio-lg"></i>
                 </button>
             </div>
@@ -11,9 +12,10 @@
             <div class="modal-body">
                 <div class="tab-content" id="postDetailModalTabContent">
                     <div class="tab-pane fade active show" id="details" role="tabpanel" aria-labelledby="details-tab">
-                        <div class="text-center mb-5" id="mediaContainer">
-                            <img src="https://travle-be.s3.ap-southeast-2.amazonaws.com/star.png" class="img-fluid rounded" alt="Post Media" style="max-width: 200px; height: 112px;">
+                        <div class="container text-center mb-5" style="max-height: 400px; overflow-y: auto;">
+                            <div class="row row-cols-3 g-2" id="mediaContainer"></div>
                         </div>
+
 
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label font-weight-bold">Họ tên</label>
@@ -32,14 +34,16 @@
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label font-weight-bold">Thời gian tạo</label>
                             <div class="col-sm-9">
-                                <span id="postCreatedTimeDetails" class="form-control-plaintext">2024-12-12 16:33:21</span>
+                                <span id="postCreatedTimeDetails" class="form-control-plaintext">2024-12-12
+                                    16:33:21</span>
                             </div>
                         </div>
 
                         <div class="row mb-3">
                             <label class="col-sm-3 col-form-label font-weight-bold">Vị trí</label>
                             <div class="col-sm-9">
-                                <span id="postLocationDetails" class="form-control-plaintext">Tân tiến, Vĩnh Tường, Vĩnh Phúc</span>
+                                <span id="postLocationDetails" class="form-control-plaintext">Tân tiến, Vĩnh Tường, Vĩnh
+                                    Phúc</span>
                             </div>
                         </div>
 
@@ -72,7 +76,8 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" aria-label="Đóng">Đóng</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal"
+                                aria-label="Đóng">Đóng</button>
                         </div>
                     </div>
                 </div>
