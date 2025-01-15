@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -460,7 +462,7 @@ public class UserService {
             throw new UnknownException(e.getMessage());
         }
     }
-    
+
     @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void switchIsLockedUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
@@ -544,23 +546,38 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void createManager(User user) throws UserAccountExistingException, UnknownException {
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
-            throw new UserAccountExistingException("Email " + user.getEmail() + " already exist. Please try another!");
-        }
 
-        user.setIsLocked(AccountStatus.OPEN.name());
-        user.setDelflag(0);
+        User foundUser = userRepository.findUserByEmail(user.getEmail());
 
-        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        HashSet<String> roles = new HashSet<>();
-        roles.add(Role.MANAGER.name());
-        user.setRoles(roles);
+        if (foundUser == null) {
+            user.setIsLocked(AccountStatus.OPEN.name());
+            user.setDelflag(0);
 
-        User savedUser = userRepository.save(user);
-        if (savedUser.getId() == null) {
-            throw new UnknownException("Transaction cannot complete!");
+            PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            HashSet<String> roles = new HashSet<>();
+            roles.add(Role.MANAGER.name());
+            user.setRoles(roles);
+
+            User savedUser = userRepository.save(user);
+            if (savedUser.getId() == null) {
+                throw new UnknownException("Transaction cannot complete!");
+            }
+        } else {
+            Set<String> roles = foundUser.getRoles();
+            if (roles.contains(Role.MANAGER.name())) {
+                throw new UserAccountExistingException("Email " + user.getEmail() + " already exist as a manager.");
+            } else if (roles.contains(Role.USER.name())) {
+                roles.add(Role.MANAGER.name());
+                foundUser.setRoles(roles);
+                User updatedUser = userRepository.save(foundUser);
+                if (updatedUser.getId() == null) {
+                    throw new UnknownException("Transaction cannot complete!");
+                }
+            }
         }
     }
 

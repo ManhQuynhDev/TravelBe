@@ -36,14 +36,12 @@ import com.quynhlm.dev.be.model.dto.responseDTO.PostMediaDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostResponseDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.PostStatisticalDTO;
 import com.quynhlm.dev.be.model.dto.responseDTO.ReactionCountDTO;
-import com.quynhlm.dev.be.model.entity.FriendShip;
 import com.quynhlm.dev.be.model.entity.HashTag;
 import com.quynhlm.dev.be.model.entity.Location;
 import com.quynhlm.dev.be.model.entity.Media;
 import com.quynhlm.dev.be.model.entity.Post;
 import com.quynhlm.dev.be.model.entity.User;
 import com.quynhlm.dev.be.repositories.CommentRepository;
-import com.quynhlm.dev.be.repositories.FriendShipRepository;
 import com.quynhlm.dev.be.repositories.HashTagRespository;
 import com.quynhlm.dev.be.repositories.LocationRepository;
 import com.quynhlm.dev.be.repositories.MediaRepository;
@@ -77,9 +75,6 @@ public class PostService {
 
     @Autowired
     private MediaRepository mediaRepository;
-
-    @Autowired
-    private FriendShipRepository friendShipRepository;
 
     @Autowired
     private UserRepository userRepository;
