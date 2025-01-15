@@ -85,7 +85,7 @@
                             <thead class="table-white">
                                 <tr>
                                     <th>#</th>
-                                    <th style="min-width: 200px;">Nội dung báo cáo</th>
+                                    <th style="min-width: 300px;">Nội dung báo cáo</th>
                                     <th>Loại vi phạm</th>
                                     <th>Trạng thái</th>
                                     <th>Lý do</th>
@@ -99,6 +99,38 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
+
+                                                <!-- Kiểm tra nếu có mediaUrls và chỉ hiển thị phần tử đầu tiên -->
+                                                <div
+                                                    th:if="${report.mediaUrls != null and report.mediaUrls.size() > 0}">
+                                                    <!-- Kiểm tra nếu mediaType là 'IMAGE' cho phần tử đầu tiên -->
+                                                    <div th:if="${report.mediaUrls[0].mediaType == 'IMAGE'}">
+                                                        <img th:src="${report.mediaUrls[0].mediaUrl}"
+                                                            alt="Content Image" class="img-fluid"
+                                                            style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;"
+                                                            onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
+                                                    </div>
+
+                                                    <!-- Kiểm tra nếu mediaType là 'VIDEO' cho phần tử đầu tiên -->
+                                                    <div th:if="${report.mediaUrls[0].mediaType == 'VIDEO'}">
+                                                        <video controls class="img-fluid"
+                                                            style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;">
+                                                            <source th:src="${report.mediaUrls[0].mediaUrl}"
+                                                                type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Nếu không có mediaUrls -->
+                                                <div
+                                                    th:if="${report.mediaUrls == null or report.mediaUrls.size() == 0}">
+                                                    <img src="/assets/img/anhdep.jpg" alt="No Image" class="img-fluid"
+                                                        style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;">
+                                                </div>
+
+                                                <!-- Hiển thị nội dung bài viết -->
+
                                                 <img th:if="${report.mediaUrls != null}"
                                                     th:src="${report.mediaUrls[0].mediaUrl}" alt="Content Image"
                                                     class="img-fluid"
@@ -107,11 +139,13 @@
                                                 <img th:if="${report.mediaUrls == null}" src="/assets/img/anhdep.jpg"
                                                     alt="No Image" class="img-fluid"
                                                     style="max-width: 70px; height: auto; margin-right: 10px;">
+
                                                 <span
                                                     th:text="${report.contentPost != null ? report.contentPost : 'No content available'}"></span>
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="text-start"
                                         th:text="${report.violationType != null ? report.violationType : 'Unknown'}">
                                         Violation Type</td>
@@ -135,9 +169,14 @@
 
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}"
+
+                                                th:disabled="${report.status == 'PROCESSED'}">
+
                                                 th:disabled="${report.status == 'CANCLE'}">
+
                                                 Phê duyệt
                                             </button>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -224,30 +263,39 @@
                     if (data.status) {
                         const report = data.data;
 
-                        // Hiển thị media
-                        const mediaContainer = document.getElementById('reportMediaContainer');
-                        mediaContainer.innerHTML = '';
-                        if (report.mediaUrls && report.mediaUrls.length > 0) {
-                            report.mediaUrls.forEach(media => {
+                        const mediaContainer = document.getElementById('mediaContainer');
+                        mediaContainer.innerHTML = ''; // Clear existing content
+
+                        if (data.data.mediaUrls && data.data.mediaUrls.length > 0) {
+                            data.data.mediaUrls.forEach(media => {
                                 const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
                                 mediaElement.src = media.mediaUrl || '/assets/img/anhdep.jpg';
                                 mediaElement.onerror = function () {
                                     this.src = '/assets/img/anhdep.jpg';
                                 };
                                 mediaElement.className = 'img-fluid rounded mb-2';
-                                mediaElement.style.width = '200px';
-                                mediaElement.style.height = '112px';
-                                mediaElement.style.objectFit = 'cover';
+                                mediaElement.style.width = '200px';  // Kích thước cố định
+                                mediaElement.style.height = '112px'; // Kích thước cố định
+                                mediaElement.style.objectFit = 'cover'; // Đảm bảo ảnh không bị biến dạng
 
-                                // Nếu là video, thêm thuộc tính controls
                                 if (media.mediaType === 'VIDEO') {
-                                    mediaElement.controls = true;
+                                    mediaElement.controls = true; // Thêm điều khiển video nếu là video
                                 }
 
-                                mediaContainer.appendChild(mediaElement);
+                                mediaContainer.appendChild(mediaElement); // Thêm vào container
                             });
+
+                            // Điều chỉnh để căn giữa khi có 1 hoặc 2 ảnh
+                            if (data.data.mediaUrls.length <= 2) {
+                                mediaContainer.style.display = 'flex';
+                                mediaContainer.style.justifyContent = 'center'; // Căn giữa các ảnh
+                            } else {
+                                mediaContainer.style.display = 'grid';
+                                mediaContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))'; // 3 ảnh xuống dòng
+                                mediaContainer.style.gap = '10px'; // Khoảng cách giữa các ảnh
+                            }
                         } else {
-                            mediaContainer.innerText = 'No media available';
+                            mediaContainer.innerText = 'No media available'; // Nếu không có media
                         }
 
                         // Hiển thị chi tiết báo cáo
@@ -308,29 +356,40 @@
                             document.getElementById('updateReportUserName').innerText = data.data.fullname;
                             document.getElementById('updateReportPostId').innerText = data.data.postId;
                             document.getElementById('updateReportReason').innerText = data.data.reason;
+                            const mediaContainer = document.getElementById('mediaContainer1');
+                            mediaContainer.innerHTML = ''; // Clear existing content
 
-                            const mediaContainer = document.getElementById('reportMediaContainer1');
-                            mediaContainer.innerHTML = '';
                             if (data.data.mediaUrls && data.data.mediaUrls.length > 0) {
                                 data.data.mediaUrls.forEach(media => {
-                                    const mediaElement = document.createElement(media.mediaType === 'IMAGE' ? 'img' : 'video');
-                                    mediaElement.src = media.mediaUrl || '/assets/img/anhdep.jpg';
-                                    mediaElement.onerror = function () {
-                                        this.src = '/assets/img/anhdep.jpg';
-                                    };
-                                    mediaElement.className = 'img-fluid rounded mb-2';
-                                    mediaElement.style.width = '200px';
-                                    mediaElement.style.height = '112px';
-                                    mediaElement.style.objectFit = 'cover';
+                                    const col = document.createElement('div');
+                                    col.className = 'col';
 
-                                    if (media.mediaType === 'VIDEO') {
-                                        mediaElement.controls = true;
+                                    if (media.mediaType === 'IMAGE') {
+                                        const img = document.createElement('img');
+                                        img.src = media.mediaUrl;
+                                        img.onerror = function () {
+                                            this.src = '/assets/img/anhdep.jpg';
+                                        };
+                                        img.className = 'img-fluid rounded';
+                                        img.style.maxWidth = '100%';
+                                        img.style.height = '112px';
+                                        img.alt = 'Post Media';
+                                        col.appendChild(img);
+                                    } else if (media.mediaType === 'VIDEO') {
+                                        const video = document.createElement('video');
+                                        video.controls = true;
+                                        video.className = 'w-100';
+                                        video.style.height = '112px';
+
+                                        const source = document.createElement('source');
+                                        source.src = media.mediaUrl;
+                                        source.type = 'video/mp4';
+                                        video.appendChild(source);
+                                        col.appendChild(video);
                                     }
 
-                                    mediaContainer.appendChild(mediaElement);
+                                    mediaContainer.appendChild(col);
                                 });
-                            } else {
-                                mediaContainer.innerText = 'No media available';
                             }
                             const modalElement = document.getElementById("updateReportModal");
                             const modal = new bootstrap.Modal(modalElement);

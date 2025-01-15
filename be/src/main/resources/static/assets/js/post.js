@@ -56,31 +56,31 @@ function loadPostDetails(id) {
         .then(data => {
             if (data.status) {
                 const post = data.data;
-
                 const mediaContainer = document.getElementById('mediaContainer');
                 mediaContainer.innerHTML = ''; // Clear existing content
 
                 if (post.mediaUrls && post.mediaUrls.length > 0) {
                     post.mediaUrls.forEach(media => {
                         const col = document.createElement('div');
-                        col.className = 'col';
+                        col.className = 'col d-flex justify-content-center'; // Căn giữa các media
 
                         if (media.mediaType === 'IMAGE') {
                             const img = document.createElement('img');
                             img.src = media.mediaUrl;
                             img.onerror = function () {
-                                this.src = '/assets/img/anhdep.jpg';
+                                this.src = '/assets/img/anhdep.jpg'; // Nếu không có ảnh, hiển thị ảnh mặc định
                             };
                             img.className = 'img-fluid rounded';
-                            img.style.maxWidth = '100%';
-                            img.style.height = '112px';
+                            img.style.maxWidth = '200px';  // Kích thước cố định cho chiều rộng ảnh khi chỉ có 1 ảnh
+                            img.style.height = 'auto'; // Chiều cao tự động thay đổi theo tỷ lệ của ảnh
+                            img.style.objectFit = 'cover'; // Đảm bảo ảnh không bị méo
                             img.alt = 'Post Media';
                             col.appendChild(img);
                         } else if (media.mediaType === 'VIDEO') {
                             const video = document.createElement('video');
                             video.controls = true;
                             video.className = 'w-100';
-                            video.style.height = '112px';
+                            video.style.height = '200px';
 
                             const source = document.createElement('source');
                             source.src = media.mediaUrl;
@@ -91,6 +91,18 @@ function loadPostDetails(id) {
 
                         mediaContainer.appendChild(col);
                     });
+
+                    // Điều chỉnh khi có ít ảnh (1 hoặc 2 ảnh)
+                    if (post.mediaUrls.length <= 2) {
+                        mediaContainer.style.display = 'flex';
+                        mediaContainer.style.justifyContent = 'center'; // Căn giữa khi ít ảnh
+                    } else {
+                        mediaContainer.style.display = 'grid';
+                        mediaContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))'; // Hiển thị 3 ảnh tự động xuống dòng
+                        mediaContainer.style.gap = '10px'; // Khoảng cách giữa các ảnh
+                    }
+                } else {
+                    mediaContainer.innerText = 'No media available'; // Hiển thị thông báo nếu không có media
                 }
 
 

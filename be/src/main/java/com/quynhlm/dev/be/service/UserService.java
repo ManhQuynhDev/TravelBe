@@ -548,6 +548,10 @@ public class UserService {
 
     @Transactional
     public void createManager(User user) throws UserAccountExistingException, UnknownException {
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new UserAccountExistingException("Email " + user.getEmail() + " đã tồn tại vui lòng thử lại.");
+        }
+
 
         User foundUser = userRepository.findUserByEmail(user.getEmail());
 

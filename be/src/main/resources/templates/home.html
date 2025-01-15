@@ -230,7 +230,7 @@
 
 
             <!-- Cột phải: Biểu đồ Thống Kê Vi Phạm -->
-            <!-- <div th:replace="fragments/notification"></div> -->
+            <div th:replace="fragments/notification"></div>
 
 
 
@@ -359,7 +359,7 @@
 
 
     <script>
-        const token = localStorage.getItem("authToken");
+        var token = localStorage.getItem("authToken");
 
         // Fetch dữ liệu người dùng
         const fetchUserData = fetch('http://localhost:8080/onboarding/statistical_register/2024', {
@@ -477,7 +477,7 @@
                     if (month11Group.post_count !== 0) {
                         percentageChangeGroup = ((differenceGroup / month11Group.post_count) * 100).toFixed(2);
                     } else if (month12Group.post_count > 0) {
-                        percentageChangeGroup = 100; 
+                        percentageChangeGroup = 100;
                     }
                 }
 
@@ -501,7 +501,7 @@
                 growthInfoElementGroup.innerHTML = htmlContentGroup;
 
                 const chartData = {
-                    labels: userLabels,  
+                    labels: userLabels,
                     datasets: [
                         {
                             label: 'Users',
@@ -563,9 +563,8 @@
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
-
         document.addEventListener("DOMContentLoaded", function () {
-            const token = localStorage.getItem("authToken");
+
 
             function logGroupId(event) {
                 const groupId = event.target.getAttribute("data-id");
@@ -747,13 +746,33 @@
         document.getElementById("logoutLink").addEventListener("click", function () {
             window.location.replace("/web-server/login");
         });
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
+
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
 
     </script>
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
-    
+
 
 </body>
 

@@ -123,14 +123,16 @@
                                     </td>
 
                                     <td th:text="${complaint.type}">Tài khoản bị khóa.</td>
-                                    <td th:text="${complaint.status}">PENDING</td>
+                                    <td th:text="${complaint.status == 'PENDING' ? 'Chưa xử lý' : complaint.status}">
+                                        PENDING</td>
                                     <td th:text="${complaint.report_reason}">Vi phạm quy định</td>
                                     <td th:text="${#strings.substringBefore(complaint.lock_date, 'T')}">
                                         2025-01-09
                                     </td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-danger details-button"
-                                            th:attr="data-id=${complaint.complaintId}">
+                                            th:attr="data-id=${complaint.complaintId}"
+                                            th:disabled="${complaint.status != 'PENDING'}">
                                             Phê duyệt
                                         </button>
                                     </td>
@@ -196,19 +198,30 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
+            // Lắng nghe các sự kiện click trên nút phê duyệt
             document.querySelectorAll('.details-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var modal = new bootstrap.Modal(document.getElementById('notificationModalUpdate'));
                     modal.show();
 
-                    const complaintId = this.getAttribute('data-id'); // Lấy ID khiếu nại từ nút được nhấn
-                    document.getElementById('approveButton').setAttribute('data-id', complaintId); // Lưu complaintId vào nút phê duyệt
+                    // Lấy complaintId từ thuộc tính data-id của nút
+                    const complaintId = this.getAttribute('data-id');
+                    document.getElementById('approveButton').setAttribute('data-id', complaintId);
                 });
             });
 
+            // Xử lý khi nhấn phê duyệt
             document.getElementById('approveButton').addEventListener('click', function () {
                 const complaintId = this.getAttribute('data-id'); // Lấy complaintId từ nút phê duyệt
+                const responseMessage = document.getElementById('responseMessage').value.trim(); // Lấy phản hồi từ input textarea
 
+                if (!responseMessage) {
+                    showModal("warning", "Thông báo", "Vui lòng nhập phản hồi trước khi duyệt.");
+                    return;
+                }
+
+
+                // Gửi yêu cầu cập nhật khiếu nại
                 fetch(`http://localhost:8080/api/complaint/${complaintId}`, {
                     method: 'PUT',
                     headers: {
@@ -217,18 +230,20 @@
                     },
                     body: JSON.stringify({
                         status: 'Đã giải quyết',
-                        responseMessage: 'Đã mở khóa cho user vì thấy sai phạm'
+                        responseMessage: responseMessage // Gửi phản hồi người dùng nhập vào
                     })
                 })
                     .then(response => response.json())
                     .then(data => {
+                        // Ẩn modal khi xử lý thành công
                         var modal = bootstrap.Modal.getInstance(document.getElementById('notificationModalUpdate'));
                         modal.hide();
                         showModal("success", "Thông báo", "Xử lý thành công");
+
+                        // Reload trang sau 1s
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
-
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -236,6 +251,7 @@
                     });
             });
         });
+
         function showModal(type, title, message) {
             document.getElementById('notificationModalLabel').textContent = title;
             document.getElementById('notificationModalBody').textContent = message;
