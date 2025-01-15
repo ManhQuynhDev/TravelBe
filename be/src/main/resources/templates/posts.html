@@ -104,7 +104,7 @@
                                                 <img th:if="${post.mediaUrls != null and post.mediaUrls.size() > 0 and post.mediaUrls[0].mediaType == 'IMAGE'}"
                                                     th:src="${post.mediaUrls[0].mediaUrl}" alt="Content Image"
                                                     class="img-fluid"
-                                                    style="max-width: 100px; height: 100px; margin-right: 10px;object-fit: contain;"
+                                                    style="width: 100px; height: 100px; margin-right: 10px;object-fit: contain;"
                                                     onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
 
                                                 <!-- Check if the first media is a video -->

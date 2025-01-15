@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Home</title>
+    <title>Quản lý nhóm</title>
     <link rel="stylesheet" th:href="@{/assets/css/vendor.min.css}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/assets/vendor/icon-set/style.css}">
@@ -103,9 +103,10 @@
                                             <div>
                                                 <img class="avatar-img" th:src="${group.cover_photo}"
                                                     alt="Image Description"
-                                                    onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';">
-
+                                                    onerror="this.onerror=null; this.src='/assets/img/anhload.jpg';"
+                                                    style="width: 100px; height: 100px;">
                                             </div>
+
                                             <div class="ml-3">
                                                 <span class="d-block h5 text-hover-primary mb-0"
                                                     th:text="${group.group_name}">Amanda Harvey</span>
@@ -126,10 +127,6 @@
                                             <button class="btn btn-sm btn-outline-secondary mr-2" id="viewMembers"
                                                 th:attr="data-id=${group.groupId}">
                                                 Xem Thành Viên
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-info" id="viewPlans"
-                                                th:attr="data-id=${group.groupId}">
-                                                Xem Kế Hoạch
                                             </button>
                                         </div>
                                     </td>
@@ -437,43 +434,43 @@
             })
         })
 
-        document.querySelectorAll('#viewPlans').forEach(button => {
-            button.addEventListener("click", async function () {
-                const groupId = this.getAttribute("data-id");
-                console.log("Group ID:", groupId);
+        // document.querySelectorAll('#viewPlans').forEach(button => {
+        //     button.addEventListener("click", async function () {
+        //         const groupId = this.getAttribute("data-id");
+        //         console.log("Group ID:", groupId);
 
-                // Lấy token từ localStorage
-                const token = localStorage.getItem("authToken");
-                const apiURL = `http://localhost:8080/api/travel-plan/by-group-id/${groupId}`;
+        //         // Lấy token từ localStorage
+        //         const token = localStorage.getItem("authToken");
+        //         const apiURL = `http://localhost:8080/api/travel-plan/by-group-id/${groupId}`;
 
-                try {
-                    const response = await fetch(apiURL, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    });
+        //         try {
+        //             const response = await fetch(apiURL, {
+        //                 method: 'GET',
+        //                 headers: {
+        //                     'Authorization': `Bearer ${token}`,
+        //                     'Content-Type': 'application/json'
+        //                 }
+        //             });
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
+        //             if (!response.ok) {
+        //                 throw new Error(`HTTP error! Status: ${response.status}`);
+        //             }
 
-                    const data = await response.json();
-                    console.log("Fetched Travel Plans:", data); // Debug dữ liệu trả về
+        //             const data = await response.json();
+        //             console.log("Fetched Travel Plans:", data); // Debug dữ liệu trả về
 
-                    if (data.content && Array.isArray(data.content)) {
-                        displayTravelPlans(data.content);
-                        $('#viewTravelPlansModal').modal('show');  // Mở modal
-                    } else {
-                        alert("No travel plans found for this group.");
-                    }
-                } catch (error) {
-                    console.error('Error fetching travel plans:', error);
-                    alert('An error occurred while fetching travel plans.');
-                }
-            });
-        });
+        //             if (data.content && Array.isArray(data.content)) {
+        //                 displayTravelPlans(data.content);
+        //                 $('#viewTravelPlansModal').modal('show');  // Mở modal
+        //             } else {
+        //                 alert("No travel plans found for this group.");
+        //             }
+        //         } catch (error) {
+        //             console.error('Error fetching travel plans:', error);
+        //             alert('An error occurred while fetching travel plans.');
+        //         }
+        //     });
+        // });
 
         function displayTravelPlans(plans) {
             const plansContainer = document.getElementById('plansList');
