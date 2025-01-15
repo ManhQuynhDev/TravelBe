@@ -105,8 +105,6 @@ public class PostController {
         return postService.getAllPostsAndSharedPosts(userId, pageable);
     }
 
-  
-
     @GetMapping("/all_posts")
     public Page<PostResponseDTO> getAllPosts(
             Pageable pageable) {

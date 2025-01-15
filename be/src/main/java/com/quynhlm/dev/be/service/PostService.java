@@ -265,7 +265,6 @@ public class PostService {
     // GET ALL
     public Page<PostResponseDTO> getAllPostsAndSharedPosts(Integer userId, Pageable pageable)
             throws UserAccountNotFoundException {
-
         User foundUser = userRepository.getAnUser(userId);
 
         if (foundUser == null) {

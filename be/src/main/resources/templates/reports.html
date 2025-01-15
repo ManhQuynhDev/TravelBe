@@ -99,6 +99,7 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
+
                                                 <!-- Kiểm tra nếu có mediaUrls và chỉ hiển thị phần tử đầu tiên -->
                                                 <div
                                                     th:if="${report.mediaUrls != null and report.mediaUrls.size() > 0}">
@@ -129,6 +130,16 @@
                                                 </div>
 
                                                 <!-- Hiển thị nội dung bài viết -->
+
+                                                <img th:if="${report.mediaUrls != null}"
+                                                    th:src="${report.mediaUrls[0].mediaUrl}" alt="Content Image"
+                                                    class="img-fluid"
+                                                    style="max-width: 70px; height: auto; margin-right: 10px;"
+                                                    onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
+                                                <img th:if="${report.mediaUrls == null}" src="/assets/img/anhdep.jpg"
+                                                    alt="No Image" class="img-fluid"
+                                                    style="max-width: 70px; height: auto; margin-right: 10px;">
+
                                                 <span
                                                     th:text="${report.contentPost != null ? report.contentPost : 'No content available'}"></span>
                                             </div>
@@ -138,8 +149,9 @@
                                     <td class="text-start"
                                         th:text="${report.violationType != null ? report.violationType : 'Unknown'}">
                                         Violation Type</td>
+
                                     <td class="text-start"
-                                        th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : 'Chưa xử lý'}">Status
+                                        th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : (report.status == 'CANCLE' ? 'Từ chối báo cáo' : 'Chưa xử lý')}">
                                     </td>
 
                                     <td class="text-start"
@@ -157,7 +169,11 @@
 
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}"
+
                                                 th:disabled="${report.status == 'PROCESSED'}">
+
+                                                th:disabled="${report.status == 'CANCLE'}">
+
                                                 Phê duyệt
                                             </button>
 
@@ -404,6 +420,7 @@
                     const reviewId = modalElement._reviewId;
                     const postId = modalElement._postId;
                     const reportId = modalElement._reportId;
+
                     console.log(userErrorId + "userID");
 
 
@@ -420,8 +437,8 @@
                         }
                     }
 
-
-                    const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=PROCESSED&action=${encodeURIComponent(action)}`;
+                    var status = "PROCESSED";
+                    const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=${status}&action=${encodeURIComponent(action)}`;
 
                     if (action === "Khóa tài khoản 3 ngày") {
                         const url = `http://localhost:8080/onboarding/look_three_days/${userErrorId}`;
@@ -447,6 +464,7 @@
                                 console.error('Lỗi khi xử lý khóa tài khoản:', error);
                                 showModal("danger", "Lỗi", "Xử lý không thành công. Vui lòng thử lại.");
                             });
+                        handlePROGESS();
                     } else if (action === "Khóa tài khoản vĩnh viễn") {
                         fetch(`http://localhost:8080/onboarding/locked-forever/${userErrorId}`, {
                             method: "PUT",
@@ -471,7 +489,7 @@
                                 console.error('Lỗi khi khóa tài khoản vĩnh viễn:', error);
                                 showModal("danger", "Lỗi", "Xử lý không thành công. Vui lòng thử lại.");
                             });
-
+                        handlePROGESS();
                     } else if (action === "Khóa bài viết") {
                         fetch(`http://localhost:8080/api/posts/${postId}`, {
                             method: "DELETE",
@@ -491,7 +509,6 @@
                                 setTimeout(() => {
                                     window.location.reload();
                                 }, 1000);
-
                             })
                             .catch(error => {
                                 console.error('Lỗi khi xóa bài viết:', error);
@@ -500,12 +517,14 @@
                                     window.location.reload();
                                 }, 1000);
                             });
+                        handlePROGESS();
                     } else if (action === "Cảnh báo người dùng") {
                         console.log("lô lô");
-
+                        handlePROGESS();
                     } else if (action === "Từ chối báo cáo") {
-                        fetch(`http://localhost:8080/api/report/${reportId}`, {
-                            method: "DELETE",
+                        const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=CANCLE&action=${encodeURIComponent(action)}`;
+                        fetch(requestUrl, {
+                            method: "PUT",
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem("authToken")}`
                             }
@@ -513,38 +532,41 @@
                             .then(res => res.json())
                             .then(data => {
                                 console.log(data);
-
                                 if (data.status) {
                                     showModal("success", "Từ chối báo cáo", "Từ chối thành công!");
                                     setTimeout(() => {
                                         window.location.reload();
                                     }, 1000);
+
+                                    return;
                                 } else {
                                     showModal("danger", "Lỗi", "Không thể xóa báo cáo. Vui lòng thử lại.");
-
                                 }
                             })
                             .catch(error => {
                                 console.log(error);
                             });
                     }
-                    fetch(requestUrl, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            modal.hide();
-                        })
-                        .catch(error => {
-                            console.error('Lỗi khi xử lý báo cáo:', error);
-                        });
                 });
             }
         });
+
+        function handlePROGESS() {
+            fetch(requestUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    modal.hide();
+                })
+                .catch(error => {
+                    console.error('Lỗi khi xử lý báo cáo:', error);
+                });
+        }
         function showModal(type, title, message) {
             document.getElementById('notificationModalLabel').textContent = title;
             document.getElementById('notificationModalBody').textContent = message;
