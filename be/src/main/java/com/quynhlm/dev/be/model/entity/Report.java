@@ -30,5 +30,6 @@ public class Report {
     private String create_time;
     private String action;
     private String response_time;
+    private Integer delflag;
 }
  

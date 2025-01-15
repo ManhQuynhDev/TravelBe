@@ -10,13 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import com.quynhlm.dev.be.model.entity.Report;
 
 public interface ReportRepository extends JpaRepository<Report, Integer> {
-       @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND post_id = :postId", nativeQuery = true)
+       @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND post_id = :postId AND delflag = 0", nativeQuery = true)
        Report foundReportExitByUserIdAndPostId(int userId, int postId);
 
-       @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND comment_id = :commentId", nativeQuery = true)
+       @Query(value = "SELECT * FROM Report WHERE user_id = :userId AND comment_id = :commentId AND delflag = 0", nativeQuery = true)
        Report foundReportExitByUserIdAndCommentId(int userId, int commentId);
 
-       @Query(value = "SELECT * FROM Report WHERE id = :id", nativeQuery = true)
+       @Query(value = "SELECT * FROM Report WHERE id = :id AND delflag = 0", nativeQuery = true)
        Report findReportById(Integer id);
 
        @Query(value = """

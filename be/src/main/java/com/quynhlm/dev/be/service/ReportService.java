@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.quynhlm.dev.be.core.exception.BadResquestException;
 import com.quynhlm.dev.be.core.exception.CommentNotFoundException;
+import com.quynhlm.dev.be.core.exception.NotFoundException;
 import com.quynhlm.dev.be.core.exception.PostNotFoundException;
 import com.quynhlm.dev.be.core.exception.ReportExistingException;
 import com.quynhlm.dev.be.core.exception.ReportNotFoundException;
@@ -118,6 +120,7 @@ public class ReportService {
         report.setUserId(reportRequestDTO.getUserId());
         report.setViolationType(reportRequestDTO.getViolationType());
         report.setReason(reportRequestDTO.getReason());
+        report.setDelflag(0);
 
         try {
             if (file != null && !file.isEmpty()) {
@@ -156,14 +159,16 @@ public class ReportService {
             throw new ReportNotFoundException(
                     "Found report with " + report_id + " not found , please try with other id");
         }
-        reportRepository.delete(report);
+        report.setDelflag(1);
+        reportRepository.save(report);
     }
 
+    @Transactional
     public void handleReport(Integer userId, Integer report_id, String violationType, String action, String status)
-            throws UnknownException, UserAccountNotFoundException, ReportNotFoundException {
+            throws UnknownException, UserAccountNotFoundException, NotFoundException {
         Report report = reportRepository.findReportById(report_id);
         if (report == null) {
-            throw new ReportNotFoundException(
+            throw new NotFoundException(
                     "Found report with " + report_id + " not found , please try with other id");
         }
 
@@ -383,7 +388,7 @@ public class ReportService {
                     mediaResponseDTO.setMediaUrl(mediaUrl);
                     mediaResponseDTO
                             .setMediaType(mediaUrl.matches(".*\\.(jpg|jpeg|png|gif|webp)$") ? "IMAGE" : "VIDEO");
-                    mediaResponseDTOs.add(mediaResponseDTO);    
+                    mediaResponseDTOs.add(mediaResponseDTO);
                 }
                 report.setMediaUrls(mediaResponseDTOs);
             } else {

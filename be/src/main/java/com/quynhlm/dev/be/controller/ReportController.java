@@ -68,6 +68,7 @@ public class ReportController {
         ResponseObject<Void> result = new ResponseObject<>();
         reportService.handleReport(userId, reportId, violation, action, status);
         result.setMessage("Handel report successfully");
+        result.setStatus(true);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
