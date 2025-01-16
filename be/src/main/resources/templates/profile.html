@@ -547,7 +547,9 @@
                             profileImg.src = data.data.avatarUrl;
                         } else {
                             const firstLetter = data.data.fullname ? data.data.fullname.charAt(0).toUpperCase() : 'N'; // Nếu không có fullname, dùng 'N'
-                            profileImg.src = `https://via.placeholder.com/150/808080/000000?text=${firstLetter}`;
+                            profileImg.src = `https://dummyimage.com/150x150/808080/000000.png&text=${firstLetter}`;
+                            console.log(firstLetter);
+
                         }
 
                         // Tính phần trăm hoàn thiện hồ sơ

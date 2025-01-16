@@ -113,7 +113,9 @@
                                             </div>
                                         </a>
                                     </td>
-                                    <td class="text-start" th:text="${group.status}">Status</td>
+                                    <td class="text-start" th:text="${group.status == 'PUBLIC' ? 'Công khai' : 'Riêng tư'}">
+                                    </td>
+
                                     <td class="text-start" th:text="${group.admin_name}">User ID</td>
                                     <td class="text-start" th:text="${#strings.substring(group.create_time, 0, 10)}">
                                         Created Time</td>
