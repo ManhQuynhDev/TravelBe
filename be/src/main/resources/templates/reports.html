@@ -141,7 +141,7 @@
                                         th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : (report.status == 'CANCEL' ? 'Từ chối báo cáo' : 'Chưa xử lý')}">
                                     </td>
 
-                                    <td class="text-start"
+                                    <td class="text-start" style="max-width: 250px;"
                                         th:text="${report.reason != null ? report.reason : 'No reason specified'}">
                                         Reason</td>
                                     <td class="text-start"

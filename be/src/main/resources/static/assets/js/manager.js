@@ -8,13 +8,10 @@ function isTokenExpired(token) {
     const payloadBase64 = token.split('.')[1];
     const decodedPayload = JSON.parse(atob(payloadBase64));
 
-    // Get expiration time
     const expirationTime = decodedPayload.exp;
 
-    // Convert to human-readable date
     const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
 
-    // Log expiration time
     console.log(`Token expires at: ${expirationDate}`);
 
     // Check if the token is expired
@@ -467,14 +464,14 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                                 console.log(data);
 
                                 if (data) {
-                                    showNotification('success', 'Thành công', 'Mở tài khoản thành công');
+                                    showModal('success', 'Thành công', 'Mở tài khoản thành công');
                                     modal.hide();
 
                                     setTimeout(() => {
                                         window.location.reload();
                                     }, 1000);
                                 } else {
-                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi mở khóa tài khoản.');
+                                    showModal('error', 'Lỗi', 'Có lỗi xảy ra khi mở khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));
@@ -484,7 +481,7 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                         const reasonInput = document.getElementById("reasonInput").value.trim();
 
                         if (!reasonInput) {
-                            showNotification('warning', 'Cảnh báo', 'Vui lòng nhập lý do khóa tài khoản.');
+                            showModal('warning', 'Cảnh báo', 'Vui lòng nhập lý do khóa tài khoản.');
                             return; // Dừng việc gửi yêu cầu nếu lý do rỗng
                         }
 
@@ -504,14 +501,14 @@ document.querySelectorAll('.btn-outline-success').forEach(button => {
                                 console.log(data);
 
                                 if (data) {
-                                    showNotification('success', 'Thành công', 'Khóa tài khoản thành công');
+                                    showModal('success', 'Thành công', 'Khóa tài khoản thành công');
                                     modal.hide();
 
                                     setTimeout(() => {
                                         window.location.reload();
                                     }, 1000);
                                 } else {
-                                    showNotification('error', 'Lỗi', 'Có lỗi xảy ra khi khóa tài khoản.');
+                                    showModal('error', 'Lỗi', 'Có lỗi xảy ra khi khóa tài khoản.');
                                 }
                             })
                             .catch(error => console.error("Lỗi:", error));

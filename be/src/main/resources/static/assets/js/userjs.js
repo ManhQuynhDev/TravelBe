@@ -71,7 +71,10 @@ function checkStatus(userId) {
         method: 'GET',
         headers: AUTH_HEADER
     })
-        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res.json()
+        })
         .then(data => {
             const userAccount = data.data.isLocked;
 
