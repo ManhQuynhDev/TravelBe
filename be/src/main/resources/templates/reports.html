@@ -99,59 +99,46 @@
                                     <td class="text-start">
                                         <div class="row">
                                             <div class="d-flex align-items-center">
-
-                                                <!-- Kiểm tra nếu có mediaUrls và chỉ hiển thị phần tử đầu tiên -->
-                                                <div
-                                                    th:if="${report.mediaUrls != null and report.mediaUrls.size() > 0}">
-                                                    <!-- Kiểm tra nếu mediaType là 'IMAGE' cho phần tử đầu tiên -->
-                                                    <div th:if="${report.mediaUrls[0].mediaType == 'IMAGE'}">
-                                                        <img th:src="${report.mediaUrls[0].mediaUrl}"
-                                                            alt="Content Image" class="img-fluid"
-                                                            style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;"
-                                                            onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
-                                                    </div>
-
-                                                    <!-- Kiểm tra nếu mediaType là 'VIDEO' cho phần tử đầu tiên -->
-                                                    <div th:if="${report.mediaUrls[0].mediaType == 'VIDEO'}">
+                                                <!-- Kiểm tra nếu là video -->
+                                                <div th:if="${report.mediaUrls != null}">
+                                                    <div th:if="${report.mediaUrls[0].mediaUrl.endsWith('.mp4')}">
+                                                        <!-- Hiển thị video nếu là file video (MP4) -->
                                                         <video controls class="img-fluid"
-                                                            style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;">
+                                                            style="width: 100px; height: 100px; object-fit: cover; margin-right: 10px;">
                                                             <source th:src="${report.mediaUrls[0].mediaUrl}"
                                                                 type="video/mp4">
                                                             Your browser does not support the video tag.
                                                         </video>
                                                     </div>
+                                                    <div th:if="${!report.mediaUrls[0].mediaUrl.endsWith('.mp4')}">
+                                                        <!-- Hiển thị ảnh nếu không phải là video -->
+                                                        <img th:src="${report.mediaUrls[0].mediaUrl}"
+                                                            alt="Content Image" class="img-fluid"
+                                                            style="max-width: 100px; height: 100px; margin-right: 10px;"
+                                                            onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
+                                                    </div>
                                                 </div>
 
                                                 <!-- Nếu không có mediaUrls -->
-                                                <div
-                                                    th:if="${report.mediaUrls == null or report.mediaUrls.size() == 0}">
+                                                <div th:if="${report.mediaUrls == null}">
                                                     <img src="/assets/img/anhdep.jpg" alt="No Image" class="img-fluid"
-                                                        style="width: 100px; height: 100px; margin-right: 10px; object-fit: contain;">
+                                                        style="max-width: 100px; height: 100px; margin-right: 10px;">
                                                 </div>
 
                                                 <!-- Hiển thị nội dung bài viết -->
-
-                                                <img th:if="${report.mediaUrls != null}"
-                                                    th:src="${report.mediaUrls[0].mediaUrl}" alt="Content Image"
-                                                    class="img-fluid"
-                                                    style="max-width: 70px; height: auto; margin-right: 10px;"
-                                                    onerror="this.onerror=null; this.src='/assets/img/anhdep.jpg';">
-                                                <img th:if="${report.mediaUrls == null}" src="/assets/img/anhdep.jpg"
-                                                    alt="No Image" class="img-fluid"
-                                                    style="max-width: 70px; height: auto; margin-right: 10px;">
-
                                                 <span
                                                     th:text="${report.contentPost != null ? report.contentPost : 'No content available'}"></span>
                                             </div>
                                         </div>
                                     </td>
 
+
                                     <td class="text-start"
                                         th:text="${report.violationType != null ? report.violationType : 'Unknown'}">
                                         Violation Type</td>
 
                                     <td class="text-start"
-                                        th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : (report.status == 'CANCLE' ? 'Từ chối báo cáo' : 'Chưa xử lý')}">
+                                        th:text="${report.status == 'PROCESSED' ? 'Đã xử lý' : (report.status == 'CANCEL' ? 'Từ chối báo cáo' : 'Chưa xử lý')}">
                                     </td>
 
                                     <td class="text-start"
@@ -169,11 +156,7 @@
 
                                             <button class="btn btn-sm btn-outline-danger mr-2" id="approveReport"
                                                 th:attr="data-id=${report.id}"
-
-                                                th:disabled="${report.status == 'PROCESSED'}">
-
-                                                th:disabled="${report.status == 'CANCLE'}">
-
+                                                th:disabled="${report.status == 'PROCESSED' || report.status == 'CANCEL'}">
                                                 Phê duyệt
                                             </button>
 
@@ -421,7 +404,8 @@
                     const postId = modalElement._postId;
                     const reportId = modalElement._reportId;
 
-                    console.log(userErrorId + "userID");
+                    console.log(userId + "userID");
+                    console.log(reviewId + "reviewID");
 
 
                     var violationType = document.getElementById("updateViolationTypeSelect").value;
@@ -522,7 +506,7 @@
                         console.log("lô lô");
                         handlePROGESS();
                     } else if (action === "Từ chối báo cáo") {
-                        const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=CANCLE&action=${encodeURIComponent(action)}`;
+                        const requestUrl = `http://localhost:8080/api/report/${userId}/${reviewId}/action?violation=${encodeURIComponent(violationType)}&status=CANCEL&action=${encodeURIComponent(action)}`;
                         fetch(requestUrl, {
                             method: "PUT",
                             headers: {
@@ -538,7 +522,7 @@
                                         window.location.reload();
                                     }, 1000);
 
-                                    return;
+
                                 } else {
                                     showModal("danger", "Lỗi", "Không thể xóa báo cáo. Vui lòng thử lại.");
                                 }
@@ -546,6 +530,7 @@
                             .catch(error => {
                                 console.log(error);
                             });
+                        handlePROGESS();
                     }
                 });
             }
