@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
@@ -475,7 +474,7 @@ public class UserService {
         }
     }
 
-    @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    // @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void switchIsLockedUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, UnknownException {
         User foundUser = userRepository.findOneById(id);
@@ -559,38 +558,45 @@ public class UserService {
     }
 
     @Transactional
-    public void createManager(User user) throws UserAccountExistingException, UnknownException {
+    public void createManager(User user) throws UserAccountExistingException, UnknownException, UserAccountNotFoundException {
 
         User foundUser = userRepository.findUserByEmail(user.getEmail());
 
-        if (foundUser == null) {
-            user.setIsLocked(AccountStatus.OPEN.name());
-            user.setDelflag(0);
-
-            PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-            HashSet<String> roles = new HashSet<>();
-            roles.add(Role.MANAGER.name());
-            user.setRoles(roles);
-
-            User savedUser = userRepository.save(user);
-            if (savedUser.getId() == null) {
-                throw new UnknownException("Transaction cannot complete!");
-            }
-        } else {
-            Set<String> roles = foundUser.getRoles();
-            if (roles.contains(Role.MANAGER.name())) {
-                throw new UserAccountExistingException("Email " + user.getEmail() + " already exist as a manager.");
-            } else if (roles.contains(Role.USER.name())) {
-                roles.add(Role.MANAGER.name());
-                foundUser.setRoles(roles);
-                User updatedUser = userRepository.save(foundUser);
-                if (updatedUser.getId() == null) {
-                    throw new UnknownException("Transaction cannot complete!");
-                }
-            }
+        if (foundUser != null) {
+            throw new UserAccountNotFoundException("Found user with " + foundUser.getEmail() + " not found , please try again");
         }
+
+        user.setIsLocked(AccountStatus.OPEN.name());
+        user.setDelflag(0);
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.MANAGER.name());
+        user.setRoles(roles);
+
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() == null) {
+            throw new UnknownException("Transaction cannot complete!");
+        }
+
+        // if (foundUser == null) {
+
+        // } else {
+        // Set<String> roles = foundUser.getRoles();
+        // if (roles.contains(Role.MANAGER.name())) {
+        // throw new UserAccountExistingException("Email " + user.getEmail() + " already
+        // exist as a manager.");
+        // } else if (roles.contains(Role.USER.name())) {
+        // roles.add(Role.MANAGER.name());
+        // foundUser.setRoles(roles);
+        // User updatedUser = userRepository.save(foundUser);
+        // if (updatedUser.getId() == null) {
+        // throw new UnknownException("Transaction cannot complete!");
+        // }
+        // }
+        // }
     }
 
     public List<User> getAllListUser() {
