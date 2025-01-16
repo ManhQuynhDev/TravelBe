@@ -123,8 +123,11 @@
                                     </td>
 
                                     <td th:text="${complaint.type}">Tài khoản bị khóa.</td>
-                                    <td th:text="${complaint.status == 'PENDING' ? 'Chưa xử lý' : complaint.status}">
-                                        PENDING</td>
+                                    <td th:text="${complaint.status == 'PENDING' ? 'Chưa xử lý' : 'Đã xử lý'}"
+                                        th:classappend="${complaint.status == 'PENDING' ? 'text-warning' : 'text-success'}">
+                                        PENDING
+                                    </td>
+
                                     <td th:text="${complaint.report_reason}">Vi phạm quy định</td>
                                     <td th:text="${#strings.substringBefore(complaint.lock_date, 'T')}">
                                         2025-01-09
@@ -198,19 +201,16 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Lắng nghe các sự kiện click trên nút phê duyệt
             document.querySelectorAll('.details-button').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var modal = new bootstrap.Modal(document.getElementById('notificationModalUpdate'));
                     modal.show();
 
-                    // Lấy complaintId từ thuộc tính data-id của nút
                     const complaintId = this.getAttribute('data-id');
                     document.getElementById('approveButton').setAttribute('data-id', complaintId);
                 });
             });
 
-            // Xử lý khi nhấn phê duyệt
             document.getElementById('approveButton').addEventListener('click', function () {
                 const complaintId = this.getAttribute('data-id'); // Lấy complaintId từ nút phê duyệt
                 const responseMessage = document.getElementById('responseMessage').value.trim(); // Lấy phản hồi từ input textarea
@@ -219,9 +219,6 @@
                     showModal("warning", "Thông báo", "Vui lòng nhập phản hồi trước khi duyệt.");
                     return;
                 }
-
-
-                // Gửi yêu cầu cập nhật khiếu nại
                 fetch(`http://localhost:8080/api/complaint/${complaintId}`, {
                     method: 'PUT',
                     headers: {
