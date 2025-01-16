@@ -267,13 +267,14 @@
             </div>
         </div>
         <div th:replace="fragments/profile/changeFullnameModal"></div>
+        <div th:replace="fragments/notification"></div>
 
 
     </div>
     <script th:src="@{/assets/js/demo.js}"></script>
     <script th:src="@{/assets/js/vendor.min.js}"></script>
     <script th:src="@{/assets/js/theme.min.js}"></script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
+    <!-- <script th:src="@{/assets/js/userjs.js}"></script> -->
     <script>
         $(document).on('ready', function () {
             $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
@@ -326,12 +327,38 @@
             });
 
         });
+        var token = localStorage.getItem("authToken");
+
+
+
+        function isTokenExpired(token) {
+            if (!token) return true;
+
+            const payloadBase64 = token.split('.')[1];
+            const decodedPayload = JSON.parse(atob(payloadBase64));
+
+            const expirationTime = decodedPayload.exp;
+
+            const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
+
+            console.log(expirationDate);
+
+            const currentTime = Math.floor(Date.now() / 1000);
+            return expirationTime < currentTime;
+        }
+
+        if (isTokenExpired(token)) {
+            showModal('warning', 'Hết phiên đăng nhập', 'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+            setTimeout(() => {
+                window.location.href = '/web-server/login';
+            }, 1000);
+        }
         let initialData = {};
 
         function loadUserData(userId) {
             fetch(`http://localhost:8080/onboarding/users/${userId}`, {
                 method: 'GET',
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+                headers: { 'Authorization': `Bearer ${token}` }
             })
                 .then(response => {
                     if (!response.ok) {
@@ -340,6 +367,8 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log(data);
+
                     const formattedDob = data.data.dob;
                     initialData = {
                         fullname: data.data.fullname || "",
@@ -396,6 +425,8 @@
         document.getElementById('avatarUploader').addEventListener('change', checkForChanges);
 
         const userId = localStorage.getItem("user_id");
+        // console.log(userId);
+
         loadUserData(userId);
 
         document.getElementById('avatarUploader').addEventListener('change', function (event) {
@@ -595,11 +626,48 @@
                     alert('Có lỗi xảy ra khi cập nhật tên. Vui lòng thử lại.');
                 });
         });
+        function showModal(type, title, message) {
+            document.getElementById('notificationModalLabel').textContent = title;
+            document.getElementById('notificationModalBody').textContent = message;
+
+            const modalElement = document.getElementById('notificationModal');
+            modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+            if (type === 'success') {
+                modalElement.classList.add('modal-success');
+            } else if (type === 'info') {
+                modalElement.classList.add('modal-info');
+            } else if (type === 'warning') {
+                modalElement.classList.add('modal-warning');
+            } else if (type === 'danger') {
+                modalElement.classList.add('modal-danger');
+            }
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+        $(document).on('ready', function () {
+            if (window.localStorage.getItem('hs-builder-popover') === null) {
+                $('#builderPopover').popover('show')
+                    .on('shown.bs.popover', function () {
+                        $('.popover').last().addClass('popover-dark')
+                    });
+
+                $(document).on('click', '#closeBuilderPopover', function () {
+                    window.localStorage.setItem('hs-builder-popover', true);
+                    $('#builderPopover').popover('dispose');
+                });
+            } else {
+                $('#builderPopover').on('show.bs.popover', function () {
+                    return false
+                });
+            }
 
 
+        });
 
     </script>
-    <script th:src="@{/assets/js/userjs.js}"></script>
+    <!-- <script th:src="@{/assets/js/userjs.js}"></script> -->
     <script>
         if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="./assets/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>

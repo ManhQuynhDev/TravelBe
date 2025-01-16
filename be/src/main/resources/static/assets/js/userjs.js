@@ -19,7 +19,34 @@ $(document).on('ready', function () {
 });
 
 const API_BASE_URL = 'http://localhost:8080/onboarding';
-const AUTH_HEADER = { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` };
+const authToken = localStorage.getItem('authToken');
+const AUTH_HEADER = { 'Authorization': `Bearer ${authToken}` };
+
+function isTokenExpired(token) {
+    if (!token) return true;
+
+    const payloadBase64 = token.split('.')[1];
+    const decodedPayload = JSON.parse(atob(payloadBase64));
+
+    const expirationTime = decodedPayload.exp;
+
+    const expirationDate = new Date(expirationTime * 1000); // Corrected declaration
+
+    console.log(`Token expires at: ${expirationDate}`);
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    return expirationTime < currentTime;
+}
+
+if (isTokenExpired(authToken)) {
+    console.log('Token hết hạn!'); // Kiểm tra xem đoạn mã này có được gọi không
+    showModal('warning', 'Hết phiên đăng nhập', 'Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+    setTimeout(() => {
+        console.log('Chuyển hướng đến trang login'); // Kiểm tra xem có đến đây không
+        window.location.href = '/web-server/login';
+    }, 1000);
+}
+
 
 document.getElementById('editAvatarUploaderModal').addEventListener('change', function (event) {
     const file = event.target.files[0];
@@ -44,7 +71,10 @@ function checkStatus(userId) {
         method: 'GET',
         headers: AUTH_HEADER
     })
-        .then(res => res.json())
+        .then(res => {
+            console.log(res);
+            return res.json()
+        })
         .then(data => {
             const userAccount = data.data.isLocked;
 
@@ -437,6 +467,26 @@ function getFriendsList(userId) {
             console.error('Lỗi khi lấy danh sách bạn bè:', error);
             document.getElementById('friendsList').innerHTML = '<tr><td colspan="4" class="text-center">Lỗi khi tải danh sách bạn bè</td></tr>';
         });
+}
+function showModal(type, title, message) {
+    document.getElementById('notificationModalLabel').textContent = title;
+    document.getElementById('notificationModalBody').textContent = message;
+
+    const modalElement = document.getElementById('notificationModal');
+    modalElement.classList.remove('modal-success', 'modal-info', 'modal-warning', 'modal-danger');
+
+    if (type === 'success') {
+        modalElement.classList.add('modal-success');
+    } else if (type === 'info') {
+        modalElement.classList.add('modal-info');
+    } else if (type === 'warning') {
+        modalElement.classList.add('modal-warning');
+    } else if (type === 'danger') {
+        modalElement.classList.add('modal-danger');
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
 }
 
 

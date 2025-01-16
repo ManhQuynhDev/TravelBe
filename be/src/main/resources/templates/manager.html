@@ -131,15 +131,17 @@
                                             th:text="'No phone number'">Phone</span>
                                     </td> -->
 
-                                    <td class="text-start" th:text="${manager.roles.iterator().next()}">Employee</td>
-
                                     <td class="text-start"
-                                        th:text="${manager.isLocked == 'LOOK' ? 'LOCKED' : manager.isLocked}">Role
+                                        th:text="${manager.roles[0] == 'MANAGER' ? 'Quản lý' : 'Quản lý'}">
+                                    </td>
+
+
+                                    <td class="text-start" th:text="${manager.isLocked == 'LOCK' ? 'Khóa' : 'Mở'}">Role
                                     </td>
 
                                     <td class="text-start">
                                         <span
-                                            th:text="'Joined ' + ${manager.create_at.toString().substring(0, 4)}">Joined
+                                            th:text="'Tham gia vào năm ' + ${manager.create_at.toString().substring(0, 4)}">Joined
                                             Date</span>
                                     </td>
 
