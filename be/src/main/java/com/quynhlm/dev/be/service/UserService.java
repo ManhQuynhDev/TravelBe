@@ -277,7 +277,19 @@ public class UserService {
         otpStorage.put(email, otpData);
 
         // Send OTP via email
-        sendEmail(email, "Your OTP Code", "Your OTP is: " + otp);
+        sendEmail(email, "Mã OTP để quên mật khẩu TravelWithMe", "Xin chào,\n" +
+                "\n" +
+                "        Để hoàn tất quá trình quên mật khẩu, vui lòng sử dụng mã xác minh dưới đây:\n" +
+                "\n" +
+                "        Mã xác minh của bạn: " + otp + // Thêm dấu "+" để nối chuỗi
+                "\n" +
+                "        Mã này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này.\n" +
+                "\n" +
+                "        Nếu bạn gặp bất kỳ vấn đề nào, hãy liên hệ với chúng tôi qua email travelwithmefpl.work@gmail.com.\n"
+                +
+                "\n" +
+                "        Trân trọng, \n" +
+                "        Đội ngũ hỗ trợ của TravelWithMe");
     }
 
     // Send email
@@ -494,7 +506,7 @@ public class UserService {
         userRepository.save(foundUser);
     }
 
-    @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
+    // @PostAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
     public void lockAccountUser(Integer id, LockUserDTO lockUserDTO)
             throws UserAccountNotFoundException, MethodNotValidException, BadResquestException {
         User user = userRepository.findOneById(id);
