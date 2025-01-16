@@ -52,6 +52,7 @@ public class ActivitiesService {
             throw new TravelPlanNotFoundException("Found group with id not found please try again");
         }
         activities.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
+        activities.setDelflag(0);
         Activities saveActivity = activitiesRepository.save(activities);
         if (saveActivity.getId() == null) {
             throw new UnknownException("Transaction cannot complete!");
@@ -64,7 +65,8 @@ public class ActivitiesService {
         if (foundActivity == null) {
             throw new ActivitiesNotFoundException("Activity with id " + id + " not found. Please try another!");
         }
-        activitiesRepository.delete(foundActivity);
+        foundActivity.setDelflag(1);
+        activitiesRepository.save(foundActivity);
     }
 
     public ActivityResponseDTO getAnActivity(int id) throws ActivitiesNotFoundException {
@@ -74,7 +76,7 @@ public class ActivitiesService {
         }
 
         List<Object[]> results = activitiesRepository.findActivitiesWithId(id);
-    
+
         if (results.isEmpty()) {
             throw new ActivitiesNotFoundException(
                     "Id " + id + " not found or invalid data. Please try another!");

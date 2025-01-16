@@ -91,6 +91,7 @@ public class TravelPlanService {
         }
 
         travelPlan.setCreate_time(new Timestamp(System.currentTimeMillis()).toString());
+        travelPlan.setDelflag(0);
 
         Travel_Plan saveTravelPlan = travelPlanRepository.save(travelPlan);
         if (saveTravelPlan.getId() == null) {
@@ -120,7 +121,8 @@ public class TravelPlanService {
                 memberPlanService.deleteMemberPlan(memberPlan.getUserId(), memberPlan.getPlanId());
             }
         }
-        travelPlanRepository.delete(foundPlan);
+        foundPlan.setDelflag(1);
+        travelPlanRepository.save(foundPlan);
     }
 
     public Page<PlanResponseDTO> getAllPlans(int page, int size) {

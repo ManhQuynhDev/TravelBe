@@ -45,6 +45,8 @@ public class MemberPlanService {
 
         member.setJoin_time(new Timestamp(System.currentTimeMillis()).toString());
 
+        member.setDelflag(0);
+
         if (!travelPlanRepository.existsById(member.getPlanId())) {
             throw new GroupNotFoundException("Plan with ID " + member.getPlanId() + " not found.");
         }
@@ -69,7 +71,8 @@ public class MemberPlanService {
         if (foundMember == null) {
             throw new MemberNotFoundException("Found user not found please try again");
         }
-        memberPlanRepository.delete(foundMember);
+        foundMember.setDelflag(1);
+        memberPlanRepository.save(foundMember);
     }
 
     public void setAdminPlan(MemberPlan member)

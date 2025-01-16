@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.quynhlm.dev.be.core.exception.GroupNotFoundException;
 import com.quynhlm.dev.be.core.exception.MemberNotFoundException;
@@ -74,6 +75,7 @@ public class MemberService {
         member.setRequest_time(new Timestamp(System.currentTimeMillis()).toString());
         member.setRole(Role.USER.name());
         member.setStatus("PENDING");
+        member.setDelflag(0);
         Member saveMember = memberRepository.save(member);
 
         if (saveMember.getId() == null) {
@@ -96,6 +98,7 @@ public class MemberService {
 
         member.setRole(Role.USER.name());
         member.setStatus("APPROVED");
+        member.setDelflag(0);
         member.setEnableNotification(true);
 
         Member saveMember = memberRepository.save(member);
@@ -167,7 +170,8 @@ public class MemberService {
             }
         }
 
-        memberRepository.delete(foundMember);
+        foundMember.setDelflag(1);
+        memberRepository.save(foundMember);
     }
 
     public void changeRoleAdmin(int adminId, int memberId, int groupId) throws UserAccountNotFoundException {
@@ -221,10 +225,12 @@ public class MemberService {
             throw new UnknownException("You do not have permission to approve/reject members.");
         }
 
-        memberRepository.delete(memberSendRequest);
+        memberSendRequest.setDelflag(1);
+        memberRepository.save(memberSendRequest);
     }
 
     // member id == managerId
+    @Transactional
     public void updateMemberStatus(int groupId, int adminId, int memberSendId, String action)
             throws UnknownException, UserAccountNotFoundException {
 

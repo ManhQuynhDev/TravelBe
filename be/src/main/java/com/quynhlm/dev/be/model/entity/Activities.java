@@ -29,4 +29,5 @@ public class Activities {
     private double cost;
     private String status;
     private String create_time;
-}   
+    private Integer delflag;
+}

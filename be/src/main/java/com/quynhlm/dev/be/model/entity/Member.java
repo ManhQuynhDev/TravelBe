@@ -30,4 +30,5 @@ public class Member {
     private String role;
     private String status;
     private boolean enableNotification;
+    private Integer delflag;
 }

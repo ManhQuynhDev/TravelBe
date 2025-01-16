@@ -26,4 +26,5 @@ public class Group {
     private String create_time;
     private String coverPhoto;
     private String bio;
+    private Integer delflag;
 }

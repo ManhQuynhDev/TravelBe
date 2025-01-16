@@ -12,10 +12,10 @@ import com.quynhlm.dev.be.model.entity.Group;
 
 public interface GroupRepository extends JpaRepository<Group, Integer> {
 
-    @Query(value = "SELECT * FROM m_group WHERE name = :name", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_group WHERE name = :name AND delflag = 0", nativeQuery = true)
     Group findGroupByName(@Param("name") String name);
 
-    @Query(value = "SELECT * FROM m_group WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_group WHERE id = :id AND delflag = 0", nativeQuery = true)
     Group findGroupById(@Param("id") Integer id);
 
     @Query(value = """
@@ -35,7 +35,7 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 member m ON m.group_id = g.id
             INNER JOIN
                 user u ON g.user_id = u.id
-            WHERE g.id = :group_id
+            WHERE g.id = :group_id AND g.delflag = 0
             GROUP BY
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
                 """, nativeQuery = true)
@@ -58,7 +58,7 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 member m ON m.group_id = g.id
             INNER JOIN
                 user u ON g.user_id = u.id
-            WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :q, '%'))
+            WHERE LOWER(g.name) LIKE LOWER(CONCAT('%', :q, '%')) AND g.delflag = 0
             GROUP BY
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
             """, nativeQuery = true)
@@ -83,6 +83,7 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                 member m ON m.group_id = g.id
             INNER JOIN
                 user u ON g.user_id = u.id
+            WHERE g.delflag = 0
             GROUP BY
                 g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
             """, nativeQuery = true)
@@ -108,6 +109,7 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                         member m ON m.group_id = g.id
                     INNER JOIN
                         user u ON g.user_id = u.id
+                    WHERE g.delflag = 0
                     GROUP BY
                         g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
                     ORDER BY
@@ -136,6 +138,7 @@ public interface GroupRepository extends JpaRepository<Group, Integer> {
                     member m ON m.group_id = g.id
                 INNER JOIN
                     user u ON g.user_id = u.id
+                WHERE g.delflag = 0
                 GROUP BY
                     g.id, u.id, g.name, g.cover_photo, g.status, g.bio, u.fullname, g.create_time
                 ORDER BY

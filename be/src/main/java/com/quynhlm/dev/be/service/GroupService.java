@@ -61,6 +61,7 @@ public class GroupService {
             group.setUser_id(groupRequestDTO.getUser_id());
             group.setName(groupRequestDTO.getName());
             group.setStatus(groupRequestDTO.getStatus());
+            group.setDelflag(0);
             if (groupRequestDTO.getBio() != null) {
                 group.setBio(groupRequestDTO.getBio());
             }
@@ -192,7 +193,9 @@ public class GroupService {
                 memberService.deleteMember(member.getId());
             }
         }
-        groupRepository.delete(foundGroup);
+        foundGroup.setDelflag(1);
+
+        groupRepository.save(foundGroup);
     }
 
     public Page<Group> getListData(int page, int size) {

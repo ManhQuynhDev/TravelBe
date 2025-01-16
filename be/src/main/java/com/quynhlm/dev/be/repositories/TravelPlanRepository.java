@@ -11,14 +11,14 @@ import org.springframework.data.repository.query.Param;
 import com.quynhlm.dev.be.model.entity.Travel_Plan;
 
 public interface TravelPlanRepository extends JpaRepository<Travel_Plan, Integer> {
-    @Query(value = "SELECT * FROM Travel_Plan WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM Travel_Plan WHERE id = :id AND delflag = 0", nativeQuery = true)
     Travel_Plan getAnTravel_Plan(@Param("id") int id);
 
 
-    @Query(value = "SELECT * FROM Travel_Plan WHERE group_id = :group_id", nativeQuery = true)
+    @Query(value = "SELECT * FROM Travel_Plan WHERE group_id = :group_id AND delflag = 0", nativeQuery = true)
     List<Travel_Plan> findByGroupId(@Param("group_id") int group_id);
 
-    @Query(value = "SELECT * FROM Travel_Plan WHERE user_id = :user_id", nativeQuery = true)
+    @Query(value = "SELECT * FROM Travel_Plan WHERE user_id = :user_id AND delflag = 0", nativeQuery = true)
     List<Travel_Plan> findByGroupUserId(@Param("user_id") int user_id);
 
     @Query(value = """
@@ -40,7 +40,7 @@ public interface TravelPlanRepository extends JpaRepository<Travel_Plan, Integer
             INNER JOIN
                 user u ON p.user_id = u.id
             WHERE
-                m.role = "ADMIN"
+                m.role = "ADMIN" AND p.delflag = 0
             GROUP BY
                 p.id, u.id, p.plan_name, p.status, p.description, u.fullname;
                                     """, nativeQuery = true)
@@ -65,7 +65,7 @@ public interface TravelPlanRepository extends JpaRepository<Travel_Plan, Integer
             INNER JOIN
                 user u ON p.user_id = u.id
             WHERE
-                p.group_id = :groupId
+                p.group_id = :groupId AND p.delflag = 0
             GROUP BY
                 p.id, u.id, p.plan_name, p.status, p.description, u.fullname;
                                     """, nativeQuery = true)

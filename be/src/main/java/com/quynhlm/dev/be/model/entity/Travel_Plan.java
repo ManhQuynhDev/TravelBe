@@ -31,4 +31,5 @@ public class Travel_Plan {
     private String description;
     private double total_butget;
     private String create_time;
+    private Integer delflag;
 }
