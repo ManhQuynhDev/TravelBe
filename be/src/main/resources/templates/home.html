@@ -85,8 +85,6 @@
                                     <span class="card-title h2" th:text="${userCount}">72,540</span>
                                 </div>
                             </div>
-                            <div id="growthInfo">
-                            </div>
                         </div>
                     </a>
                 </div>
@@ -101,9 +99,7 @@
                                     <span class="card-title h2" th:text="${managerCount}">25</span>
                                 </div>
                             </div>
-                            <span class="badge badge-soft-info">
-                                <i class="tio-trending-up"></i>13%</span>
-                            <span class="text-body font-size-sm ml-1">so với tuần trước</span>
+                        
                         </div>
                     </a>
                 </div>
@@ -115,8 +111,6 @@
                                 <div class="col-6">
                                     <span class="card-title h2" th:text="${groupCount}">10</span>
                                 </div>
-                            </div>
-                            <div id="growthInfoGroup">
                             </div>
                         </div>
                     </a>
@@ -146,6 +140,16 @@
                         <div class="card-body">
                             <h4 class="text-center">Biểu Đồ Tăng Trưởng Của Người Dùng, Bài Viết và Nhóm</h4>
                             <canvas id="growthChart"></canvas>
+                            <div class="form-group">
+                                <label for="yearSelect">Chọn năm:</label>
+                                <select id="yearSelect" class="form-control">
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <!-- Thêm các năm khác nếu cần -->
+                                </select>
+                            </div>
+
                         </div>
                     </div>
                     <div class="card shadow-sm mb-4">
@@ -361,208 +365,133 @@
     <script>
         var token = localStorage.getItem("authToken");
 
-        // Fetch dữ liệu người dùng
-        const fetchUserData = fetch('http://localhost:8080/onboarding/statistical_register/2024', {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`
+        // Biến để lưu biểu đồ
+        let growthChart = null;
+
+        // Hàm hủy biểu đồ cũ trước khi vẽ biểu đồ mới
+        function destroyChart() {
+            if (growthChart) {
+                growthChart.destroy();  // Hủy biểu đồ cũ
             }
-        }).then(response => response.json());
+        }
 
-        const fetchPostData = fetch('http://localhost:8080/api/posts/statistical_post/2024', {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then(response => response.json());
-
-        const fetchGroupData = fetch('http://localhost:8080/api/groups/statistical_group/2024', {
-            method: "GET",
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        }).then(response => response.json());
-
-        Promise.all([fetchUserData, fetchPostData, fetchGroupData])
-            .then(([userData, postData, groupData]) => {
-                console.log('User Data:', userData);
-                console.log('Post Data:', postData);
-                console.log('Group Data:', groupData);
-
-                const safeUserData = Array.isArray(userData) ? userData : [];
-                const userLabels = safeUserData.map(item => {
-                    if (item?.month) {
-                        return item.month.toString().padStart(2, '0');
-                    }
-                    return '';
-                });
-
-                const userRegisterCounts = safeUserData.map(item => item?.count || 0);
-                const month11User = safeUserData.find(item => item.month === 11);
-                const month12User = safeUserData.find(item => item.month === 12);
-
-                let percentageChangeUser = 0;
-                if (month11User && month12User) {
-                    const differenceUser = month12User.count - month11User.count;
-                    if (month11User.count !== 0) {
-                        percentageChangeUser = ((differenceUser / month11User.count) * 100).toFixed(2);
-                    } else if (month12User.count > 0) {
-                        percentageChangeUser = 100;
-                    }
+        // Hàm tải dữ liệu và cập nhật biểu đồ
+        function fetchDataAndUpdateChart(year) {
+            const fetchUserData = fetch(`http://localhost:8080/onboarding/statistical_register/${year}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
+            }).then(response => response.json());
 
-                const growthInfoElement = document.getElementById("growthInfo");
-                let htmlContent = "";
-                if (percentageChangeUser > 0) {
-                    htmlContent = `
-                <span class="badge badge-soft-success">
-                    <i class="tio-trending-up"></i> ${percentageChangeUser}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
-                } else if (percentageChangeUser < 0) {
-                    htmlContent = `
-                <span class="badge badge-soft-danger">
-                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangeUser)}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
+            const fetchPostData = fetch(`http://localhost:8080/api/posts/statistical_post/${year}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-                growthInfoElement.innerHTML = htmlContent;
+            }).then(response => response.json());
 
-                const safePostData = Array.isArray(postData) ? postData : [];
-                const postLabels = safePostData.map(item => item?.month || '');
-                const postCounts = safePostData.map(item => item?.post_count || 0);
-                const month11Post = safePostData.find(item => item.month === 11);
-                const month12Post = safePostData.find(item => item.month === 12);
-
-                let percentageChangePost = 0;
-                if (month11Post && month12Post) {
-                    const differencePost = month12Post.post_count - month11Post.post_count;
-                    if (month11Post.post_count !== 0) {
-                        percentageChangePost = ((differencePost / month11Post.post_count) * 100).toFixed(2);
-                    } else if (month12Post.post_count > 0) {
-                        percentageChangePost = 100;
-                    }
+            const fetchGroupData = fetch(`http://localhost:8080/api/groups/statistical_group/${year}`, {
+                method: "GET",
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
+            }).then(response => response.json());
 
-                const growthInfoElementPost = document.getElementById("growthInfoPost");
-                let htmlContentPost = "";
-                if (percentageChangePost > 0) {
-                    htmlContentPost = `
-                <span class="badge badge-soft-success">
-                    <i class="tio-trending-up"></i> ${percentageChangePost}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
-                } else if (percentageChangePost < 0) {
-                    htmlContentPost = `
-                <span class="badge badge-soft-danger">
-                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangePost)}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
-                }
-                growthInfoElementPost.innerHTML = htmlContentPost;
+            Promise.all([fetchUserData, fetchPostData, fetchGroupData])
+                .then(([userData, postData, groupData]) => {
+                    // Xử lý dữ liệu người dùng
+                    const safeUserData = Array.isArray(userData) ? userData : [];
+                    const userLabels = safeUserData.map(item => item?.month?.toString().padStart(2, '0') || '');
+                    const userRegisterCounts = safeUserData.map(item => item?.count || 0);
 
-                const safeGroupData = Array.isArray(groupData) ? groupData : [];
-                const groupLabels = safeGroupData.map(item => item?.month || '');
-                const groupCounts = safeGroupData.map(item => item?.post_count || 0);
-                const month11Group = safeGroupData.find(item => item.month === 11);
-                const month12Group = safeGroupData.find(item => item.month === 12);
+                    // Xử lý dữ liệu bài viết
+                    const safePostData = Array.isArray(postData) ? postData : [];
+                    const postCounts = safePostData.map(item => item?.post_count || 0);
 
-                let percentageChangeGroup = 0;
-                if (month11Group && month12Group) {
-                    const differenceGroup = month12Group.post_count - month11Group.post_count;
-                    if (month11Group.post_count !== 0) {
-                        percentageChangeGroup = ((differenceGroup / month11Group.post_count) * 100).toFixed(2);
-                    } else if (month12Group.post_count > 0) {
-                        percentageChangeGroup = 100;
-                    }
-                }
+                    // Xử lý dữ liệu nhóm
+                    const safeGroupData = Array.isArray(groupData) ? groupData : [];
+                    const groupCounts = safeGroupData.map(item => item?.post_count || 0);
 
-                const growthInfoElementGroup = document.getElementById("growthInfoGroup");
-                let htmlContentGroup = "";
-                if (percentageChangeGroup > 0) {
-                    htmlContentGroup = `
-                <span class="badge badge-soft-success">
-                    <i class="tio-trending-up"></i> ${percentageChangeGroup}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
-                } else if (percentageChangeGroup < 0) {
-                    htmlContentGroup = `
-                <span class="badge badge-soft-danger">
-                    <i class="tio-trending-down"></i> ${Math.abs(percentageChangeGroup)}%
-                </span>
-                <span class="text-body font-size-sm ml-1">so với tháng trước</span>
-            `;
-                }
-                growthInfoElementGroup.innerHTML = htmlContentGroup;
+                    // Hủy bỏ biểu đồ cũ trước khi tạo mới
+                    destroyChart();
 
-                const chartData = {
-                    labels: userLabels,
-                    datasets: [
-                        {
-                            label: 'Users',
-                            data: userRegisterCounts,
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            fill: true
-                        },
-                        {
-                            label: 'Posts',
-                            data: postCounts,
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            fill: true
-                        },
-                        {
-                            label: 'Groups',
-                            data: groupCounts,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: true
-                        }
-                    ]
-                };
-
-                const ctx = document.getElementById('growthChart').getContext('2d');
-                const growthChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: chartData,
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
+                    // Cập nhật biểu đồ
+                    const chartData = {
+                        labels: userLabels,
+                        datasets: [
+                            {
+                                label: 'Users',
+                                data: userRegisterCounts,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                fill: true
                             },
-                            tooltip: {
-                                mode: 'index',
-                                intersect: false,
+                            {
+                                label: 'Posts',
+                                data: postCounts,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                fill: true
+                            },
+                            {
+                                label: 'Groups',
+                                data: groupCounts,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                fill: true
                             }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Months'
+                        ]
+                    };
+
+                    const ctx = document.getElementById('growthChart').getContext('2d');
+                    growthChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
                                 }
                             },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Count'
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Months'
+                                    }
                                 },
-                                suggestedMax: 120,
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Count'
+                                    },
+                                    suggestedMax: 120,
+                                }
                             }
                         }
-                    }
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
                 });
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
+        }
+
+        // Lắng nghe sự kiện thay đổi năm từ dropdown
+        document.getElementById('yearSelect').addEventListener('change', (event) => {
+            const selectedYear = event.target.value;
+            fetchDataAndUpdateChart(selectedYear); // Gọi hàm để tải dữ liệu và cập nhật biểu đồ
+        });
+
+        // Tải dữ liệu và vẽ biểu đồ cho năm mặc định (ví dụ: 2024)
+        fetchDataAndUpdateChart('2025');
+
+
         document.addEventListener("DOMContentLoaded", function () {
 
 
